@@ -95,6 +95,25 @@ static class EntryPoint
 		while ( key != Lua.Nil.Instance )
 		{
 			Console.WriteLine( "{0} {1}", key, value );
+			table[ key ] = Lua.Nil.Instance;
+
+			table.Next( ref key, out value );
+		}
+
+
+		foreach ( KeyValuePair< Lua.Value, Lua.Value > item in table )
+		{
+			Console.WriteLine( "ELEMENT: {0} {1}", item.Key, item.Value );
+		}
+
+		key		= Lua.Nil.Instance;
+		value	= Lua.Nil.Instance;
+
+		table.Next( ref key, out value );
+		while ( key != Lua.Nil.Instance )
+		{
+			Console.WriteLine( "NEXT: {0} {1}", key, value );
+			table[ key ] = Lua.Nil.Instance;
 
 			table.Next( ref key, out value );
 		}

@@ -29,6 +29,7 @@ namespace Lua
 */
 
 
+[DebuggerDisplay( "Count = {Count}" ), DebuggerTypeProxy( typeof( TableDebugView ) )]
 public sealed class Table
 	:	Value
 	,	IDictionary< Value, Value >
@@ -251,36 +252,33 @@ public sealed class Table
 			{
 				if ( enumerator.Current.Key.Equals( key ) )
 				{
-					// Return next entry.
-
-					if ( enumerator.MoveNext() )
-					{
-						key		= enumerator.Current.Key;
-						value	= enumerator.Current.Value;
-						return;
-					}
+					break;
 				}
 			}
 		}
-		else
+
+
+		// Find next non-nil entry.
+
+		bool bExists = enumerator.MoveNext();
+		while ( enumerator.Current.Value == Nil.Instance )
 		{
-
-			// First hash index.
-
-			if ( enumerator.MoveNext() )
-			{
-				key		= enumerator.Current.Key;
-				value	= enumerator.Current.Value;
-				return;
-			}
+			bExists = enumerator.MoveNext();
 		}
-
 
 
 		// Finished.
 
-		key		= Nil.Instance;
-		value	= Nil.Instance;
+		if ( bExists )
+		{
+			key		= enumerator.Current.Key;
+			value	= enumerator.Current.Value;
+		}
+		else
+		{
+			key		= Nil.Instance;
+			value	= Nil.Instance;
+		}
 	}
 
 
@@ -533,6 +531,40 @@ public sealed class Table
 	{
 		return ( (IDictionary< Value, Value >)this ).GetEnumerator();
 	}
+
+
+
+	// Debug view.
+
+	class TableDebugView
+	{
+		Table table;
+
+
+		public TableDebugView( Table table )
+		{
+			this.table = table;
+		}
+
+
+		[DebuggerBrowsable( DebuggerBrowsableState.RootHidden )]
+		public KeyValuePair< Value, Value >[] Elements
+		{
+			get
+			{
+				KeyValuePair< Value, Value >[] elements = new KeyValuePair< Value, Value >[ table.Count ];
+				int i = 0;
+				foreach ( KeyValuePair< Value, Value > item in table )
+				{
+					elements[ i ] = item;
+					i += 1;
+				}
+				return elements;
+			}
+		}
+	}
+
+
 }
 
 
