@@ -6,12 +6,14 @@
 
 
 using System;
+using System.Diagnostics;
 
 
 namespace Lua
 {
 
 
+[DebuggerDisplay( "nil" )]
 public sealed class Nil
 	:	Value
 {
@@ -29,7 +31,16 @@ public sealed class Nil
 	{
 	}
 	
+
+
+	// Hashing.
 	
+	public override string ToString()
+	{
+		return "nil";
+	}
+
+
 
 	// Comparison operators.
 

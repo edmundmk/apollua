@@ -6,12 +6,14 @@
 
 
 using System;
+using System.Diagnostics;
 
 
 namespace Lua
 {
 
 
+[DebuggerDisplay( "{Value}" )]
 public sealed class Number
 	:	Value
 {
@@ -47,7 +49,17 @@ public sealed class Number
 
 	public override int GetHashCode()
 	{
+		int integer;
+		if ( TryToInteger( out integer ) )
+		{
+			return integer.GetHashCode();
+		}
 		return Value.GetHashCode();
+	}
+
+	public override string ToString()
+	{
+		return Value.ToString();
 	}
 
 

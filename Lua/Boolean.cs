@@ -6,20 +6,22 @@
 
 
 using System;
+using System.Diagnostics;
 
 
 namespace Lua
 {
 
 
+[DebuggerDisplay( "{IsTrue()}" )]
 public sealed class Boolean
 	:	Value
 {
 
 	// Singleton instances.
 
-	public static Boolean True	{ get; private set; }
-	public static Boolean False	{ get; private set; }
+	[DebuggerHidden] public static Boolean True		{ get; private set; }
+	[DebuggerHidden] public static Boolean False	{ get; private set; }
 
 	static Boolean()
 	{
@@ -29,6 +31,28 @@ public sealed class Boolean
 
 	private Boolean()
 	{
+	}
+
+
+
+	// Hashing.
+
+	public override int GetHashCode()
+	{
+		if ( this == False )
+		{
+			return false.GetHashCode();
+		}
+		return true.GetHashCode();
+	}
+
+	public override string ToString()
+	{
+		if ( this == False )
+		{
+			return false.ToString();
+		}
+		return true.ToString();
 	}
 
 
