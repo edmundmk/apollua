@@ -397,7 +397,15 @@ public sealed class Table
 	{
 		get
 		{
-			return arrayOccupancy + hash.Count;
+			int hashCount = 0;
+			foreach ( KeyValuePair< Value, Value > item in hash )
+			{
+				if ( item.Value != Nil.Instance )
+				{
+					hashCount += 1;
+				}
+			}
+ 			return arrayOccupancy + hashCount;
 		}
 	}
 
@@ -523,7 +531,10 @@ public sealed class Table
 
 		foreach ( KeyValuePair< Value, Value > item in hash )
 		{
-			yield return item;
+			if ( item.Value != Nil.Instance )
+			{
+				yield return item;
+			}
 		}
 	}
 
