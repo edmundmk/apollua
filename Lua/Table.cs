@@ -122,7 +122,7 @@ public sealed class Table
 		}
 
 
-		return Nil.Instance;
+		return null;
 	}
 
 
@@ -138,11 +138,11 @@ public sealed class Table
 			if ( index < array.Length )
 			{
 				Value existingValue = array[ index ];
-				if ( existingValue != Nil.Instance && value == Nil.Instance )
+				if ( existingValue != null && value == null )
 				{
 					arrayOccupancy -= 1;
 				}
-				else if ( existingValue == Nil.Instance && value != Nil.Instance )
+				else if ( existingValue == null && value != null )
 				{
 					arrayOccupancy += 1;
 				}
@@ -150,11 +150,11 @@ public sealed class Table
 			else if ( index < nextLength )
 			{
 				Value existingValue = Index( key );
-				if ( existingValue != Nil.Instance && value == Nil.Instance )
+				if ( existingValue != null && value == null )
 				{
 					nextOccupancy -= 1;
 				}
-				else if ( existingValue == Nil.Instance && value != Nil.Instance )
+				else if ( existingValue == null && value != null )
 				{
 					nextOccupancy += 1;
 				}
@@ -181,7 +181,7 @@ public sealed class Table
 
 				// Update boundary.
 
-				if ( value != Nil.Instance )
+				if ( value != null )
 				{
 					if ( boundary == index )
 					{
@@ -201,7 +201,7 @@ public sealed class Table
 
 		// Try hash.
 
-		if ( key == Nil.Instance )
+		if ( key == null )
 		{
 			throw new IndexOutOfRangeException( "Table indices cannot be nil." );
 		}
@@ -218,13 +218,13 @@ public sealed class Table
 		// Try integer index.
 
 		int index = -1;
-		if ( key == Nil.Instance || TryArrayIndex( key, out index ) )
+		if ( key == null || TryArrayIndex( key, out index ) )
 		{
 			// Try next index.
 
 			for ( index += 1; index < array.Length; ++index )
 			{
-				if ( array[ index ] != Nil.Instance )
+				if ( array[ index ] != null )
 				{
 					key		= new Integer( index + 1 );
 					value	= array[ index ];
@@ -235,7 +235,7 @@ public sealed class Table
 
 			// Start from the start of the hash.
 
-			key = Nil.Instance;
+			key = null;
 		}
 
 
@@ -244,7 +244,7 @@ public sealed class Table
 
 		IEnumerator< KeyValuePair< Value, Value > > enumerator = hash.GetEnumerator();
 
-		if ( key != Nil.Instance )
+		if ( key != null )
 		{
 			// Search for the key.
 
@@ -260,25 +260,18 @@ public sealed class Table
 
 		// Find next non-nil entry.
 
-		bool bExists = enumerator.MoveNext();
-		while ( enumerator.Current.Value == Nil.Instance )
+		while ( enumerator.MoveNext() )
 		{
-			bExists = enumerator.MoveNext();
+			if ( enumerator.Current.Value != null )
+			{
+				key		= enumerator.Current.Key;
+				value	= enumerator.Current.Value;
+				return;
+			}
 		}
 
-
-		// Finished.
-
-		if ( bExists )
-		{
-			key		= enumerator.Current.Key;
-			value	= enumerator.Current.Value;
-		}
-		else
-		{
-			key		= Nil.Instance;
-			value	= Nil.Instance;
-		}
+		key		= null;
+		value	= null;
 	}
 
 
@@ -303,11 +296,11 @@ public sealed class Table
 		// This function is called when the previous boundary index becomes non-nil.
 
 		Debug.Assert( boundary < array.Length );
-		Debug.Assert( array[ boundary ] != Nil.Instance );
+		Debug.Assert( array[ boundary ] != null );
 
 		for ( boundary += 1; boundary < array.Length; ++boundary )
 		{
-			if ( array[ boundary ] == Nil.Instance )
+			if ( array[ boundary ] == null )
 			{
 				break;
 			}
@@ -328,7 +321,7 @@ public sealed class Table
 			Array.Resize( ref array, nextLength );
 			for ( int i = oldLength; i < array.Length; ++i )
 			{
-				array[ i ] = Nil.Instance;
+				array[ i ] = null;
 			}
 			nextLength *= 2;
 
@@ -350,7 +343,7 @@ public sealed class Table
 				
 				foreach ( KeyValuePair< Value, Value > entry in hash )
 				{
-					if ( entry.Value == Nil.Instance )
+					if ( entry.Value == null )
 					{
 						continue;
 					}
@@ -400,7 +393,7 @@ public sealed class Table
 			int hashCount = 0;
 			foreach ( KeyValuePair< Value, Value > item in hash )
 			{
-				if ( item.Value != Nil.Instance )
+				if ( item.Value != null )
 				{
 					hashCount += 1;
 				}
@@ -464,7 +457,7 @@ public sealed class Table
 
 	public bool ContainsKey( Value key )
 	{
-		return Index( key ) != Nil.Instance;
+		return Index( key ) != null;
 	}
 
 	public bool Contains( KeyValuePair< Value, Value > item )
@@ -475,15 +468,15 @@ public sealed class Table
 	public bool TryGetValue( Value key, out Value value )
 	{
 		value = Index( key );
-		return value != Nil.Instance;
+		return value != null;
 	}
 
 	public bool Remove( Value key )
 	{
 		Value value = Index( key );
-		if ( value != Nil.Instance )
+		if ( value != null )
 		{
-			NewIndex( key, Nil.Instance );
+			NewIndex( key, null );
 			return true;
 		}
 		return false;
@@ -494,7 +487,7 @@ public sealed class Table
 		Value value = Index( item.Key );
 		if ( value.Equals( item.Value ) )
 		{
-			NewIndex( item.Key, Nil.Instance );
+			NewIndex( item.Key, null );
 			return true;
 		}
 		return false;
@@ -523,7 +516,7 @@ public sealed class Table
 		for ( int index = 0; index < array.Length; ++index )
 		{
 			Value value = array[ index ];
-			if ( value != Nil.Instance )
+			if ( value != null )
 			{
 				yield return new KeyValuePair< Value, Value >( new Integer( index + 1 ), value );
 			}
@@ -531,7 +524,7 @@ public sealed class Table
 
 		foreach ( KeyValuePair< Value, Value > item in hash )
 		{
-			if ( item.Value != Nil.Instance )
+			if ( item.Value != null )
 			{
 				yield return item;
 			}

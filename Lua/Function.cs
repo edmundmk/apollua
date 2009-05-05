@@ -78,13 +78,6 @@ public abstract class Function
 
 	// Individual functions must implement all call operations.
 
-	public override abstract Value[] InvokeM();
-	public override abstract Value[] InvokeM( Value arg );
-	public override abstract Value[] InvokeM( Value arg1, Value arg2 );
-	public override abstract Value[] InvokeM( Value arg1, Value arg2, Value arg3 );
-	public override abstract Value[] InvokeM( Value arg1, Value arg2, Value arg3, Value arg4 );
-	public override abstract Value[] InvokeM( Value[] arguments );
-
 	public override abstract Value InvokeS();
 	public override abstract Value InvokeS( Value arg );
 	public override abstract Value InvokeS( Value arg1, Value arg2 );
@@ -92,7 +85,15 @@ public abstract class Function
 	public override abstract Value InvokeS( Value arg1, Value arg2, Value arg3, Value arg4 );
 	public override abstract Value InvokeS( Value[] arguments );
 
+	public override abstract Value[] InvokeM();
+	public override abstract Value[] InvokeM( Value arg );
+	public override abstract Value[] InvokeM( Value arg1, Value arg2 );
+	public override abstract Value[] InvokeM( Value arg1, Value arg2, Value arg3 );
+	public override abstract Value[] InvokeM( Value arg1, Value arg2, Value arg3, Value arg4 );
+	public override abstract Value[] InvokeM( Value[] arguments );
 
+//	public override abstract Value ResumeS( StackFrame frame );
+//	public override abstract Value[] ResumeM( StackFrame frame );
 
 }
 

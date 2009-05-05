@@ -38,11 +38,11 @@ static class EntryPoint
 		}
 
 
-		Lua.Value key	= Lua.Nil.Instance;
-		Lua.Value value	= Lua.Nil.Instance;
+		Lua.Value key	= null;
+		Lua.Value value	= null;
 
 		table.Next( ref key, out value );
-		while ( key != Lua.Nil.Instance )
+		while ( key != null )
 		{
 			Console.WriteLine( "{0} {1}", key, value );
 
@@ -50,7 +50,7 @@ static class EntryPoint
 		}
 
 
-		table[ new Lua.Integer( 3 ) ] = Lua.Nil.Instance;
+		table[ new Lua.Integer( 3 ) ] = null;
 
 		Console.WriteLine( "#table = {0}", table.Length() );
 
@@ -62,11 +62,11 @@ static class EntryPoint
 
 		Console.WriteLine( "#table = {0}", table.Length() );
 
-		table[ new Lua.Integer( 3 ) ] = Lua.Nil.Instance;
+		table[ new Lua.Integer( 3 ) ] = null;
 
 		Console.WriteLine( "#table = {0}", table.Length() );
 
-		table[ new Lua.Integer( 4 ) ] = Lua.Nil.Instance;
+		table[ new Lua.Integer( 4 ) ] = null;
 
 		Console.WriteLine( "#table = {0}", table.Length() );
 
@@ -88,14 +88,14 @@ static class EntryPoint
 		}
 
 
-		key		= Lua.Nil.Instance;
-		value	= Lua.Nil.Instance;
+		key		= null;
+		value	= null;
 
 		table.Next( ref key, out value );
-		while ( key != Lua.Nil.Instance )
+		while ( key != null )
 		{
 			Console.WriteLine( "{0} {1}", key, value );
-			table[ key ] = Lua.Nil.Instance;
+			table[ key ] = null;
 
 			table.Next( ref key, out value );
 		}
@@ -106,14 +106,14 @@ static class EntryPoint
 			Console.WriteLine( "ELEMENT: {0} {1}", item.Key, item.Value );
 		}
 
-		key		= Lua.Nil.Instance;
-		value	= Lua.Nil.Instance;
+		key		= null;
+		value	= null;
 
 		table.Next( ref key, out value );
-		while ( key != Lua.Nil.Instance )
+		while ( key != null )
 		{
 			Console.WriteLine( "NEXT: {0} {1}", key, value );
-			table[ key ] = Lua.Nil.Instance;
+			table[ key ] = null;
 
 			table.Next( ref key, out value );
 		}

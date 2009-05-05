@@ -12,6 +12,26 @@ namespace Lua
 {
 
 
+/*	All values manipulated by the Lua runtime are instances of this class.  This
+	allows simple compilation of Lua operations into virtual method calls on this
+	type.  The compiled code does not switch on the type of values and does not
+	need to implement the semantics of metatables.
+
+	Even primitive values (numbers, booleans) are 'boxed' into Value instances.
+	To manipulate these values as Object references would require boxing anyway,
+	and this way has the advantages described above.
+
+	Unlike LuaCLR, nil is represented directly as a null reference.  This is more
+	obvious than having a special Value instance to represent nil.  Any operations
+	on null values will cause the runtime to throw a NullReferenceException.  This
+	is acceptable because none of Lua 5.1's primitive operations are valid on nil
+	values and nil cannot have a custom metatable.  However, as a consequence,
+	the expression ( nil <op> right ) always raises an error, rather than allowing
+	a call to right's meta handler.
+*/
+
+
+
 public abstract class Value
 {
 
@@ -70,7 +90,7 @@ public abstract class Value
 		}
 
 		Value h = GetComparisonHandler( this, o, "__eq" );
-		if ( h != Nil.Instance )
+		if ( h != null )
 		{
 			return h.InvokeS( this, o ).IsTrue();
 		}
@@ -81,7 +101,7 @@ public abstract class Value
 	public virtual bool LessThan( Value o )
 	{
 		Value h = GetComparisonHandler( this, o, "__lt" );
-		if ( h != Nil.Instance )
+		if ( h != null )
 		{
 			return h.InvokeS( this, o ).IsTrue();
 		}
@@ -92,13 +112,13 @@ public abstract class Value
 	public virtual bool LessThanOrEqual( Value o )
 	{
 		Value h = GetComparisonHandler( this, o, "__le" );
-		if ( h != Nil.Instance )
+		if ( h != null )
 		{
 			return h.InvokeS( this, o ).IsTrue();
 		}
 
 		h = GetComparisonHandler( this, o, "__lt" );
-		if ( h != Nil.Instance )
+		if ( h != null )
 		{
 			return ! h.InvokeS( o, this ).IsTrue();
 		}
@@ -113,7 +133,7 @@ public abstract class Value
 	public virtual Value Index( Value key )
 	{
 		Value h = GetHandler( this, "__index" );
-		if ( h != Nil.Instance )
+		if ( h != null )
 		{
 			return h.InvokeS( this, key );
 		}
@@ -124,7 +144,7 @@ public abstract class Value
 	public virtual void NewIndex( Value key, Value value )
 	{
 		Value h = GetHandler( this, "__newindex" );
-		if ( h != Nil.Instance )
+		if ( h != null )
 		{
 			h.InvokeS( this, key, value );
 		}
@@ -136,10 +156,80 @@ public abstract class Value
 
 	// Function call.
 
+	public virtual Value InvokeS()
+	{
+		Value h = GetHandler( this, "__call" );
+		if ( h != null )
+		{
+			return h.InvokeS( this );
+		}
+
+		throw new InvalidOperationException();
+	}
+
+	public virtual Value InvokeS( Value arg )
+	{
+		Value h = GetHandler( this, "__call" );
+		if ( h != null )
+		{
+			return h.InvokeS( this, arg );
+		}
+
+		throw new InvalidOperationException();
+	}
+
+	public virtual Value InvokeS( Value arg1, Value arg2 )
+	{
+		Value h = GetHandler( this, "__call" );
+		if ( h != null )
+		{
+			return h.InvokeS( this, arg1, arg2 );
+		}
+
+		throw new InvalidOperationException();
+	}
+
+	public virtual Value InvokeS( Value arg1, Value arg2, Value arg3 )
+	{
+		Value h = GetHandler( this, "__call" );
+		if ( h != null )
+		{
+			return h.InvokeS( this, arg1, arg2, arg3 );
+		}
+
+		throw new InvalidOperationException();
+	}
+
+	public virtual Value InvokeS( Value arg1, Value arg2, Value arg3, Value arg4 )
+	{
+		Value h = GetHandler( this, "__call" );
+		if ( h != null )
+		{
+			return h.InvokeS( new Value[]{ this, arg1, arg2, arg3, arg4 } );
+		}
+
+		throw new InvalidOperationException();
+	}
+
+	public virtual Value InvokeS( Value[] arguments )
+	{
+		Value h = GetHandler( this, "__call" );
+		if ( h != null )
+		{
+			Value[] harguments = new Value[ arguments.Length + 1 ];
+			harguments[ 0 ] = this;
+			arguments.CopyTo( harguments, 1 );
+
+			return h.InvokeS( harguments );
+		}
+
+		throw new InvalidOperationException();
+	}
+
 	public virtual Value[] InvokeM()
 	{
 		Value h = GetHandler( this, "__call" );
-		if ( h != Nil.Instance )
+		if ( h != null )
 		{
 			return h.InvokeM( this );
 		}
@@ -150,7 +240,7 @@ public abstract class Value
 	public virtual Value[] InvokeM( Value arg )
 	{
 		Value h = GetHandler( this, "__call" );
-		if ( h != Nil.Instance )
+		if ( h != null )
 		{
 			return h.InvokeM( this, arg );
 		}
@@ -161,7 +251,7 @@ public abstract class Value
 	public virtual Value[] InvokeM( Value arg1, Value arg2 )
 	{
 		Value h = GetHandler( this, "__call" );
-		if ( h != Nil.Instance )
+		if ( h != null )
 		{
 			return h.InvokeM( this, arg1, arg2 );
 		}
@@ -172,7 +262,7 @@ public abstract class Value
 	public virtual Value[] InvokeM( Value arg1, Value arg2, Value arg3 )
 	{
 		Value h = GetHandler( this, "__call" );
-		if ( h != Nil.Instance )
+		if ( h != null )
 		{
 			return h.InvokeM( this, arg1, arg2, arg3 );
 		}
@@ -183,7 +273,7 @@ public abstract class Value
 	public virtual Value[] InvokeM( Value arg1, Value arg2, Value arg3, Value arg4 )
 	{
 		Value h = GetHandler( this, "__call" );
-		if ( h != Nil.Instance )
+		if ( h != null )
 		{
 			return h.InvokeM( new Value[]{ this, arg1, arg2, arg3, arg4 } );
 		}
@@ -194,7 +284,7 @@ public abstract class Value
 	public virtual Value[] InvokeM( params Value[] arguments )
 	{
 		Value h = GetHandler( this, "__call" );
-		if ( h != Nil.Instance )
+		if ( h != null )
 		{
 			Value[] harguments = new Value[ arguments.Length + 1 ];
 			harguments[ 0 ] = this;
@@ -206,76 +296,17 @@ public abstract class Value
 		throw new InvalidOperationException();
 	}
 
-
-	public virtual Value InvokeS()
+/*
+	public virtual Value ResumeS( StackFrame frame )
 	{
-		Value h = GetHandler( this, "__call" );
-		if ( h != Nil.Instance )
-		{
-			return h.InvokeS( this );
-		}
-
-		throw new InvalidOperationException();
+		throw new InvalidContinuationException();
 	}
-
-	public virtual Value InvokeS( Value arg )
+	
+	public virtual Value[] ResumeM( StackFrame frame )
 	{
-		Value h = GetHandler( this, "__call" );
-		if ( h != Nil.Instance )
-		{
-			return h.InvokeS( this, arg );
-		}
-
-		throw new InvalidOperationException();
+		throw new InvalidContinuationException();
 	}
-
-	public virtual Value InvokeS( Value arg1, Value arg2 )
-	{
-		Value h = GetHandler( this, "__call" );
-		if ( h != Nil.Instance )
-		{
-			return h.InvokeS( this, arg1, arg2 );
-		}
-
-		throw new InvalidOperationException();
-	}
-
-	public virtual Value InvokeS( Value arg1, Value arg2, Value arg3 )
-	{
-		Value h = GetHandler( this, "__call" );
-		if ( h != Nil.Instance )
-		{
-			return h.InvokeS( this, arg1, arg2, arg3 );
-		}
-
-		throw new InvalidOperationException();
-	}
-
-	public virtual Value InvokeS( Value arg1, Value arg2, Value arg3, Value arg4 )
-	{
-		Value h = GetHandler( this, "__call" );
-		if ( h != Nil.Instance )
-		{
-			return h.InvokeS( new Value[]{ this, arg1, arg2, arg3, arg4 } );
-		}
-
-		throw new InvalidOperationException();
-	}
-
-	public virtual Value InvokeS( Value[] arguments )
-	{
-		Value h = GetHandler( this, "__call" );
-		if ( h != Nil.Instance )
-		{
-			Value[] harguments = new Value[ arguments.Length + 1 ];
-			harguments[ 0 ] = this;
-			arguments.CopyTo( harguments, 1 );
-
-			return h.InvokeS( harguments );
-		}
-
-		throw new InvalidOperationException();
-	}
+*/
 
 
 

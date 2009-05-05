@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using Lua.Compiler.Frontend.Parser;
+using Lua.Compiler.Frontend.AST;
 
 
 namespace Lua.Compiler
@@ -36,6 +37,7 @@ static class Compiler
 	
 	static Function Compile( StringWriter errors, Parser parser )
 	{
+
 		return null;
 	}
 

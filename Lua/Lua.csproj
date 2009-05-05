@@ -49,7 +49,6 @@
     <Compile Include="Coroutine.cs" />
     <Compile Include="Function.cs" />
     <Compile Include="Integer.cs" />
-    <Compile Include="Nil.cs" />
     <Compile Include="Number.cs" />
     <Compile Include="Value.cs" />
     <Compile Include="String.cs" />
