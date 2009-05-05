@@ -7,8 +7,8 @@
 
 using System;
 using System.Collections.Generic;
-using Lua.Compiler.Frontend.AST;
-using Lua.Compiler.Frontend.Parser;
+using Lua.Compiler.Front.AST;
+using Lua.Compiler.Front.Parser;
 
 
 namespace Lua.Compiler.AST
@@ -17,11 +17,21 @@ namespace Lua.Compiler.AST
 
 /*	Each function is compiled to a class deriving from Lua.Function.
 	
+	Only one version of each function is compiled.  This is simpler than LuaCLR as
+	described in http://portal.acm.org/citation.cfm?doid=1363686.1363743, which
+	compiles both a multi-return and a single-return version of each function.
+	Instead any function that can potentially return multiple values is compiled
+	as a multi-return function.
+	
 	We implement continuations using the technique described in
 	http://www.ccs.neu.edu/scheme/pubs/stackhack4.html.  When yielding a coroutine,
 	we do not use exceptions because they are slow and impose constraints on the
 	generated code.  Instead yielding functions return StackFrame values, which are
-	explicitly checked for.
+	explicitly checked for (which slows down the normal, non-yield path, but is
+	simpler and allows the stack frame saving code to be shared).
+
+
+
 
 	The general structure of a compiled function class is:
 
@@ -46,12 +56,6 @@ namespace Lua.Compiler.AST
 		}
 
 
-
-		// Only one version of each function is compiled.  This is simpler than LuaCLR as
-		// described in http://portal.acm.org/citation.cfm?doid=1363686.1363743, which
-		// compiles both a multi-return and a single-return version of each function.
-		// Instead any function that can potentially return multiple values is compiled
-		// as a multi-return function.
 
 		// Function parameters are declared exactly as in the Lua declaration, though each
 		// function must declare at least one parameter so that we can check for StackFrames.
@@ -145,7 +149,7 @@ namespace Lua.Compiler.AST
 
 
 sealed class CompileAST
-	:	Frontend.IParserActions
+	:	Front.IParserActions
 {
 	public Scope Function( SourceLocation l, Scope scope, IList< string > parameternamelist, bool isVararg )
 	{

@@ -8,12 +8,12 @@
 using System;
 
 
-namespace Lua.Compiler.Frontend.AST
+namespace Lua.Compiler.Front.AST
 {
 
 
-/*	This class represents a local variable declaration.  It contains
-	enough information to allow name lookup to happen in the frontend.
+/*	This class represents a local variable declaration.  It contains enough
+	information to allow name lookup to be performed in the frontend.
 */
 
 

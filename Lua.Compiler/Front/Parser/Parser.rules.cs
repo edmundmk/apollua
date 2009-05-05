@@ -8,10 +8,10 @@ using System;
 using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
-using Lua.Compiler.Frontend.AST;
+using Lua.Compiler.Front.AST;
 
 
-namespace Lua.Compiler.Frontend.Parser
+namespace Lua.Compiler.Front.Parser
 {
 
 

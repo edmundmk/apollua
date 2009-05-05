@@ -7,8 +7,8 @@
 
 using System;
 using System.IO;
-using Lua.Compiler.Frontend.Parser;
-using Lua.Compiler.Frontend.AST;
+using Lua.Compiler.Front.Parser;
+using Lua.Compiler.Front.AST;
 
 
 namespace Lua.Compiler

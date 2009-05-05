@@ -8,11 +8,11 @@
 using System;
 
 
-namespace Lua.Compiler.Frontend.AST
+namespace Lua.Compiler.Front.AST
 {
 
 
-/*	This class represents the result of compiling a function.
+/*	This class represents the result of parsing a function.
 */
 
 

@@ -7,11 +7,11 @@
 
 using System;
 using System.Collections.Generic;
-using Lua.Compiler.Frontend.AST;
-using Lua.Compiler.Frontend.Parser;
+using Lua.Compiler.Front.AST;
+using Lua.Compiler.Front.Parser;
 
 
-namespace Lua.Compiler.Frontend
+namespace Lua.Compiler.Front
 {
 
 

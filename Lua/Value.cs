@@ -92,7 +92,8 @@ public abstract class Value
 		Value h = GetComparisonHandler( this, o, "__eq" );
 		if ( h != null )
 		{
-			return h.InvokeS( this, o ).IsTrue();
+			Value result = h.InvokeS( this, o );
+			return result != null && result.IsTrue();
 		}
 
 		return false;
@@ -103,7 +104,8 @@ public abstract class Value
 		Value h = GetComparisonHandler( this, o, "__lt" );
 		if ( h != null )
 		{
-			return h.InvokeS( this, o ).IsTrue();
+			Value result = h.InvokeS( this, o );
+			return result != null && result.IsTrue();
 		}
 
 		throw new InvalidOperationException();
@@ -114,13 +116,15 @@ public abstract class Value
 		Value h = GetComparisonHandler( this, o, "__le" );
 		if ( h != null )
 		{
-			return h.InvokeS( this, o ).IsTrue();
+			Value result = h.InvokeS( this, o );
+			return result != null && result.IsTrue();
 		}
 
 		h = GetComparisonHandler( this, o, "__lt" );
 		if ( h != null )
 		{
-			return ! h.InvokeS( o, this ).IsTrue();
+			Value result = h.InvokeS( o, this );
+			return result == null || ! result.IsTrue();
 		}
 		
 		throw new InvalidOperationException();

@@ -45,23 +45,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AST\CompileAST.cs" />
     <Compile Include="Compiler.cs" />
-    <Compile Include="Frontend\AST\Code.cs" />
-    <Compile Include="Frontend\AST\Expression.cs" />
-    <Compile Include="Frontend\AST\Local.cs" />
-    <Compile Include="Frontend\AST\Scope.cs" />
-    <Compile Include="Frontend\AST\SourceLocation.cs" />
-    <Compile Include="Frontend\IParserActions.cs" />
-    <Compile Include="Frontend\Parser\Lexer.cs" />
-    <Compile Include="Frontend\Parser\Lexer.private.cs" />
-    <Compile Include="Frontend\Parser\Lexer.rules.cs" />
-    <Compile Include="Frontend\Parser\Parser.cs" />
-    <Compile Include="Frontend\Parser\Parser.private.cs" />
-    <Compile Include="Frontend\Parser\Parser.rules.cs" />
-    <Compile Include="Frontend\Parser\ParseStack.cs" />
-    <Compile Include="Frontend\Parser\Token.cs" />
-    <Compile Include="Frontend\Parser\TokenKind.cs" />
+    <Compile Include="Front\AST\Code.cs" />
+    <Compile Include="Front\AST\Expression.cs" />
+    <Compile Include="Front\AST\Local.cs" />
+    <Compile Include="Front\AST\Scope.cs" />
+    <Compile Include="Front\AST\SourceLocation.cs" />
+    <Compile Include="Front\IParserActions.cs" />
+    <Compile Include="Front\Parser\Lexer.cs" />
+    <Compile Include="Front\Parser\Lexer.private.cs" />
+    <Compile Include="Front\Parser\Lexer.rules.cs" />
+    <Compile Include="Front\Parser\Parser.cs" />
+    <Compile Include="Front\Parser\Parser.private.cs" />
+    <Compile Include="Front\Parser\Parser.rules.cs" />
+    <Compile Include="Front\Parser\ParseStack.cs" />
+    <Compile Include="Front\Parser\Token.cs" />
+    <Compile Include="Front\Parser\TokenKind.cs" />
+    <Compile Include="Middle\AST\Code.cs" />
+    <Compile Include="Middle\AST\Expression.cs" />
+    <Compile Include="Middle\CompileAST.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
