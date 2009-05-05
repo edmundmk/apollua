@@ -12,6 +12,10 @@ namespace Lua.Compiler.Frontend.AST
 {
 
 
+/*	This structure identifies a location in the source script file.
+*/
+
+
 struct SourceLocation
 {
 	public string	SourceName		{ get; private set; }

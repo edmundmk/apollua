@@ -11,7 +11,11 @@ using System;
 namespace Lua.Compiler.Frontend.AST
 {
 
+
+/*	This class represents the result of compiling an expression.
+*/
 	
+
 abstract class Expression
 {
 }

@@ -21,7 +21,7 @@ interface IParserActions
 	// Blocks.
 	
 	Scope		Function( SourceLocation l, Scope scope, IList< string > parameternamelist, bool isVararg );
-	ObjectCode	EndFunction( SourceLocation l, Scope end );
+	Code		EndFunction( SourceLocation l, Scope end );
 	Scope		Do( SourceLocation l, Scope scope );
 	void		EndDo( SourceLocation l, Scope end );
 	Scope		If( SourceLocation l, Scope scope, Expression condition );
@@ -53,7 +53,7 @@ interface IParserActions
 
 	Expression	UnaryExpression( SourceLocation l, Expression operand, TokenKind op );
 	Expression	BinaryExpression( SourceLocation l, Expression left, Expression right, TokenKind op );
-	Expression	FunctionExpression( SourceLocation l, ObjectCode objectCode );
+	Expression	FunctionExpression( SourceLocation l, Code objectCode );
 	Expression	LiteralExpression( SourceLocation l, object value );
 	Expression	VarargsExpression( SourceLocation l, Scope functionScope );
 	Expression	LookupExpression( SourceLocation l, Expression left, Expression key );

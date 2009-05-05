@@ -13,6 +13,13 @@ namespace Lua.Compiler.Frontend.AST
 {
 
 
+/*	This class represents a declaration scope, such as a function, a do block, a
+	clause of an if statement, or a loop.  It contains enough informations to allow
+	name lookup to be performed in the frontend, and to allow the usage of break,
+	continue and ... to be checked.
+*/
+
+
 abstract class Scope
 {
 	public virtual bool		IsFunctionScope			{ get { return false; } }

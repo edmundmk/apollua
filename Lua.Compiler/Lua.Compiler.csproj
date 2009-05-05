@@ -47,9 +47,9 @@
   <ItemGroup>
     <Compile Include="AST\CompileAST.cs" />
     <Compile Include="Compiler.cs" />
+    <Compile Include="Frontend\AST\Code.cs" />
     <Compile Include="Frontend\AST\Expression.cs" />
     <Compile Include="Frontend\AST\Local.cs" />
-    <Compile Include="Frontend\AST\ObjectCode.cs" />
     <Compile Include="Frontend\AST\Scope.cs" />
     <Compile Include="Frontend\AST\SourceLocation.cs" />
     <Compile Include="Frontend\IParserActions.cs" />

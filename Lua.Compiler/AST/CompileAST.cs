@@ -29,6 +29,12 @@ namespace Lua.Compiler.AST
 	class <name>
 		:	Lua.Function
 	{
+		// All constants are initialized only once, when the function is loaded.
+
+		[ const Value constant = <constant>; ]*
+	
+
+
 		// Upval references are set up when the function value is created, and are
 		// inherited from the enclosing function.
 		
@@ -41,9 +47,9 @@ namespace Lua.Compiler.AST
 
 
 
-		// Only one version of each function is compiled.  This is again simpler than
-		// LuaCLR as described in http://portal.acm.org/citation.cfm?doid=1363686.1363743,
-		// which compiles both a multi-return and a single-return version of each function.
+		// Only one version of each function is compiled.  This is simpler than LuaCLR as
+		// described in http://portal.acm.org/citation.cfm?doid=1363686.1363743, which
+		// compiles both a multi-return and a single-return version of each function.
 		// Instead any function that can potentially return multiple values is compiled
 		// as a multi-return function.
 
@@ -146,7 +152,7 @@ sealed class CompileAST
 		throw new NotImplementedException();
 	}
 
-	public ObjectCode EndFunction( SourceLocation l, Scope end )
+	public Code EndFunction( SourceLocation l, Scope end )
 	{
 		throw new NotImplementedException();
 	}
@@ -256,7 +262,7 @@ sealed class CompileAST
 		throw new NotImplementedException();
 	}
 
-	public Expression FunctionExpression( SourceLocation l, ObjectCode objectCode )
+	public Expression FunctionExpression( SourceLocation l, Code objectCode )
 	{
 		throw new NotImplementedException();
 	}

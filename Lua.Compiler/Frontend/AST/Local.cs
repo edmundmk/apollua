@@ -12,6 +12,11 @@ namespace Lua.Compiler.Frontend.AST
 {
 
 
+/*	This class represents a local variable declaration.  It contains
+	enough information to allow name lookup to happen in the frontend.
+*/
+
+
 abstract class Local
 {
 	public string Name { get; private set; }

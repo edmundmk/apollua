@@ -28,7 +28,7 @@ partial class Parser
 
 	// Chunk
 
-	ObjectCode chunk( IParserActions actions )
+	Code chunk( IParserActions actions )
 	{
 		/*	goal chunk
 				: block eof
@@ -49,7 +49,7 @@ partial class Parser
 
 		Token eof = Check( TokenKind.EOF );
 
-		ObjectCode objectCode = actions.EndFunction( eof.Location, scope.Pop() );
+		Code objectCode = actions.EndFunction( eof.Location, scope.Pop() );
 
 		Debug.Assert( this.expression.Count == 0 );
 		Debug.Assert( this.name.Count == 0 );

@@ -40,9 +40,9 @@ partial class Parser
 	}
 
 
-	public ObjectCode Parse( IParserActions actions )
+	public Code Parse( IParserActions actions )
 	{
-		ObjectCode objectCode = chunk( actions );
+		Code objectCode = chunk( actions );
 		if ( ! HasError )
 		{
 			return objectCode;
