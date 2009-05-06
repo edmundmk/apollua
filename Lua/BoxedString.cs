@@ -1,4 +1,4 @@
-// String.cs
+// BoxedString.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -14,14 +14,14 @@ namespace Lua
 
 
 [DebuggerDisplay( "{Value}" )]
-public sealed class String
+public sealed class BoxedString
 	:	Value
 {
 	// Value.
 
 	public string Value { get; private set; }
 
-	public String( string value )
+	public BoxedString( string value )
 	{
 		Value = value;
 	}
@@ -34,9 +34,9 @@ public sealed class String
 		{
 			return false;
 		}
-		if ( o.GetType() == typeof( String ) )
+		if ( o.GetType() == typeof( BoxedString ) )
 		{
-			return Value.Equals( ( (String)o ).Value );
+			return Value.Equals( ( (BoxedString)o ).Value );
 		}
 		return base.Equals( o );
 	}
@@ -73,17 +73,17 @@ public sealed class String
 
 	public override Value Concatenate( Value o )
 	{
-		if ( o.GetType() == typeof( Integer ) )
+		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return new String( System.String.Concat( Value, ( (Integer)o ).Value ) );
+			return new BoxedString( String.Concat( Value, ( (BoxedInteger)o ).Value ) );
 		}
-		if ( o.GetType() == typeof( Number ) )
+		if ( o.GetType() == typeof( BoxedNumber ) )
 		{
-			return new String( System.String.Concat( Value, ( (Number)o ).Value ) );
+			return new BoxedString( String.Concat( Value, ( (BoxedNumber)o ).Value ) );
 		}
 		if ( o.GetType() == typeof( string ) )
 		{
-			return new String( System.String.Concat( Value, ( (String)o ).Value ) );
+			return new BoxedString( String.Concat( Value, ( (BoxedString)o ).Value ) );
 		}
 		return base.Concatenate( o );
 	}
@@ -94,7 +94,7 @@ public sealed class String
 
 	public override Value Length()
 	{
-		return new Integer( Value.Length );
+		return new BoxedInteger( Value.Length );
 	}
 
 
@@ -103,9 +103,9 @@ public sealed class String
 
 	public override bool Equals( Value o )
 	{
-		if ( o.GetType() == typeof( String ) )
+		if ( o.GetType() == typeof( BoxedString ) )
 		{
-			return Value == ( (String)o ).Value;
+			return Value == ( (BoxedString)o ).Value;
 		}
 		return base.Equals( o );
 	}
@@ -114,7 +114,7 @@ public sealed class String
 	{
 		if ( o.GetType() == typeof( string ) )
 		{
-			return System.String.Compare( Value, ( (String)o ).Value ) < 0;
+			return String.Compare( Value, ( (BoxedString)o ).Value ) < 0;
 		}
 		return base.LessThan( o );
 	}
@@ -123,7 +123,7 @@ public sealed class String
 	{
 		if ( o.GetType() == typeof( string ) )
 		{
-			return System.String.Compare( Value, ( (String)o ).Value ) <= 0;
+			return String.Compare( Value, ( (BoxedString)o ).Value ) <= 0;
 		}
 		return base.LessThanOrEqual( o );
 	}

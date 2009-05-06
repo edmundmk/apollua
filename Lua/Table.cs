@@ -81,7 +81,7 @@ public sealed class Table
 
 	public override Value Length()
 	{
-		return new Integer( boundary );
+		return new BoxedInteger( boundary );
 	}
 
 
@@ -226,7 +226,7 @@ public sealed class Table
 			{
 				if ( array[ index ] != null )
 				{
-					key		= new Integer( index + 1 );
+					key		= new BoxedInteger( index + 1 );
 					value	= array[ index ];
 					return;
 				}
@@ -518,7 +518,7 @@ public sealed class Table
 			Value value = array[ index ];
 			if ( value != null )
 			{
-				yield return new KeyValuePair< Value, Value >( new Integer( index + 1 ), value );
+				yield return new KeyValuePair< Value, Value >( new BoxedInteger( index + 1 ), value );
 			}
 		}
 

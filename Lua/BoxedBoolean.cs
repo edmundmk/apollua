@@ -1,4 +1,4 @@
-﻿// Boolean.cs
+﻿// BoxedBoolean.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -14,22 +14,22 @@ namespace Lua
 
 
 [DebuggerDisplay( "{IsTrue()}" )]
-public sealed class Boolean
+public sealed class BoxedBoolean
 	:	Value
 {
 
 	// Singleton instances.
 
-	[DebuggerHidden] public static Boolean True		{ get; private set; }
-	[DebuggerHidden] public static Boolean False	{ get; private set; }
+	[DebuggerHidden] public static BoxedBoolean True	{ get; private set; }
+	[DebuggerHidden] public static BoxedBoolean False	{ get; private set; }
 
-	static Boolean()
+	static BoxedBoolean()
 	{
-		True	= new Boolean();
-		False	= new Boolean();
+		True	= new BoxedBoolean();
+		False	= new BoxedBoolean();
 	}
 
-	private Boolean()
+	private BoxedBoolean()
 	{
 	}
 

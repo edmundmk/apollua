@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using Lua;
 
 
 namespace Test
@@ -18,28 +19,28 @@ static class EntryPoint
 	{
 		// Excercise the table.
 		
-		Lua.Table table = new Lua.Table();
+		Table table = new Table();
 
 		for ( int i = 5; i >= 1; --i )
 		{
-			table.NewIndex( new Lua.Integer( i ), Lua.Boolean.True );
+			table.NewIndex( i, true );
 		}
 
 		for ( int i = -2; i <= 8; ++i )
 		{
-			Console.WriteLine( "{0} {1}", i, table[ new Lua.Integer( i ) ] );
+			Console.WriteLine( "{0} {1}", i, table[ i ] );
 		}
 
 		Console.WriteLine( "#table = {0}", table.Length() );
 
-		foreach ( KeyValuePair< Lua.Value, Lua.Value > item in table )
+		foreach ( KeyValuePair< Value, Value > item in table )
 		{
 			Console.WriteLine( "{0} {1}", item.Key, item.Value );
 		}
 
 
-		Lua.Value key	= null;
-		Lua.Value value	= null;
+		Value key	= null;
+		Value value	= null;
 
 		table.Next( ref key, out value );
 		while ( key != null )
@@ -50,39 +51,39 @@ static class EntryPoint
 		}
 
 
-		table[ new Lua.Integer( 3 ) ] = null;
+		table[ 3 ] = null;
 
 		Console.WriteLine( "#table = {0}", table.Length() );
 
 
-		table[ new Lua.String( "Hello" ) ] = new Lua.String( "World" );
+		table[ "Hello" ] = "World";
 
 
-		table[ new Lua.Integer( 3 ) ] = Lua.Boolean.True;
-
-		Console.WriteLine( "#table = {0}", table.Length() );
-
-		table[ new Lua.Integer( 3 ) ] = null;
+		table[ 3 ] = 42;
 
 		Console.WriteLine( "#table = {0}", table.Length() );
 
-		table[ new Lua.Integer( 4 ) ] = null;
+		table[ 3 ] = null;
 
 		Console.WriteLine( "#table = {0}", table.Length() );
 
-		table[ new Lua.Integer( 3 ) ] = Lua.Boolean.True;
+		table[ 4 ] = null;
 
 		Console.WriteLine( "#table = {0}", table.Length() );
 
-		table[ new Lua.Integer( 4 ) ] = Lua.Boolean.True;
+		table[ 3 ] = 67.432;
 
 		Console.WriteLine( "#table = {0}", table.Length() );
 
-		table[ new Lua.Integer( 0 ) ] = Lua.Boolean.True;
+		table[ 4 ] = false;
 
 		Console.WriteLine( "#table = {0}", table.Length() );
 
-		foreach ( KeyValuePair< Lua.Value, Lua.Value > item in table )
+		table[ 0 ] = "AHAHAAH";
+
+		Console.WriteLine( "#table = {0}", table.Length() );
+
+		foreach ( KeyValuePair< Value, Value > item in table )
 		{
 			Console.WriteLine( "{0} {1}", item.Key, item.Value );
 		}
@@ -101,7 +102,7 @@ static class EntryPoint
 		}
 
 
-		foreach ( KeyValuePair< Lua.Value, Lua.Value > item in table )
+		foreach ( KeyValuePair< Value, Value > item in table )
 		{
 			Console.WriteLine( "ELEMENT: {0} {1}", item.Key, item.Value );
 		}

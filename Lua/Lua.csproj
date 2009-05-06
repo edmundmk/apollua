@@ -45,13 +45,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Boolean.cs" />
+    <Compile Include="BoxedBoolean.cs" />
+    <Compile Include="BoxedInteger.cs" />
+    <Compile Include="BoxedNumber.cs" />
+    <Compile Include="BoxedString.cs" />
     <Compile Include="Coroutine.cs" />
     <Compile Include="Function.cs" />
-    <Compile Include="Integer.cs" />
-    <Compile Include="Number.cs" />
     <Compile Include="Value.cs" />
-    <Compile Include="String.cs" />
     <Compile Include="Table.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

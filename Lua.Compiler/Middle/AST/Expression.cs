@@ -22,6 +22,31 @@ abstract class Expression
 
 
 
+sealed class UnaryExpression
+{
+	static readonly Dictionary< TokenKind, MethodInfo > operators = new Dictionary< TokenKind, MethodInfo >
+	{
+		{ TokenKind.HyphenMinus,		typeof( Value ).GetMethod( "UnaryMinus" )		},
+		{ TokenKind.NumberSign,			typeof( Value ).GetMethod( "Length" )			},
+	};
+
+
+
+	public MethodInfo	Operator	{ get; private set; }
+	public Expression	Operand		{ get; private set; }
+
+
+	public UnaryExpression( TokenKind op, Expression operand )
+	{
+		Operator	= operators[ op ];
+		Operand		= operand;
+	}
+
+
+}
+
+
+
 sealed class BinaryExpression
 	:	Expression
 {
@@ -54,28 +79,34 @@ sealed class BinaryExpression
 
 }
 
-
-sealed class UnaryExpression
+	
+sealed class FunctionExpression
+	:	Expression
 {
-	static readonly Dictionary< TokenKind, MethodInfo > operators = new Dictionary< TokenKind, MethodInfo >
-	{
-		{ TokenKind.HyphenMinus,		typeof( Value ).GetMethod( "UnaryMinus" )		},
-		{ TokenKind.NumberSign,			typeof( Value ).GetMethod( "Length" )			},
-	};
+}
+	
+
+sealed class LiteralExpression
+	:	Expression
+{
+}
+	
+
+sealed class VarargsExpression
+	:	Expression
+{
+}
 
 
-
-	public MethodInfo	Operator	{ get; private set; }
-	public Expression	Operand		{ get; private set; }
-
-
-	public UnaryExpression( TokenKind op, Expression operand )
-	{
-		Operator	= operators[ op ];
-		Operand		= operand;
-	}
+sealed class IndexExpression
+	:	Expression
+{
+}
 
 
+sealed class CallExpression
+	:	Expression
+{
 }
 
 

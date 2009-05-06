@@ -44,6 +44,7 @@ public abstract class Value
 	}
 
 
+
 	// Conversion.
 
 	public virtual bool TryToInteger( out int value )	{ value = 0; return false; }
@@ -340,6 +341,78 @@ public abstract class Value
 	{
 		return null;
 	}
+
+
+
+
+	// Convenience conversions.
+
+	public static implicit operator Value ( bool b )
+	{
+		return b ? BoxedBoolean.True : BoxedBoolean.False;
+	}
+
+	public static implicit operator Value ( sbyte i )
+	{
+		return new BoxedInteger( i );
+	}
+
+	public static implicit operator Value ( byte i )
+	{
+		return new BoxedInteger( i );
+	}
+
+	public static implicit operator Value ( short i )
+	{
+		return new BoxedInteger( i );
+	}
+
+	public static implicit operator Value ( ushort i )
+	{
+		return new BoxedInteger( i );
+	}
+
+	public static implicit operator Value ( int i )
+	{
+		return new BoxedInteger( i );
+	}
+
+	public static explicit operator Value ( uint i )
+	{
+		checked { return new BoxedInteger( (int)i ); }
+	}
+
+	public static explicit operator Value ( long i )
+	{
+		checked { return new BoxedInteger( (int)i ); }
+	}
+
+	public static explicit operator Value ( ulong i )
+	{
+		checked { return new BoxedInteger( (int)i ); }
+	}
+
+	public static implicit operator Value ( float n )
+	{
+		return new BoxedNumber( n );
+	}
+
+	public static implicit operator Value ( double n )
+	{
+		return new BoxedNumber( n );
+	}
+
+	public static explicit operator Value ( decimal n )
+	{
+		checked { return new BoxedNumber( (double)n ); }
+	}
+
+	public static implicit operator Value ( string s )
+	{
+		return new BoxedString( s );
+	}
+
+
 
 }
 
