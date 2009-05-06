@@ -61,9 +61,13 @@
     <Compile Include="Front\Parser\ParseStack.cs" />
     <Compile Include="Front\Parser\Token.cs" />
     <Compile Include="Front\Parser\TokenKind.cs" />
-    <Compile Include="Middle\AST\Code.cs" />
-    <Compile Include="Middle\AST\Expression.cs" />
-    <Compile Include="Middle\CompileAST.cs" />
+    <Compile Include="Middle\IRCompiler.constructor.cs" />
+    <Compile Include="Middle\IRCompiler.cs" />
+    <Compile Include="Middle\IRCompiler.expression.cs" />
+    <Compile Include="Middle\IRCompiler.scope.cs" />
+    <Compile Include="Middle\IRCompiler.statement.cs" />
+    <Compile Include="Middle\IR\IRCode.cs" />
+    <Compile Include="Middle\IR\IRExpression.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
