@@ -60,6 +60,13 @@ sealed class BeginBlock
 
 	public string Name { get; private set; }
 
+
+	public BeginBlock( SourceLocation l, string name )
+		:	base( l )
+	{
+		Name		= name;
+	}
+
 }
 
 
@@ -68,6 +75,13 @@ sealed class Break
 {
 
 	public string BlockName { get; private set; }
+
+
+	public Break( SourceLocation l, string blockName )
+		:	base( l )
+	{
+		BlockName	= blockName;
+	}
 
 }
 
@@ -78,12 +92,24 @@ sealed class Continue
 
 	public string BlockName { get; private set; }
 
+
+	public Continue( SourceLocation l, string blockName )
+		:	base( l )
+	{
+		BlockName	= blockName;
+	}
 }
 
 
 sealed class EndBlock
 	:	IRStatement
 {
+
+	public EndBlock( SourceLocation l )
+		:	base( l )
+	{
+	}
+
 }
 
 
@@ -101,12 +127,25 @@ sealed class BeginTest
 
 	public IRExpression	Expression { get; private set; }
 
+
+	public BeginTest( SourceLocation l, IRExpression expression )
+		:	base( l )
+	{
+		Expression	= expression;
+	}
+
 }
 
 
 sealed class EndTest
 	:	IRStatement
 {
+	
+	public EndTest( SourceLocation l )
+		:	base( l )
+	{
+	}
+
 }
 
 
@@ -121,12 +160,24 @@ sealed class EndTest
 sealed class BeginScope
 	:	IRStatement
 {
+
+	public BeginScope( SourceLocation l )
+		:	base( l )
+	{
+	}
+
 }
 
 
 sealed class EndScope
 	:	IRStatement
 {
+
+	public EndScope( SourceLocation l )
+		:	base( l )
+	{
+	}
+
 }
 
 
@@ -144,7 +195,7 @@ sealed class EndScope
 	  o  The IL generator does not have to worry about the semantics of Lua
 	     statements - multiple assignments are split, multiple results are
 	     stored in the valuelist.
-	  o  The IL evaluation stack is empty between each instruction.
+	  o  The IL evaluation stack is empty between each statement.
 	  o  There are no function calls in expressions.  Instead call statements
 	     are used for every individual call.
 
@@ -161,6 +212,13 @@ sealed class Declare
 
 	public Local					Local		{ get; private set; }
 
+
+	public Declare( SourceLocation l, Local local )
+		:	base( l )
+	{
+		Local		= local;
+	}
+
 }
 
 
@@ -174,6 +232,14 @@ sealed class DeclareAssign
 	public Local					Local		{ get; private set; }
 	public IRExpression				Expression	{ get; private set; }
 
+
+	public DeclareAssign( SourceLocation l, Local local, IRExpression expression )
+		:	base( l )
+	{
+		Local		= local;
+		Expression	= expression;
+	}
+
 }
 
 
@@ -186,6 +252,14 @@ sealed class Assign
 
 	public IRExpression				Target		{ get; private set; }
 	public IRExpression				Expression	{ get; private set; }
+
+
+	public Assign( SourceLocation l, IRExpression target, IRExpression expression )
+		:	base( l )
+	{
+		Target		= target;
+		Expression	= expression;
+	}
 
 }
 
@@ -201,6 +275,17 @@ sealed class Call
 	public IRExpression				Function	{ get; private set; }
 	public IList< IRExpression >	Arguments	{ get; private set; }
 	public bool						UseResults	{ get; private set; }
+
+
+	public Call( SourceLocation l, IRExpression target, IRExpression function,
+					IList< IRExpression > arguments, bool useResults )
+		:	base( l )
+	{
+		Target		= target;
+		Function	= function;
+		Arguments	= arguments;
+		UseResults	= useResults;
+	}
 
 }
 
@@ -218,6 +303,19 @@ sealed class CallSelf
 	public IList< IRExpression >	Arguments	{ get; private set; }
 	public bool						UseResults	{ get; private set; }
 
+
+	public CallSelf( SourceLocation l, IRExpression target, IRExpression o,
+					string methodName, IList< IRExpression > arguments, bool useResults )
+		:	base( l )
+	{
+		Target		= target;
+		Object		= o;
+		MethodName	= methodName;
+		Arguments	= arguments;
+		UseResults	= useResults;
+	}
+
+
 }
 
 
@@ -231,6 +329,16 @@ sealed class MultipleResultsCall
 	public IRExpression				Function	{ get; private set; }
 	public IList< IRExpression >	Arguments	{ get; private set; }
 	public bool						UseResults	{ get; private set; }
+
+
+	public MultipleResultsCall( SourceLocation l, IRExpression function,
+					IList< IRExpression > arguments, bool useResults )
+		:	base( l )
+	{
+		Function	= function;
+		Arguments	= arguments;
+		UseResults	= useResults;
+	}
 
 }
 
@@ -247,6 +355,17 @@ sealed class MultipleResultsCallSelf
 	public IList< IRExpression >	Arguments	{ get; private set; }
 	public bool						UseResults	{ get; private set; }
 
+
+	public MultipleResultsCallSelf( SourceLocation l, IRExpression o,
+					string methodName, IList< IRExpression > arguments, bool useResults )
+		:	base( l )
+	{
+		Object		= o;
+		MethodName	= methodName;
+		Arguments	= arguments;
+		UseResults	= useResults;
+	}
+
 }
 
 
@@ -260,6 +379,14 @@ sealed class SetList
 	public IRExpression				Table		{ get; private set; }
 	public int						Index		{ get; private set; }
 
+
+	public SetList( SourceLocation l, IRExpression table, int index )
+		:	base( l )
+	{
+		Table		= table;
+		Index		= index;
+	}
+
 }
 
 
@@ -270,7 +397,14 @@ sealed class Return
 	:	IRStatement
 {
 
-	public IRExpression				Expression	{ get; private set; }
+	public IRExpression				Result		{ get; private set; }
+
+
+	public Return( SourceLocation l, IRExpression result )
+		:	base( l )
+	{
+		Result		= result;
+	}
 
 }
 
@@ -285,6 +419,14 @@ sealed class ReturnMultipleResults
 	public IList< IRExpression >	Results		{ get; private set; }
 	public bool						UseResults	{ get; private set; }
 
+
+	public ReturnMultipleResults( SourceLocation l, IList< IRExpression > results, bool useResults )
+		:	base( l )
+	{
+		Results		= results;
+		UseResults	= useResults;
+	}
+
 }
 
 
@@ -298,6 +440,16 @@ sealed class TailCallReturn
 	public IRExpression				Function	{ get; private set; }
 	public IList< IRExpression >	Arguments	{ get; private set; }
 	public bool						UseResults	{ get; private set; }
+
+
+	public TailCallReturn( SourceLocation l, IRExpression function,
+					IList< IRExpression > arguments, bool useResults )
+		:	base( l )
+	{
+		Function	= function;
+		Arguments	= arguments;
+		UseResults	= useResults;
+	}
 
 }
 
@@ -314,6 +466,16 @@ sealed class TailCallReturnMultipleResults
 	public IList< IRExpression >	Arguments	{ get; private set; }
 	public bool						UseResults	{ get; private set; }
 
+
+	public TailCallReturnMultipleResults( SourceLocation l, IRExpression o,
+				string methodName, IList< IRExpression > arguments, bool useResults )
+		: base( l )
+	{
+		Object		= o;
+		MethodName	= methodName;
+		Arguments	= arguments;
+		UseResults	= useResults;
+	}
 
 }
 
