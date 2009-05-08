@@ -1,4 +1,4 @@
-﻿// Expression.cs
+﻿// IRExpression.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -16,9 +16,20 @@ namespace Lua.Compiler.Middle.IR
 {
 
 
+/*	Expressions are generated from the parse tree.  Then when constructing the IR
+	for a function expressions are rewritten:
+
+	  o  Temporaries and valuelist references are introduced to enable
+	     representation of Lua semantics in the statement IR.
+	  o  Function call expressions are converted into statements.
+
+*/
+
+
 abstract class IRExpression
 	:	Expression
 {
+
 	public SourceLocation	Location	{ get; private set; }
 
 	
@@ -26,9 +37,12 @@ abstract class IRExpression
 	{
 		Location = l;
 	}
+
 }
 
 
+
+// <operator> <operand>
 
 sealed class UnaryExpression
 	:	IRExpression
@@ -57,6 +71,8 @@ sealed class UnaryExpression
 
 
 
+// <left> <operator> <right>
+
 sealed class BinaryExpression
 	:	IRExpression
 {
@@ -84,30 +100,35 @@ sealed class BinaryExpression
 	{
 		Operator	= operators[ op ];
 		Left		= left;
-		right		= right;
+		Right		= right;
 	}
 
 
 }
 
 
+
+// function() <ircode> end
 
 sealed class FunctionExpression
 	:	IRExpression
 {
 
-	public IRCode		ObjectCode	{ get; private set; }
+	public IRCode		IRCode		{ get; private set; }
 
 
-	public FunctionExpression( SourceLocation l, IRCode objectCode )
+	public FunctionExpression( SourceLocation l, IRCode code )
 		:	base( l )
 	{
-		ObjectCode	= objectCode;
+		IRCode	= code;
 	}
 
 }
 
 
+
+
+// <value>
 
 sealed class LiteralExpression
 	:	IRExpression
@@ -126,6 +147,8 @@ sealed class LiteralExpression
 
 
 
+// ...
+
 sealed class VarargsExpression
 	:	IRExpression
 {
@@ -138,6 +161,8 @@ sealed class VarargsExpression
 }
 
 
+
+// <left>[ <key> ]
 
 sealed class IndexExpression
 	:	IRExpression
@@ -158,6 +183,8 @@ sealed class IndexExpression
 
 
 
+// <left>( <arguments> )
+
 sealed class CallExpression
 	:	IRExpression
 {
@@ -176,6 +203,8 @@ sealed class CallExpression
 }
 
 
+
+// <left>[ <key> ]( <left>, <arguments> )
 
 sealed class SelfCallExpression
 	:	IRExpression
@@ -200,6 +229,8 @@ sealed class SelfCallExpression
 
 
 
+// ( f() ) or ( ... )
+
 sealed class SingleValueExpression
 	:	IRExpression
 {
@@ -218,6 +249,8 @@ sealed class SingleValueExpression
 
 
 
+// <local>
+
 sealed class LocalVariableExpression
 	:	IRExpression
 {
@@ -234,6 +267,9 @@ sealed class LocalVariableExpression
 }
 
 
+
+
+// <local>
 
 sealed class UpValExpression
 	:	IRExpression
@@ -252,6 +288,8 @@ sealed class UpValExpression
 
 
 
+// <name>
+
 sealed class GlobalVariableExpression
 	:	IRExpression
 {
@@ -266,6 +304,45 @@ sealed class GlobalVariableExpression
 	}
 
 }
+
+
+
+// temporary#<index>
+
+sealed class TemporaryExpression
+	:	IRExpression
+{
+
+	public int			Index;
+
+
+	public TemporaryExpression( SourceLocation l, int index )
+		:	base( l )
+	{
+		Index		= index;
+	}
+
+}
+
+
+
+// valuelist[ <index> ]
+
+sealed class MultipleResultsElementExpression
+	:	IRExpression
+{
+
+	public int			Index;
+
+
+	public MultipleResultsElementExpression( SourceLocation l, int index )
+		:	base( l )
+	{
+		Index		= index;
+	}
+
+}
+
 
 
 

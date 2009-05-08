@@ -68,6 +68,7 @@
     <Compile Include="Middle\IRCompiler.statement.cs" />
     <Compile Include="Middle\IR\IRCode.cs" />
     <Compile Include="Middle\IR\IRExpression.cs" />
+    <Compile Include="Middle\IR\IRStatement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
