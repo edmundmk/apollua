@@ -32,10 +32,6 @@ sealed class IRCode
 		Statements.Add( statement );
 	}
 
-	public TemporaryExpression MakeTemporary( SourceLocation l )
-	{
-		return new TemporaryExpression( l, 0 );
-	}
 	
 
 }

@@ -287,22 +287,15 @@ sealed class GlobalVariableExpression
 
 
 
-// Temporaries.
-
-
-// temporary#<index>
+// Temporaries are assigned once and then used once.
 
 sealed class TemporaryExpression
 	:	IRExpression
 {
 
-	public int			Index;
-
-
-	public TemporaryExpression( SourceLocation l, int index )
+	public TemporaryExpression( SourceLocation l )
 		:	base( l )
 	{
-		Index		= index;
 	}
 
 }
@@ -467,7 +460,7 @@ abstract class CallArgumentsExpression
 		{
 			// Ensure each function call has its own statement.
 
-			TemporaryExpression temporary = code.MakeTemporary( Location );
+			TemporaryExpression temporary = new TemporaryExpression( Location );
 			code.Add( new Assign( Location, temporary, this ) );
 			return temporary;
 		}
