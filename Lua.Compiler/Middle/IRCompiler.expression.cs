@@ -83,7 +83,7 @@ sealed partial class IRCompiler
 
 	public Expression UpValExpression( SourceLocation l, Scope lookupScope, Local local )
 	{
-		( (IRLocal)local ).IsUpVal = true;
+		( (IRLocal)local ).MarkUpVal();
 		return new UpValExpression( l, (IRLocal)local );
 	}
 

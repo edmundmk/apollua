@@ -344,11 +344,14 @@ enum ExtraArguments
 abstract class MultipleResultsExpression
 	:	IRExpression
 {
+
 	public bool IsSingleValue { get; private set; }
+
 
 	public MultipleResultsExpression( SourceLocation l )
 		:	base( l )
 	{
+		IsSingleValue = false;
 	}
 
 

@@ -16,12 +16,19 @@ namespace Lua.Compiler.Middle.IR
 sealed class IRLocal
 	:	Local
 {
-	public bool IsUpVal { get; set; }
+	public bool IsUpVal { get; private set; }
 
 
 	public IRLocal( string name )
 		:	base( name )
 	{
+		IsUpVal = false;
+	}
+
+
+	public void MarkUpVal()
+	{
+		IsUpVal = true;
 	}
 
 }
