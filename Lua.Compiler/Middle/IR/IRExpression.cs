@@ -42,6 +42,11 @@ abstract class IRExpression
 
 
 
+
+
+// Operations.
+
+
 // <operator> <operand>
 
 sealed class UnaryExpression
@@ -108,6 +113,9 @@ sealed class BinaryExpression
 
 
 
+// Values
+
+
 // function() <ircode> end
 
 sealed class FunctionExpression
@@ -125,8 +133,7 @@ sealed class FunctionExpression
 
 }
 
-
-
+	
 
 // <value>
 
@@ -147,20 +154,10 @@ sealed class LiteralExpression
 
 
 
-// ...
-
-sealed class VarargsExpression
-	:	IRExpression
-{
-
-	public VarargsExpression( SourceLocation l )
-		:	base( l )
-	{
-	}
-
-}
 
 
+// Assignable.
+	
 
 // <left>[ <key> ]
 
@@ -183,71 +180,6 @@ sealed class IndexExpression
 
 
 
-// <left>( <arguments> )
-
-sealed class CallExpression
-	:	IRExpression
-{
-
-	public IRExpression				Left		{ get; private set; }
-	public IList< IRExpression >	Arguments	{ get; private set; }
-
-	
-	public CallExpression( SourceLocation l, IRExpression left, IList< IRExpression > arguments )
-		:	base( l )
-	{
-		Left		= left;
-		Arguments	= arguments;
-	}
-
-}
-
-
-
-// <left>[ <key> ]( <left>, <arguments> )
-
-sealed class SelfCallExpression
-	:	IRExpression
-{
-	public IRExpression				Left		{ get; private set; }
-	public SourceLocation			KeyLocation	{ get; private set; }
-	public string					Key			{ get; private set; }
-	public IList< IRExpression >	Arguments	{ get; private set; }
-
-
-	public SelfCallExpression( SourceLocation l, IRExpression left, SourceLocation keyl, string key, IList< IRExpression > arguments )
-		:	base( l )
-	{
-		Left		= left;
-		KeyLocation	= keyl;
-		Key			= key;
-		Arguments	= arguments;
-	}
-
-
-}
-
-
-
-// ( f() ) or ( ... )
-
-sealed class SingleValueExpression
-	:	IRExpression
-{
-
-	public IRExpression	Expression;
-
-
-	public SingleValueExpression( SourceLocation l, IRExpression expression )
-		:	base( l )
-	{
-		Expression	= expression;
-	}
-
-}
-
-
-
 
 // <local>
 
@@ -255,10 +187,10 @@ sealed class LocalVariableExpression
 	:	IRExpression
 {
 
-	public Local		Local;
+	public IRLocal		Local		{ get; private set; }
 
 
-	public LocalVariableExpression( SourceLocation l, Local local )
+	public LocalVariableExpression( SourceLocation l, IRLocal local )
 		:	base( l )
 	{
 		Local		= local;
@@ -275,10 +207,10 @@ sealed class UpValExpression
 	:	IRExpression
 {
 
-	public Local		Local;
+	public IRLocal		Local;
 
 
-	public UpValExpression( SourceLocation l, Local local )
+	public UpValExpression( SourceLocation l, IRLocal local )
 		:	base( l )
 	{
 		Local		= local;
@@ -307,6 +239,10 @@ sealed class GlobalVariableExpression
 
 
 
+
+// Transformed temporaries.
+
+
 // temporary#<index>
 
 sealed class TemporaryExpression
@@ -328,20 +264,123 @@ sealed class TemporaryExpression
 
 // valuelist[ <index> ]
 
-sealed class MultipleResultsElementExpression
+sealed class ValueListElementExpression
 	:	IRExpression
 {
 
 	public int			Index;
 
 
-	public MultipleResultsElementExpression( SourceLocation l, int index )
+	public ValueListElementExpression( SourceLocation l, int index )
 		:	base( l )
 	{
 		Index		= index;
 	}
 
 }
+
+
+
+
+// Multiple Results.
+
+
+enum ExtraArguments
+{
+	None,
+	UseValueList,
+	UseVararg,
+}
+
+
+
+// ( f() ) or ( ... )
+
+sealed class SingleValueExpression
+	:	IRExpression
+{
+
+	public IRExpression	Expression;
+
+
+	public SingleValueExpression( SourceLocation l, IRExpression expression )
+		:	base( l )
+	{
+		Expression	= expression;
+	}
+
+}
+
+
+
+// ...
+
+sealed class VarargsExpression
+	:	IRExpression
+{
+
+	public VarargsExpression( SourceLocation l )
+		:	base( l )
+	{
+	}
+
+}
+
+
+
+// <function>( <arguments> [, valuelist |, varargs ] )
+
+sealed class CallExpression
+	:	IRExpression
+{
+
+	public IRExpression				Function		{ get; private set; }
+	public IList< IRExpression >	Arguments		{ get; private set; }
+	public ExtraArguments			ExtraArguments	{ get; private set; }
+
+	
+	public CallExpression( SourceLocation l, IRExpression function,
+			IList< IRExpression > arguments, ExtraArguments extraArguments )
+		:	base( l )
+	{
+		Function			= function;
+		Arguments			= arguments;
+		ExtraArguments		= extraArguments;
+	}
+
+}
+
+
+
+
+
+// <object>.<methodname>( <object>, <arguments> [, valuelist |, varargs ] )
+
+sealed class SelfCallExpression
+	:	IRExpression
+{
+	public IRExpression				Object				{ get; private set; }
+	public SourceLocation			MethodNameLocation	{ get; private set; }
+	public string					MethodName			{ get; private set; }
+	public IList< IRExpression >	Arguments			{ get; private set; }
+	public ExtraArguments			ExtraArguments		{ get; private set; }
+
+
+	public SelfCallExpression( SourceLocation l, IRExpression o, SourceLocation methodNameLocation,
+					string methodName, IList< IRExpression > arguments, ExtraArguments extraArguments )
+		:	base( l )
+	{
+		Object				= o;
+		MethodNameLocation	= methodNameLocation;
+		MethodName			= methodName;
+		Arguments			= arguments;
+		ExtraArguments		= extraArguments;
+	}
+
+
+}
+
+
 
 
 

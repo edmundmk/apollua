@@ -55,12 +55,12 @@ sealed partial class IRCompiler
 
 	public Expression CallExpression( SourceLocation l, Expression left, IList< Expression > argumentlist )
 	{
-		return new CallExpression( l, (IRExpression)left, CopyExpressionList( argumentlist ) );
+		return new CallExpression( l, (IRExpression)left, CopyExpressionList( argumentlist ), ExtraArguments.None );
 	}
 
 	public Expression SelfCallExpression( SourceLocation l, Expression left, SourceLocation keyl, string key, IList< Expression > argumentlist )
 	{
-		return new SelfCallExpression( l, (IRExpression)left, keyl, key, CopyExpressionList( argumentlist ) );
+		return new SelfCallExpression( l, (IRExpression)left, keyl, key, CopyExpressionList( argumentlist ), ExtraArguments.None );
 	}
 
 	public Expression NestedExpression( SourceLocation l, Expression expression )
@@ -79,12 +79,12 @@ sealed partial class IRCompiler
 
 	public Expression LocalVariableExpression( SourceLocation l, Scope lookupScope, Local local )
 	{
-		return new LocalVariableExpression( l, local );
+		return new LocalVariableExpression( l, (IRLocal)local );
 	}
 
 	public Expression UpValExpression( SourceLocation l, Scope lookupScope, Local local )
 	{
-		return new UpValExpression( l, local );
+		return new UpValExpression( l, (IRLocal)local );
 	}
 
 	public Expression GlobalVariableExpression( SourceLocation l, string name )

@@ -42,6 +42,23 @@ abstract class IRStatement
 	     expression is false.
 	  o  Scopes represent variable declaration scope, and are tracked for debugging.
 
+
+	Structural statements:
+
+		block <name>
+		{
+			break <name>
+			continue <name>
+		}
+		
+		test <expression>
+		{
+		}
+		
+		scope
+		{
+		}
+
 */
 
 
@@ -64,7 +81,7 @@ sealed class BeginBlock
 	public BeginBlock( SourceLocation l, string name )
 		:	base( l )
 	{
-		Name		= name;
+		Name = name;
 	}
 
 }
@@ -80,7 +97,7 @@ sealed class Break
 	public Break( SourceLocation l, string blockName )
 		:	base( l )
 	{
-		BlockName	= blockName;
+		BlockName = blockName;
 	}
 
 }
@@ -199,45 +216,56 @@ sealed class EndScope
 	  o  There are no function calls in expressions.  Instead call statements
 	     are used for every individual call.
 
+
+	Statements:
+
+		declare <local>
+		declare <local> = <expression>
+		<target> = <expression>
+		valuelist = <expression>
+		<table>[ <startindex> ... ] = valuelist | varargs
+		return <expression>
+		return <results> [ valuelist | varargs ]?
+
 */
 
 
 
 
-// local <local>
+// declare <local>
 
 sealed class Declare
 	:	IRStatement
 {
 
-	public Local					Local		{ get; private set; }
+	public IRLocal					Local			{ get; private set; }
 
 
-	public Declare( SourceLocation l, Local local )
+	public Declare( SourceLocation l, IRLocal local )
 		:	base( l )
 	{
-		Local		= local;
+		Local			= local;
 	}
 
 }
 
 
 
-// local <local> = <expression>
+// declare <local> = <expression>
 
 sealed class DeclareAssign
 	:	IRStatement
 {
 
-	public Local					Local		{ get; private set; }
-	public IRExpression				Expression	{ get; private set; }
+	public IRLocal					Local			{ get; private set; }
+	public IRExpression				Expression		{ get; private set; }
 
 
-	public DeclareAssign( SourceLocation l, Local local, IRExpression expression )
+	public DeclareAssign( SourceLocation l, IRLocal local, IRExpression expression )
 		:	base( l )
 	{
-		Local		= local;
-		Expression	= expression;
+		Local			= local;
+		Expression		= expression;
 	}
 
 }
@@ -249,142 +277,60 @@ sealed class DeclareAssign
 sealed class Assign
 	:	IRStatement
 {
-
-	public IRExpression				Target		{ get; private set; }
-	public IRExpression				Expression	{ get; private set; }
+		
+	public IRExpression				Target			{ get; private set; }
+	public IRExpression				Expression		{ get; private set; }
 
 
 	public Assign( SourceLocation l, IRExpression target, IRExpression expression )
 		:	base( l )
 	{
-		Target		= target;
-		Expression	= expression;
+		Target			= target;
+		Expression		= expression;
 	}
 
 }
 
 
 
-// <target> = <function>( <arguments> [, valuelist ] )
+// valuelist = <expression>
 
-sealed class Call
+sealed class AssignValueList
 	:	IRStatement
 {
 
-	public IRExpression				Target		{ get; private set; }
-	public IRExpression				Function	{ get; private set; }
-	public IList< IRExpression >	Arguments	{ get; private set; }
-	public bool						UseResults	{ get; private set; }
+	public IRExpression				Expression		{ get; private set; }
 
 
-	public Call( SourceLocation l, IRExpression target, IRExpression function,
-					IList< IRExpression > arguments, bool useResults )
+	public AssignValueList( SourceLocation l, IRExpression expression )
 		:	base( l )
 	{
-		Target		= target;
-		Function	= function;
-		Arguments	= arguments;
-		UseResults	= useResults;
+		Expression		= expression;
 	}
 
 }
 
 
 
-// <target> = <object>.<methodname>( <object>, <arguments> [, valuelist ] )
-
-sealed class CallSelf
-	:	IRStatement
-{
-
-	public IRExpression				Target		{ get; private set; }
-	public IRExpression				Object		{ get; private set; }
-	public string					MethodName	{ get; private set; }
-	public IList< IRExpression >	Arguments	{ get; private set; }
-	public bool						UseResults	{ get; private set; }
 
 
-	public CallSelf( SourceLocation l, IRExpression target, IRExpression o,
-					string methodName, IList< IRExpression > arguments, bool useResults )
-		:	base( l )
-	{
-		Target		= target;
-		Object		= o;
-		MethodName	= methodName;
-		Arguments	= arguments;
-		UseResults	= useResults;
-	}
-
-
-}
-
-
-
-// valuelist = <function>( <arguments> [, valuelist ] )
-
-sealed class MultipleResultsCall
-	:	IRStatement
-{
-
-	public IRExpression				Function	{ get; private set; }
-	public IList< IRExpression >	Arguments	{ get; private set; }
-	public bool						UseResults	{ get; private set; }
-
-
-	public MultipleResultsCall( SourceLocation l, IRExpression function,
-					IList< IRExpression > arguments, bool useResults )
-		:	base( l )
-	{
-		Function	= function;
-		Arguments	= arguments;
-		UseResults	= useResults;
-	}
-
-}
-
-
-
-// valuelist = <object>.<methodname>( <object>, <arguments> [, valuelist ] )
-
-sealed class MultipleResultsCallSelf
-	:	IRStatement
-{
-
-	public IRExpression				Object		{ get; private set; }
-	public string					MethodName	{ get; private set; }
-	public IList< IRExpression >	Arguments	{ get; private set; }
-	public bool						UseResults	{ get; private set; }
-
-
-	public MultipleResultsCallSelf( SourceLocation l, IRExpression o,
-					string methodName, IList< IRExpression > arguments, bool useResults )
-		:	base( l )
-	{
-		Object		= o;
-		MethodName	= methodName;
-		Arguments	= arguments;
-		UseResults	= useResults;
-	}
-
-}
-
-
-
-// <table>.InsertRange( <index>, valuelist )
+// <table>[ <startindex> ... ] = valuelist | varargs
 
 sealed class SetList
 	:	IRStatement
 {
 
-	public IRExpression				Table		{ get; private set; }
-	public int						Index		{ get; private set; }
+	public IRExpression				Table			{ get; private set; }
+	public int						Index			{ get; private set; }
+	public ExtraArguments			ExtraArguments	{ get; private set; }
 
 
-	public SetList( SourceLocation l, IRExpression table, int index )
+	public SetList( SourceLocation l, IRExpression table, int index, ExtraArguments extraArguments )
 		:	base( l )
 	{
-		Table		= table;
-		Index		= index;
+		Table			= table;
+		Index			= index;
+		ExtraArguments	= extraArguments;
 	}
 
 }
@@ -397,87 +343,38 @@ sealed class Return
 	:	IRStatement
 {
 
-	public IRExpression				Result		{ get; private set; }
+	public IRExpression				Result			{ get; private set; }
 
 
 	public Return( SourceLocation l, IRExpression result )
 		:	base( l )
 	{
-		Result		= result;
+		Result			= result;
 	}
 
 }
 
 
 
-// return <results> [, valuelist ]
+// return <results> [, valuelist | varargs ]
 
 sealed class ReturnMultipleResults
 	:	IRStatement
 {
 
-	public IList< IRExpression >	Results		{ get; private set; }
-	public bool						UseResults	{ get; private set; }
+	public IList< IRExpression >	Results			{ get; private set; }
+	public ExtraArguments			ExtraArguments	{ get; private set; }
 
 
-	public ReturnMultipleResults( SourceLocation l, IList< IRExpression > results, bool useResults )
+	public ReturnMultipleResults( SourceLocation l, IList< IRExpression > results, ExtraArguments extraArguments )
 		:	base( l )
 	{
-		Results		= results;
-		UseResults	= useResults;
+		Results			= results;
+		ExtraArguments	= extraArguments;
 	}
 
 }
 
-
-
-// return <function>( <arguments> [, valuelist] )
-
-sealed class TailCallReturn
-	:	IRStatement
-{
-
-	public IRExpression				Function	{ get; private set; }
-	public IList< IRExpression >	Arguments	{ get; private set; }
-	public bool						UseResults	{ get; private set; }
-
-
-	public TailCallReturn( SourceLocation l, IRExpression function,
-					IList< IRExpression > arguments, bool useResults )
-		:	base( l )
-	{
-		Function	= function;
-		Arguments	= arguments;
-		UseResults	= useResults;
-	}
-
-}
-
-
-
-// return <object>.<methodname>( <object>, <arguments> [, valuelist ] )
-
-sealed class TailCallReturnMultipleResults
-	:	IRStatement
-{
-
-	public IRExpression				Object		{ get; private set; }
-	public string					MethodName	{ get; private set; }
-	public IList< IRExpression >	Arguments	{ get; private set; }
-	public bool						UseResults	{ get; private set; }
-
-
-	public TailCallReturnMultipleResults( SourceLocation l, IRExpression o,
-				string methodName, IList< IRExpression > arguments, bool useResults )
-		: base( l )
-	{
-		Object		= o;
-		MethodName	= methodName;
-		Arguments	= arguments;
-		UseResults	= useResults;
-	}
-
-}
 
 
 
