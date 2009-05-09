@@ -25,11 +25,14 @@ sealed partial class IRCompiler
 
 	public Expression UnaryExpression( SourceLocation l, Expression operand, TokenKind op )
 	{
+		( (IRExpression)operand ).RestrictToSingleValue();
 		return new UnaryExpression( l, op, (IRExpression)operand );
 	}
 
 	public Expression BinaryExpression( SourceLocation l, Expression left, Expression right, TokenKind op )
 	{
+		( (IRExpression)left ).RestrictToSingleValue();
+		( (IRExpression)right ).RestrictToSingleValue();
 		return new BinaryExpression( l, (IRExpression)left, (IRExpression)right, op );
 	}
 
@@ -50,31 +53,27 @@ sealed partial class IRCompiler
 
 	public Expression LookupExpression( SourceLocation l, Expression left, Expression key )
 	{
+		( (IRExpression)left ).RestrictToSingleValue();
+		( (IRExpression)key ).RestrictToSingleValue();
 		return new IndexExpression( l, (IRExpression)left, (IRExpression)key );
 	}
 
 	public Expression CallExpression( SourceLocation l, Expression left, IList< Expression > argumentlist )
 	{
-		return new CallExpression( l, (IRExpression)left, CopyExpressionList( argumentlist ), ExtraArguments.None );
+		( (IRExpression)left ).RestrictToSingleValue();
+		return new CallExpression( l, (IRExpression)left, MakeArgumentList( argumentlist ) );
 	}
 
 	public Expression SelfCallExpression( SourceLocation l, Expression left, SourceLocation keyl, string key, IList< Expression > argumentlist )
 	{
-		return new SelfCallExpression( l, (IRExpression)left, keyl, key, CopyExpressionList( argumentlist ), ExtraArguments.None );
+		( (IRExpression)left ).RestrictToSingleValue();
+		return new SelfCallExpression( l, (IRExpression)left, keyl, key, MakeArgumentList( argumentlist ) );
 	}
 
 	public Expression NestedExpression( SourceLocation l, Expression expression )
 	{
-		if (    expression.GetType() == typeof( CallExpression )
-			 || expression.GetType() == typeof( SelfCallExpression )
-		     || expression.GetType() == typeof( VarargsExpression ) )
-		{
-			return new SingleValueExpression( l, (IRExpression)expression );
-		}
-		else
-		{
-			return expression;
-		}
+		( (IRExpression)expression ).RestrictToSingleValue();
+		return expression;
 	}
 
 	public Expression LocalVariableExpression( SourceLocation l, Scope lookupScope, Local local )
@@ -84,6 +83,7 @@ sealed partial class IRCompiler
 
 	public Expression UpValExpression( SourceLocation l, Scope lookupScope, Local local )
 	{
+		( (IRLocal)local ).IsUpVal = true;
 		return new UpValExpression( l, (IRLocal)local );
 	}
 
@@ -97,14 +97,26 @@ sealed partial class IRCompiler
 
 	// Helpers.
 
-	IList< IRExpression > CopyExpressionList( IList< Expression > list )
+	IList< IRExpression > MakeArgumentList( IList< Expression > list )
 	{
+		// Create a typecasted copy.
+
 		List< IRExpression > copy = new List< IRExpression >( list.Count );
-		foreach ( Expression expression in list )
+		for ( int argument = 0; argument < list.Count; ++argument )
 		{
-			copy.Add( (IRExpression)expression );
+			copy.Add( (IRExpression)list[ argument ] );
 		}
-		return copy.AsReadOnly();
+
+
+		// All arguments except the last one are restricted to a single value.
+
+		for ( int argument = 0; argument < copy.Count - 1; ++argument )
+		{
+			copy[ argument ].RestrictToSingleValue();
+		}
+
+
+		return copy;
 	}
 
 }

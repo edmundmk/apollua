@@ -16,6 +16,8 @@ namespace Lua.Compiler.Middle.IR
 sealed class IRLocal
 	:	Local
 {
+	public bool IsUpVal { get; set; }
+
 
 	public IRLocal( string name )
 		:	base( name )

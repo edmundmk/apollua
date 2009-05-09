@@ -45,6 +45,7 @@ interface IParserActions
 	void		Assignment( SourceLocation l, Scope scope, IList< Expression > variablelist, IList< Expression > expressionlist );
 	void		CallStatement( SourceLocation l, Scope scope, Expression call );
 	void		Break( SourceLocation l, Scope loopScope );
+	void		Continue( SourceLocation l, Scope loopScope );
 	void		Return( SourceLocation l, Scope functionScope, IList< Expression > expressionlist );
 
 

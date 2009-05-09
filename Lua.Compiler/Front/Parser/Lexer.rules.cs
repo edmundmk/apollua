@@ -24,6 +24,7 @@ partial class Lexer
 	{
 		{ "and",		TokenKind.And		},
 		{ "break",		TokenKind.Break		},
+		{ "continue",	TokenKind.Continue	},
 		{ "do",			TokenKind.Do		},
 		{ "else",		TokenKind.Else		},
 		{ "elseif",		TokenKind.Elseif	},

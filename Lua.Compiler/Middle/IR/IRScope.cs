@@ -13,9 +13,49 @@ namespace Lua.Compiler.Middle.IR
 {
 
 
+enum ScopeKind
+{
+	Normal,
+	Function,
+	Loop,
+}
+
+
 sealed class IRScope
 	:	Scope
 {
+	public ScopeKind		ScopeKind				{ get; private set; }
+	public override bool	IsFunctionScope			{ get { return ScopeKind == ScopeKind.Function; } }
+	public override bool	IsVarargFunctionScope	{ get { return isVararg; } }
+	public override bool	IsLoopScope				{ get { return ScopeKind == ScopeKind.Loop; } }
+	public string			BreakBlockName			{ get; private set; }
+	public string			ContinueBlockName		{ get; private set; }
+
+	bool isVararg;
+
+
+	public IRScope()
+		:	this( ScopeKind.Normal, false, null, null )
+	{
+	}
+
+	public IRScope( ScopeKind kind, bool isVararg )
+		:	this( kind, isVararg, null, null )
+	{
+	}
+
+	public IRScope( ScopeKind kind, string breakName, string continueName )
+		:	this( kind, false, breakName, continueName )
+	{
+	}
+
+	public IRScope( ScopeKind kind, bool isVararg, string breakName, string continueName )
+	{
+		ScopeKind				= kind;
+		this.isVararg			= isVararg;
+		BreakBlockName			= breakName;
+		ContinueBlockName		= continueName;
+	}
 }
 
 

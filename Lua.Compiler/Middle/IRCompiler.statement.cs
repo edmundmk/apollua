@@ -41,6 +41,10 @@ sealed partial class IRCompiler
 		throw new NotImplementedException();
 	}
 
+	public void Continue( SourceLocation l, Scope loopScope )
+	{
+	}
+
 	public void Return( SourceLocation l, Scope functionScope, IList< Expression > expressionlist )
 	{
 		throw new NotImplementedException();

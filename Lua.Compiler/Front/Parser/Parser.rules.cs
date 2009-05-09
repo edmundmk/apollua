@@ -126,6 +126,7 @@ partial class Parser
 			laststat
 				: retstat
 				| breakstat
+				| continuestat
 				;
 		*/
 
@@ -172,6 +173,10 @@ partial class Parser
 
 		case TokenKind.Break:
 			breakstat();
+			return true;
+
+		case TokenKind.Continue:
+			continuestat();
 			return true;
 
 		default:
@@ -669,6 +674,29 @@ partial class Parser
 		}
 
 		Error( "No loop to break" );
+	}
+
+
+	void continuestat()
+	{
+		/*	continuestat
+				: 'continue'
+				;
+		*/
+
+		Token continueToken = Check( TokenKind.Continue );
+
+		for ( int scopecount = 0; scopecount < scope.Count; ++scopecount )
+		{
+			Scope loopScope = scope.Peek( scopecount );
+			if ( loopScope.IsLoopScope )
+			{
+				actions.Continue( continueToken.Location, loopScope );
+				return;
+			}
+		}
+
+		Error( "No loop to continue" );
 	}
 
 

@@ -38,6 +38,30 @@ abstract class IRExpression
 		Location = l;
 	}
 
+
+	// Restricting multiple results to a single value.
+
+	public virtual void RestrictToSingleValue()
+	{
+		// do nothing.
+	}
+
+
+
+	// Transforming so each function call is a separate statement.
+
+	public virtual void Transform( IRCode code )
+	{
+		// do nothing.
+	}
+
+
+	public virtual IRExpression TransformedExpression( IRCode code )
+	{
+		Transform( code );
+		return this;
+	}
+
 }
 
 
@@ -69,6 +93,13 @@ sealed class UnaryExpression
 	{
 		Operator	= operators[ op ];
 		Operand		= operand;
+	}
+
+
+	public override void Transform( IRCode code )
+	{
+		base.Transform( code );
+		Operand		= Operand.TransformedExpression( code );
 	}
 
 
@@ -106,6 +137,14 @@ sealed class BinaryExpression
 		Operator	= operators[ op ];
 		Left		= left;
 		Right		= right;
+	}
+
+
+	public override void Transform( IRCode code )
+	{
+		base.Transform( code );
+		Left		= Left.TransformedExpression( code );
+		Right		= Right.TransformedExpression( code );
 	}
 
 
@@ -176,6 +215,14 @@ sealed class IndexExpression
 		Key			= key;
 	}
 
+
+	public override void Transform( IRCode code )
+	{
+		base.Transform( code );
+		Left		= Left.TransformedExpression( code );
+		Key			= Key.TransformedExpression( code );
+	}
+
 }
 
 
@@ -240,7 +287,7 @@ sealed class GlobalVariableExpression
 
 
 
-// Transformed temporaries.
+// Temporaries.
 
 
 // temporary#<index>
@@ -294,29 +341,66 @@ enum ExtraArguments
 
 
 
-// ( f() ) or ( ... )
-
-sealed class SingleValueExpression
+abstract class MultipleResultsExpression
 	:	IRExpression
 {
+	public bool IsSingleValue { get; private set; }
 
-	public IRExpression	Expression;
-
-
-	public SingleValueExpression( SourceLocation l, IRExpression expression )
+	public MultipleResultsExpression( SourceLocation l )
 		:	base( l )
 	{
-		Expression	= expression;
+	}
+
+
+	public override void RestrictToSingleValue()
+	{
+		base.RestrictToSingleValue();
+		IsSingleValue = true;
+	}
+
+
+	public virtual ExtraArguments TransformToExtraArguments()
+	{
+		return ExtraArguments.None;
+	}
+
+
+	public static void TransformExpressionList( IRCode code, 
+			ref IList< IRExpression> list, ref ExtraArguments extraArguments )
+	{
+		// Transform all expressions in list.
+
+		for ( int i = 0; i < list.Count; ++i )
+		{
+			list[ i ] = list[ i ].TransformedExpression( code );
+		}
+
+
+		// If the final expression is a multiple-result expression, use the correct
+		// kind of extra arguments when compiling.
+
+		if ( list.Count > 0 )
+		{
+			MultipleResultsExpression lastExpression = list[ list.Count - 1 ] as MultipleResultsExpression;
+			if ( lastExpression != null )
+			{
+				extraArguments = lastExpression.TransformToExtraArguments();
+				list.RemoveAt( list.Count - 1 );
+			}
+		}
+
 	}
 
 }
 
 
 
+
+
 // ...
 
 sealed class VarargsExpression
-	:	IRExpression
+	:	MultipleResultsExpression
 {
 
 	public VarargsExpression( SourceLocation l )
@@ -324,28 +408,109 @@ sealed class VarargsExpression
 	{
 	}
 
+
+	public override ExtraArguments TransformToExtraArguments()
+	{
+		if ( ! IsSingleValue )
+		{
+			return ExtraArguments.UseVararg;
+		}
+		return base.TransformToExtraArguments();
+	}
+
+
 }
 
+
+
+
+
+
+// Function calls.
+
+
+abstract class CallArgumentsExpression
+	:	MultipleResultsExpression
+{
+	
+	public IList< IRExpression >	Arguments			{ get { return arguments; } }
+	public ExtraArguments			ExtraArguments		{ get { return extraArguments; } }
+
+	IList< IRExpression >			arguments;
+	ExtraArguments					extraArguments;
+
+
+	public CallArgumentsExpression( SourceLocation l, IList< IRExpression > arguments )
+		:	base( l )
+	{
+		this.arguments		= arguments;
+		this.extraArguments	= ExtraArguments.None;
+	}
+
+
+	
+	public override void Transform( IRCode code )
+	{
+		base.Transform( code );
+		TransformExpressionList( code, ref arguments, ref extraArguments );
+	}
+
+
+	public override IRExpression TransformedExpression( IRCode code )
+	{
+		base.TransformedExpression( code );
+
+		if ( IsSingleValue )
+		{
+			// Ensure each function call has its own statement.
+
+			TemporaryExpression temporary = code.MakeTemporary( Location );
+			code.Add( new Assign( Location, temporary, this ) );
+			return temporary;
+		}
+		else
+		{
+			// Can return multiple results, 
+
+			code.Add( new AssignValueList( Location, this ) );
+			return this;
+		}
+	}
+
+
+	public override ExtraArguments TransformToExtraArguments()
+	{
+		if ( ! IsSingleValue )
+		{
+			return ExtraArguments.UseValueList;
+		}
+		return base.TransformToExtraArguments();
+	}
+
+}
+	
 
 
 // <function>( <arguments> [, valuelist |, varargs ] )
 
 sealed class CallExpression
-	:	IRExpression
+	:	CallArgumentsExpression
 {
 
-	public IRExpression				Function		{ get; private set; }
-	public IList< IRExpression >	Arguments		{ get; private set; }
-	public ExtraArguments			ExtraArguments	{ get; private set; }
+	public IRExpression	Function	{ get; private set; }
 
 	
-	public CallExpression( SourceLocation l, IRExpression function,
-			IList< IRExpression > arguments, ExtraArguments extraArguments )
-		:	base( l )
+	public CallExpression( SourceLocation l, IRExpression function, IList< IRExpression > arguments )
+		:	base( l, arguments )
 	{
-		Function			= function;
-		Arguments			= arguments;
-		ExtraArguments		= extraArguments;
+		Function = function;
+	}
+
+
+	public override void Transform( IRCode code )
+	{
+		Function = Function.TransformedExpression( code );
+		base.Transform( code );
 	}
 
 }
@@ -357,26 +522,29 @@ sealed class CallExpression
 // <object>.<methodname>( <object>, <arguments> [, valuelist |, varargs ] )
 
 sealed class SelfCallExpression
-	:	IRExpression
+	:	CallArgumentsExpression
 {
+
 	public IRExpression				Object				{ get; private set; }
 	public SourceLocation			MethodNameLocation	{ get; private set; }
 	public string					MethodName			{ get; private set; }
-	public IList< IRExpression >	Arguments			{ get; private set; }
-	public ExtraArguments			ExtraArguments		{ get; private set; }
 
 
-	public SelfCallExpression( SourceLocation l, IRExpression o, SourceLocation methodNameLocation,
-					string methodName, IList< IRExpression > arguments, ExtraArguments extraArguments )
-		:	base( l )
+	public SelfCallExpression( SourceLocation l, IRExpression o,
+		SourceLocation methodNameLocation, string methodName, IList< IRExpression > arguments )
+		:	base( l, arguments )
 	{
 		Object				= o;
 		MethodNameLocation	= methodNameLocation;
 		MethodName			= methodName;
-		Arguments			= arguments;
-		ExtraArguments		= extraArguments;
 	}
 
+
+	public override void Transform( IRCode code )
+	{
+		Object = Object.TransformedExpression( code );
+		base.Transform( code );
+	}
 
 }
 

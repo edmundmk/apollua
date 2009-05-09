@@ -28,6 +28,7 @@ enum TokenKind
 	
 	And,
 	Break,
+	Continue,
 	Do,
 	Else,
 	Elseif,
