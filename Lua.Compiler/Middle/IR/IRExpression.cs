@@ -30,7 +30,8 @@ abstract class IRExpression
 	:	Expression
 {
 
-	public SourceLocation	Location	{ get; private set; }
+	public SourceLocation	Location		{ get; private set; }
+	public virtual bool		IsSingleValue	{ get { return true; } }
 
 	
 	public IRExpression( SourceLocation l )
@@ -312,7 +313,7 @@ sealed class GlobalVariableExpression
 
 
 
-// Temporaries are assigned once and then used once.
+// Temporaries are assigned once and used once.
 
 sealed class TemporaryExpression
 	:	IRExpression
@@ -324,6 +325,40 @@ sealed class TemporaryExpression
 	}
 
 }
+
+
+
+// Constructors exist between BeginConstructor and EndConstructor statements,
+// after which they are referenced once.
+
+sealed class ConstructorExpression
+	:	IRExpression
+{
+
+	public int			ArrayCount	{ get; private set; }
+	public int			HashCount	{ get; private set; }
+
+
+	public ConstructorExpression( SourceLocation l )
+		:	base( l )
+	{
+		ArrayCount	= 0;
+		HashCount	= 0;
+	}
+
+
+	public void IncrementArrayCount()
+	{
+		ArrayCount += 1;
+	}
+
+	public void IncrementHashCount()
+	{
+		HashCount += 1;
+	}
+
+}
+
 
 
 
@@ -363,20 +398,22 @@ abstract class MultipleResultsExpression
 	:	IRExpression
 {
 
-	public bool IsSingleValue { get; private set; }
+	public override bool IsSingleValue { get { return isSingleValue; } }
+
+	bool isSingleValue;
 
 
 	public MultipleResultsExpression( SourceLocation l )
 		:	base( l )
 	{
-		IsSingleValue = false;
+		isSingleValue = false;
 	}
 
 
 	public override void RestrictToSingleValue()
 	{
 		base.RestrictToSingleValue();
-		IsSingleValue = true;
+		isSingleValue = true;
 	}
 
 
@@ -406,7 +443,10 @@ abstract class MultipleResultsExpression
 			if ( lastExpression != null )
 			{
 				extraArguments = lastExpression.TransformToExtraArguments();
-				list.RemoveAt( list.Count - 1 );
+				if ( extraArguments != ExtraArguments.None )
+				{
+					list.RemoveAt( list.Count - 1 );
+				}
 			}
 		}
 

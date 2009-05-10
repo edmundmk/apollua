@@ -61,13 +61,13 @@ sealed partial class IRCompiler
 	public Expression CallExpression( SourceLocation l, Expression left, IList< Expression > argumentlist )
 	{
 		( (IRExpression)left ).RestrictToSingleValue();
-		return new CallExpression( l, (IRExpression)left, MakeArgumentList( argumentlist ) );
+		return new CallExpression( l, (IRExpression)left, CastExpressionList( argumentlist ) );
 	}
 
 	public Expression SelfCallExpression( SourceLocation l, Expression left, SourceLocation keyl, string key, IList< Expression > argumentlist )
 	{
 		( (IRExpression)left ).RestrictToSingleValue();
-		return new SelfCallExpression( l, (IRExpression)left, keyl, key, MakeArgumentList( argumentlist ) );
+		return new SelfCallExpression( l, (IRExpression)left, keyl, key, CastExpressionList( argumentlist ) );
 	}
 
 	public Expression NestedExpression( SourceLocation l, Expression expression )
@@ -94,30 +94,6 @@ sealed partial class IRCompiler
 
 
 
-
-	// Helpers.
-
-	IList< IRExpression > MakeArgumentList( IList< Expression > list )
-	{
-		// Create a typecasted copy.
-
-		List< IRExpression > copy = new List< IRExpression >( list.Count );
-		for ( int argument = 0; argument < list.Count; ++argument )
-		{
-			copy.Add( (IRExpression)list[ argument ] );
-		}
-
-
-		// All arguments except the last one are restricted to a single value.
-
-		for ( int argument = 0; argument < copy.Count - 1; ++argument )
-		{
-			copy[ argument ].RestrictToSingleValue();
-		}
-
-
-		return copy;
-	}
 
 }
 

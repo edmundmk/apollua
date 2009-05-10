@@ -162,6 +162,9 @@ sealed partial class IRCompiler
 	}
 
 
+
+	// Helpers.
+
 	void Statement( IRStatement statement )
 	{
 		code.Peek().Statement( statement );
@@ -170,6 +173,30 @@ sealed partial class IRCompiler
 	void Transform( IRExpression expression )
 	{
 		expression.Transform( code.Peek() );
+	}
+
+	
+	
+	IList< IRExpression > CastExpressionList( IList< Expression > list )
+	{
+		// Create a typecasted copy.
+
+		List< IRExpression > copy = new List< IRExpression >( list.Count );
+		for ( int expression = 0; expression < list.Count; ++expression )
+		{
+			copy.Add( (IRExpression)list[ expression ] );
+		}
+
+
+		// All expression except the last one are restricted to a single value.
+
+		for ( int expression = 0; expression < copy.Count - 1; ++expression )
+		{
+			copy[ expression ].RestrictToSingleValue();
+		}
+
+
+		return copy;
 	}
 
 

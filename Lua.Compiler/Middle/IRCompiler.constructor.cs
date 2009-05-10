@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Lua.Compiler.Front;
 using Lua.Compiler.Front.AST;
 using Lua.Compiler.Front.Parser;
@@ -23,27 +24,63 @@ sealed partial class IRCompiler
 
 	public Scope Constructor( SourceLocation l, Scope scope )
 	{
-		throw new NotImplementedException();
+		ConstructorExpression constructor = new ConstructorExpression( l );
+		Statement( new BeginConstructor( l, constructor ) );
+		return new ConstructorScope( constructor );
 	}
 
-	public void Field( SourceLocation l, Scope constructorScope, Expression key, Expression value )
+	public void Field( SourceLocation l, Scope constructorScope, Expression key, Expression v )
 	{
-		throw new NotImplementedException();
+		ConstructorScope scope = (ConstructorScope)constructorScope;
+		scope.Constructor.IncrementHashCount();
+
+		IRExpression index = new IndexExpression( l, scope.Constructor, (IRExpression)key );
+		IRExpression value = (IRExpression)v;
+		
+		Transform( index );
+		Transform( value );
+		Statement( new Assign( l, index, value ) );
 	}
 
-	public void Field( SourceLocation l, Scope constructorScope, int key, Expression value )
+	public void Field( SourceLocation l, Scope constructorScope, int key, Expression v )
 	{
-		throw new NotImplementedException();
+		ConstructorScope scope = (ConstructorScope)constructorScope;
+		scope.Constructor.IncrementArrayCount();
+
+		IRExpression index = new IndexExpression( l, scope.Constructor, new LiteralExpression( l, (double)key ) );
+		IRExpression value = (IRExpression)v;
+		
+		Transform( index );
+		Transform( value );
+		Statement( new Assign( l, index, value ) );
 	}
 
-	public void LastField( SourceLocation l, Scope constructorScope, int key, Expression valuelist )
+	public void LastField( SourceLocation l, Scope constructorScope, int key, Expression v )
 	{
-		throw new NotImplementedException();
+		ConstructorScope scope = (ConstructorScope)constructorScope;
+
+		MultipleResultsExpression multipleResults = v as MultipleResultsExpression;
+		if ( multipleResults != null && ! multipleResults.IsSingleValue )
+		{
+			// Set list.
+
+			multipleResults = (MultipleResultsExpression)multipleResults.TransformedExpression( code.Peek() );
+			ExtraArguments extraArguments = multipleResults.TransformToExtraArguments();
+			Debug.Assert( extraArguments != ExtraArguments.None );
+			Statement( new SetList( l, scope.Constructor, key, extraArguments ) );
+			return;
+		}
+
+		
+		// Fall back to single value.
+
+		Field( l, constructorScope, key, v );
 	}
 
 	public Expression EndConstructor( SourceLocation l, Scope end )
 	{
-		throw new NotImplementedException();
+		ConstructorScope scope = (ConstructorScope)end;
+		return scope.Constructor;
 	}
 
 }

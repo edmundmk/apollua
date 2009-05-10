@@ -223,10 +223,9 @@ sealed class EndScope
 		declare <local> = <expression>
 		<target> = <expression>
 		valuelist = <expression>
-		<table>[ <startindex> ... ] = valuelist | varargs
+		evaluate <expression>
 		return <expression>
 		return <results> [ valuelist | varargs ]?
-
 */
 
 
@@ -265,6 +264,25 @@ sealed class DeclareAssign
 		:	base( l )
 	{
 		Local			= local;
+		Expression		= expression;
+	}
+
+}
+
+
+
+// <expression>
+
+sealed class Evaluate
+	:	IRStatement
+{
+
+	public IRExpression				Expression		{ get; private set; }
+
+
+	public Evaluate( SourceLocation l, IRExpression expression )
+		:	base( l )
+	{
 		Expression		= expression;
 	}
 
@@ -376,6 +394,42 @@ sealed class ReturnMultipleResults
 }
 
 
+
+/*	Constructor expressions are a special kind of temporary.  They are live
+	beyond a single reference; they exist during table construction and for
+	a single reference afterwards.
+
+	constructor <constructor>
+	{
+	}
+*/
+
+sealed class BeginConstructor
+	:	IRStatement
+{
+
+	public ConstructorExpression	Constructor		{ get; private set; }
+
+
+	public BeginConstructor( SourceLocation l, ConstructorExpression constructor )
+		:	base( l )
+	{
+		Constructor = constructor;
+	}
+}
+
+
+
+sealed class EndConstructor
+	:	IRStatement
+{
+
+	public EndConstructor( SourceLocation l )
+		:	base( l )
+	{
+	}
+
+}
 
 
 }

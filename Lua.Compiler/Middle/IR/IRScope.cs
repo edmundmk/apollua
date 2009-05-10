@@ -152,6 +152,21 @@ class ForScope
 
 
 
+class ConstructorScope
+	:	IRScope
+{
+
+	public ConstructorExpression Constructor	{ get; private set; }
+
+
+	public ConstructorScope( ConstructorExpression constructor )
+	{
+		Constructor	= constructor;
+	}
+
+}
+
+
 
 }
 

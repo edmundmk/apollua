@@ -21,33 +21,57 @@ sealed partial class IRCompiler
 	:	IParserActions
 {
 
-	public void Local( SourceLocation l, Scope scope, IList< string > namelist, IList< Expression > expressionlist )
+	public void Local( SourceLocation l, Scope scope, IList< string > namelist, IList< Expression > elist )
 	{
+		IList< IRExpression > expressionlist = CastExpressionList( elist );
 		throw new NotImplementedException();
 	}
 
-	public void Assignment( SourceLocation l, Scope scope, IList< Expression > variablelist, IList< Expression > expressionlist )
+	public void Assignment( SourceLocation l, Scope scope, IList< Expression > variablelist, IList< Expression > elist )
 	{
+		IList< IRExpression> expressionlist = CastExpressionList( elist );
 		throw new NotImplementedException();
 	}
 
 	public void CallStatement( SourceLocation l, Scope scope, Expression call )
 	{
-		throw new NotImplementedException();
+		IRExpression callExpression = (IRExpression)call;
+		Transform( callExpression );
+		Statement( new Evaluate( l, callExpression ) );
 	}
 
 	public void Break( SourceLocation l, Scope loopScope )
 	{
-		throw new NotImplementedException();
+		IRScope scope = (IRScope)loopScope;
+		scope.Break( l, code.Peek() );
 	}
 
 	public void Continue( SourceLocation l, Scope loopScope )
 	{
+		IRScope scope = (IRScope)loopScope;
+		scope.Continue( l, code.Peek() );
 	}
 
-	public void Return( SourceLocation l, Scope functionScope, IList< Expression > expressionlist )
+	public void Return( SourceLocation l, Scope functionScope, IList< Expression > elist )
 	{
-		throw new NotImplementedException();
+		IList< IRExpression> expressionlist = CastExpressionList( elist );
+		
+		if ( expressionlist.Count == 1 )
+		{
+			// Return a single result or tail call.
+
+			Transform( expressionlist[ 0 ] );
+			Statement( new Return( l, expressionlist[ 0 ] ) );
+		}
+		else
+		{
+			// Return multiple results.
+
+			IRExpression	lastExpression = expressionlist[ expressionlist.Count - 1 ];
+			ExtraArguments	extraArguments = ExtraArguments.None;
+			MultipleResultsExpression.TransformExpressionList( code.Peek(), ref expressionlist, ref extraArguments );
+			Statement( new ReturnMultipleResults( l, expressionlist, extraArguments ) );
+		}
 	}
 
 }
