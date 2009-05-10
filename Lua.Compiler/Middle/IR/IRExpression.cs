@@ -222,7 +222,7 @@ sealed class LiteralExpression
 
 
 // Assignable.
-	
+
 
 // <left>[ <key> ]
 

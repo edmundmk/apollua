@@ -588,6 +588,16 @@ partial class Parser
 	}
 
 
+
+	enum ExpressionType
+	{
+		None,
+		FunctionCall,
+		Assignable,
+	}
+
+
+
 	void exprstat()
 	{
 		/*	exprstat
@@ -598,28 +608,46 @@ partial class Parser
 
 		
 		Token callToken;
-		bool isFunctionCall = primaryexp( out callToken );
-		if ( ! isFunctionCall )
-		{
-			int variablecount	= 1;
-			while ( Test( TokenKind.Comma ) )
-			{
-				variablecount += 1;
-				primaryexp( out callToken );
-			}
-
-			Token equalSign = Check( TokenKind.EqualSign );
-			int expressioncount = explist();
-
-			IList< Expression > expressionlist	= expression.Pop( expressioncount );
-			IList< Expression > variablelist	= expression.Pop( variablecount );
-			
-			actions.Assignment( equalSign.Location, scope.Peek(), variablelist, expressionlist );
-		}
-		else
+		ExpressionType expressionType = primaryexp( out callToken );
+		
+		if ( expressionType == ExpressionType.FunctionCall )
 		{
 			actions.CallStatement( callToken.Location, scope.Peek(), expression.Pop() );
-		}		
+			return;
+		}
+		
+		
+		bool assignmentError = false;
+		if ( expressionType != ExpressionType.Assignable )
+		{
+			Error( "Expression is not assignable" );
+			assignmentError = true;
+		}
+
+
+		int variablecount	= 1;
+		while ( Test( TokenKind.Comma ) )
+		{
+			variablecount += 1;
+			expressionType = primaryexp( out callToken );
+			if ( expressionType != ExpressionType.Assignable )
+			{
+				Error( "Expression is not assignable" );
+				assignmentError = true;
+			}
+		}
+
+		
+		Token equalSign = Check( TokenKind.EqualSign );
+		int expressioncount = explist();
+
+		IList< Expression > expressionlist	= expression.Pop( expressioncount );
+		IList< Expression > variablelist	= expression.Pop( variablecount );
+
+		if ( ! assignmentError )
+		{
+			actions.Assignment( equalSign.Location, scope.Peek(), variablelist, expressionlist );
+		}
 	}
 
 
@@ -1026,7 +1054,7 @@ partial class Parser
 	}
 
 
-	bool primaryexp( out Token callToken )
+	ExpressionType primaryexp( out Token callToken )
 	{
 		/*	primaryexp
 				: prefixexp ( postfix )*	{ return result of last postfix, or false }
@@ -1040,11 +1068,10 @@ partial class Parser
 				;
 		*/
 
-		prefixexp();
+		ExpressionType expressionType = prefixexp();
 		
 		Expression left;
-		bool isFunctionCall = false;
-
+		
 		while ( true )
 		{
 			Token name;
@@ -1056,7 +1083,7 @@ partial class Parser
 			{
 			// lookup.
 			case TokenKind.FullStop:
-				isFunctionCall = false;
+				expressionType = ExpressionType.Assignable;
 				left = expression.Pop();
 				Token fullStop = Check( TokenKind.FullStop );
 				name = Check( TokenKind.Identifier );
@@ -1066,7 +1093,7 @@ partial class Parser
 
 			// array lookup.
 			case TokenKind.LeftSquareBracket:
-				isFunctionCall = false;
+				expressionType = ExpressionType.Assignable;
 				left = expression.Pop();
 				Token bracket = Check( TokenKind.LeftSquareBracket );
 				exp();
@@ -1080,7 +1107,7 @@ partial class Parser
 			case TokenKind.NewlineLeftParenthesis:
 			case TokenKind.LeftCurlyBracket:
 			case TokenKind.String:
-				isFunctionCall = true;
+				expressionType = ExpressionType.FunctionCall;
 				left = expression.Pop();
 				argumentcount = funcargs();
 				expression.Push( actions.CallExpression(
@@ -1089,7 +1116,7 @@ partial class Parser
 
 			// selfcall
 			case TokenKind.Colon:
-				isFunctionCall = true;
+				expressionType = ExpressionType.FunctionCall;
 				left = expression.Pop();
 				Check( TokenKind.Colon );
 				name = Check( TokenKind.Identifier );
@@ -1101,7 +1128,7 @@ partial class Parser
 
 			// no more postfixes
 			default:
-				return isFunctionCall;
+				return expressionType;
 			}
 		}
 	}
@@ -1156,7 +1183,7 @@ partial class Parser
 	}
 
 
-	void prefixexp()
+	ExpressionType prefixexp()
 	{
 		/*	prefixexp
 				: IDENTIFIER
@@ -1172,17 +1199,17 @@ partial class Parser
 			exp();
 			Check( TokenKind.RightParenthesis, matchParenthesis );
 			expression.Push( actions.NestedExpression( matchParenthesis.Location, expression.Pop() ) );
-			break;
+			return ExpressionType.None;
 			
 		case TokenKind.Identifier:
 			Token name = Check( TokenKind.Identifier );
 			expression.Push( Lookup( name ) );
-			break;
+			return ExpressionType.Assignable;
 
 		default:
 			expression.Push( actions.LiteralExpression( GetToken().Location, null ) );
 			Error( "Unexpected token {0}", Lexer.GetTokenName( Get() ) );
-			break;
+			return ExpressionType.None;
 		}
 
 
