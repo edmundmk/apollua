@@ -57,7 +57,7 @@ abstract class IRExpression
 	}
 
 
-	public virtual IRExpression TransformedExpression( IRCode code )
+	public virtual IRExpression TransformExpression( IRCode code )
 	{
 		Transform( code );
 		return this;
@@ -100,7 +100,7 @@ sealed class UnaryExpression
 	public override void Transform( IRCode code )
 	{
 		base.Transform( code );
-		Operand		= Operand.TransformedExpression( code );
+		Operand		= Operand.TransformExpression( code );
 	}
 
 
@@ -144,8 +144,8 @@ sealed class BinaryExpression
 	public override void Transform( IRCode code )
 	{
 		base.Transform( code );
-		Left		= Left.TransformedExpression( code );
-		Right		= Right.TransformedExpression( code );
+		Left		= Left.TransformExpression( code );
+		Right		= Right.TransformExpression( code );
 	}
 
 
@@ -171,7 +171,7 @@ sealed class ToNumberExpression
 	public override void Transform( IRCode code )
 	{
 		base.Transform( code );
-		Operand		= Operand.TransformedExpression( code );
+		Operand		= Operand.TransformExpression( code );
 	}
 }
 
@@ -245,8 +245,8 @@ sealed class IndexExpression
 	public override void Transform( IRCode code )
 	{
 		base.Transform( code );
-		Left		= Left.TransformedExpression( code );
-		Key			= Key.TransformedExpression( code );
+		Left		= Left.TransformExpression( code );
+		Key			= Key.TransformExpression( code );
 	}
 
 }
@@ -430,7 +430,7 @@ abstract class MultipleResultsExpression
 
 		for ( int i = 0; i < list.Count; ++i )
 		{
-			list[ i ] = list[ i ].TransformedExpression( code );
+			list[ i ] = list[ i ].TransformExpression( code );
 		}
 
 
@@ -517,9 +517,9 @@ abstract class CallArgumentsExpression
 	}
 
 
-	public override IRExpression TransformedExpression( IRCode code )
+	public override IRExpression TransformExpression( IRCode code )
 	{
-		base.TransformedExpression( code );
+		base.TransformExpression( code );
 
 		if ( IsSingleValue )
 		{
@@ -570,7 +570,7 @@ sealed class CallExpression
 
 	public override void Transform( IRCode code )
 	{
-		Function = Function.TransformedExpression( code );
+		Function = Function.TransformExpression( code );
 		base.Transform( code );
 	}
 
@@ -602,7 +602,7 @@ sealed class SelfCallExpression
 
 	public override void Transform( IRCode code )
 	{
-		Object = Object.TransformedExpression( code );
+		Object = Object.TransformExpression( code );
 		base.Transform( code );
 	}
 

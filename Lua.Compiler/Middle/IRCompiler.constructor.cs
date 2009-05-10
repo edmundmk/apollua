@@ -64,7 +64,7 @@ sealed partial class IRCompiler
 		{
 			// Set list.
 
-			multipleResults = (MultipleResultsExpression)multipleResults.TransformedExpression( code.Peek() );
+			multipleResults = (MultipleResultsExpression)multipleResults.TransformExpression( code.Peek() );
 			ExtraArguments extraArguments = multipleResults.TransformToExtraArguments();
 			Debug.Assert( extraArguments != ExtraArguments.None );
 			Statement( new SetList( l, scope.Constructor, key, extraArguments ) );
