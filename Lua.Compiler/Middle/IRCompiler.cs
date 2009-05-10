@@ -153,6 +153,26 @@ namespace Lua.Compiler.Middle
 sealed partial class IRCompiler
 	:	IParserActions
 {
+	Stack< IRCode > code;
+
+
+	public IRCompiler()
+	{
+		code = new Stack< IRCode >();
+	}
+
+
+	void Statement( IRStatement statement )
+	{
+		code.Peek().Statement( statement );
+	}
+
+	void Transform( IRExpression expression )
+	{
+		expression.Transform( code.Peek() );
+	}
+
+
 }
 
 

@@ -78,7 +78,7 @@ sealed partial class IRCompiler
 
 	public Expression LocalVariableExpression( SourceLocation l, Scope lookupScope, Local local )
 	{
-		return new LocalVariableExpression( l, (IRLocal)local );
+		return new LocalExpression( l, (IRLocal)local );
 	}
 
 	public Expression UpValExpression( SourceLocation l, Scope lookupScope, Local local )

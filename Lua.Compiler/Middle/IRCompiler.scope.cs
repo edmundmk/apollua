@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Lua.Compiler.Front;
 using Lua.Compiler.Front.AST;
 using Lua.Compiler.Front.Parser;
@@ -23,82 +24,430 @@ sealed partial class IRCompiler
 
 	public Scope Function( SourceLocation l, Scope scope, IList< string > parameternamelist, bool isVararg )
 	{
-		throw new NotImplementedException();
+		IRScope functionScope	= new FunctionScope( isVararg );
+		IRCode	functionCode	= new IRCode();
+
+
+		// Set up parameters.
+
+		for ( int parameter = 0; parameter < parameternamelist.Count; ++parameter )
+		{
+			IRLocal local = new IRLocal( parameternamelist[ parameter ] );
+			functionScope.Declare( local );
+			functionCode.DeclareParameter( local );
+		}
+		
+		if ( isVararg )
+		{
+			functionCode.MarkVararg();
+		}
+		
+
+		code.Push( functionCode );
+		return functionScope;
 	}
 
 	public Code EndFunction( SourceLocation l, Scope end )
 	{
-		throw new NotImplementedException();
+		return code.Pop();
 	}
+
+
+
+	/*	scope
+		{
+		...
+		}
+	*/
+
 
 	public Scope Do( SourceLocation l, Scope scope )
 	{
-		throw new NotImplementedException();
+		Statement( new BeginScope( l ) );
+		return new DoScope();
 	}
 
 	public void EndDo( SourceLocation l, Scope end )
 	{
-		throw new NotImplementedException();
+		Statement( new EndScope( l ) );
 	}
 
-	public Scope If( SourceLocation l, Scope scope, Expression condition )
+
+
+	/*	block if
+		{
+			scope
+			{
+				test <condition>
+				{
+	...	
+					break if
+				}
+			}
+			scope
+			{
+				test <condition>
+				{
+	...
+					break if
+				}
+			}
+			scope
+			{
+		...
+			}
+		}
+	*/
+
+	public Scope If( SourceLocation l, Scope scope, Expression c )
 	{
-		throw new NotImplementedException();
+		IRExpression condition = (IRExpression)c;
+
+		Statement( new BeginBlock( l, "if" ) );
+		Statement( new BeginScope( l ) );
+		Transform( condition );
+		Statement( new BeginTest( l, condition ) );
+		
+		return new IfScope();
 	}
 
-	public Scope ElseIf( SourceLocation l, Scope scope, Expression condition )
+	public Scope ElseIf( SourceLocation l, Scope scope, Expression c )
 	{
-		throw new NotImplementedException();
+		IRExpression condition = (IRExpression)c;
+
+		Statement( new Break( l, "if" ) );
+		Statement( new EndTest( l ) );
+		Statement( new EndScope( l ) );
+		Statement( new BeginScope( l ) );
+		Transform( condition );
+		Statement( new BeginTest( l, condition ) );
+
+		return new IfScope();
 	}
 
 	public Scope Else( SourceLocation l, Scope scope )
 	{
-		throw new NotImplementedException();
+		Statement( new Break( l, "if" ) );
+		Statement( new EndTest( l ) );
+		Statement( new EndScope( l ) );
+		Statement( new BeginScope( l ) );
+
+		return new DoScope();
 	}
 
 	public void EndIf( SourceLocation l, Scope end )
 	{
-		throw new NotImplementedException();
+		IRScope clauseScope = (IRScope)end;
+
+		if ( clauseScope.IsIfScope )
+		{
+			Statement( new Break( l, "if" ) );
+			Statement( new EndTest( l ) );
+		}
+
+		Statement( new EndScope( l ) );
+		Statement( new EndBlock( l ) );
 	}
 
-	public Scope While( SourceLocation l, Scope scope, Expression condition )
+
+
+	/*	block while
+		{
+			scope
+			{
+				test <condition>
+				{
+	...
+					continue while
+				}
+			}
+		}
+	*/
+
+	public Scope While( SourceLocation l, Scope scope, Expression c )
 	{
-		throw new NotImplementedException();
+		IRExpression condition = (IRExpression)c;
+
+		Statement( new BeginBlock( l, "while" ) );
+		Statement( new BeginScope( l ) );
+		Transform( condition );
+		Statement( new BeginTest( l, condition ) );
+
+		return new LoopScope( "while" );
 	}
 
 	public void EndWhile( SourceLocation l, Scope end )
 	{
-		throw new NotImplementedException();
+		Statement( new Continue( l, "while" ) );
+		Statement( new EndTest( l ) );
+		Statement( new EndScope( l ) );
+		Statement( new EndBlock( l ) );
 	}
+
+
+
+	/*	block repeat
+		{
+			scope
+			{
+				block repeatbody
+				{
+	...
+				}
+				test <condition>
+				{
+					continue repeat
+				}
+			}
+		}
+	*/
 
 	public Scope Repeat( SourceLocation l, Scope scope )
 	{
-		throw new NotImplementedException();
+		Statement( new BeginBlock( l, "repeat" ) );
+		Statement( new BeginScope( l ) );
+		Statement( new BeginBlock( l, "repeatbody" ) );
+
+		return new RepeatScope( "repeat", "repeatbody" );
 	}
 
-	public void Until( SourceLocation l, Scope scope, Expression condition )
+	public void Until( SourceLocation l, Scope scope, Expression c )
 	{
-		throw new NotImplementedException();
+		IRExpression condition = (IRExpression)c;
+
+		Statement( new EndBlock( l ) );
+		Transform( condition );
+		Statement( new BeginTest( l, condition ) );
+		Statement( new Continue( l, "repeat" ) );
+		Statement( new EndTest( l ) );
+		Statement( new EndScope( l ) );
+		Statement( new EndBlock( l ) );
 	}
 
-	public Scope For( SourceLocation l, Scope scope, string varname, Expression start, Expression limit, Expression step )
+
+
+	/*	scope
+		{
+			local (for index)	= tonumber( <index> )
+			local (for limit)	= tonumber( <limit> )
+			local (for step)	= tonumber( <step> )
+			block for
+			{
+				scope
+				{
+					test (    ( (for step) > 0 and (for index) <= (for limit) )
+						   or ( (for step) < 0 and (for index) >= (for limit) ) )
+					{
+						block forbody
+						{
+							local <index> = (for index)
+	...
+						}
+						(for index) = (for index) + (for step)
+						continue for
+					}
+				}
+			}
+		}
+	*/
+
+	public Scope For( SourceLocation l, Scope scope, string varname, Expression st, Expression li, Expression sp )
 	{
-		throw new NotImplementedException();
+		IRExpression start = (IRExpression)st;
+		IRExpression limit = (IRExpression)li;
+		IRExpression step  = (IRExpression)sp;
+
+
+		Statement( new BeginScope( l ) );
+		
+
+		// Delcare internal variables.
+
+		IRLocal forIndex = new IRLocal( "(for local)" );
+		IRLocal forLimit = new IRLocal( "(for limit)" );
+		IRLocal forStep  = new IRLocal( "(for step)" );
+
+		Transform( start );
+		Statement( new DeclareAssign( l, forIndex, new ToNumberExpression( l, start ) ) );
+		Transform( limit );
+		Statement( new DeclareAssign( l, forLimit, new ToNumberExpression( l, limit ) ) );
+		Transform( step );
+		Statement( new DeclareAssign( l, forStep, new ToNumberExpression( l, step ) ) );
+
+
+		// Test expression.
+
+		IRExpression test =
+			new BinaryExpression( l,
+				new BinaryExpression( l,
+					new BinaryExpression( l,
+						new LocalExpression( l, forStep ),
+						new LiteralExpression( l, 0.0 ),
+						TokenKind.GreaterThanSign ),
+					new BinaryExpression( l,
+						new LocalExpression( l, forIndex ),
+						new LocalExpression( l, forLimit ),
+						TokenKind.LessThanOrEqual ),
+					TokenKind.And ),
+				new BinaryExpression( l,
+					new BinaryExpression( l,
+						new LocalExpression( l, forStep ),
+						new LiteralExpression( l, 0.0 ),
+						TokenKind.LessThanSign ),
+					new BinaryExpression( l,
+						new LocalExpression( l, forIndex ),
+						new LocalExpression( l, forLimit ),
+						TokenKind.GreaterThanOrEqual ),
+					TokenKind.And ),
+				TokenKind.Or );
+
+
+		// Loop body.
+
+		Statement( new BeginBlock( l, "for" ) );
+		Statement( new BeginScope( l ) );
+		Transform( test );
+		Statement( new BeginTest( l, test ) );
+		Statement( new BeginBlock( l, "forbody" ) );
+		
+
+		// Declare index variable.
+
+		IRScope forScope = new ForScope( "for", "forbody", forIndex, forLimit, forStep );
+		IRLocal userIndex = new IRLocal( varname );
+		forScope.Declare( userIndex );
+		Statement( new DeclareAssign( l, userIndex, new LocalExpression( l, forIndex ) ) );
+		
+
+		return forScope;
 	}
 
 	public void EndFor( SourceLocation l, Scope end )
 	{
-		throw new NotImplementedException();
+		ForScope forScope = (ForScope)end;
+
+
+		Statement( new EndBlock( l ) );	// forbody
+
+		// Increment index.
+
+		IRExpression increment =
+			new BinaryExpression( l,
+				new LocalExpression( l, forScope.ForIndex ),
+				new LocalExpression( l, forScope.ForStep ),
+				TokenKind.PlusSign );
+
+		Transform( increment );
+		Statement( new Assign( l, new LocalExpression( l, forScope.ForIndex ), increment ) );
+
+
+
+		// Finish loop.
+
+		Statement( new Continue( l, "for" ) );
+		Statement( new EndTest( l ) );
+		Statement( new EndScope( l ) );
+		Statement( new EndBlock( l ) );	
+		Statement( new EndScope( l ) );
 	}
+
+
+
+
+	/*	scope
+		{
+			local (for generator), (for state), (for control) = <expressionlist>
+			block forin
+			{
+				scope
+				{
+					local <variablelist> = (for generator) ( (for state), (for control) )
+					(for control) = <variablelist>[ 0 ]
+					test ( (for control) == nil )
+					{
+						break forin
+					}
+	...
+					continue forin
+				}
+			}
+		}
+	*/		
 
 	public Scope ForIn( SourceLocation l, Scope scope, IList< string > variablenamelist, IList< Expression > expressionlist )
 	{
-		throw new NotImplementedException();
+		Statement( new BeginScope( l ) );
+
+
+		// Declare internal variables.
+
+		IRScope internalScope = new DoScope();
+		Local( l, internalScope, new string[]{ "(for generator)", "(for state)", "(for control)" }, expressionlist );
+		
+		Debug.Assert( internalScope.Locals.Count == 3 );
+		IRLocal forGenerator	= (IRLocal)internalScope.Locals[ 0 ];
+		IRLocal forState		= (IRLocal)internalScope.Locals[ 1 ];
+		IRLocal forControl		= (IRLocal)internalScope.Locals[ 2 ];
+		
+		Debug.Assert( forGenerator.Name	== "(for generator" );
+		Debug.Assert( forState.Name		== "(for state)" );
+		Debug.Assert( forControl.Name	== "(for control)" );
+
+
+		// For loop block.
+
+		Statement( new BeginBlock( l, "forin" ) );
+		Statement( new BeginScope( l ) );
+
+
+		// Generator expressin.
+
+		IRExpression generator =
+			new CallExpression( l,
+				new LocalExpression( l, forGenerator ),
+				new IRExpression[]{
+					new LocalExpression( l, forState ),
+					new LocalExpression( l, forControl ) } );
+
+
+		// Declare user variables.
+
+		IRScope forInScope = new LoopScope( "forin" );
+		Local( l, forInScope, variablenamelist, new IRExpression[]{ generator } );
+
+		Debug.Assert( forInScope.Locals.Count == variablenamelist.Count );
+		IRLocal userControl = (IRLocal)forInScope.Locals[ 0 ];
+		Debug.Assert( userControl.Name == variablenamelist[ 0 ] );
+
+
+
+		// Test expression.
+
+		IRExpression test =
+			new BinaryExpression( l,
+				new LocalExpression( l, forControl ),
+				new LiteralExpression( l, null ),
+				TokenKind.LogicalEqual );
+
+
+		// Update control and test.
+
+		Statement( new Assign( l, new LocalExpression( l, forControl ), new LocalExpression( l, userControl ) ) );
+		Transform( test );
+		Statement( new BeginTest( l, test ) );
+		Statement( new Break( l, "forin" ) );
+		Statement( new EndTest( l ) );
+
+		
+		return forInScope;
 	}
 
 	public void EndForIn( SourceLocation l, Scope end )
 	{
-		throw new NotImplementedException();
+		Statement( new Continue( l, "forin" ) );
+		Statement( new EndScope( l ) );
+		Statement( new EndBlock( l ) );
+		Statement( new EndScope( l ) );
 	}
 
 }

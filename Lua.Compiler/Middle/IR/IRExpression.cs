@@ -152,6 +152,31 @@ sealed class BinaryExpression
 
 
 
+// tonumber( operand )
+
+sealed class ToNumberExpression
+	:	IRExpression
+{
+	public IRExpression	Operand		{ get; private set; }
+
+
+	public ToNumberExpression( SourceLocation l, IRExpression operand )
+		:	base( l )
+	{
+		Operand		= operand;
+	}
+
+
+	public override void Transform( IRCode code )
+	{
+		base.Transform( code );
+		Operand		= Operand.TransformedExpression( code );
+	}
+}
+
+
+
+
 // Values
 
 
@@ -230,14 +255,14 @@ sealed class IndexExpression
 
 // <local>
 
-sealed class LocalVariableExpression
+sealed class LocalExpression
 	:	IRExpression
 {
 
 	public IRLocal		Local		{ get; private set; }
 
 
-	public LocalVariableExpression( SourceLocation l, IRLocal local )
+	public LocalExpression( SourceLocation l, IRLocal local )
 		:	base( l )
 	{
 		Local		= local;
@@ -461,14 +486,14 @@ abstract class CallArgumentsExpression
 			// Ensure each function call has its own statement.
 
 			TemporaryExpression temporary = new TemporaryExpression( Location );
-			code.Add( new Assign( Location, temporary, this ) );
+			code.Statement( new Assign( Location, temporary, this ) );
 			return temporary;
 		}
 		else
 		{
 			// Can return multiple results, 
 
-			code.Add( new AssignValueList( Location, this ) );
+			code.Statement( new AssignValueList( Location, this ) );
 			return this;
 		}
 	}
@@ -511,8 +536,7 @@ sealed class CallExpression
 
 }
 
-
-
+	
 
 
 // <object>.<methodname>( <object>, <arguments> [, valuelist |, varargs ] )

@@ -18,16 +18,34 @@ sealed class IRCode
 	:	Code
 {
 
+	public IList< IRLocal >		Parameters	{ get; private set; }
+	public bool					IsVararg	{ get; private set; }
 	public IList< IRStatement >	Statements	{ get; private set; }
 
 
 	public IRCode()
 	{
-		Statements = new List< IRStatement >();
+		Parameters	= new List< IRLocal >();
+		Statements	= new List< IRStatement >();
+		IsVararg	= false;
 	}
 
 
-	public void Add( IRStatement statement )
+
+	public void DeclareParameter( IRLocal local )
+	{
+		Parameters.Add( local );
+	}
+	
+	
+	public void MarkVararg()
+	{
+		IsVararg	= true;
+	}
+
+
+
+	public void Statement( IRStatement statement )
 	{
 		Statements.Add( statement );
 	}
