@@ -17,26 +17,45 @@ namespace Lua.Compiler.Middle.IR
 sealed class IRCode
 	:	Code
 {
+	public IRCode				Parent		{ get; private set; }
+	public IList< IRCode >		Children	{ get; private set; }
 
+	public IList< IRLocal >		UpVals		{ get; private set; }
 	public IList< IRLocal >		Parameters	{ get; private set; }
 	public bool					IsVararg	{ get; private set; }
-	public IList< IRCode >		Functions	{ get; private set; }
+	public IList< IRLocal >		Locals		{ get; private set; }
+	
 	public IList< IRStatement >	Statements	{ get; private set; }
 
 
-	public IRCode()
+	public IRCode( IRCode parent )
 	{
+		Parent		= parent;
+		Children	= new List< IRCode >();
+
+		UpVals		= new List< IRLocal >();
 		Parameters	= new List< IRLocal >();
 		IsVararg	= false;
-		Functions	= new List< IRCode >();
+		Locals		= new List< IRLocal >();
+	
 		Statements	= new List< IRStatement >();
 	}
 
 
 
-	public void DeclareParameter( IRLocal local )
+	public void MarkUpVal( IRLocal upval )
 	{
-		Parameters.Add( local );
+		IRCode code = this;
+		while ( ! code.Parameters.Contains( upval ) && ! code.Locals.Contains( upval ) )
+		{
+			code.UpVals.Add( upval );
+			code = code.Parent;
+		}
+	}
+
+	public void DeclareParameter( IRLocal parameter )
+	{
+		Parameters.Add( parameter );
 	}
 		
 	public void MarkVararg()
@@ -44,10 +63,16 @@ sealed class IRCode
 		IsVararg	= true;
 	}
 
-
-	public void Function( IRCode function )
+	public void DeclareLocal( IRLocal local )
 	{
-		Functions.Add( function );
+		Locals.Add( local );
+	}
+
+
+
+	public void ChildFunction( IRCode code )
+	{
+		Children.Add( code );
 	}
 
 	public void Statement( IRStatement statement )

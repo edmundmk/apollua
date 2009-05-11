@@ -34,6 +34,7 @@ sealed partial class IRCompiler
 		{
 			IRLocal local = new IRLocal( namelist[ variable ] );
 			scope.Declare( local );
+			code.Peek().DeclareLocal( local );
 			locallist.Add( local );
 		}
 		

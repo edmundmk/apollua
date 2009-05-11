@@ -83,8 +83,10 @@ sealed partial class IRCompiler
 
 	public Expression UpValExpression( SourceLocation l, Scope lookupScope, Local local )
 	{
-		( (IRLocal)local ).MarkUpVal();
-		return new UpValExpression( l, (IRLocal)local );
+		IRLocal upval = (IRLocal)local;
+		upval.MarkUpVal();
+		code.Peek().MarkUpVal( upval );
+		return new UpValExpression( l, upval );
 	}
 
 	public Expression GlobalVariableExpression( SourceLocation l, string name )

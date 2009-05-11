@@ -25,14 +25,19 @@ sealed partial class IRCompiler
 	public Scope Function( SourceLocation l, Scope scope, IList< string > parameternamelist, bool isVararg )
 	{
 		IRScope functionScope	= new FunctionScope( isVararg );
-		IRCode	functionCode	= new IRCode();
 
+		// Link a new IR into.
 
-		// Add to current function.
-
+		IRCode	functionCode;
 		if ( code.Count > 0 )
 		{
-			code.Peek().Function( functionCode );
+			IRCode parent = code.Peek();
+			functionCode = new IRCode( parent );
+			parent.ChildFunction( functionCode );
+		}
+		else
+		{
+			functionCode = new IRCode( null );
 		}
 
 
@@ -50,7 +55,6 @@ sealed partial class IRCompiler
 			functionCode.MarkVararg();
 		}
 		
-
 
 		code.Push( functionCode );
 		return functionScope;
@@ -329,6 +333,7 @@ sealed partial class IRCompiler
 		IRScope forScope = new ForScope( "for", "forbody", forIndex, forLimit, forStep );
 		IRLocal userIndex = new IRLocal( varname );
 		forScope.Declare( userIndex );
+		code.Peek().DeclareLocal( userIndex );
 		IRExpression indexExpression = new LocalExpression( l, forIndex );
 		Transform( indexExpression );
 		Statement( new DeclareAssign( l, userIndex, indexExpression ) );
