@@ -57,6 +57,12 @@ abstract class IRExpression
 	}
 
 
+	public virtual void TransformAssign( IRCode code )
+	{
+		Transform( code );
+	}
+
+
 	public virtual IRExpression TransformExpression( IRCode code )
 	{
 		Transform( code );
@@ -249,6 +255,25 @@ sealed class IndexExpression
 		Key			= Key.TransformExpression( code );
 	}
 
+
+	public override void TransformAssign( IRCode code )
+	{
+		// Store operands in temporaries so that assignments can't trash them.
+
+		IRExpression leftTemp	= new TemporaryExpression( Left.Location );
+		IRExpression keyTemp	= new TemporaryExpression( Key.Location );
+
+		leftTemp.TransformAssign( code );
+		Left.Transform( code );
+		code.Statement( new Assign( Location, leftTemp, Left ) );
+		Left = leftTemp;
+
+		keyTemp.TransformAssign( code );
+		Key.Transform( code );
+		code.Statement( new Assign( Location, keyTemp, Key ) );
+		Key = keyTemp;
+	}
+
 }
 
 
@@ -381,6 +406,25 @@ sealed class ValueListElementExpression
 
 
 
+// { ... }[ <index> ]
+
+
+sealed class VarargElementExpression
+	:	IRExpression
+{
+
+	public int			Index;
+
+	
+	public VarargElementExpression( SourceLocation l, int index )
+		:	base( l )
+	{
+		Index		= index;
+	}
+
+}
+
+
 
 // Multiple Results.
 
@@ -423,8 +467,7 @@ abstract class MultipleResultsExpression
 	}
 
 
-	public static void TransformExpressionList( IRCode code, 
-			ref IList< IRExpression> list, ref ExtraArguments extraArguments )
+	public static void TransformExpressionList( IRCode code, IList< IRExpression> list )
 	{
 		// Transform all expressions in list.
 
@@ -432,24 +475,25 @@ abstract class MultipleResultsExpression
 		{
 			list[ i ] = list[ i ].TransformExpression( code );
 		}
+	}
 
 
+	public static ExtraArguments TransformLastExpression( IRCode code, IList< IRExpression > list )
+	{
 		// If the final expression is a multiple-result expression, use the correct
 		// kind of extra arguments when compiling.
 
 		if ( list.Count > 0 )
 		{
-			MultipleResultsExpression lastExpression = list[ list.Count - 1 ] as MultipleResultsExpression;
+			MultipleResultsExpression lastExpression =
+				list[ list.Count - 1 ] as MultipleResultsExpression;
 			if ( lastExpression != null )
 			{
-				extraArguments = lastExpression.TransformToExtraArguments();
-				if ( extraArguments != ExtraArguments.None )
-				{
-					list.RemoveAt( list.Count - 1 );
-				}
+				return lastExpression.TransformToExtraArguments();
 			}
 		}
 
+		return ExtraArguments.None;
 	}
 
 }
@@ -494,26 +538,31 @@ abstract class CallArgumentsExpression
 	:	MultipleResultsExpression
 {
 	
-	public IList< IRExpression >	Arguments			{ get { return arguments; } }
-	public ExtraArguments			ExtraArguments		{ get { return extraArguments; } }
-
-	IList< IRExpression >			arguments;
-	ExtraArguments					extraArguments;
+	public IList< IRExpression >	Arguments			{ get; private set; }
+	public ExtraArguments			ExtraArguments		{ get; private set; }
 
 
 	public CallArgumentsExpression( SourceLocation l, IList< IRExpression > arguments )
 		:	base( l )
 	{
-		this.arguments		= arguments;
-		this.extraArguments	= ExtraArguments.None;
+		Arguments		= arguments;
+		ExtraArguments	= ExtraArguments.None;
 	}
 
 
-	
 	public override void Transform( IRCode code )
 	{
 		base.Transform( code );
-		TransformExpressionList( code, ref arguments, ref extraArguments );
+
+		// Transform arguments and convert final argument to extra arguments
+		// if required.
+
+		TransformExpressionList( code, Arguments );
+		ExtraArguments = TransformLastExpression( code, Arguments );
+		if ( ExtraArguments != ExtraArguments.None )
+		{
+			Arguments.RemoveAt( Arguments.Count - 1 );
+		}
 	}
 
 

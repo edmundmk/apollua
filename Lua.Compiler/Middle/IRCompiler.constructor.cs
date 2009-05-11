@@ -37,7 +37,7 @@ sealed partial class IRCompiler
 		IRExpression index = new IndexExpression( l, scope.Constructor, (IRExpression)key );
 		IRExpression value = (IRExpression)v;
 		
-		Transform( index );
+		TransformAssign( index );
 		Transform( value );
 		Statement( new Assign( l, index, value ) );
 	}
@@ -50,7 +50,7 @@ sealed partial class IRCompiler
 		IRExpression index = new IndexExpression( l, scope.Constructor, new LiteralExpression( l, (double)key ) );
 		IRExpression value = (IRExpression)v;
 		
-		Transform( index );
+		TransformAssign( index );
 		Transform( value );
 		Statement( new Assign( l, index, value ) );
 	}

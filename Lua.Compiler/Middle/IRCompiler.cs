@@ -175,6 +175,11 @@ sealed partial class IRCompiler
 		expression.Transform( code.Peek() );
 	}
 
+	void TransformAssign( IRExpression expression )
+	{
+		expression.TransformAssign( code.Peek() );
+	}
+
 	
 	
 	IList< IRExpression > CastExpressionList( IList< Expression > list )

@@ -28,6 +28,14 @@ sealed partial class IRCompiler
 		IRCode	functionCode	= new IRCode();
 
 
+		// Add to current function.
+
+		if ( code.Count > 0 )
+		{
+			code.Peek().Function( functionCode );
+		}
+
+
 		// Set up parameters.
 
 		for ( int parameter = 0; parameter < parameternamelist.Count; ++parameter )
@@ -42,6 +50,7 @@ sealed partial class IRCompiler
 			functionCode.MarkVararg();
 		}
 		
+
 
 		code.Push( functionCode );
 		return functionScope;
@@ -267,12 +276,16 @@ sealed partial class IRCompiler
 		IRLocal forLimit = new IRLocal( "(for limit)" );
 		IRLocal forStep  = new IRLocal( "(for step)" );
 
-		Transform( start );
-		Statement( new DeclareAssign( l, forIndex, new ToNumberExpression( l, start ) ) );
-		Transform( limit );
-		Statement( new DeclareAssign( l, forLimit, new ToNumberExpression( l, limit ) ) );
-		Transform( step );
-		Statement( new DeclareAssign( l, forStep, new ToNumberExpression( l, step ) ) );
+		IRExpression startExpression = new ToNumberExpression( l, start );
+		IRExpression limitExpression = new ToNumberExpression( l, limit );
+		IRExpression stepExpression  = new ToNumberExpression( l, step );
+
+		Transform( startExpression );
+		Statement( new DeclareAssign( l, forIndex, startExpression ) );
+		Transform( limitExpression );
+		Statement( new DeclareAssign( l, forLimit, limitExpression ) );
+		Transform( stepExpression );
+		Statement( new DeclareAssign( l, forStep, stepExpression ) );
 
 
 		// Test expression.
@@ -316,7 +329,9 @@ sealed partial class IRCompiler
 		IRScope forScope = new ForScope( "for", "forbody", forIndex, forLimit, forStep );
 		IRLocal userIndex = new IRLocal( varname );
 		forScope.Declare( userIndex );
-		Statement( new DeclareAssign( l, userIndex, new LocalExpression( l, forIndex ) ) );
+		IRExpression indexExpression = new LocalExpression( l, forIndex );
+		Transform( indexExpression );
+		Statement( new DeclareAssign( l, userIndex, indexExpression ) );
 		
 
 		return forScope;
@@ -331,14 +346,16 @@ sealed partial class IRCompiler
 
 		// Increment index.
 
-		IRExpression increment =
+		IRExpression indexVariable = new LocalExpression( l, forScope.ForIndex );
+		IRExpression incrementExpression  =
 			new BinaryExpression( l,
 				new LocalExpression( l, forScope.ForIndex ),
 				new LocalExpression( l, forScope.ForStep ),
 				TokenKind.PlusSign );
 
-		Transform( increment );
-		Statement( new Assign( l, new LocalExpression( l, forScope.ForIndex ), increment ) );
+		TransformAssign( indexVariable );
+		Transform( incrementExpression );
+		Statement( new Assign( l, indexVariable, incrementExpression ) );
 
 
 
@@ -432,7 +449,12 @@ sealed partial class IRCompiler
 
 		// Update control and test.
 
-		Statement( new Assign( l, new LocalExpression( l, forControl ), new LocalExpression( l, userControl ) ) );
+		IRExpression controlVariable	= new LocalExpression( l, forControl );
+		IRExpression updateExpression	= new LocalExpression( l, userControl );
+
+		TransformAssign( controlVariable );
+		Transform( updateExpression );
+		Statement( new Assign( l, controlVariable, updateExpression ) );
 		Transform( test );
 		Statement( new BeginTest( l, test ) );
 		Statement( new Break( l, "forin" ) );

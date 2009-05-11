@@ -20,14 +20,16 @@ sealed class IRCode
 
 	public IList< IRLocal >		Parameters	{ get; private set; }
 	public bool					IsVararg	{ get; private set; }
+	public IList< IRCode >		Functions	{ get; private set; }
 	public IList< IRStatement >	Statements	{ get; private set; }
 
 
 	public IRCode()
 	{
 		Parameters	= new List< IRLocal >();
-		Statements	= new List< IRStatement >();
 		IsVararg	= false;
+		Functions	= new List< IRCode >();
+		Statements	= new List< IRStatement >();
 	}
 
 
@@ -36,14 +38,17 @@ sealed class IRCode
 	{
 		Parameters.Add( local );
 	}
-	
-	
+		
 	public void MarkVararg()
 	{
 		IsVararg	= true;
 	}
 
 
+	public void Function( IRCode function )
+	{
+		Functions.Add( function );
+	}
 
 	public void Statement( IRStatement statement )
 	{
