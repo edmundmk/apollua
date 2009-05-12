@@ -286,12 +286,29 @@ sealed partial class IRCompiler
 	{
 		IList< IRExpression> expressionlist = CastExpressionList( elist );
 		
+		if ( expressionlist.Count == 0 )
+		{
+			// Return null.
+
+			Statement( new Return( l, new LiteralExpression( l, null ) ) );
+		}
 		if ( expressionlist.Count == 1 )
 		{
-			// Return a single result or tail call.
+			IRExpression expression = expressionlist[ 0 ];
 
-			Transform( expressionlist[ 0 ] );
-			Statement( new Return( l, expressionlist[ 0 ] ) );
+			if ( expression.IsSingleValue )
+			{
+				// Return a single result.
+
+				expression = expression.TransformExpression( code.Peek() );
+				Statement( new Return( l, expression ) );
+			}
+			else
+			{
+				// Return multiple values (possibly a tail call)
+
+				Statement( new ReturnMultipleResults( l, expressionlist, ExtraArguments.None ) );
+			}
 		}
 		else
 		{
