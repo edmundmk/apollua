@@ -7,7 +7,7 @@
 
 using System;
 using Lua.Compiler.Front.AST;
-using Lua.Compiler.Middle.IR.Statement.Structural;
+using Lua.Compiler.Middle.IR.Statement;
 
 
 namespace Lua.Compiler.Middle.IR.Scope

@@ -1,4 +1,4 @@
-// VarargElementExpression.cs
+// Return.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -7,29 +7,26 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using Lua.Compiler.Front.Parser;
 using Lua.Compiler.Front.AST;
 
 
-namespace Lua.Compiler.Middle.IR.Expression.Temporary
+namespace Lua.Compiler.Middle.IR.Statement
 {
 
 
-// { ... }[ <index> ]
+// return <expression>
 
-
-sealed class VarargElementExpression
-	:	IRExpression
+sealed class Return
+	:	IRStatement
 {
 
-	public int			Index;
+	public IRExpression				Result			{ get; private set; }
 
-	
-	public VarargElementExpression( SourceLocation l, int index )
+
+	public Return( SourceLocation l, IRExpression result )
 		:	base( l )
 	{
-		Index		= index;
+		Result			= result;
 	}
 
 }

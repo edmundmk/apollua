@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using Lua.Compiler.Front.AST;
 
 
-namespace Lua.Compiler.Middle.IR.Statement.Instruction
+namespace Lua.Compiler.Middle.IR.Statement
 {
 
 	

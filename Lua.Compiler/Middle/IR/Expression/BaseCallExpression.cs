@@ -10,8 +10,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Lua.Compiler.Front.Parser;
 using Lua.Compiler.Front.AST;
-using Lua.Compiler.Middle.IR.Expression.Temporary;
-using Lua.Compiler.Middle.IR.Statement.Instruction;
+using Lua.Compiler.Middle.IR.Statement;
 
 
 namespace Lua.Compiler.Middle.IR.Expression

@@ -7,7 +7,7 @@
 
 using System;
 using Lua.Compiler.Front.AST;
-using Lua.Compiler.Middle.IR.Expression.Temporary;
+using Lua.Compiler.Middle.IR.Expression;
 
 
 namespace Lua.Compiler.Middle.IR.Scope

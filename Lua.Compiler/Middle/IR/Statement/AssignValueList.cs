@@ -1,4 +1,4 @@
-// GlobalExpression.cs
+// AssignValueList.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -7,33 +7,29 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using Lua.Compiler.Front.Parser;
 using Lua.Compiler.Front.AST;
 
 
-namespace Lua.Compiler.Middle.IR.Expression.Assignable
+namespace Lua.Compiler.Middle.IR.Statement
 {
 
 
+// valuelist = <expression>
 
-// <name>
-
-sealed class GlobalExpression
-	:	IRExpression
+sealed class AssignValueList
+	:	IRStatement
 {
 
-	public string		Name;
+	public IRExpression				Expression		{ get; private set; }
 
 
-	public GlobalExpression( SourceLocation l, string name )
+	public AssignValueList( SourceLocation l, IRExpression expression )
 		:	base( l )
 	{
-		Name		= name;
+		Expression		= expression;
 	}
 
 }
-
 
 
 

@@ -1,4 +1,4 @@
-// Scope.cs
+// BeginEndTest.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -10,42 +10,44 @@ using System.Collections.Generic;
 using Lua.Compiler.Front.AST;
 
 
-namespace Lua.Compiler.Middle.IR.Statement.Structural
+namespace Lua.Compiler.Middle.IR.Statement
 {
 
 
 
 /*
-	scope					// local variable declaration scope.
+	test <expression>		// if expression is false, branch to end.
 	{
 	}
 */
 
 
-sealed class BeginScope
+sealed class BeginTest
 	:	IRStatement
 {
 
-	public BeginScope( SourceLocation l )
+	public IRExpression	Expression { get; private set; }
+
+
+	public BeginTest( SourceLocation l, IRExpression expression )
 		:	base( l )
 	{
+		Expression	= expression;
 	}
 
 }
 
 
-sealed class EndScope
+sealed class EndTest
 	:	IRStatement
 {
-
-	public EndScope( SourceLocation l )
+	
+	public EndTest( SourceLocation l )
 		:	base( l )
 	{
 	}
 
 }
-
-
 
 
 

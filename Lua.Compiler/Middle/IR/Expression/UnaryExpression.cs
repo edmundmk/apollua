@@ -12,7 +12,7 @@ using Lua.Compiler.Front.Parser;
 using Lua.Compiler.Front.AST;
 
 
-namespace Lua.Compiler.Middle.IR.Expression.Operation
+namespace Lua.Compiler.Middle.IR.Expression
 {
 
 

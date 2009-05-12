@@ -1,4 +1,4 @@
-// FunctionLiteralExpression.cs
+// GlobalExpression.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -12,29 +12,28 @@ using Lua.Compiler.Front.Parser;
 using Lua.Compiler.Front.AST;
 
 
-namespace Lua.Compiler.Middle.IR.Expression.Literal
+namespace Lua.Compiler.Middle.IR.Expression
 {
 
 
 
-// function() <ircode> end
+// <name>
 
-sealed class FunctionLiteralExpression
+sealed class GlobalExpression
 	:	IRExpression
 {
 
-	public IRCode		IRCode		{ get; private set; }
+	public string		Name;
 
 
-	public FunctionLiteralExpression( SourceLocation l, IRCode code )
+	public GlobalExpression( SourceLocation l, string name )
 		:	base( l )
 	{
-		IRCode	= code;
+		Name		= name;
 	}
 
 }
 
-	
 
 
 

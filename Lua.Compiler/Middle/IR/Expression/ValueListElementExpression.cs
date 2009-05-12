@@ -1,4 +1,4 @@
-// UpValExpression.cs
+// ValueListElementExpression.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -12,23 +12,23 @@ using Lua.Compiler.Front.Parser;
 using Lua.Compiler.Front.AST;
 
 
-namespace Lua.Compiler.Middle.IR.Expression.Assignable
+namespace Lua.Compiler.Middle.IR.Expression
 {
 
 
-// <local>
+// valuelist[ <index> ]
 
-sealed class UpValExpression
+sealed class ValueListElementExpression
 	:	IRExpression
 {
 
-	public IRLocal		Local;
+	public int			Index;
 
 
-	public UpValExpression( SourceLocation l, IRLocal local )
+	public ValueListElementExpression( SourceLocation l, int index )
 		:	base( l )
 	{
-		Local		= local;
+		Index		= index;
 	}
 
 }

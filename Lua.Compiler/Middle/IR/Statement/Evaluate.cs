@@ -1,4 +1,4 @@
-// DeclareAssign.cs
+// Evaluate.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -10,30 +10,26 @@ using System.Collections.Generic;
 using Lua.Compiler.Front.AST;
 
 
-namespace Lua.Compiler.Middle.IR.Statement.Instruction
+namespace Lua.Compiler.Middle.IR.Statement
 {
 
+	
+// <expression>
 
-// declare <local> = <expression>
-
-sealed class DeclareAssign
+sealed class Evaluate
 	:	IRStatement
 {
 
-	public IRLocal					Local			{ get; private set; }
 	public IRExpression				Expression		{ get; private set; }
 
 
-	public DeclareAssign( SourceLocation l, IRLocal local, IRExpression expression )
+	public Evaluate( SourceLocation l, IRExpression expression )
 		:	base( l )
 	{
-		Local			= local;
 		Expression		= expression;
 	}
 
 }
-
-
 
 
 }

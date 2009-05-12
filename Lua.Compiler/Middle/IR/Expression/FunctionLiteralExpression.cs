@@ -1,4 +1,4 @@
-// VarargExpression.cs
+// FunctionLiteralExpression.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -12,35 +12,29 @@ using Lua.Compiler.Front.Parser;
 using Lua.Compiler.Front.AST;
 
 
-namespace Lua.Compiler.Middle.IR.Expression.MultipleResults
+namespace Lua.Compiler.Middle.IR.Expression
 {
 
 
 
-// ...
+// function() <ircode> end
 
-sealed class VarargExpression
-	:	MultipleResultsExpression
+sealed class FunctionLiteralExpression
+	:	IRExpression
 {
 
-	public VarargExpression( SourceLocation l )
+	public IRCode		IRCode		{ get; private set; }
+
+
+	public FunctionLiteralExpression( SourceLocation l, IRCode code )
 		:	base( l )
 	{
+		IRCode	= code;
 	}
-
-
-	public override ExtraArguments TransformToExtraArguments()
-	{
-		if ( ! IsSingleValue )
-		{
-			return ExtraArguments.UseVararg;
-		}
-		return base.TransformToExtraArguments();
-	}
-
 
 }
 
+	
 
 
 

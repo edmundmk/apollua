@@ -1,4 +1,4 @@
-// AssignValueList.cs
+// UpValExpression.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -7,30 +7,31 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using Lua.Compiler.Front.Parser;
 using Lua.Compiler.Front.AST;
 
 
-namespace Lua.Compiler.Middle.IR.Statement.Instruction
+namespace Lua.Compiler.Middle.IR.Expression
 {
 
 
-// valuelist = <expression>
+// <local>
 
-sealed class AssignValueList
-	:	IRStatement
+sealed class UpValExpression
+	:	IRExpression
 {
 
-	public IRExpression				Expression		{ get; private set; }
+	public IRLocal		Local;
 
 
-	public AssignValueList( SourceLocation l, IRExpression expression )
+	public UpValExpression( SourceLocation l, IRLocal local )
 		:	base( l )
 	{
-		Expression		= expression;
+		Local		= local;
 	}
 
 }
-
 
 
 }

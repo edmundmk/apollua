@@ -1,4 +1,4 @@
-// TemporaryExpression.cs
+// VarargElementExpression.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -12,25 +12,27 @@ using Lua.Compiler.Front.Parser;
 using Lua.Compiler.Front.AST;
 
 
-namespace Lua.Compiler.Middle.IR.Expression.Temporary
+namespace Lua.Compiler.Middle.IR.Expression
 {
 
 
+// { ... }[ <index> ]
 
-// Temporaries are assigned once and used once.
 
-sealed class TemporaryExpression
+sealed class VarargElementExpression
 	:	IRExpression
 {
 
-	public TemporaryExpression( SourceLocation l )
+	public int			Index;
+
+	
+	public VarargElementExpression( SourceLocation l, int index )
 		:	base( l )
 	{
+		Index		= index;
 	}
 
 }
-
-
 
 
 

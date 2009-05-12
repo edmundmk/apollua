@@ -1,4 +1,4 @@
-// Test.cs
+// BeginEndConstructor.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -8,49 +8,45 @@
 using System;
 using System.Collections.Generic;
 using Lua.Compiler.Front.AST;
+using Lua.Compiler.Middle.IR.Expression;
 
 
-namespace Lua.Compiler.Middle.IR.Statement.Structural
+namespace Lua.Compiler.Middle.IR.Statement
 {
 
 
-
-/*
-	test <expression>		// if expression is false, branch to end.
+/*	
+	constructor <constructor>
 	{
 	}
 */
 
-
-sealed class BeginTest
+sealed class BeginConstructor
 	:	IRStatement
 {
 
-	public IRExpression	Expression { get; private set; }
+	public ConstructorExpression	Constructor		{ get; private set; }
 
 
-	public BeginTest( SourceLocation l, IRExpression expression )
+	public BeginConstructor( SourceLocation l, ConstructorExpression constructor )
 		:	base( l )
 	{
-		Expression	= expression;
+		Constructor = constructor;
 	}
-
-}
-
-
-sealed class EndTest
-	:	IRStatement
-{
-	
-	public EndTest( SourceLocation l )
-		:	base( l )
-	{
-	}
-
 }
 
 
 
+sealed class EndConstructor
+	:	IRStatement
+{
+
+	public EndConstructor( SourceLocation l )
+		:	base( l )
+	{
+	}
+
+}
 
 
 }

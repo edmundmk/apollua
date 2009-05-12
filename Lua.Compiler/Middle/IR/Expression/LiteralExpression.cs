@@ -1,4 +1,4 @@
-// ValueListElementExpression.cs
+// LiteralExpression.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -12,26 +12,27 @@ using Lua.Compiler.Front.Parser;
 using Lua.Compiler.Front.AST;
 
 
-namespace Lua.Compiler.Middle.IR.Expression.Temporary
+namespace Lua.Compiler.Middle.IR.Expression
 {
 
 
-// valuelist[ <index> ]
+// <value>
 
-sealed class ValueListElementExpression
+sealed class LiteralExpression
 	:	IRExpression
 {
 
-	public int			Index;
+	public object		Value		{ get; private set; }
 
 
-	public ValueListElementExpression( SourceLocation l, int index )
+	public LiteralExpression( SourceLocation l, object value )
 		:	base( l )
 	{
-		Index		= index;
+		Value		= value;
 	}
 
 }
+
 
 
 }

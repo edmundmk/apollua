@@ -14,11 +14,7 @@ using Lua.Compiler.Front.Parser;
 using Lua.Compiler.Middle.IR;
 using Lua.Compiler.Middle.IR.Scope;
 using Lua.Compiler.Middle.IR.Expression;
-using Lua.Compiler.Middle.IR.Expression.Literal;
-using Lua.Compiler.Middle.IR.Expression.Assignable;
-using Lua.Compiler.Middle.IR.Expression.Temporary;
-using Lua.Compiler.Middle.IR.Statement.Structural;
-using Lua.Compiler.Middle.IR.Statement.Instruction;
+using Lua.Compiler.Middle.IR.Statement;
 
 
 namespace Lua.Compiler.Middle
