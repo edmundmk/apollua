@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Lua.Compiler.Front.AST;
 
 
@@ -43,6 +44,9 @@ sealed class IRCode
 
 
 
+
+	// Locals.
+
 	public void MarkUpVal( IRLocal upval )
 	{
 		IRCode code = this;
@@ -70,10 +74,17 @@ sealed class IRCode
 
 
 
+
+	// Functions.
+
 	public void ChildFunction( IRCode code )
 	{
 		Children.Add( code );
 	}
+
+
+
+	// Statements.
 
 	public void Statement( IRStatement statement )
 	{
@@ -81,6 +92,13 @@ sealed class IRCode
 	}
 
 	
+
+	// Disassembly.
+
+	public void Disassemble( TextWriter w )
+	{
+	}
+
 
 }
 

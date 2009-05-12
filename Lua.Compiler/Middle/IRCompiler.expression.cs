@@ -27,14 +27,25 @@ sealed partial class IRCompiler
 	public Expression UnaryExpression( SourceLocation l, Expression operand, TokenKind op )
 	{
 		( (IRExpression)operand ).RestrictToSingleValue();
-		return new UnaryExpression( l, op, (IRExpression)operand );
+
+		switch ( op )
+		{
+		case TokenKind.Not:	return new NotExpression( l, (IRExpression)operand );
+		default:			return new UnaryExpression( l, (IRExpression)operand, op );
+		}
 	}
 
 	public Expression BinaryExpression( SourceLocation l, Expression left, Expression right, TokenKind op )
 	{
 		( (IRExpression)left ).RestrictToSingleValue();
 		( (IRExpression)right ).RestrictToSingleValue();
-		return new BinaryExpression( l, (IRExpression)left, (IRExpression)right, op );
+
+		switch ( op )
+		{
+		case TokenKind.And:	return new AndExpression( l, (IRExpression)left, (IRExpression)right );
+		case TokenKind.Or:	return new OrExpression( l, (IRExpression)left, (IRExpression)right );
+		default:			return new BinaryExpression( l, (IRExpression)left, (IRExpression)right, op );
+		}
 	}
 
 	public Expression FunctionExpression( SourceLocation l, Code objectCode )

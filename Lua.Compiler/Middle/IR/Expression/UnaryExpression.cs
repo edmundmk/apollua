@@ -33,7 +33,7 @@ sealed class UnaryExpression
 	public IRExpression	Operand		{ get; private set; }
 
 
-	public UnaryExpression( SourceLocation l, TokenKind op, IRExpression operand )
+	public UnaryExpression( SourceLocation l, IRExpression operand, TokenKind op )
 		:	base( l )
 	{
 		Operator	= operators[ op ];

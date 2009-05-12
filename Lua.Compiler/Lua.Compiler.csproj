@@ -45,7 +45,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Compiler.cs" />
     <Compile Include="Front\AST\Code.cs" />
     <Compile Include="Front\AST\Expression.cs" />
     <Compile Include="Front\AST\Local.cs" />
@@ -61,6 +60,7 @@
     <Compile Include="Front\Parser\ParseStack.cs" />
     <Compile Include="Front\Parser\Token.cs" />
     <Compile Include="Front\Parser\TokenKind.cs" />
+    <Compile Include="LuaCompiler.cs" />
     <Compile Include="Middle\CompilerScope\CompilerScope.cs" />
     <Compile Include="Middle\CompilerScope\ConstructorScope.cs" />
     <Compile Include="Middle\CompilerScope\DoScope.cs" />
@@ -83,7 +83,10 @@
     <Compile Include="Middle\IR\Expression\IndexExpression.cs" />
     <Compile Include="Middle\IR\Expression\LiteralExpression.cs" />
     <Compile Include="Middle\IR\Expression\LocalExpression.cs" />
+    <Compile Include="Middle\IR\Expression\AndExpression.cs" />
     <Compile Include="Middle\IR\Expression\MultipleResultsExpression.cs" />
+    <Compile Include="Middle\IR\Expression\NotExpression.cs" />
+    <Compile Include="Middle\IR\Expression\OrExpression.cs" />
     <Compile Include="Middle\IR\Expression\SelfCallExpression.cs" />
     <Compile Include="Middle\IR\Expression\TemporaryExpression.cs" />
     <Compile Include="Middle\IR\Expression\ToNumberExpression.cs" />

@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using Lua;
+using Lua.Compiler;
 
 
 namespace Test
@@ -15,7 +16,14 @@ namespace Test
 static class EntryPoint
 {
 
-	static void Main( string[] args )
+	static int Main( string[] args )
+	{
+		LuaCompiler.Compile( args[ 0 ] );
+		return 0;
+	}
+
+
+	static void TestTable()
 	{
 		// Excercise the table.
 		
