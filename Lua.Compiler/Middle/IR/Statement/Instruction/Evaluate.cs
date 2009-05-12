@@ -1,4 +1,4 @@
-// Return.cs
+// Evaluate.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -10,27 +10,26 @@ using System.Collections.Generic;
 using Lua.Compiler.Front.AST;
 
 
-namespace Lua.Compiler.Middle.IR
+namespace Lua.Compiler.Middle.IR.Statement.Instruction
 {
 
+	
+// <expression>
 
-// return <expression>
-
-sealed class Return
+sealed class Evaluate
 	:	IRStatement
 {
 
-	public IRExpression				Result			{ get; private set; }
+	public IRExpression				Expression		{ get; private set; }
 
 
-	public Return( SourceLocation l, IRExpression result )
+	public Evaluate( SourceLocation l, IRExpression expression )
 		:	base( l )
 	{
-		Result			= result;
+		Expression		= expression;
 	}
 
 }
-
 
 
 }

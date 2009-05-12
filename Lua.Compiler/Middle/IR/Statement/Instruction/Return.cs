@@ -1,4 +1,4 @@
-// Declare.cs
+// Return.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -10,29 +10,28 @@ using System.Collections.Generic;
 using Lua.Compiler.Front.AST;
 
 
-namespace Lua.Compiler.Middle.IR
+namespace Lua.Compiler.Middle.IR.Statement.Instruction
 {
 
-	
 
-// declare <local>
+// return <expression>
 
-sealed class Declare
+sealed class Return
 	:	IRStatement
 {
 
-	public IRLocal					Local			{ get; private set; }
+	public IRExpression				Result			{ get; private set; }
 
 
-	public Declare( SourceLocation l, IRLocal local )
+	public Return( SourceLocation l, IRExpression result )
 		:	base( l )
 	{
-		Local			= local;
+		Result			= result;
 	}
 
 }
 
-	
+
 
 }
 

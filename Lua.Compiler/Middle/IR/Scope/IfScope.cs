@@ -9,7 +9,7 @@ using System;
 using Lua.Compiler.Front.AST;
 
 
-namespace Lua.Compiler.Middle.IR
+namespace Lua.Compiler.Middle.IR.Scope
 {
 
 

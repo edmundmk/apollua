@@ -8,9 +8,10 @@
 using System;
 using System.Collections.Generic;
 using Lua.Compiler.Front.AST;
+using Lua.Compiler.Middle.IR.Expression.Temporary;
 
 
-namespace Lua.Compiler.Middle.IR
+namespace Lua.Compiler.Middle.IR.Statement.Structural
 {
 
 

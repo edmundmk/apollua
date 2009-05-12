@@ -12,6 +12,13 @@ using Lua.Compiler.Front;
 using Lua.Compiler.Front.AST;
 using Lua.Compiler.Front.Parser;
 using Lua.Compiler.Middle.IR;
+using Lua.Compiler.Middle.IR.Scope;
+using Lua.Compiler.Middle.IR.Expression;
+using Lua.Compiler.Middle.IR.Expression.Literal;
+using Lua.Compiler.Middle.IR.Expression.Assignable;
+using Lua.Compiler.Middle.IR.Expression.Temporary;
+using Lua.Compiler.Middle.IR.Statement.Structural;
+using Lua.Compiler.Middle.IR.Statement.Instruction;
 
 
 namespace Lua.Compiler.Middle

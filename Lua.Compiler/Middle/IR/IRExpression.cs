@@ -27,7 +27,7 @@ namespace Lua.Compiler.Middle.IR
 
 
 abstract class IRExpression
-	:	Expression
+	:	Lua.Compiler.Front.AST.Expression
 {
 
 	public SourceLocation	Location		{ get; private set; }

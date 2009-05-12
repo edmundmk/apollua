@@ -1,4 +1,4 @@
-// SetList.cs
+// ReturnMultipleResults.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -10,31 +10,31 @@ using System.Collections.Generic;
 using Lua.Compiler.Front.AST;
 
 
-namespace Lua.Compiler.Middle.IR
+namespace Lua.Compiler.Middle.IR.Statement.Instruction
 {
 
 
 
-// <table>[ <startindex> ... ] = valuelist | varargs
 
-sealed class SetList
+// return <results> [, valuelist | varargs ]
+
+sealed class ReturnMultipleResults
 	:	IRStatement
 {
 
-	public IRExpression				Table			{ get; private set; }
-	public int						Index			{ get; private set; }
+	public IList< IRExpression >	Results			{ get; private set; }
 	public ExtraArguments			ExtraArguments	{ get; private set; }
 
 
-	public SetList( SourceLocation l, IRExpression table, int index, ExtraArguments extraArguments )
+	public ReturnMultipleResults( SourceLocation l, IList< IRExpression > results, ExtraArguments extraArguments )
 		:	base( l )
 	{
-		Table			= table;
-		Index			= index;
+		Results			= results;
 		ExtraArguments	= extraArguments;
 	}
 
 }
+
 
 
 

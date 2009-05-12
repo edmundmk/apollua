@@ -17,7 +17,7 @@ namespace Lua.Compiler.Middle.IR
 */
 
 abstract class IRScope
-	:	Scope
+	:	Lua.Compiler.Front.AST.Scope
 {
 	public virtual bool IsIfScope { get { return false; } }
 
