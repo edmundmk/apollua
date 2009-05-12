@@ -38,7 +38,7 @@ sealed partial class IRCompiler
 
 	public Expression FunctionExpression( SourceLocation l, Code objectCode )
 	{
-		return new FunctionExpression( l, (IRCode)objectCode );
+		return new FunctionLiteralExpression( l, (IRCode)objectCode );
 	}
 
 	public Expression LiteralExpression( SourceLocation l, object value )
@@ -48,7 +48,7 @@ sealed partial class IRCompiler
 
 	public Expression VarargsExpression( SourceLocation l, Scope functionScope )
 	{
-		return new VarargsExpression( l );
+		return new VarargExpression( l );
 	}
 
 	public Expression LookupExpression( SourceLocation l, Expression left, Expression key )
@@ -91,7 +91,7 @@ sealed partial class IRCompiler
 
 	public Expression GlobalVariableExpression( SourceLocation l, string name )
 	{
-		return new GlobalVariableExpression( l, name );
+		return new GlobalExpression( l, name );
 	}
 
 

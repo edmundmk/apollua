@@ -189,14 +189,14 @@ sealed class ToNumberExpression
 
 // function() <ircode> end
 
-sealed class FunctionExpression
+sealed class FunctionLiteralExpression
 	:	IRExpression
 {
 
 	public IRCode		IRCode		{ get; private set; }
 
 
-	public FunctionExpression( SourceLocation l, IRCode code )
+	public FunctionLiteralExpression( SourceLocation l, IRCode code )
 		:	base( l )
 	{
 		IRCode	= code;
@@ -236,14 +236,14 @@ sealed class IndexExpression
 	:	IRExpression
 {
 
-	public IRExpression	Left		{ get; private set; }
+	public IRExpression	Table		{ get; private set; }
 	public IRExpression Key			{ get; private set; }
 
 
-	public IndexExpression( SourceLocation l, IRExpression left, IRExpression key )
+	public IndexExpression( SourceLocation l, IRExpression table, IRExpression key )
 		:	base( l )
 	{
-		Left		= left;
+		Table		= table;
 		Key			= key;
 	}
 
@@ -251,7 +251,7 @@ sealed class IndexExpression
 	public override void Transform( IRCode code )
 	{
 		base.Transform( code );
-		Left		= Left.TransformExpression( code );
+		Table		= Table.TransformExpression( code );
 		Key			= Key.TransformExpression( code );
 	}
 
@@ -260,13 +260,13 @@ sealed class IndexExpression
 	{
 		// Store operands in temporaries so that assignments can't trash them.
 
-		IRExpression leftTemp	= new TemporaryExpression( Left.Location );
+		IRExpression leftTemp	= new TemporaryExpression( Table.Location );
 		IRExpression keyTemp	= new TemporaryExpression( Key.Location );
 
 		leftTemp.TransformAssign( code );
-		Left.Transform( code );
-		code.Statement( new Assign( Location, leftTemp, Left ) );
-		Left = leftTemp;
+		Table.Transform( code );
+		code.Statement( new Assign( Location, leftTemp, Table ) );
+		Table = leftTemp;
 
 		keyTemp.TransformAssign( code );
 		Key.Transform( code );
@@ -320,14 +320,14 @@ sealed class UpValExpression
 
 // <name>
 
-sealed class GlobalVariableExpression
+sealed class GlobalExpression
 	:	IRExpression
 {
 
 	public string		Name;
 
 
-	public GlobalVariableExpression( SourceLocation l, string name )
+	public GlobalExpression( SourceLocation l, string name )
 		:	base( l )
 	{
 		Name		= name;
@@ -504,11 +504,11 @@ abstract class MultipleResultsExpression
 
 // ...
 
-sealed class VarargsExpression
+sealed class VarargExpression
 	:	MultipleResultsExpression
 {
 
-	public VarargsExpression( SourceLocation l )
+	public VarargExpression( SourceLocation l )
 		:	base( l )
 	{
 	}
@@ -534,7 +534,7 @@ sealed class VarargsExpression
 // Function calls.
 
 
-abstract class CallArgumentsExpression
+abstract class BaseCallExpression
 	:	MultipleResultsExpression
 {
 	
@@ -542,7 +542,7 @@ abstract class CallArgumentsExpression
 	public ExtraArguments			ExtraArguments		{ get; private set; }
 
 
-	public CallArgumentsExpression( SourceLocation l, IList< IRExpression > arguments )
+	public BaseCallExpression( SourceLocation l, IList< IRExpression > arguments )
 		:	base( l )
 	{
 		Arguments		= arguments;
@@ -604,7 +604,7 @@ abstract class CallArgumentsExpression
 // <function>( <arguments> [, valuelist |, varargs ] )
 
 sealed class CallExpression
-	:	CallArgumentsExpression
+	:	BaseCallExpression
 {
 
 	public IRExpression	Function	{ get; private set; }
@@ -631,7 +631,7 @@ sealed class CallExpression
 // <object>.<methodname>( <object>, <arguments> [, valuelist |, varargs ] )
 
 sealed class SelfCallExpression
-	:	CallArgumentsExpression
+	:	BaseCallExpression
 {
 
 	public IRExpression				Object				{ get; private set; }
