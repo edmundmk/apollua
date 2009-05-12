@@ -11,8 +11,8 @@ using System.Diagnostics;
 using Lua.Compiler.Front;
 using Lua.Compiler.Front.AST;
 using Lua.Compiler.Front.Parser;
+using Lua.Compiler.Middle.CompilerScope;
 using Lua.Compiler.Middle.IR;
-using Lua.Compiler.Middle.IR.Scope;
 using Lua.Compiler.Middle.IR.Expression;
 using Lua.Compiler.Middle.IR.Statement;
 
@@ -27,7 +27,7 @@ sealed partial class IRCompiler
 
 	public Scope Function( SourceLocation l, Scope scope, IList< string > parameternamelist, bool isVararg )
 	{
-		IRScope functionScope	= new FunctionScope( isVararg );
+		IRCompilerScope functionScope	= new FunctionScope( isVararg );
 
 		// Link a new IR into.
 
@@ -153,7 +153,7 @@ sealed partial class IRCompiler
 
 	public void EndIf( SourceLocation l, Scope end )
 	{
-		IRScope clauseScope = (IRScope)end;
+		IRCompilerScope clauseScope = (IRCompilerScope)end;
 
 		if ( clauseScope.IsIfScope )
 		{
@@ -333,7 +333,7 @@ sealed partial class IRCompiler
 
 		// Declare index variable.
 
-		IRScope forScope = new ForScope( "for", "forbody", forIndex, forLimit, forStep );
+		IRCompilerScope forScope = new ForScope( "for", "forbody", forIndex, forLimit, forStep );
 		IRLocal userIndex = new IRLocal( varname );
 		forScope.Declare( userIndex );
 		code.Peek().DeclareLocal( userIndex );
@@ -406,7 +406,7 @@ sealed partial class IRCompiler
 
 		// Declare internal variables.
 
-		IRScope internalScope = new DoScope();
+		IRCompilerScope internalScope = new DoScope();
 		Local( l, internalScope, new string[]{ "(for generator)", "(for state)", "(for control)" }, expressionlist );
 		
 		Debug.Assert( internalScope.Locals.Count == 3 );
@@ -437,7 +437,7 @@ sealed partial class IRCompiler
 
 		// Declare user variables.
 
-		IRScope forInScope = new LoopScope( "forin" );
+		IRCompilerScope forInScope = new LoopScope( "forin" );
 		Local( l, forInScope, variablenamelist, new IRExpression[]{ generator } );
 
 		Debug.Assert( forInScope.Locals.Count == variablenamelist.Count );

@@ -88,15 +88,7 @@
     <Compile Include="Middle\IR\IRCode.cs" />
     <Compile Include="Middle\IR\IRExpression.cs" />
     <Compile Include="Middle\IR\IRLocal.cs" />
-    <Compile Include="Middle\IR\IRScope.cs" />
     <Compile Include="Middle\IR\IRStatement.cs" />
-    <Compile Include="Middle\IR\Scope\ConstructorScope.cs" />
-    <Compile Include="Middle\IR\Scope\DoScope.cs" />
-    <Compile Include="Middle\IR\Scope\ForScope.cs" />
-    <Compile Include="Middle\IR\Scope\FunctionScope.cs" />
-    <Compile Include="Middle\IR\Scope\IfScope.cs" />
-    <Compile Include="Middle\IR\Scope\LoopScope.cs" />
-    <Compile Include="Middle\IR\Scope\RepeatScope.cs" />
     <Compile Include="Middle\IR\Statement\Assign.cs" />
     <Compile Include="Middle\IR\Statement\AssignValueList.cs" />
     <Compile Include="Middle\IR\Statement\BeginEndBlock.cs" />
@@ -109,6 +101,14 @@
     <Compile Include="Middle\IR\Statement\Return.cs" />
     <Compile Include="Middle\IR\Statement\ReturnMultipleResults.cs" />
     <Compile Include="Middle\IR\Statement\SetList.cs" />
+    <Compile Include="Middle\Scope\CompilerScope.cs" />
+    <Compile Include="Middle\Scope\ConstructorScope.cs" />
+    <Compile Include="Middle\Scope\DoScope.cs" />
+    <Compile Include="Middle\Scope\ForScope.cs" />
+    <Compile Include="Middle\Scope\FunctionScope.cs" />
+    <Compile Include="Middle\Scope\IfScope.cs" />
+    <Compile Include="Middle\Scope\LoopScope.cs" />
+    <Compile Include="Middle\Scope\RepeatScope.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -7,16 +7,17 @@
 
 using System;
 using Lua.Compiler.Front.AST;
+using Lua.Compiler.Middle.IR;
 using Lua.Compiler.Middle.IR.Statement;
 
 
-namespace Lua.Compiler.Middle.IR.Scope
+namespace Lua.Compiler.Middle.CompilerScope
 {
 
 
 
 class RepeatScope
-	:	IRScope
+	:	IRCompilerScope
 {
 	public override bool	IsLoopScope				{ get { return true; } }
 	public string			LoopBlockName			{ get; private set; }

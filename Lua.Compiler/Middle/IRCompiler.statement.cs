@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Lua.Compiler.Front;
 using Lua.Compiler.Front.AST;
 using Lua.Compiler.Front.Parser;
+using Lua.Compiler.Middle.CompilerScope;
 using Lua.Compiler.Middle.IR;
 using Lua.Compiler.Middle.IR.Expression;
 using Lua.Compiler.Middle.IR.Statement;
@@ -25,7 +26,7 @@ sealed partial class IRCompiler
 
 	public void Local( SourceLocation l, Scope s, IList< string > namelist, IList< Expression > elist )
 	{
-		IRScope scope = (IRScope)s;
+		IRCompilerScope scope = (IRCompilerScope)s;
 		IList< IRExpression > expressionlist = CastExpressionList( elist );
 
 
@@ -265,7 +266,7 @@ sealed partial class IRCompiler
 	{
 		// Break loop scope.
 
-		IRScope scope = (IRScope)loopScope;
+		IRCompilerScope scope = (IRCompilerScope)loopScope;
 		scope.Break( l, code.Peek() );
 	}
 
@@ -275,7 +276,7 @@ sealed partial class IRCompiler
 	{
 		// Continue loop scope.
 
-		IRScope scope = (IRScope)loopScope;
+		IRCompilerScope scope = (IRCompilerScope)loopScope;
 		scope.Continue( l, code.Peek() );
 	}
 

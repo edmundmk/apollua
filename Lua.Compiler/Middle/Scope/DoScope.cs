@@ -9,12 +9,12 @@ using System;
 using Lua.Compiler.Front.AST;
 
 
-namespace Lua.Compiler.Middle.IR.Scope
+namespace Lua.Compiler.Middle.CompilerScope
 {
 
 
 class DoScope
-	:	IRScope
+	:	IRCompilerScope
 {
 }
 

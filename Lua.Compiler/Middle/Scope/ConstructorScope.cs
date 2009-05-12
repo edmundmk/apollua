@@ -10,12 +10,12 @@ using Lua.Compiler.Front.AST;
 using Lua.Compiler.Middle.IR.Expression;
 
 
-namespace Lua.Compiler.Middle.IR.Scope
+namespace Lua.Compiler.Middle.CompilerScope
 {
 
 
 class ConstructorScope
-	:	IRScope
+	:	IRCompilerScope
 {
 
 	public ConstructorExpression Constructor	{ get; private set; }

@@ -9,13 +9,13 @@ using System;
 using Lua.Compiler.Front.AST;
 
 
-namespace Lua.Compiler.Middle.IR.Scope
+namespace Lua.Compiler.Middle.CompilerScope
 {
 
 
 
 class FunctionScope
-	:	IRScope
+	:	IRCompilerScope
 {
 	public override bool	IsFunctionScope			{ get { return true; } }
 	public override bool	IsVarargFunctionScope	{ get { return isVararg; } }
