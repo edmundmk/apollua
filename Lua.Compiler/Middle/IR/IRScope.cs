@@ -13,6 +13,8 @@ namespace Lua.Compiler.Middle.IR
 {
 
 
+/*	Scopes are used to keep track of state during parsing.
+*/
 
 abstract class IRScope
 	:	Scope
@@ -34,134 +36,6 @@ abstract class IRScope
 	public virtual void Continue( SourceLocation l, IRCode code )
 	{
 		throw new InvalidOperationException();
-	}
-
-}
-
-
-
-class DoScope
-	:	IRScope
-{
-}
-
-
-
-class IfScope
-	:	IRScope
-{
-	public override bool IsIfScope { get { return true; } }
-}
-
-
-
-class FunctionScope
-	:	IRScope
-{
-	public override bool	IsFunctionScope			{ get { return true; } }
-	public override bool	IsVarargFunctionScope	{ get { return isVararg; } }
-
-	bool isVararg;
-
-
-	public FunctionScope( bool isVararg )
-	{
-		this.isVararg = isVararg;
-	}
-
-}
-
-
-
-class LoopScope
-	:	IRScope
-{
-	public override bool	IsLoopScope				{ get { return true; } }
-	public string			LoopBlockName			{ get; private set; }
-
-
-	public LoopScope( string loopBlockName )
-	{
-		LoopBlockName = loopBlockName;
-	}
-
-
-	public override void Break( SourceLocation l, IRCode code )
-	{
-		code.Statement( new Break( l, LoopBlockName ) );
-	}
-
-	public override void Continue( SourceLocation l, IRCode code )
-	{
-		code.Statement( new Continue( l, LoopBlockName ) );
-	}
-
-
-}
-
-
-
-class RepeatScope
-	:	IRScope
-{
-	public override bool	IsLoopScope				{ get { return true; } }
-	public string			LoopBlockName			{ get; private set; }
-	public string			LoopBodyBlockName		{ get; private set; }
-
-
-	public RepeatScope( string loopBlockName, string loopBodyBlockName )
-	{
-		LoopBlockName		= loopBlockName;
-		LoopBodyBlockName	= loopBodyBlockName;
-	}
-
-
-	public override void Break( SourceLocation l, IRCode code )
-	{
-		code.Statement( new Break( l, LoopBlockName ) );
-	}
-
-	public override void Continue( SourceLocation l, IRCode code )
-	{
-		code.Statement( new Break( l, LoopBodyBlockName ) );
-	}
-
-}
-
-
-
-class ForScope
-	:	RepeatScope
-{
-	public IRLocal			ForIndex				{ get; private set; }
-	public IRLocal			ForLimit				{ get; private set; }
-	public IRLocal			ForStep					{ get; private set; }
-
-
-	public ForScope( string loopBlockName, string loopBodyBlockName,
-						IRLocal forIndex, IRLocal forLimit, IRLocal forStep )
-		:	base( loopBlockName, loopBodyBlockName )
-	{
-		ForIndex	= forIndex;
-		ForLimit	= forLimit;
-		ForStep		= forStep;
-	}
-
-
-}
-
-
-
-class ConstructorScope
-	:	IRScope
-{
-
-	public ConstructorExpression Constructor	{ get; private set; }
-
-
-	public ConstructorScope( ConstructorExpression constructor )
-	{
-		Constructor	= constructor;
 	}
 
 }
