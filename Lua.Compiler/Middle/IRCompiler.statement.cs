@@ -300,13 +300,14 @@ sealed partial class IRCompiler
 			{
 				// Return a single result.
 
-				expression = expression.TransformExpression( code.Peek() );
+				Transform( expression );
 				Statement( new Return( l, expression ) );
 			}
 			else
 			{
 				// Return multiple values (possibly a tail call)
 
+				Transform( expression );
 				Statement( new ReturnMultipleResults( l, expressionlist, ExtraArguments.None ) );
 			}
 		}
