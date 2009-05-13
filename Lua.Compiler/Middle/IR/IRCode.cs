@@ -8,10 +8,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Lua.Compiler.Front.AST;
+using Lua.Compiler.Frontend.AST;
 
 
-namespace Lua.Compiler.Middle.IR
+namespace Lua.Compiler.Intermediate.IR
 {
 
 

@@ -8,7 +8,7 @@
 using System;
 
 
-namespace Lua.Compiler.Front.AST
+namespace Lua.Compiler.Frontend.AST
 {
 
 

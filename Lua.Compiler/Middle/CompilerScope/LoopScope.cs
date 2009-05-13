@@ -6,12 +6,12 @@
 
 
 using System;
-using Lua.Compiler.Front.AST;
-using Lua.Compiler.Middle.IR;
-using Lua.Compiler.Middle.IR.Statement;
+using Lua.Compiler.Frontend.AST;
+using Lua.Compiler.Intermediate.IR;
+using Lua.Compiler.Intermediate.IR.Statement;
 
 
-namespace Lua.Compiler.Middle.CompilerScope
+namespace Lua.Compiler.Intermediate.CompilerScope
 {
 
 

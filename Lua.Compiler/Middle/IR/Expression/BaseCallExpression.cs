@@ -8,12 +8,12 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Lua.Compiler.Front.Parser;
-using Lua.Compiler.Front.AST;
-using Lua.Compiler.Middle.IR.Statement;
+using Lua.Compiler.Frontend.Parser;
+using Lua.Compiler.Frontend.AST;
+using Lua.Compiler.Intermediate.IR.Statement;
 
 
-namespace Lua.Compiler.Middle.IR.Expression
+namespace Lua.Compiler.Intermediate.IR.Expression
 {
 
 

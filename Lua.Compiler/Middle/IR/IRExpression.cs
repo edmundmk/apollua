@@ -8,11 +8,11 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Lua.Compiler.Front.Parser;
-using Lua.Compiler.Front.AST;
+using Lua.Compiler.Frontend.Parser;
+using Lua.Compiler.Frontend.AST;
 
 
-namespace Lua.Compiler.Middle.IR
+namespace Lua.Compiler.Intermediate.IR
 {
 
 
@@ -27,7 +27,7 @@ namespace Lua.Compiler.Middle.IR
 
 
 abstract class IRExpression
-	:	Lua.Compiler.Front.AST.Expression
+	:	Lua.Compiler.Frontend.AST.Expression
 {
 
 	public SourceLocation	Location		{ get; private set; }

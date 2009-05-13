@@ -7,14 +7,14 @@
 
 using System;
 using System.Collections.Generic;
-using Lua.Compiler.Front;
-using Lua.Compiler.Front.AST;
-using Lua.Compiler.Front.Parser;
-using Lua.Compiler.Middle.IR;
-using Lua.Compiler.Middle.IR.Expression;
+using Lua.Compiler.Frontend;
+using Lua.Compiler.Frontend.AST;
+using Lua.Compiler.Frontend.Parser;
+using Lua.Compiler.Intermediate.IR;
+using Lua.Compiler.Intermediate.IR.Expression;
 
 
-namespace Lua.Compiler.Middle
+namespace Lua.Compiler.Intermediate
 {
 
 

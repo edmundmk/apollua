@@ -6,10 +6,10 @@
 
 
 using System;
-using Lua.Compiler.Front.AST;
+using Lua.Compiler.Frontend.AST;
 
 
-namespace Lua.Compiler.Middle.IR
+namespace Lua.Compiler.Intermediate.IR
 {
 
 

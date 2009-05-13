@@ -8,16 +8,16 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Lua.Compiler.Front;
-using Lua.Compiler.Front.AST;
-using Lua.Compiler.Front.Parser;
-using Lua.Compiler.Middle.CompilerScope;
-using Lua.Compiler.Middle.IR;
-using Lua.Compiler.Middle.IR.Expression;
-using Lua.Compiler.Middle.IR.Statement;
+using Lua.Compiler.Frontend;
+using Lua.Compiler.Frontend.AST;
+using Lua.Compiler.Frontend.Parser;
+using Lua.Compiler.Intermediate.CompilerScope;
+using Lua.Compiler.Intermediate.IR;
+using Lua.Compiler.Intermediate.IR.Expression;
+using Lua.Compiler.Intermediate.IR.Statement;
 
 
-namespace Lua.Compiler.Middle
+namespace Lua.Compiler.Intermediate
 {
 
 

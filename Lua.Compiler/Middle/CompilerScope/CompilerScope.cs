@@ -6,11 +6,11 @@
 
 
 using System;
-using Lua.Compiler.Front.AST;
-using Lua.Compiler.Middle.IR;
+using Lua.Compiler.Frontend.AST;
+using Lua.Compiler.Intermediate.IR;
 
 
-namespace Lua.Compiler.Middle.CompilerScope
+namespace Lua.Compiler.Intermediate.CompilerScope
 {
 
 
@@ -18,7 +18,7 @@ namespace Lua.Compiler.Middle.CompilerScope
 */
 
 abstract class IRCompilerScope
-	:	Lua.Compiler.Front.AST.Scope
+	:	Lua.Compiler.Frontend.AST.Scope
 {
 	public virtual bool IsIfScope { get { return false; } }
 

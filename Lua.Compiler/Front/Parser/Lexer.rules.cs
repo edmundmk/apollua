@@ -14,7 +14,7 @@ using System.Collections.Generic;
 
 
 
-namespace Lua.Compiler.Front.Parser
+namespace Lua.Compiler.Frontend.Parser
 {
 
 	

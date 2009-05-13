@@ -9,7 +9,7 @@ using System;
 using System.IO;
 
 
-namespace Lua.Compiler.Front.Parser
+namespace Lua.Compiler.Frontend.Parser
 {
 
 	

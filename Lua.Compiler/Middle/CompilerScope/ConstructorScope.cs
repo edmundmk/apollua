@@ -6,11 +6,11 @@
 
 
 using System;
-using Lua.Compiler.Front.AST;
-using Lua.Compiler.Middle.IR.Expression;
+using Lua.Compiler.Frontend.AST;
+using Lua.Compiler.Intermediate.IR.Expression;
 
 
-namespace Lua.Compiler.Middle.CompilerScope
+namespace Lua.Compiler.Intermediate.CompilerScope
 {
 
 

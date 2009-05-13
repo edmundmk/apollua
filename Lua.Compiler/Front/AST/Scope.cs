@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 
 
-namespace Lua.Compiler.Front.AST
+namespace Lua.Compiler.Frontend.AST
 {
 
 

@@ -11,10 +11,10 @@ using System.IO;
 using System.Globalization;
 using System.Diagnostics;
 using System.Collections.Generic;
-using Lua.Compiler.Front.AST;
+using Lua.Compiler.Frontend.AST;
 
 
-namespace Lua.Compiler.Front.Parser
+namespace Lua.Compiler.Frontend.Parser
 {
 
 	
