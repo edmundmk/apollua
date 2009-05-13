@@ -58,6 +58,12 @@ sealed class BinaryExpression
 	}
 
 
+	public override string ToString()
+	{
+		return String.Format( "( {0} ) <{1}> ( {2} )", Left, Operator.Name, Right );
+	}
+
+
 }
 
 

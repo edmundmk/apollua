@@ -31,6 +31,23 @@ sealed class LiteralExpression
 		Value		= value;
 	}
 
+
+	public override string ToString()
+	{
+		if ( Value is string )
+		{
+			return String.Format( "\"{0}\"", ( (string)Value ).Replace( "\n", "\\n" ) );
+		}
+		else if ( Value != null )
+		{
+			return Value.ToString();
+		}
+		else
+		{
+			return "nil";
+		}
+	}
+
 }
 
 

@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Diagnostics;
 using Lua.Compiler.Frontend.AST;
 
 
@@ -29,9 +31,18 @@ sealed class SetList
 	public SetList( SourceLocation l, IRExpression table, int index, ExtraArguments extraArguments )
 		:	base( l )
 	{
+		Debug.Assert( extraArguments != ExtraArguments.None );
+
 		Table			= table;
 		Index			= index;
 		ExtraArguments	= extraArguments;
+	}
+
+
+	public override string ToString()
+	{
+		return String.Format( "setlist {0}[ {1} ... ] = {2}",
+			Table, Index, ExtraArguments == ExtraArguments.UseValueList ? "valuelist" : "..." );
 	}
 
 }

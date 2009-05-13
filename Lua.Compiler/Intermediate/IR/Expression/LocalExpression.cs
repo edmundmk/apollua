@@ -31,6 +31,12 @@ sealed class LocalExpression
 	{
 		Local		= local;
 	}
+	
+
+	public override string ToString()
+	{
+		return Local.Name;
+	}
 
 }
 

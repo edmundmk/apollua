@@ -43,6 +43,11 @@ sealed class OrExpression
 	}
 
 
+	public override string ToString()
+	{
+		return String.Format( "( {0} ) or ( {1} )", Left, Right );
+	}
+
 }
 
 

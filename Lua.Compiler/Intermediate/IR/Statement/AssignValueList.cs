@@ -29,6 +29,11 @@ sealed class AssignValueList
 		Expression		= expression;
 	}
 
+
+	public override string ToString()
+	{
+		return String.Format( "valuelist = {0}", Expression );
+	}
 }
 
 

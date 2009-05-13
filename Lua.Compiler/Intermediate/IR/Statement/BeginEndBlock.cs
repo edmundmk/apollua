@@ -37,6 +37,12 @@ sealed class BeginBlock
 		Name = name;
 	}
 
+
+	public override string ToString()
+	{
+		return String.Format( "block {0} {{", Name );
+	}
+
 }
 
 
@@ -51,6 +57,12 @@ sealed class Break
 		:	base( l )
 	{
 		BlockName = blockName;
+	}
+
+
+	public override string ToString()
+	{
+		return String.Format( "break {0}", BlockName );
 	}
 
 }
@@ -68,6 +80,13 @@ sealed class Continue
 	{
 		BlockName	= blockName;
 	}
+
+
+	public override string ToString()
+	{
+		return String.Format( "continue {0}", BlockName );
+	}
+
 }
 
 
@@ -80,6 +99,12 @@ sealed class EndBlock
 	{
 	}
 
+
+	public override string ToString()
+	{
+		return "}";
+	}
+	
 }
 
 

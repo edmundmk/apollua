@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Lua.Compiler.Frontend.AST;
 
 
@@ -22,8 +23,9 @@ sealed class ReturnMultipleResults
 	:	IRStatement
 {
 
-	public IList< IRExpression >	Results			{ get; private set; }
-	public ExtraArguments			ExtraArguments	{ get; private set; }
+	public override bool			IsReturnStatement	{ get { return true; } }
+	public IList< IRExpression >	Results				{ get; private set; }
+	public ExtraArguments			ExtraArguments		{ get; private set; }
 
 
 	public ReturnMultipleResults( SourceLocation l, IList< IRExpression > results, ExtraArguments extraArguments )
@@ -32,6 +34,31 @@ sealed class ReturnMultipleResults
 		Results			= results;
 		ExtraArguments	= extraArguments;
 	}
+
+
+	public override string ToString()
+	{
+		StringBuilder s = new StringBuilder();
+		s.Append( "return " );
+		
+		bool isFirst = true;
+		foreach ( IRExpression result in Results )
+		{
+			if ( ! isFirst )
+				s.Append( ", " );
+			isFirst = false;
+			s.Append( result );
+		}
+
+		switch ( ExtraArguments )
+		{
+		case ExtraArguments.UseValueList:	s.Append( ", valuelist" );	break;
+		case ExtraArguments.UseVararg:		s.Append( ", ..." );		break;
+		}
+
+		return s.ToString();
+	}
+
 
 }
 

@@ -61,6 +61,12 @@ sealed class IndexExpression
 		code.Statement( new Assign( Location, keyTemp, Key ) );
 		Key = keyTemp;
 	}
+	
+
+	public override string ToString()
+	{
+		return String.Format( "{0}[ {1} ]", Table, Key );
+	}
 
 }
 

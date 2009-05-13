@@ -31,6 +31,12 @@ sealed class ValueListElementExpression
 		Index		= index;
 	}
 
+
+	public override string ToString()
+	{
+		return String.Format( "valuelist[ {0} ]", Index );
+	}
+
 }
 
 

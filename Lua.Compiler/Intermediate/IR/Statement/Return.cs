@@ -20,14 +20,22 @@ sealed class Return
 	:	IRStatement
 {
 
-	public IRExpression				Result			{ get; private set; }
-
+	public override bool	IsReturnStatement	{ get { return true; } }
+	public IRExpression		Result				{ get; private set; }
+	
 
 	public Return( SourceLocation l, IRExpression result )
 		:	base( l )
 	{
 		Result			= result;
 	}
+
+
+	public override string ToString()
+	{
+		return String.Format( "return {0}", Result );
+	}
+
 
 }
 

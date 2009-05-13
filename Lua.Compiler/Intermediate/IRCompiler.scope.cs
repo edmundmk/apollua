@@ -31,7 +31,7 @@ sealed partial class IRCompiler
 
 		// Link a new IR into.
 
-		IRCode	functionCode;
+		IRCode functionCode;
 		if ( code.Count > 0 )
 		{
 			IRCode parent = code.Peek();
@@ -65,7 +65,23 @@ sealed partial class IRCompiler
 
 	public Code EndFunction( SourceLocation l, Scope end )
 	{
-		return code.Pop();
+		IRCode functionCode = code.Peek();
+
+
+		// Add return statement if required.
+
+		if ( ! functionCode.EndsWithReturnStatement() )
+		{
+			Return( l, end, new List< Expression >() );
+		}
+
+
+		// This function is finished.
+
+		code.Pop();
+
+
+		return functionCode;
 	}
 
 

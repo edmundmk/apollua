@@ -31,6 +31,12 @@ sealed class BeginScope
 	{
 	}
 
+	
+	public override string ToString()
+	{
+		return "scope {";
+	}
+
 }
 
 
@@ -41,6 +47,12 @@ sealed class EndScope
 	public EndScope( SourceLocation l )
 		:	base( l )
 	{
+	}
+
+
+	public override string ToString()
+	{
+		return "}";
 	}
 
 }

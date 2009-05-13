@@ -82,8 +82,9 @@ namespace Lua.Compiler.Intermediate.IR
 abstract class IRStatement
 {
 
-	public SourceLocation Location { get; private set; }
-
+	public virtual bool		IsReturnStatement	{ get { return false; } }
+	public SourceLocation	Location			{ get; private set; }
+	
 	
 	public IRStatement( SourceLocation l )
 	{

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 using Lua.Compiler.Frontend.Parser;
 using Lua.Compiler.Frontend.AST;
 
@@ -37,6 +38,39 @@ sealed class CallExpression
 	{
 		Function = Function.TransformExpression( code );
 		base.Transform( code );
+	}
+
+
+	public override string ToString()
+	{
+		StringBuilder s = new StringBuilder();
+		s.Append( Function );
+		s.Append( "(" );
+
+		if ( Arguments.Count > 0 )
+		{
+			s.Append( " " );
+
+			bool isFirst = true;
+			foreach ( IRExpression argument in Arguments )
+			{
+				if ( ! isFirst )
+					s.Append( ", " );
+				isFirst = false;
+				s.Append( argument );
+			}
+
+			switch ( ExtraArguments )
+			{
+			case ExtraArguments.UseValueList:	s.Append( ", valuelist" );	break;
+			case ExtraArguments.UseVararg:		s.Append( ", ..." );		break;
+			}
+
+			s.Append( " " );
+		}
+
+		s.Append( ")" );
+		return s.ToString();
 	}
 
 }

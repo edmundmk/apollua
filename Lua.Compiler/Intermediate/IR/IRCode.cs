@@ -91,12 +91,60 @@ sealed class IRCode
 		Statements.Add( statement );
 	}
 
+	public bool EndsWithReturnStatement()
+	{
+		if ( Statements.Count == 0 )
+		{
+			return false;
+		}
+		else
+		{
+			return Statements[ Statements.Count - 1 ].IsReturnStatement;
+		}
+	}
+
 	
 
 	// Disassembly.
 
 	public void Disassemble( TextWriter w )
 	{
+		w.WriteLine( "function{0:X}", GetHashCode() );
+
+		w.WriteLine( "UpVals" );
+		foreach ( IRLocal upval in UpVals )
+		{
+			w.WriteLine( "\t{0}", upval.Name );
+		}
+
+		w.WriteLine( "Parameters" );
+		foreach ( IRLocal parameter in Parameters )
+		{
+			w.WriteLine( "\t{0}", parameter.Name );
+		}
+		if ( IsVararg )
+		{
+			w.WriteLine( "\t..." );
+		}
+
+		w.WriteLine( "Locals" );
+		foreach ( IRLocal local in Locals )
+		{
+			w.WriteLine( "\t{0}", local.Name );
+		}
+
+		w.WriteLine( "Statements" );
+		foreach( IRStatement statement in Statements )
+		{
+			w.WriteLine( "\t{0}", statement.ToString() );
+		}
+
+		w.WriteLine();
+
+		foreach( IRCode code in Children )
+		{
+			code.Disassemble( w );
+		}
 	}
 
 

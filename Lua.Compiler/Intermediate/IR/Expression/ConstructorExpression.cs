@@ -46,6 +46,12 @@ sealed class ConstructorExpression
 		HashCount += 1;
 	}
 
+
+	public override string ToString()
+	{
+		return String.Format( "constructor{0:X}", GetHashCode() );
+	}
+
 }
 
 

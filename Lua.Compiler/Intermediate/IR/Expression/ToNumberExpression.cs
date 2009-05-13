@@ -37,6 +37,13 @@ sealed class ToNumberExpression
 		base.Transform( code );
 		Operand		= Operand.TransformExpression( code );
 	}
+
+
+	public override string ToString()
+	{
+		return String.Format( "tonumber( {0} )", Operand );
+	}
+
 }
 
 

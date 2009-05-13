@@ -31,6 +31,13 @@ sealed class DeclareAssign
 		Expression		= expression;
 	}
 
+
+	public override string ToString()
+	{
+		return String.Format( "declare {0} = {1}", Local.Name, Expression );
+	}
+
+
 }
 
 

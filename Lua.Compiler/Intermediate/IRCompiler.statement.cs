@@ -117,6 +117,7 @@ sealed partial class IRCompiler
 
 			for ( int local = 0; local < locallist.Count; ++local )
 			{
+				expressionlist[ local ].RestrictToSingleValue();
 				Transform( expressionlist[ local ] );
 				Statement( new DeclareAssign( l, locallist[ local ], expressionlist[ local ] ) );
 			}
@@ -126,6 +127,7 @@ sealed partial class IRCompiler
 
 			for ( int expression = locallist.Count; expression < expressionlist.Count; ++expression )
 			{
+				expressionlist[ expression ].RestrictToSingleValue();
 				Transform( expressionlist[ expression ] );
 				Statement( new Evaluate( l, expressionlist[ expression ] ) );
 			}
@@ -138,6 +140,20 @@ sealed partial class IRCompiler
 	public void Assignment( SourceLocation l, Scope scope, IList< Expression > variablelist, IList< Expression > elist )
 	{
 		IList< IRExpression> expressionlist = CastExpressionList( elist );
+
+
+		// Simpler code when there are no dependencies between expressions
+
+		if ( variablelist.Count == 1 && expressionlist.Count == 1 )
+		{
+			Transform( (IRExpression)variablelist[ 0 ] );
+			expressionlist[ 0 ].RestrictToSingleValue();
+			Transform( expressionlist[ 0 ] );
+			Statement( new Assign( l, (IRExpression)variablelist[ 0 ], expressionlist[ 0 ] ) );
+			return;
+		}
+
+
 
 
 		// Transform assignment expressions.
@@ -222,6 +238,7 @@ sealed partial class IRCompiler
 			for ( int variable = 0; variable < variablelist.Count; ++variable )
 			{
 				IRExpression temporary = new TemporaryExpression( l );
+				expressionlist[ variable ].RestrictToSingleValue();
 				Transform( expressionlist[ variable ] );
 				Statement( new Assign( l, temporary, expressionlist[ variable ] ) );
 				temporarylist.Add( temporary );
@@ -232,6 +249,7 @@ sealed partial class IRCompiler
 
 			for ( int expression = variablelist.Count; expression < expressionlist.Count; ++expression )
 			{
+				expressionlist[ expression ].RestrictToSingleValue();
 				Transform( expressionlist[ expression ] );
 				Statement( new Evaluate( l, expressionlist[ expression ] ) );
 			}
@@ -294,7 +312,7 @@ sealed partial class IRCompiler
 			Transform( nullExpression );
 			Statement( new Return( l, nullExpression ) );
 		}
-		if ( expressionlist.Count == 1 )
+		else if ( expressionlist.Count == 1 )
 		{
 			IRExpression expression = expressionlist[ 0 ];
 

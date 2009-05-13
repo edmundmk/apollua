@@ -48,6 +48,12 @@ sealed class UnaryExpression
 	}
 
 
+	public override string ToString()
+	{
+		return String.Format( "<{0}> {1}", Operator.Name, Operand );
+	}
+
+
 }
 
 

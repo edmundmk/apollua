@@ -32,6 +32,12 @@ sealed class FunctionLiteralExpression
 		IRCode	= code;
 	}
 
+
+	public override string ToString()
+	{
+		return String.Format( "function{0:X}", IRCode.GetHashCode() );
+	}
+
 }
 
 	

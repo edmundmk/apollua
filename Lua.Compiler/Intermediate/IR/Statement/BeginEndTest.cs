@@ -35,6 +35,13 @@ sealed class BeginTest
 		Expression	= expression;
 	}
 
+
+	public override string ToString()
+	{
+		return String.Format( "test {0} {{", Expression );
+	}
+
+
 }
 
 
@@ -45,6 +52,12 @@ sealed class EndTest
 	public EndTest( SourceLocation l )
 		:	base( l )
 	{
+	}
+
+
+	public override string ToString()
+	{
+		return "}";
 	}
 
 }

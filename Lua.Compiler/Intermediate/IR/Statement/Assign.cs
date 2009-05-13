@@ -32,6 +32,12 @@ sealed class Assign
 		Expression		= expression;
 	}
 
+
+	public override string ToString()
+	{
+		return String.Format( "{0} = {1}", Target, Expression );
+	}
+
 }
 
 

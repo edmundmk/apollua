@@ -30,6 +30,12 @@ sealed class Declare
 		Local			= local;
 	}
 
+
+	public override string ToString()
+	{
+		return String.Format( "declare {0}", Local.Name );
+	}
+
 }
 
 	

@@ -43,6 +43,12 @@ sealed class AndExpression
 	}
 
 
+	public override string ToString()
+	{
+		return String.Format( "( {0} ) and ( {1} )", Left, Right );
+	}
+
+
 }
 
 

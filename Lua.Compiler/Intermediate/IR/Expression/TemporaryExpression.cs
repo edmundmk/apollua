@@ -28,6 +28,12 @@ sealed class TemporaryExpression
 	{
 	}
 
+
+	public override string ToString()
+	{
+		return String.Format( "temporary{0:X}", GetHashCode() );
+	}
+
 }
 
 

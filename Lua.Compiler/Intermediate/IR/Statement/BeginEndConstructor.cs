@@ -33,6 +33,13 @@ sealed class BeginConstructor
 	{
 		Constructor = constructor;
 	}
+
+
+	public override string ToString()
+	{
+		return String.Format( "constructor {0} {1} {2} {{", Constructor, Constructor.ArrayCount, Constructor.HashCount );
+	}
+
 }
 
 
@@ -46,6 +53,11 @@ sealed class EndConstructor
 	{
 	}
 
+
+	public override string ToString()
+	{
+		return "}";
+	}
 }
 
 

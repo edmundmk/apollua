@@ -29,6 +29,12 @@ sealed class Evaluate
 		Expression		= expression;
 	}
 
+
+	public override string ToString()
+	{
+		return Expression.ToString();
+	}
+
 }
 
 

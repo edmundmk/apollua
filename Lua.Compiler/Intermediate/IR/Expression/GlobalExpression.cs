@@ -32,6 +32,12 @@ sealed class GlobalExpression
 		Name		= name;
 	}
 
+
+	public override string ToString()
+	{
+		return Name;
+	}
+
 }
 
 
