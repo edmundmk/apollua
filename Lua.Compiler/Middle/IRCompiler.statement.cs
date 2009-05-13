@@ -290,7 +290,9 @@ sealed partial class IRCompiler
 		{
 			// Return null.
 
-			Statement( new Return( l, new LiteralExpression( l, null ) ) );
+			IRExpression nullExpression = new LiteralExpression( l, null );
+			Transform( nullExpression );
+			Statement( new Return( l, nullExpression ) );
 		}
 		if ( expressionlist.Count == 1 )
 		{
