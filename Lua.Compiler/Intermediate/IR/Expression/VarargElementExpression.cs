@@ -32,6 +32,12 @@ sealed class VarargElementExpression
 		Index		= index;
 	}
 
+
+	public override string ToString()
+	{
+		return String.Format( "vararg[ {0} ]", Index );
+	}
+
 }
 
 

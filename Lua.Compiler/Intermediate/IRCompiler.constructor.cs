@@ -41,7 +41,7 @@ sealed partial class IRCompiler
 		IRExpression value = (IRExpression)v;
 		
 		Transform( index );
-		Transform( value );
+		TransformAssignValue( index, ref value );
 		Statement( new Assign( l, index, value ) );
 	}
 
@@ -54,7 +54,7 @@ sealed partial class IRCompiler
 		IRExpression value = (IRExpression)v;
 		
 		Transform( index );
-		Transform( value );
+		TransformAssignValue( index, ref value );
 		Statement( new Assign( l, index, value ) );
 	}
 

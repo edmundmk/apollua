@@ -63,6 +63,13 @@ sealed class IndexExpression
 	}
 	
 
+	public override void TransformAssignValue( IRCode code, ref IRExpression value )
+	{
+		value = value.TransformExpression( code );
+	}
+
+
+
 	public override string ToString()
 	{
 		return String.Format( "{0}[ {1} ]", Table, Key );

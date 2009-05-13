@@ -63,6 +63,12 @@ abstract class IRExpression
 	}
 
 
+	public virtual void TransformAssignValue( IRCode code, ref IRExpression value )
+	{
+		value.Transform( code );
+	}
+
+
 	public virtual IRExpression TransformExpression( IRCode code )
 	{
 		Transform( code );

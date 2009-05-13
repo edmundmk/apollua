@@ -66,6 +66,15 @@ sealed partial class IRCompiler
 
 			// Check for multiple results on the last expression.
 
+			int last = expressionlist.Count - 1;
+			if ( expressionlist[ last ].IsSingleValue )
+			{
+				Transform( expressionlist[ last ] );
+			}
+			else
+			{
+				expressionlist[ last ] = expressionlist[ last ].TransformExpression( code.Peek() );
+			}
 			ExtraArguments extraArguments =
 				MultipleResultsExpression.TransformLastExpression( code.Peek(), expressionlist );
 
@@ -76,8 +85,6 @@ sealed partial class IRCompiler
 			{
 				// Assign last expression.
 				
-				int last = expressionlist.Count - 1;
-				Transform( expressionlist[ last ] );
 				Statement( new DeclareAssign( l, locallist[ last ], expressionlist[ last ] ) );
 
 
@@ -92,10 +99,10 @@ sealed partial class IRCompiler
 			{
 				// Assign from value list.
 
-				for ( int local = expressionlist.Count; local < locallist.Count; ++local )
+				for ( int local = expressionlist.Count - 1; local < locallist.Count; ++local )
 				{
 					Statement( new DeclareAssign( l, locallist[ local ],
-						new ValueListElementExpression( l, local - expressionlist.Count ) ) );
+						new ValueListElementExpression( l, local - expressionlist.Count + 1 ) ) );
 				}
 
 			}
@@ -103,10 +110,10 @@ sealed partial class IRCompiler
 			{
 				// Assign from vararg.
 
-				for ( int local = expressionlist.Count; local < locallist.Count; ++local )
+				for ( int local = expressionlist.Count - 1; local < locallist.Count; ++local )
 				{
 					Statement( new DeclareAssign( l, locallist[ local ],
-						new VarargElementExpression( l, local - expressionlist.Count ) ) );
+						new VarargElementExpression( l, local - expressionlist.Count + 1 ) ) );
 				}
 			}
 		}
@@ -146,10 +153,13 @@ sealed partial class IRCompiler
 
 		if ( variablelist.Count == 1 && expressionlist.Count == 1 )
 		{
-			Transform( (IRExpression)variablelist[ 0 ] );
-			expressionlist[ 0 ].RestrictToSingleValue();
-			Transform( expressionlist[ 0 ] );
-			Statement( new Assign( l, (IRExpression)variablelist[ 0 ], expressionlist[ 0 ] ) );
+			IRExpression variable	= (IRExpression)variablelist[ 0 ];
+			IRExpression expression	= expressionlist[ 0 ];
+
+			expression.RestrictToSingleValue();
+			Transform( variable );
+			TransformAssignValue( variable, ref expression );
+			Statement( new Assign( l, variable, expression ) );
 			return;
 		}
 
@@ -181,9 +191,17 @@ sealed partial class IRCompiler
 			}
 
 
-
 			// Check for multiple results on the last expression.
 
+			int last = expressionlist.Count - 1;
+			if ( expressionlist[ last ].IsSingleValue )
+			{
+				Transform( expressionlist[ last ] );
+			}
+			else
+			{
+				expressionlist[ last ] = expressionlist[ last ].TransformExpression( code.Peek() );
+			}
 			ExtraArguments extraArguments =
 				MultipleResultsExpression.TransformLastExpression( code.Peek(), expressionlist );
 
@@ -192,9 +210,8 @@ sealed partial class IRCompiler
 
 			if ( extraArguments == ExtraArguments.None )
 			{
-				int last = expressionlist.Count - 1;
 				IRExpression temporary = new TemporaryExpression( l );
-				Transform( expressionlist[ last ] );
+
 				Statement( new Assign( l, temporary, expressionlist[ last ] ) );
 				temporarylist.Add( temporary );
 			}

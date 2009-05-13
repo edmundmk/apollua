@@ -180,6 +180,11 @@ sealed partial class IRCompiler
 		expression.TransformAssign( code.Peek() );
 	}
 
+	void TransformAssignValue( IRExpression variable, ref IRExpression value )
+	{
+		variable.TransformAssignValue( code.Peek(), ref value );
+	}
+
 	
 	
 	IList< IRExpression > CastExpressionList( IList< Expression > list )

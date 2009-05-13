@@ -33,10 +33,19 @@ sealed class GlobalExpression
 	}
 
 
+	public override void TransformAssignValue( IRCode code, ref IRExpression value )
+	{
+		value = value.TransformExpression( code );
+	}
+
+
 	public override string ToString()
 	{
 		return Name;
 	}
+
+
+
 
 }
 

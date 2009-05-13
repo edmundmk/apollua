@@ -39,6 +39,11 @@ sealed class VarargExpression
 	}
 
 
+	public override string ToString()
+	{
+		return "...";
+	}
+
 }
 
 

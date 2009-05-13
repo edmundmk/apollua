@@ -39,6 +39,11 @@ sealed class NotExpression
 	}
 
 
+	public override string ToString()
+	{
+		return String.Format( "not {0}", Operand );
+	}
+
 }
 
 
