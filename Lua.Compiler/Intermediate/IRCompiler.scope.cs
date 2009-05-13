@@ -298,28 +298,25 @@ sealed partial class IRCompiler
 		// Test expression.
 
 		IRExpression test =
-			new BinaryExpression( l,
-				new BinaryExpression( l,
-					new BinaryExpression( l,
+			new OrExpression( l,
+				new AndExpression( l,
+					new ComparisonExpression( l,
 						new LocalExpression( l, forStep ),
 						new LiteralExpression( l, 0.0 ),
 						TokenKind.GreaterThanSign ),
-					new BinaryExpression( l,
+					new ComparisonExpression( l,
 						new LocalExpression( l, forIndex ),
 						new LocalExpression( l, forLimit ),
-						TokenKind.LessThanOrEqual ),
-					TokenKind.And ),
-				new BinaryExpression( l,
-					new BinaryExpression( l,
+						TokenKind.LessThanOrEqual ) ),
+				new AndExpression( l,
+					new ComparisonExpression( l,
 						new LocalExpression( l, forStep ),
 						new LiteralExpression( l, 0.0 ),
 						TokenKind.LessThanSign ),
-					new BinaryExpression( l,
+					new ComparisonExpression( l,
 						new LocalExpression( l, forIndex ),
 						new LocalExpression( l, forLimit ),
-						TokenKind.GreaterThanOrEqual ),
-					TokenKind.And ),
-				TokenKind.Or );
+						TokenKind.GreaterThanOrEqual ) ) );
 
 
 		// Loop body.
@@ -414,7 +411,7 @@ sealed partial class IRCompiler
 		IRLocal forState		= (IRLocal)internalScope.Locals[ 1 ];
 		IRLocal forControl		= (IRLocal)internalScope.Locals[ 2 ];
 		
-		Debug.Assert( forGenerator.Name	== "(for generator" );
+		Debug.Assert( forGenerator.Name	== "(for generator)" );
 		Debug.Assert( forState.Name		== "(for state)" );
 		Debug.Assert( forControl.Name	== "(for control)" );
 
@@ -449,7 +446,7 @@ sealed partial class IRCompiler
 		// Test expression.
 
 		IRExpression test =
-			new BinaryExpression( l,
+			new ComparisonExpression( l,
 				new LocalExpression( l, forControl ),
 				new LiteralExpression( l, null ),
 				TokenKind.LogicalEqual );

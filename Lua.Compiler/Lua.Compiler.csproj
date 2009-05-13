@@ -77,6 +77,7 @@
     <Compile Include="Intermediate\IR\Expression\BaseCallExpression.cs" />
     <Compile Include="Intermediate\IR\Expression\BinaryExpression.cs" />
     <Compile Include="Intermediate\IR\Expression\CallExpression.cs" />
+    <Compile Include="Intermediate\IR\Expression\ComparisonExpression.cs" />
     <Compile Include="Intermediate\IR\Expression\ConstructorExpression.cs" />
     <Compile Include="Intermediate\IR\Expression\FunctionLiteralExpression.cs" />
     <Compile Include="Intermediate\IR\Expression\GlobalExpression.cs" />

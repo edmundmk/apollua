@@ -30,8 +30,11 @@ sealed partial class IRCompiler
 
 		switch ( op )
 		{
-		case TokenKind.Not:	return new NotExpression( l, (IRExpression)operand );
-		default:			return new UnaryExpression( l, (IRExpression)operand, op );
+		case TokenKind.Not:
+			return new NotExpression( l, (IRExpression)operand );
+
+		default:
+			return new UnaryExpression( l, (IRExpression)operand, op );
 		}
 	}
 
@@ -42,9 +45,22 @@ sealed partial class IRCompiler
 
 		switch ( op )
 		{
-		case TokenKind.And:	return new AndExpression( l, (IRExpression)left, (IRExpression)right );
-		case TokenKind.Or:	return new OrExpression( l, (IRExpression)left, (IRExpression)right );
-		default:			return new BinaryExpression( l, (IRExpression)left, (IRExpression)right, op );
+		case TokenKind.LogicalEqual:
+		case TokenKind.NotEqual:
+		case TokenKind.LessThanSign:
+		case TokenKind.GreaterThanOrEqual:
+		case TokenKind.LessThanOrEqual:
+		case TokenKind.GreaterThanSign:
+			return new ComparisonExpression( l, (IRExpression)left, (IRExpression)right, op );
+
+		case TokenKind.And:
+			return new AndExpression( l, (IRExpression)left, (IRExpression)right );
+		
+		case TokenKind.Or:
+			return new OrExpression( l, (IRExpression)left, (IRExpression)right );
+
+		default:
+			return new BinaryExpression( l, (IRExpression)left, (IRExpression)right, op );
 		}
 	}
 
