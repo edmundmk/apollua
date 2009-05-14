@@ -46,35 +46,6 @@ abstract class MultipleResultsExpression
 	}
 
 
-	public static void TransformExpressionList( IRCode code, IList< IRExpression> list )
-	{
-		// Transform all expressions in list.
-
-		for ( int i = 0; i < list.Count; ++i )
-		{
-			list[ i ] = list[ i ].TransformExpression( code );
-		}
-	}
-
-
-	public static ExtraArguments TransformLastExpression( IRCode code, IList< IRExpression > list )
-	{
-		// If the final expression is a multiple-result expression, use the correct
-		// kind of extra arguments when compiling.
-
-		if ( list.Count > 0 )
-		{
-			MultipleResultsExpression lastExpression =
-				list[ list.Count - 1 ] as MultipleResultsExpression;
-			if ( lastExpression != null )
-			{
-				return lastExpression.TransformToExtraArguments();
-			}
-		}
-
-		return ExtraArguments.None;
-	}
-
 }
 
 

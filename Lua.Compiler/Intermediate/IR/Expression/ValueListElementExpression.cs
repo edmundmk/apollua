@@ -22,13 +22,13 @@ sealed class ValueListElementExpression
 	:	IRExpression
 {
 
-	public int			Index;
+	public int Index { get; private set; }
 
 
 	public ValueListElementExpression( SourceLocation l, int index )
 		:	base( l )
 	{
-		Index		= index;
+		Index = index;
 	}
 
 

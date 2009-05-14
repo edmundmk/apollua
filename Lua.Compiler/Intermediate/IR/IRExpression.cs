@@ -30,8 +30,11 @@ abstract class IRExpression
 	:	Lua.Compiler.Frontend.AST.Expression
 {
 
-	public SourceLocation	Location		{ get; private set; }
-	public virtual bool		IsSingleValue	{ get { return true; } }
+	public virtual bool		IsSingleValue		{ get { return true; } }
+	public virtual bool		IsComplexAssignment	{ get { return false; } }
+
+	public SourceLocation	Location			{ get; private set; }
+	
 
 	
 	public IRExpression( SourceLocation l )
@@ -51,29 +54,29 @@ abstract class IRExpression
 
 	// Transforming so each function call is a separate statement.
 
-	public virtual void Transform( IRCode code )
+	public virtual IRExpression Transform( IRCode code )
 	{
-		// do nothing.
-	}
-
-
-	public virtual void TransformAssign( IRCode code )
-	{
-		Transform( code );
-	}
-
-
-	public virtual void TransformAssignValue( IRCode code, ref IRExpression value )
-	{
-		value.Transform( code );
-	}
-
-
-	public virtual IRExpression TransformExpression( IRCode code )
-	{
-		Transform( code );
 		return this;
 	}
+
+	public virtual IRExpression TransformSingleValue( IRCode code )
+	{
+		return Transform( code );
+	}
+
+	public virtual IRExpression TransformMultipleValues( IRCode code, out ExtraArguments extraArguments )
+	{
+		extraArguments = ExtraArguments.None;
+		return this;
+	}
+
+	public virtual IRExpression TransformDependentAssignment( IRCode code )
+	{
+		return Transform( code );
+	}
+
+
+
 
 }
 

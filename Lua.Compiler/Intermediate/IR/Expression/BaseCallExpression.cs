@@ -35,52 +35,75 @@ abstract class BaseCallExpression
 	}
 
 
-	public override void Transform( IRCode code )
+	public override IRExpression Transform( IRCode code )
 	{
-		base.Transform( code );
+		// Transform arguments.
 
-		// Transform arguments and convert final argument to extra arguments
-		// if required.
-
-		TransformExpressionList( code, Arguments );
-		ExtraArguments = TransformLastExpression( code, Arguments );
-		if ( ExtraArguments != ExtraArguments.None )
+		for ( int argument = 0; argument < Arguments.Count - 1; ++argument )
 		{
-			Arguments.RemoveAt( Arguments.Count - 1 );
+			Arguments[ argument ] = Arguments[ argument ].TransformSingleValue( code );
 		}
+
+
+		// Last argument can return multiple results.
+
+		if ( Arguments.Count > 0 )
+		{
+			int last = Arguments.Count - 1;
+			ExtraArguments extraArguments;
+			Arguments[ last ] = Arguments[ last ].TransformMultipleValues( code, out extraArguments );
+			if ( extraArguments != ExtraArguments.None )
+			{
+				ExtraArguments = extraArguments;
+				Arguments.RemoveAt( last );
+			}
+		}
+
+
+		// Leave function.
+
+		return base.Transform( code );
 	}
 
 
-	public override IRExpression TransformExpression( IRCode code )
+	public override IRExpression TransformSingleValue( IRCode code )
 	{
-		base.TransformExpression( code );
+		// Transform arguments.
+
+		Transform( code );
+
+
+		// Function results must be the only thing on the stack.
+
+		TemporaryExpression temporary = new TemporaryExpression( Location );
+		code.Statement( new Assign( Location, temporary, this ) );
+		return temporary;
+	}
+
+
+	public override IRExpression TransformMultipleValues( IRCode code, out ExtraArguments extraArguments )
+	{
+		// If we have been restricted to a single result, transform it.
 
 		if ( IsSingleValue )
 		{
-			// Ensure each function call has its own statement.
-
-			TemporaryExpression temporary = new TemporaryExpression( Location );
-			code.Statement( new Assign( Location, temporary, this ) );
-			return temporary;
-		}
-		else
-		{
-			// Can return multiple results, 
-
-			code.Statement( new AssignValueList( Location, this ) );
+			extraArguments = ExtraArguments.None;
 			return this;
 		}
+
+		
+		// Transform arguments.
+
+		Transform( code );
+
+		
+		// Evaluate and return value list.
+
+		code.Statement( new AssignValueList( Location, this ) );
+		extraArguments = ExtraArguments.UseValueList;
+		return null;
 	}
 
-
-	public override ExtraArguments TransformToExtraArguments()
-	{
-		if ( ! IsSingleValue )
-		{
-			return ExtraArguments.UseValueList;
-		}
-		return base.TransformToExtraArguments();
-	}
 
 
 

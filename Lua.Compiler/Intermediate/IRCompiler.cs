@@ -170,20 +170,39 @@ sealed partial class IRCompiler
 		code.Peek().Statement( statement );
 	}
 
-	void Transform( IRExpression expression )
+	void Transform( ref IRExpression expression )
 	{
-		expression.Transform( code.Peek() );
+		expression = expression.Transform( code.Peek() );
 	}
 
-	void TransformAssign( IRExpression expression )
+	void TransformMultipleValues( ref IRExpression expression, out ExtraArguments extraArguments )
 	{
-		expression.TransformAssign( code.Peek() );
+		expression = expression.TransformMultipleValues( code.Peek(), out extraArguments );
 	}
 
-	void TransformAssignValue( IRExpression variable, ref IRExpression value )
+	void TransformIndependentAssignment( ref IRExpression variable )
 	{
-		variable.TransformAssignValue( code.Peek(), ref value );
+		variable = variable.Transform( code.Peek() );
 	}
+
+	void TransformDependentAssignment( ref IRExpression variable )
+	{
+		variable = variable.TransformDependentAssignment( code.Peek() );
+	}
+
+	void TransformAssignmentValue( IRExpression variable, ref IRExpression value )
+	{
+		if ( variable.IsComplexAssignment )
+		{
+			value = value.TransformSingleValue( code.Peek() );
+		}
+		else
+		{
+			value = value.Transform( code.Peek() );
+		}
+	}
+
+
 
 	
 	
@@ -196,15 +215,6 @@ sealed partial class IRCompiler
 		{
 			copy.Add( (IRExpression)list[ expression ] );
 		}
-
-
-		// All expression except the last one are restricted to a single value.
-
-		for ( int expression = 0; expression < copy.Count - 1; ++expression )
-		{
-			copy[ expression ].RestrictToSingleValue();
-		}
-
 
 		return copy;
 	}

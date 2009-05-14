@@ -41,10 +41,10 @@ sealed class UnaryExpression
 	}
 
 
-	public override void Transform( IRCode code )
+	public override IRExpression Transform( IRCode code )
 	{
-		base.Transform( code );
-		Operand		= Operand.TransformExpression( code );
+		Operand = Operand.TransformSingleValue( code );
+		return base.Transform( code );
 	}
 
 

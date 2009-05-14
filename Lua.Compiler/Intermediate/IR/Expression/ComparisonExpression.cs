@@ -62,13 +62,12 @@ sealed class ComparisonExpression
 	}
 
 
-	public override void Transform( IRCode code )
+	public override IRExpression Transform( IRCode code )
 	{
-		base.Transform( code );
-		Left	= Left.TransformExpression( code );
-		Right	= Right.TransformExpression( code );
+		Left	= Left.TransformSingleValue( code );
+		Right	= Right.TransformSingleValue( code );
+		return base.Transform( code );
 	}
-
 
 	
 	public override string ToString()

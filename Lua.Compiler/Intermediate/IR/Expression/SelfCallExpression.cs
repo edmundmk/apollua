@@ -39,10 +39,10 @@ sealed class SelfCallExpression
 	}
 
 
-	public override void Transform( IRCode code )
+	public override IRExpression Transform( IRCode code )
 	{
-		Object = Object.TransformExpression( code );
-		base.Transform( code );
+		Object = Object.TransformSingleValue( code );
+		return base.Transform( code );
 	}
 
 

@@ -23,13 +23,13 @@ sealed class VarargElementExpression
 	:	IRExpression
 {
 
-	public int			Index;
+	public int Index { get; private set; }
 
 	
 	public VarargElementExpression( SourceLocation l, int index )
 		:	base( l )
 	{
-		Index		= index;
+		Index = index;
 	}
 
 

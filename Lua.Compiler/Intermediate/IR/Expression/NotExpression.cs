@@ -28,15 +28,16 @@ sealed class NotExpression
 	public NotExpression( SourceLocation l, IRExpression operand )
 		:	base( l )
 	{
-		Operand		= operand;
+		Operand	 = operand;
 	}
 
 
-	public override void Transform( IRCode code )
+	public override IRExpression Transform( IRCode code )
 	{
-		base.Transform( code );
-		Operand		= Operand.TransformExpression( code );
+		Operand = Operand.TransformSingleValue( code );
+		return base.TransformSingleValue( code );
 	}
+
 
 
 	public override string ToString()

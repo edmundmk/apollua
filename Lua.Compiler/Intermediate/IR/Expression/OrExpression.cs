@@ -30,16 +30,16 @@ sealed class OrExpression
 	public OrExpression( SourceLocation l, IRExpression left, IRExpression right )
 		:	base( l )
 	{
-		Left		= left;
-		Right		= right;
+		Left	= left;
+		Right	= right;
 	}
 
 
-	public override void Transform( IRCode code )
+	public override IRExpression Transform( IRCode code )
 	{
-		base.Transform( code );
-		Left		= Left.TransformExpression( code );
-		Right		= Right.TransformExpression( code );
+		Left	= Left.TransformSingleValue( code );
+		Right	= Right.TransformSingleValue( code );
+		return base.Transform( code );
 	}
 
 

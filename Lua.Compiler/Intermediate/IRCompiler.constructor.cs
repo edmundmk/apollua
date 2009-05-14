@@ -40,8 +40,8 @@ sealed partial class IRCompiler
 		IRExpression index = new IndexExpression( l, scope.Constructor, (IRExpression)key );
 		IRExpression value = (IRExpression)v;
 		
-		Transform( index );
-		TransformAssignValue( index, ref value );
+		TransformIndependentAssignment( ref index );
+		TransformAssignmentValue( index, ref value );
 		Statement( new Assign( l, index, value ) );
 	}
 
@@ -53,8 +53,8 @@ sealed partial class IRCompiler
 		IRExpression index = new IndexExpression( l, scope.Constructor, new LiteralExpression( l, (double)key ) );
 		IRExpression value = (IRExpression)v;
 		
-		Transform( index );
-		TransformAssignValue( index, ref value );
+		TransformIndependentAssignment( ref index );
+		TransformAssignmentValue( index, ref value );
 		Statement( new Assign( l, index, value ) );
 	}
 
@@ -62,22 +62,27 @@ sealed partial class IRCompiler
 	{
 		ConstructorScope scope = (ConstructorScope)constructorScope;
 
-		MultipleResultsExpression multipleResults = v as MultipleResultsExpression;
-		if ( multipleResults != null && ! multipleResults.IsSingleValue )
+
+		// Try multiple values.
+
+		IRExpression value = (IRExpression)v;
+		ExtraArguments extraArguments;
+		TransformMultipleValues( ref value, out extraArguments );
+
+
+		if ( extraArguments == ExtraArguments.None )
+		{
+			// Fall back to single value.
+
+			Field( l, constructorScope, key, v );
+		}
+		else
 		{
 			// Set list.
 
-			multipleResults = (MultipleResultsExpression)multipleResults.TransformExpression( code.Peek() );
-			ExtraArguments extraArguments = multipleResults.TransformToExtraArguments();
-			Debug.Assert( extraArguments != ExtraArguments.None );
 			Statement( new SetList( l, scope.Constructor, key, extraArguments ) );
-			return;
 		}
 
-		
-		// Fall back to single value.
-
-		Field( l, constructorScope, key, v );
 	}
 
 	public Expression EndConstructor( SourceLocation l, Scope end )

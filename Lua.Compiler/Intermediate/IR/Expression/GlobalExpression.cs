@@ -23,19 +23,14 @@ sealed class GlobalExpression
 	:	IRExpression
 {
 
-	public string		Name;
+	public override bool	IsComplexAssignment	{ get { return true; } }
+	public string			Name				{ get; private set; }
 
 
 	public GlobalExpression( SourceLocation l, string name )
 		:	base( l )
 	{
-		Name		= name;
-	}
-
-
-	public override void TransformAssignValue( IRCode code, ref IRExpression value )
-	{
-		value = value.TransformExpression( code );
+		Name = name;
 	}
 
 

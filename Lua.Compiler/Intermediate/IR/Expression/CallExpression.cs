@@ -34,10 +34,10 @@ sealed class CallExpression
 	}
 
 
-	public override void Transform( IRCode code )
+	public override IRExpression Transform( IRCode code )
 	{
-		Function = Function.TransformExpression( code );
-		base.Transform( code );
+		Function = Function.TransformSingleValue( code );
+		return base.Transform( code );
 	}
 
 

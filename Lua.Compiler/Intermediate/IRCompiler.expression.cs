@@ -26,8 +26,6 @@ sealed partial class IRCompiler
 
 	public Expression UnaryExpression( SourceLocation l, Expression operand, TokenKind op )
 	{
-		( (IRExpression)operand ).RestrictToSingleValue();
-
 		switch ( op )
 		{
 		case TokenKind.Not:
@@ -40,9 +38,6 @@ sealed partial class IRCompiler
 
 	public Expression BinaryExpression( SourceLocation l, Expression left, Expression right, TokenKind op )
 	{
-		( (IRExpression)left ).RestrictToSingleValue();
-		( (IRExpression)right ).RestrictToSingleValue();
-
 		switch ( op )
 		{
 		case TokenKind.LogicalEqual:
@@ -81,27 +76,24 @@ sealed partial class IRCompiler
 
 	public Expression LookupExpression( SourceLocation l, Expression left, Expression key )
 	{
-		( (IRExpression)left ).RestrictToSingleValue();
-		( (IRExpression)key ).RestrictToSingleValue();
 		return new IndexExpression( l, (IRExpression)left, (IRExpression)key );
 	}
 
 	public Expression CallExpression( SourceLocation l, Expression left, IList< Expression > argumentlist )
 	{
-		( (IRExpression)left ).RestrictToSingleValue();
 		return new CallExpression( l, (IRExpression)left, CastExpressionList( argumentlist ) );
 	}
 
 	public Expression SelfCallExpression( SourceLocation l, Expression left, SourceLocation keyl, string key, IList< Expression > argumentlist )
 	{
-		( (IRExpression)left ).RestrictToSingleValue();
 		return new SelfCallExpression( l, (IRExpression)left, keyl, key, CastExpressionList( argumentlist ) );
 	}
 
 	public Expression NestedExpression( SourceLocation l, Expression expression )
 	{
-		( (IRExpression)expression ).RestrictToSingleValue();
-		return expression;
+		IRExpression operand = (IRExpression)expression;
+		operand.RestrictToSingleValue();
+		return operand;
 	}
 
 	public Expression LocalVariableExpression( SourceLocation l, Scope lookupScope, Local local )

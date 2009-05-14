@@ -29,6 +29,34 @@ sealed class VarargExpression
 	}
 
 
+
+	public override IRExpression Transform( IRCode code )
+	{
+		// All contexts other than multiple values, use the first variable argument.
+
+		return new VarargElementExpression( Location, 0 );
+	}
+	
+	public override IRExpression TransformMultipleValues( IRCode code, out ExtraArguments extraArguments )
+	{
+		// Single values return the first vararg.
+
+		if ( IsSingleValue )
+		{
+			extraArguments = ExtraArguments.None;
+			return this;
+		}
+
+
+		// Otherwise use the vararg array.
+
+		extraArguments = ExtraArguments.UseVararg;
+		return null;
+	}
+
+
+
+
 	public override ExtraArguments TransformToExtraArguments()
 	{
 		if ( ! IsSingleValue )

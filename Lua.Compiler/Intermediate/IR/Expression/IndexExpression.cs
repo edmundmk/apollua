@@ -36,36 +36,38 @@ sealed class IndexExpression
 	}
 
 
-	public override void Transform( IRCode code )
+	public override IRExpression Transform( IRCode code )
 	{
-		base.Transform( code );
-		Table		= Table.TransformExpression( code );
-		Key			= Key.TransformExpression( code );
+		Table	= Table.TransformSingleValue( code );
+		Key		= Key.TransformSingleValue( code );
+		return base.Transform( code );
 	}
 
 
-	public override void TransformAssign( IRCode code )
+	public override IRExpression TransformDependentAssignment( IRCode code )
 	{
+		// Transform operands.
+
+		Transform( code );
+
+
 		// Store operands in temporaries so that assignments can't trash them.
 
-		IRExpression leftTemp	= new TemporaryExpression( Table.Location );
-		IRExpression keyTemp	= new TemporaryExpression( Key.Location );
+		if ( !( Table is TemporaryExpression ) )
+		{
+			IRExpression tableTemp = new TemporaryExpression( Table.Location );
+			code.Statement( new Assign( Location, tableTemp, Table ) );
+			Table = tableTemp;
+		}
 
-		leftTemp.TransformAssign( code );
-		Table.Transform( code );
-		code.Statement( new Assign( Location, leftTemp, Table ) );
-		Table = leftTemp;
+		if ( !( Key is TemporaryExpression ) )
+		{
+			IRExpression keyTemp = new TemporaryExpression( Key.Location );
+			code.Statement( new Assign( Location, keyTemp, Key ) );
+			Key = keyTemp;
+		}
 
-		keyTemp.TransformAssign( code );
-		Key.Transform( code );
-		code.Statement( new Assign( Location, keyTemp, Key ) );
-		Key = keyTemp;
-	}
-	
-
-	public override void TransformAssignValue( IRCode code, ref IRExpression value )
-	{
-		value = value.TransformExpression( code );
+		return this;
 	}
 
 

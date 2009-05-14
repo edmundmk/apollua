@@ -137,7 +137,7 @@ sealed partial class IRCompiler
 
 		Statement( new BeginBlock( l, "if" ) );
 		Statement( new BeginScope( l ) );
-		Transform( condition );
+		Transform( ref condition );
 		Statement( new BeginTest( l, condition ) );
 		
 		return new IfScope();
@@ -151,7 +151,7 @@ sealed partial class IRCompiler
 		Statement( new EndTest( l ) );
 		Statement( new EndScope( l ) );
 		Statement( new BeginScope( l ) );
-		Transform( condition );
+		Transform( ref condition );
 		Statement( new BeginTest( l, condition ) );
 
 		return new IfScope();
@@ -202,7 +202,7 @@ sealed partial class IRCompiler
 
 		Statement( new BeginBlock( l, "while" ) );
 		Statement( new BeginScope( l ) );
-		Transform( condition );
+		Transform( ref condition );
 		Statement( new BeginTest( l, condition ) );
 
 		return new LoopScope( "while" );
@@ -248,7 +248,7 @@ sealed partial class IRCompiler
 		IRExpression condition = (IRExpression)c;
 
 		Statement( new EndBlock( l ) );
-		Transform( condition );
+		Transform( ref condition );
 		Statement( new BeginTest( l, condition ) );
 		Statement( new Continue( l, "repeat" ) );
 		Statement( new EndTest( l ) );
@@ -303,11 +303,11 @@ sealed partial class IRCompiler
 		IRExpression limitExpression = new ToNumberExpression( l, limit );
 		IRExpression stepExpression  = new ToNumberExpression( l, step );
 
-		Transform( startExpression );
+		Transform( ref startExpression );
 		Statement( new DeclareAssign( l, forIndex, startExpression ) );
-		Transform( limitExpression );
+		Transform( ref limitExpression );
 		Statement( new DeclareAssign( l, forLimit, limitExpression ) );
-		Transform( stepExpression );
+		Transform( ref stepExpression );
 		Statement( new DeclareAssign( l, forStep, stepExpression ) );
 
 
@@ -339,7 +339,7 @@ sealed partial class IRCompiler
 
 		Statement( new BeginBlock( l, "for" ) );
 		Statement( new BeginScope( l ) );
-		Transform( test );
+		Transform( ref test );
 		Statement( new BeginTest( l, test ) );
 		Statement( new BeginBlock( l, "forbody" ) );
 		
@@ -351,7 +351,7 @@ sealed partial class IRCompiler
 		forScope.Declare( userIndex );
 		code.Peek().DeclareLocal( userIndex );
 		IRExpression indexExpression = new LocalExpression( l, forIndex );
-		Transform( indexExpression );
+		Transform( ref indexExpression );
 		Statement( new DeclareAssign( l, userIndex, indexExpression ) );
 		
 
@@ -374,8 +374,8 @@ sealed partial class IRCompiler
 				new LocalExpression( l, forScope.ForStep ),
 				TokenKind.PlusSign );
 
-		TransformAssign( indexVariable );
-		Transform( incrementExpression );
+		TransformIndependentAssignment( ref indexVariable );
+		TransformAssignmentValue( indexVariable, ref incrementExpression );
 		Statement( new Assign( l, indexVariable, incrementExpression ) );
 
 
@@ -473,10 +473,10 @@ sealed partial class IRCompiler
 		IRExpression controlVariable	= new LocalExpression( l, forControl );
 		IRExpression updateExpression	= new LocalExpression( l, userControl );
 
-		TransformAssign( controlVariable );
-		Transform( updateExpression );
+		TransformIndependentAssignment( ref controlVariable );
+		TransformAssignmentValue( controlVariable, ref updateExpression );
 		Statement( new Assign( l, controlVariable, updateExpression ) );
-		Transform( test );
+		Transform( ref test );
 		Statement( new BeginTest( l, test ) );
 		Statement( new Break( l, "forin" ) );
 		Statement( new EndTest( l ) );

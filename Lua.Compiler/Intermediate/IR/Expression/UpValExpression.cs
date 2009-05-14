@@ -22,7 +22,7 @@ sealed class UpValExpression
 	:	IRExpression
 {
 
-	public IRLocal		Local;
+	public IRLocal Local { get; private set; }
 
 
 	public UpValExpression( SourceLocation l, IRLocal local )
