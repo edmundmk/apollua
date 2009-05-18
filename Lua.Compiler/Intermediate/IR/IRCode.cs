@@ -19,7 +19,7 @@ sealed class IRCode
 	:	Code
 {
 	public IRCode				Parent		{ get; private set; }
-	public IList< IRCode >		Children	{ get; private set; }
+	public IList< IRCode >		Functions	{ get; private set; }
 
 	public IList< IRLocal >		UpVals		{ get; private set; }
 	public IList< IRLocal >		Parameters	{ get; private set; }
@@ -32,7 +32,7 @@ sealed class IRCode
 	public IRCode( IRCode parent )
 	{
 		Parent		= parent;
-		Children	= new List< IRCode >();
+		Functions	= new List< IRCode >();
 
 		UpVals		= new List< IRLocal >();
 		Parameters	= new List< IRLocal >();
@@ -50,7 +50,9 @@ sealed class IRCode
 	public void MarkUpVal( IRLocal upval )
 	{
 		IRCode code = this;
-		while ( ! code.Parameters.Contains( upval ) && ! code.Locals.Contains( upval ) )
+		while (    ! code.Parameters.Contains( upval )
+			    && ! code.Locals.Contains( upval )
+				&& ! code.UpVals.Contains( upval ) )
 		{
 			code.UpVals.Add( upval );
 			code = code.Parent;
@@ -79,7 +81,7 @@ sealed class IRCode
 
 	public void ChildFunction( IRCode code )
 	{
-		Children.Add( code );
+		Functions.Add( code );
 	}
 
 
@@ -114,13 +116,13 @@ sealed class IRCode
 		w.WriteLine( "UpVals" );
 		foreach ( IRLocal upval in UpVals )
 		{
-			w.WriteLine( "\t{0}", upval.Name );
+			w.WriteLine( "\t{0:X} {1}", upval.GetHashCode(), upval.Name );
 		}
 
 		w.WriteLine( "Parameters" );
 		foreach ( IRLocal parameter in Parameters )
 		{
-			w.WriteLine( "\t{0}", parameter.Name );
+			w.WriteLine( "\t{0:X} {1}", parameter.GetHashCode(), parameter.Name );
 		}
 		if ( IsVararg )
 		{
@@ -130,7 +132,7 @@ sealed class IRCode
 		w.WriteLine( "Locals" );
 		foreach ( IRLocal local in Locals )
 		{
-			w.WriteLine( "\t{0}", local.Name );
+			w.WriteLine( "\t{0:X} {1}", local.GetHashCode(), local.Name );
 		}
 
 		w.WriteLine( "Statements" );
@@ -141,7 +143,7 @@ sealed class IRCode
 
 		w.WriteLine();
 
-		foreach( IRCode code in Children )
+		foreach( IRCode code in Functions )
 		{
 			code.Disassemble( w );
 		}

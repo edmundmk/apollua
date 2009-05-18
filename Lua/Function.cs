@@ -77,7 +77,7 @@ public abstract class Function
 
 
 	// Individual functions must implement all call operations.
-
+/*
 	public override abstract Value InvokeS();
 	public override abstract Value InvokeS( Value arg );
 	public override abstract Value InvokeS( Value arg1, Value arg2 );
@@ -94,7 +94,7 @@ public abstract class Function
 
 //	public override abstract Value ResumeS( StackFrame frame );
 //	public override abstract Value[] ResumeM( StackFrame frame );
-
+*/
 }
 
 

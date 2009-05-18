@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Backend\CILCompiler.cs" />
     <Compile Include="Frontend\AST\Code.cs" />
     <Compile Include="Frontend\AST\Expression.cs" />
     <Compile Include="Frontend\AST\Local.cs" />

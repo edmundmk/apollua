@@ -51,6 +51,7 @@
     <Compile Include="BoxedString.cs" />
     <Compile Include="Coroutine.cs" />
     <Compile Include="Function.cs" />
+    <Compile Include="UpVal.cs" />
     <Compile Include="Value.cs" />
     <Compile Include="Table.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
