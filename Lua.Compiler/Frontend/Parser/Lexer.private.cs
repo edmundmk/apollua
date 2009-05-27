@@ -246,6 +246,9 @@ partial class Lexer
 
 
 
+
+
+
 	void ElideText()
 	{
 		tokenIndex = charIndex;
