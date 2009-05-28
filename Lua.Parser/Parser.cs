@@ -1023,7 +1023,8 @@ public class Parser
 
 			for ( int local = 0; local < locallist.Count; ++local )
 			{
-				function.Statement( new Declare( s, locallist[ local ] ) );
+				function.Statement( new DeclareAssign( s, locallist[ local ],
+					new Literal( s, null ) ) );
 			}
 
 		}
@@ -1085,7 +1086,8 @@ public class Parser
 
 				for ( int local = expressionlist.Count; local < locallist.Count; ++local )
 				{
-					function.Statement( new Declare( s, locallist[ local ] ) );
+					function.Statement( new DeclareAssign( s, locallist[ local ],
+						new Literal( s, null ) ) );
 				}
 			}
 
