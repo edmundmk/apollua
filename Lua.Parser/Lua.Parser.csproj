@@ -50,10 +50,10 @@
     <Compile Include="AST\Expressions\BinaryOp.cs" />
     <Compile Include="AST\Expressions\Call.cs" />
     <Compile Include="AST\Expressions\CallSelf.cs" />
-    <Compile Include="AST\Expressions\Closure.cs" />
     <Compile Include="AST\Expressions\Comparison.cs" />
     <Compile Include="AST\Expressions\ComparisonOp.cs" />
     <Compile Include="AST\Expressions\Constructor.cs" />
+    <Compile Include="AST\Expressions\FunctionClosure.cs" />
     <Compile Include="AST\Expressions\Global.cs" />
     <Compile Include="AST\Expressions\Index.cs" />
     <Compile Include="AST\Expressions\Literal.cs" />

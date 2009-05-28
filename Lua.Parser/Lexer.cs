@@ -68,6 +68,8 @@ class Lexer
 		startColumn			= 1;
 		line				= 1;
 		column				= 1;
+
+		FillBuffer();
 	}
 
 

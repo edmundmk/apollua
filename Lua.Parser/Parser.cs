@@ -40,7 +40,6 @@ public class Parser
 	Function					function;
 	Scope						scope;
 	ParseStack< Expression >	expression;
-	ParseStack< string >		name;
 
 
 
@@ -58,7 +57,6 @@ public class Parser
 		function			= null;
 		scope				= null;
 		expression			= new ParseStack< Expression >();
-		name				= new ParseStack< string >();
 	}
 
 
@@ -104,7 +102,6 @@ public class Parser
 		Debug.Assert( function == null );
 		Debug.Assert( scope == null );
 		Debug.Assert( expression.Count == 0 );
-		Debug.Assert( name.Count == 0 );
 		
 		return result;
 	}
@@ -533,16 +530,16 @@ public class Parser
 		Token name = Check( TokenKind.Identifier );
 		Check( TokenKind.EqualSign );
 		exp();
-		Expression start = expression.Pop();
+		Expression start = PopValue();
 		Check( TokenKind.Comma );
 		exp();
-		Expression limit = expression.Pop();
+		Expression limit = PopValue();
 
 		Expression step = null;
 		if ( Test( TokenKind.Comma ) )
 		{
 			exp();
-			step = expression.Pop();
+			step = PopValue();
 		}
 		else
 		{
@@ -646,6 +643,7 @@ public class Parser
 		function.Statement( new EndScope( s ) );
 		function.Statement( new EndBlock( s ) );	
 		function.Statement( new EndScope( s ) );
+		scope = scope.Parent;
 	}
 
 
@@ -657,13 +655,12 @@ public class Parser
 		*/
 
 		
-		name.Push( (string)Check( TokenKind.Identifier ).Value );
-		int namecount = 1;
+		IList< Token > namelist = new List< Token >();
+		namelist.Add( Check( TokenKind.Identifier ) );
 		
 		while ( Test( TokenKind.Comma ) )
 		{
-			name.Push( (string)Check( TokenKind.Identifier ).Value );
-			namecount += 1;
+			namelist.Add( Check( TokenKind.Identifier ) );
 		}
 
 		Check( TokenKind.In );
@@ -680,10 +677,13 @@ public class Parser
 		// Declare internal variables.
 
 		scope = new Scope( function, scope );
-		name.Push( "(for generator)" );
-		name.Push( "(for state)" );
-		name.Push( "(for control)" );
-		LocalStatementAST( s, 3, expressioncount );
+		Token[] internalNameList = new Token[]
+		{
+			new Token( s, TokenKind.Identifier, "(for generator)" ),
+			new Token( s, TokenKind.Identifier, "(for state)" ),
+			new Token( s, TokenKind.Identifier, "(for control)" ),
+		};
+		LocalStatementAST( s, internalNameList, expressioncount );
 
 		Debug.Assert( scope.Locals.Count == 3 );
 		Variable forGenerator	= scope.Locals[ 0 ];
@@ -692,7 +692,6 @@ public class Parser
 		Debug.Assert( forGenerator.Name	== "(for generator)" );
 		Debug.Assert( forState.Name		== "(for state)" );
 		Debug.Assert( forControl.Name	== "(for control)" );
-
 		scope = scope.Parent;
 
 
@@ -718,10 +717,10 @@ public class Parser
 		scope = new Scope( function, scope,
 			new BreakContinueAction( BreakOrContinue.Break, "forin" ),
 			new BreakContinueAction( BreakOrContinue.Continue, "forin" ) );
-		expression.Push( generator );
-		LocalStatementAST( s, namecount, 1 );
+		PushExpression( generator );
+		LocalStatementAST( s, namelist, 1 );
 
-		Debug.Assert( scope.Locals.Count == namecount );
+		Debug.Assert( scope.Locals.Count == namelist.Count );
 		Variable userControl = scope.Locals[ 0 ];
 
 
@@ -759,6 +758,7 @@ public class Parser
 		function.Statement( new EndScope( s ) );
 		function.Statement( new EndBlock( s ) );
 		function.Statement( new EndScope( s ) );
+		scope = scope.Parent;
 	}
 
 
@@ -811,7 +811,7 @@ public class Parser
 		}
 
 		funcbody( matchFunction, functionName.ToString(), methodName );
-		Expression f = expression.Pop();
+		Expression f = PopValue();
 	
 		function.Statement( new Assign( variable.SourceSpan, variable, f ) );
 	}
@@ -829,7 +829,7 @@ public class Parser
 		Token localName = Check( TokenKind.Identifier );
 
 		funcbody( matchFunction, (string)localName.Value, null );
-		Expression f = expression.Pop();
+		Expression f = PopValue();
 
 		Variable local = new Variable( (string)localName.Value );
 		function.Local( local ); scope.Local( local );
@@ -941,7 +941,7 @@ public class Parser
 		// Push a function expression.
 
 		SourceSpan s = new SourceSpan( matchFunction.SourceSpan.Start, endFunction.SourceSpan.End );
-		expression.Push( new Closure( s, function ) );
+		PushExpression( new FunctionClosure( s, function ) );
 
 
 		// Finished.
@@ -959,19 +959,21 @@ public class Parser
 		*/
 
 		Token local = Check( TokenKind.Local );
+		SourceLocation end;
 
 
 		// Have to declare new variables after evaluating the explist, so
 		// that local x = x will find the value of x in the enclosing scope.
 
-		int variablecount = 0;
+		IList< Token > namelist = new List< Token >();
 		while ( true )
 		{
 			// IDENTIFIER
 
-			name.Push( (string)Check( TokenKind.Identifier ).Value );
-			variablecount += 1;
-			
+			Token name = Check( TokenKind.Identifier );
+			namelist.Add( name );
+			end = name.SourceSpan.End;
+						
 
 			// ','
 
@@ -985,31 +987,30 @@ public class Parser
 		// explist
 
 		int expressioncount = 0;
-		if ( Get() == TokenKind.EqualSign )
+		if ( Test( TokenKind.EqualSign ) )
 		{
-			Check( TokenKind.EqualSign );
 			expressioncount = explist();
+			end = expression.Peek().SourceSpan.End;
 		}
 
 
 		// Perform assignment.
 
-		SourceSpan s = new SourceSpan( local.SourceSpan.Start, expression.Peek().SourceSpan.End );
-		LocalStatementAST( s, variablecount, expressioncount );
+		SourceSpan s = new SourceSpan( local.SourceSpan.Start, end );
+		LocalStatementAST( s, namelist, expressioncount );
 	}
 
-	void LocalStatementAST( SourceSpan s, int variablecount, int expressioncount )
+	void LocalStatementAST( SourceSpan s, IList< Token > namelist, int expressioncount )
 	{
 		
 		// Declare locals.
 
-		IList< string > namelist = name.Pop( variablecount );
 		IList< Variable > locallist = new Variable[ namelist.Count ];
 		for ( int variable = 0; variable < namelist.Count; ++variable )
 		{
-			Variable local = new Variable( namelist[ variable ] );
+			Variable local = new Variable( (string)namelist[ variable ].Value );
 			function.Local( local ); scope.Local( local );
-			locallist.Add( local );
+			locallist[ variable ] = local;
 		}
 		
 
@@ -1026,7 +1027,7 @@ public class Parser
 			}
 
 		}
-		else if ( variablecount > expressioncount )
+		else if ( namelist.Count > expressioncount )
 		{
 
 			// Check for multiple results on the last expression.
@@ -1183,6 +1184,8 @@ public class Parser
 
 	void AssignStatementAST( SourceSpan s, int variablecount, int expressioncount )
 	{
+		Debug.Assert( variablecount > 0 && expressioncount > 0 );
+
 
 		// Simpler code when there are no dependencies between expressions
 		
@@ -1212,10 +1215,11 @@ public class Parser
 		
 		// Transform assignment expressions.
 
-		IList< Expression > variablelist = PopValues( variablecount );
+		IList< Expression > vlist = PopValues( variablecount );
+		IList< Expression > variablelist = new Expression[ variablecount ];
 		for ( int variable = 0; variable < variablelist.Count; ++variable )
 		{
-			Index index = variablelist[ variable ] as Index;
+			Index index = vlist[ variable ] as Index;
 			if ( index != null )
 			{
 				Temporary temporaryTable	= new Temporary( index.Table.SourceSpan );
@@ -1225,6 +1229,10 @@ public class Parser
 				function.Statement( new Assign( index.SourceSpan, temporaryKey, index.Key ) );
 
 				variablelist[ variable ] = new Index( index.SourceSpan, temporaryTable, temporaryKey );
+			}
+			else
+			{
+				variablelist[ variable ] = vlist[ variable ];
 			}
 		}
 		
@@ -1243,7 +1251,7 @@ public class Parser
 			
 				function.Statement( new Assign( s, temporary, e ) );
 				
-				temporarylist.Add( temporary );
+				temporarylist[ expression ] = temporary;
 			}
 
 
@@ -1315,7 +1323,7 @@ public class Parser
 
 				function.Statement( new Assign( s, temporary, e ) );
 				
-				temporarylist.Add( temporary );
+				temporarylist[ variable ] = temporary;
 			}
 
 
@@ -1972,7 +1980,7 @@ public class Parser
 		
 		case TokenKind.String:
 			Token stringToken = Check( TokenKind.String );
-			expression.Push( new Literal( stringToken.SourceSpan, stringToken.Value ) );
+			PushExpression( new Literal( stringToken.SourceSpan, stringToken.Value ) );
 			end = stringToken.SourceSpan.End;
 			argumentcount = 1;
 			break;
@@ -1986,10 +1994,14 @@ public class Parser
 		SourceSpan s = new SourceSpan( function.SourceSpan.Start, end );
 	
 		// Check for multiple results.
-		Expression values = PopMultipleValues();
-		if ( values != null )
+		Expression values = null;
+		if ( argumentcount > 0 )
 		{
-			argumentcount -= 1;
+			values = PopMultipleValues();
+			if ( values != null )
+			{
+				argumentcount -= 1;
+			}
 		}
 
 		// Create a call or self-call expression.
@@ -2031,13 +2043,13 @@ public class Parser
 		case TokenKind.Identifier:
 		{
 			Token nameToken = Check( TokenKind.Identifier );
-			expression.Push( Lookup( nameToken ) );
+			PushExpression( Lookup( nameToken ) );
 			return ExpressionType.Assignable;
 		}
 
 		default:
 		{
-			expression.Push( new Literal( GetToken().SourceSpan, null ) );
+			PushExpression( new Literal( GetToken().SourceSpan, null ) );
 			Error( "Unexpected token '{0}'", Lexer.GetTokenName( Get() ) );
 			return ExpressionType.None;
 		}

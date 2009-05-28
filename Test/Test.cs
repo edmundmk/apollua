@@ -5,8 +5,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Lua;
-using Lua.Compiler;
+using Lua.Parser;
+using AST = Lua.Parser.AST;
 
 
 namespace Test
@@ -18,7 +20,9 @@ static class EntryPoint
 
 	static int Main( string[] args )
 	{
-		LuaCompiler.Compile( args[ 0 ] );
+		StringWriter errors = new StringWriter();
+		Parser parser = new Parser( errors, File.OpenText( args[ 0 ] ), args[ 0 ] );
+		AST.Function f = parser.Parse();
 		return 0;
 	}
 
