@@ -566,9 +566,9 @@ public class Parser
 		Expression limitExpression = new ToNumber( limit.SourceSpan, limit );
 		Expression stepExpression  = new ToNumber( step.SourceSpan, step );
 
-		function.Statement( new DeclareAssign( start.SourceSpan, forIndex, startExpression ) );
-		function.Statement( new DeclareAssign( limit.SourceSpan, forLimit, limitExpression ) );
-		function.Statement( new DeclareAssign( step.SourceSpan, forStep, stepExpression ) );
+		function.Statement( new Declare( start.SourceSpan, forIndex, startExpression ) );
+		function.Statement( new Declare( limit.SourceSpan, forLimit, limitExpression ) );
+		function.Statement( new Declare( step.SourceSpan, forStep, stepExpression ) );
 
 
 		// Test expression.
@@ -607,7 +607,7 @@ public class Parser
 		Variable userIndex = new Variable( (string)name.Value );
 		function.Local( userIndex ); scope.Local( userIndex );
 		Expression indexExpression = new Local( s, forIndex );
-		function.Statement( new DeclareAssign( s, userIndex, indexExpression ) );
+		function.Statement( new Declare( s, userIndex, indexExpression ) );
 
 
 		// Loop body.
@@ -833,7 +833,7 @@ public class Parser
 
 		Variable local = new Variable( (string)localName.Value );
 		function.Local( local ); scope.Local( local );
-		function.Statement( new DeclareAssign( localName.SourceSpan, local, f ) );
+		function.Statement( new Declare( localName.SourceSpan, local, f ) );
 	}
 
 
@@ -1023,7 +1023,7 @@ public class Parser
 
 			for ( int local = 0; local < locallist.Count; ++local )
 			{
-				function.Statement( new DeclareAssign( s, locallist[ local ],
+				function.Statement( new Declare( s, locallist[ local ],
 					new Literal( s, null ) ) );
 			}
 
@@ -1046,7 +1046,7 @@ public class Parser
 			for ( int expression = 0; expression < expressionlist.Count; ++expression )
 			{
 				Expression value = expressionlist[ expression ];
-				function.Statement( new DeclareAssign( s, locallist[ expression ], value ) );
+				function.Statement( new Declare( s, locallist[ expression ], value ) );
 			}
 
 
@@ -1060,7 +1060,7 @@ public class Parser
 
 					for ( int local = expressionlist.Count; local < locallist.Count; ++local )
 					{
-						function.Statement( new DeclareAssign( s, locallist[ local ],
+						function.Statement( new Declare( s, locallist[ local ],
 							new VarargElement( s, local - expressionlist.Count ) ) );
 					}
 				}
@@ -1075,7 +1075,7 @@ public class Parser
 
 					for ( int local = expressionlist.Count; local < locallist.Count; ++local )
 					{
-						function.Statement( new DeclareAssign( s, locallist[ local ],
+						function.Statement( new Declare( s, locallist[ local ],
 							new ValueListElement( s, local - expressionlist.Count ) ) );
 					}
 				}
@@ -1086,7 +1086,7 @@ public class Parser
 
 				for ( int local = expressionlist.Count; local < locallist.Count; ++local )
 				{
-					function.Statement( new DeclareAssign( s, locallist[ local ],
+					function.Statement( new Declare( s, locallist[ local ],
 						new Literal( s, null ) ) );
 				}
 			}
@@ -1101,7 +1101,7 @@ public class Parser
 			for ( int local = 0; local < locallist.Count; ++local )
 			{
 				Expression value = expressionlist[ local ];
-				function.Statement( new DeclareAssign( s, locallist[ local ], value ) );
+				function.Statement( new Declare( s, locallist[ local ], value ) );
 			}
 
 
@@ -1810,7 +1810,7 @@ public class Parser
 					}
 					else
 					{
-						function.Statement( new IndexList( values.SourceSpan, constructor, arrayKey, values ) );
+						function.Statement( new IndexMultipleValues( values.SourceSpan, constructor, arrayKey, values ) );
 					}
 				}
 			}

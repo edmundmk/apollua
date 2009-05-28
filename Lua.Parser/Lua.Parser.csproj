@@ -81,9 +81,9 @@
     <Compile Include="AST\Statements\BeginEndConstructor.cs" />
     <Compile Include="AST\Statements\BeginEndScope.cs" />
     <Compile Include="AST\Statements\BeginEndTest.cs" />
-    <Compile Include="AST\Statements\DeclareAssign.cs" />
+    <Compile Include="AST\Statements\Declare.cs" />
     <Compile Include="AST\Statements\Evaluate.cs" />
-    <Compile Include="AST\Statements\IndexList.cs" />
+    <Compile Include="AST\Statements\IndexMultipleValues.cs" />
     <Compile Include="AST\Statements\Return.cs" />
     <Compile Include="AST\Statements\ReturnMultipleValues.cs" />
     <Compile Include="AST\Variable.cs" />
