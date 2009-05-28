@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using Lua.Parser.AST.Statements;
 
 
 namespace Lua.Parser.AST
@@ -17,14 +18,15 @@ public class Function
 {
 	// Properties.
 
-	public string				Name			{ get; private set; }
-	public Function				Parent			{ get; private set; }
-	public IList< Function >	Functions		{ get; private set; }
-	public IList< Variable >	UpVals			{ get; private set; }
-	public IList< Variable >	Parameters		{ get; private set; }
-	public bool					IsVararg		{ get; private set; }
-	public IList< Variable >	Locals			{ get; private set; }
-	public IList< Statement >	Statements		{ get; private set; }
+	public string				Name					{ get; private set; }
+	public Function				Parent					{ get; private set; }
+	public IList< Function >	Functions				{ get; private set; }
+	public IList< Variable >	UpVals					{ get; private set; }
+	public IList< Variable >	Parameters				{ get; private set; }
+	public bool					IsVararg				{ get; private set; }
+	public IList< Variable >	Locals					{ get; private set; }
+	public IList< Statement >	Statements				{ get; private set; }
+	public bool					ReturnsMultipleValues	{ get; private set; }
 	
 
 	// Mutable collections.
@@ -46,14 +48,15 @@ public class Function
 		locals		= new List< Variable >();
 		statements	= new List< Statement >();
 		
-		Name		= name;
-		Parent		= parent;
-		Functions	= functions.AsReadOnly();
-		UpVals		= upvals.AsReadOnly();
-		Parameters	= parameters.AsReadOnly();
-		IsVararg	= false;
-		Locals		= locals.AsReadOnly();
-		Statements	= statements.AsReadOnly();
+		Name					= name;
+		Parent					= parent;
+		Functions				= functions.AsReadOnly();
+		UpVals					= upvals.AsReadOnly();
+		Parameters				= parameters.AsReadOnly();
+		IsVararg				= false;
+		Locals					= locals.AsReadOnly();
+		Statements				= statements.AsReadOnly();
+		ReturnsMultipleValues	= false;
 	}
 
 
@@ -101,6 +104,10 @@ public class Function
 	public void Statement( Statement statement )
 	{
 		statements.Add( statement );
+		if ( statement is ReturnMultipleValues )
+		{
+			ReturnsMultipleValues = true;
+		}
 	}
 	
 }

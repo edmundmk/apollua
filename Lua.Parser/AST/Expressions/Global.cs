@@ -15,13 +15,13 @@ namespace Lua.Parser.AST.Expressions
 public class Global
 	:	Expression
 {
-	public Variable Variable { get; private set; }
+	public string Name { get; private set; }
 
 
-	public Global( SourceSpan s, Variable variable )
+	public Global( SourceSpan s, string name )
 		:	base( s )
 	{
-		Variable = variable;
+		Name = name;
 	}
 
 }

@@ -1,4 +1,4 @@
-// Return.cs
+// ReturnMultipleValues.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -13,14 +13,14 @@ namespace Lua.Parser.AST.Statements
 {
 
 
-public class ReturnMultipleResults
+public class ReturnMultipleValues
 	:	Statement
 {
 	public IList< Expression >	Results			{ get; private set; }
 	public Expression			ResultValues	{ get; private set; }
 
 
-	public ReturnMultipleResults( SourceSpan s, IList< Expression > results, Expression resultValues )
+	public ReturnMultipleValues( SourceSpan s, IList< Expression > results, Expression resultValues )
 		:	base( s )
 	{
 		Results			= results;

@@ -683,7 +683,7 @@ public class Parser
 		name.Push( "(for generator)" );
 		name.Push( "(for state)" );
 		name.Push( "(for control)" );
-		//LocalStatementAST( s, 3, expressioncount );
+		LocalStatementAST( s, 3, expressioncount );
 
 		Debug.Assert( scope.Locals.Count == 3 );
 		Variable forGenerator	= scope.Locals[ 0 ];
@@ -719,7 +719,7 @@ public class Parser
 			new BreakContinueAction( BreakOrContinue.Break, "forin" ),
 			new BreakContinueAction( BreakOrContinue.Continue, "forin" ) );
 		expression.Push( generator );
-		//LocalStatementAST( s, namecount, 1 );
+		LocalStatementAST( s, namecount, 1 );
 
 		Debug.Assert( scope.Locals.Count == namecount );
 		Variable userControl = scope.Locals[ 0 ];
@@ -931,7 +931,7 @@ public class Parser
 		}
 
 		if (    !( lastStatement is Return )
-			 && !( lastStatement is ReturnMultipleResults ) )
+			 && !( lastStatement is ReturnMultipleValues ) )
 		{
 			function.Statement( new Return( endFunction.SourceSpan,
 				new Literal( endFunction.SourceSpan, null ) ) );
@@ -994,10 +994,124 @@ public class Parser
 
 		// Perform assignment.
 
-		IList< Expression >	expressionlist	= expression.Pop( expressioncount );
-		IList< string >		namelist		= name.Pop( variablecount );
+		SourceSpan s = new SourceSpan( local.SourceSpan.Start, expression.Peek().SourceSpan.End );
+		LocalStatementAST( s, variablecount, expressioncount );
+	}
+
+	void LocalStatementAST( SourceSpan s, int variablecount, int expressioncount )
+	{
 		
-		actions.Local( local.Location, scope.Peek(), namelist, expressionlist );
+		// Declare locals.
+
+		IList< string > namelist = name.Pop( variablecount );
+		IList< Variable > locallist = new Variable[ namelist.Count ];
+		for ( int variable = 0; variable < namelist.Count; ++variable )
+		{
+			Variable local = new Variable( namelist[ variable ] );
+			function.Local( local ); scope.Local( local );
+			locallist.Add( local );
+		}
+		
+
+		// Assign.
+
+		if ( expressioncount == 0 )
+		{
+
+			// Just declare all the variables.
+
+			for ( int local = 0; local < locallist.Count; ++local )
+			{
+				function.Statement( new Declare( s, locallist[ local ] ) );
+			}
+
+		}
+		else if ( variablecount > expressioncount )
+		{
+
+			// Check for multiple results on the last expression.
+						
+			Expression multipleValues = PopMultipleValues();
+			if ( multipleValues != null )
+			{
+				expressioncount -= 1;
+			}
+
+
+			// Assign expressions.
+
+			IList< Expression > expressionlist = PopValues( expressioncount );	
+			for ( int expression = 0; expression < expressionlist.Count; ++expression )
+			{
+				Expression value = expressionlist[ expression ];
+				function.Statement( new DeclareAssign( s, locallist[ expression ], value ) );
+			}
+
+
+			// Deal with remaining variables.
+
+			if ( multipleValues != null )
+			{
+				if ( multipleValues is Vararg )
+				{
+					// Assign from vararg.
+
+					for ( int local = expressionlist.Count; local < locallist.Count; ++local )
+					{
+						function.Statement( new DeclareAssign( s, locallist[ local ],
+							new VarargElement( s, local - expressionlist.Count ) ) );
+					}
+				}
+				else
+				{
+					// Evaluate multiple values.
+
+					function.Statement( new Assign( s, new ValueList( s ), multipleValues ) );
+
+
+					// Assign from value list.
+
+					for ( int local = expressionlist.Count; local < locallist.Count; ++local )
+					{
+						function.Statement( new DeclareAssign( s, locallist[ local ],
+							new ValueListElement( s, local - expressionlist.Count ) ) );
+					}
+				}
+			}
+			else
+			{
+				// No extra values, just declare.
+
+				for ( int local = expressionlist.Count; local < locallist.Count; ++local )
+				{
+					function.Statement( new Declare( s, locallist[ local ] ) );
+				}
+			}
+
+		}
+		else
+		{
+			
+			// Assign locals.
+
+			IList< Expression > expressionlist = PopValues( expressioncount );
+			for ( int local = 0; local < locallist.Count; ++local )
+			{
+				Expression value = expressionlist[ local ];
+				function.Statement( new DeclareAssign( s, locallist[ local ], value ) );
+			}
+
+
+			// Evaluate and throw away extra expressions.
+
+			for ( int expression = locallist.Count; expression < expressionlist.Count; ++expression )
+			{
+				Expression value = expressionlist[ expression ];
+				function.Statement( new Evaluate( s, value ) );
+			}
+
+		}
+
 	}
 
 
@@ -1008,9 +1122,7 @@ public class Parser
 		FunctionCall,
 		Assignable,
 	}
-
-
-
+		
 	void exprstat()
 	{
 		/*	exprstat
@@ -1024,7 +1136,8 @@ public class Parser
 		
 		if ( expressionType == ExpressionType.FunctionCall )
 		{
-			actions.CallStatement( callToken.Location, scope.Peek(), expression.Pop() );
+			Expression e = PopValue();
+			function.Statement( new Evaluate( e.SourceSpan, e ) );
 			return;
 		}
 		
@@ -1037,7 +1150,8 @@ public class Parser
 		}
 
 
-		int variablecount	= 1;
+		Expression firstVariable = expression.Peek();
+		int variablecount = 1;
 		while ( Test( TokenKind.Comma ) )
 		{
 			variablecount += 1;
@@ -1053,13 +1167,176 @@ public class Parser
 		Token equalSign = Check( TokenKind.EqualSign );
 		int expressioncount = explist();
 
-		IList< Expression > expressionlist	= expression.Pop( expressioncount );
-		IList< Expression > variablelist	= expression.Pop( variablecount );
-
-		if ( ! assignmentError )
+		if ( assignmentError )
 		{
-			actions.Assignment( equalSign.Location, scope.Peek(), variablelist, expressionlist );
+			PopValues( expressioncount );
+			PopValues( variablecount );
+			return;
 		}
+
+
+		// Build AST
+
+		SourceSpan s = new SourceSpan( firstVariable.SourceSpan.Start, expression.Peek().SourceSpan.End );
+		AssignStatementAST( s, variablecount, expressioncount );
+	}
+
+	void AssignStatementAST( SourceSpan s, int variablecount, int expressioncount )
+	{
+
+		// Simpler code when there are no dependencies between expressions
+		
+		if ( variablecount == 1 && expressioncount == 1 )
+		{
+			Expression expression	= PopValue();
+			Expression variable		= PopValue();			
+			function.Statement( new Assign( s, variable, expression ) );	
+			return;
+		}
+
+
+		// Pop expressions and check for multiple values.
+
+		Expression multipleValues = null;
+		if ( variablecount > expressioncount )
+		{
+			multipleValues = PopMultipleValues();
+			if ( multipleValues != null )
+			{
+				expressioncount -= 1;
+			}
+		}
+
+		IList< Expression > expressionlist = PopValues( expressioncount );
+
+		
+		// Transform assignment expressions.
+
+		IList< Expression > variablelist = PopValues( variablecount );
+		for ( int variable = 0; variable < variablelist.Count; ++variable )
+		{
+			Index index = variablelist[ variable ] as Index;
+			if ( index != null )
+			{
+				Temporary temporaryTable	= new Temporary( index.Table.SourceSpan );
+				Temporary temporaryKey		= new Temporary( index.Key.SourceSpan );
+
+				function.Statement( new Assign( index.SourceSpan, temporaryTable, index.Table ) );
+				function.Statement( new Assign( index.SourceSpan, temporaryKey, index.Key ) );
+
+				variablelist[ variable ] = new Index( index.SourceSpan, temporaryTable, temporaryKey );
+			}
+		}
+		
+
+		// Assign.
+
+		if ( variablelist.Count > expressionlist.Count )
+		{
+			// Evaluate expression list and assign to temporaries.
+
+			IList< Expression > temporarylist = new Expression[ expressionlist.Count ];
+			for ( int expression = 0; expression < expressionlist.Count; ++expression )
+			{
+				Expression e			= expressionlist[ expression ];
+				Expression temporary	= new Temporary( e.SourceSpan );
+			
+				function.Statement( new Assign( s, temporary, e ) );
+				
+				temporarylist.Add( temporary );
+			}
+
+
+			// Evaluate last (multiple value) expression.
+
+			if ( multipleValues != null )
+			{
+				function.Statement( new Assign( s, new ValueList( s ), multipleValues ) );
+			}
+
+
+			// Perform assignments.
+
+			for ( int expression = 0; expression < expressionlist.Count; ++expression )
+			{
+				function.Statement( new Assign( s,
+					variablelist[ expression ], temporarylist[ expression ] ) );
+			}
+			
+			if ( multipleValues != null )
+			{
+				if ( multipleValues is Vararg )
+				{
+					// Assign from vararg.
+
+					for ( int variable = expressionlist.Count; variable < variablelist.Count; ++variable )
+					{
+						function.Statement( new Assign( s, variablelist[ variable ],
+							new VarargElement( s, variable - expressionlist.Count ) ) );
+					}
+				}
+				else
+				{
+					// Evaluate multiple values.
+
+					function.Statement( new Assign( s, new ValueList( s ), multipleValues ) );
+
+
+					// Assign from value list.
+
+					for ( int variable = expressionlist.Count; variable < variablelist.Count; ++variable )
+					{
+						function.Statement( new Assign( s, variablelist[ variable ],
+							new ValueListElement( s, variable - expressionlist.Count ) ) );
+					}
+				}
+			}
+			else
+			{
+				// No extra values, assign null.
+
+				for ( int variable = expressionlist.Count; variable < variablelist.Count; ++variable )
+				{
+					function.Statement( new Assign( s, variablelist[ variable ],
+						new Literal( s, null ) ) );
+				}
+			}
+		}
+		else
+		{
+
+			// Evaluate expression list and assign to temporaries.
+
+			IList< Expression > temporarylist = new Expression[ variablelist.Count ];
+			for ( int variable = 0; variable < variablelist.Count; ++variable )
+			{
+				Expression e			= expressionlist[ variable ];
+				Expression temporary	= new Temporary( e.SourceSpan );
+
+				function.Statement( new Assign( s, temporary, e ) );
+				
+				temporarylist.Add( temporary );
+			}
+
+
+			// Evaluate and throw away extra expressions.
+
+			for ( int expression = variablelist.Count; expression < expressionlist.Count; ++expression )
+			{
+				Expression e = expressionlist[ expression ];
+				function.Statement( new Evaluate( e.SourceSpan, e ) );
+			}
+
+
+			// Preform assignments.
+
+			for ( int variable = 0; variable < variablelist.Count; ++variable )
+			{
+				function.Statement( new Assign( s, variablelist[ variable ], temporarylist[ variable ] ) );
+			}
+
+		}
+
 	}
 
 
@@ -1079,18 +1356,40 @@ public class Parser
 			expressioncount = explist();
 		}
 
-		for ( int scopecount = 0; scopecount < scope.Count; ++scopecount )
+		if ( expressioncount == 0 )
 		{
-			Scope functionScope = scope.Peek( scopecount );
-			if ( functionScope.IsFunctionScope )
+			// Return null.
+
+			SourceSpan s = returnToken.SourceSpan;
+			function.Statement( new Return( s, new Literal( s, null ) ) );
+		}
+		else
+		{
+			SourceSpan s = new SourceSpan( returnToken.SourceSpan.Start, expression.Peek().SourceSpan.End );
+
+
+			// Check for multiple results.
+
+			Expression resultValues = PopMultipleValues();
+			if ( resultValues != null )
 			{
-				actions.Return( returnToken.Location, functionScope, expression.Pop( expressioncount ) );
-				return;
+				expressioncount -= 1;
+			}
+			
+
+			// Return.
+
+			if ( resultValues == null && expressioncount == 1 )
+			{
+				Expression result = PopValue();
+				function.Statement( new Return( s, result ) );
+			}
+			else
+			{
+				IList< Expression > results = PopValues( expressioncount );
+				function.Statement( new ReturnMultipleValues( s, results, resultValues ) );
 			}
 		}
-
-		expression.Pop( expressioncount );
-		Error( "No function to return from" );
 	}
 
 
@@ -1103,12 +1402,16 @@ public class Parser
 
 		Token breakToken = Check( TokenKind.Break );
 
-		for ( int scopecount = 0; scopecount < scope.Count; ++scopecount )
+		for ( Scope loop = scope; loop != null; loop = loop.Parent )
 		{
-			Scope loopScope = scope.Peek( scopecount );
-			if ( loopScope.IsLoopScope )
+			if ( loop.Break.BreakOrContinue == BreakOrContinue.Break )
 			{
-				actions.Break( breakToken.Location, loopScope );
+				function.Statement( new Break( breakToken.SourceSpan, loop.Break.BlockName ) );
+				return;
+			}
+			else if ( loop.Break.BreakOrContinue == BreakOrContinue.Continue )
+			{
+				function.Statement( new Continue( breakToken.SourceSpan, loop.Break.BlockName ) );
 				return;
 			}
 		}
@@ -1126,12 +1429,16 @@ public class Parser
 
 		Token continueToken = Check( TokenKind.Continue );
 
-		for ( int scopecount = 0; scopecount < scope.Count; ++scopecount )
+		for ( Scope loop = scope; loop != null; loop = loop.Parent )
 		{
-			Scope loopScope = scope.Peek( scopecount );
-			if ( loopScope.IsLoopScope )
+			if ( loop.Continue.BreakOrContinue == BreakOrContinue.Break )
 			{
-				actions.Continue( continueToken.Location, loopScope );
+				function.Statement( new Break( continueToken.SourceSpan, loop.Break.BlockName ) );
+				return;
+			}
+			else if ( loop.Continue.BreakOrContinue == BreakOrContinue.Continue )
+			{
+				function.Statement( new Continue( continueToken.SourceSpan, loop.Break.BlockName ) );
 				return;
 			}
 		}
@@ -1327,7 +1634,7 @@ public class Parser
 
 		case TokenKind.Number:
 			Token numberToken = Check( TokenKind.Number );
-			PushExpression( new Literal( stringToken.SourceSpan, numberToken.Value ) );
+			PushExpression( new Literal( numberToken.SourceSpan, numberToken.Value ) );
 			break;
 
 		case TokenKind.LeftCurlyBracket:
@@ -1493,7 +1800,7 @@ public class Parser
 					}
 					else
 					{
-						function.Statement( new AssignList( values.SourceSpan, constructor, arrayKey, values ) );
+						function.Statement( new IndexList( values.SourceSpan, constructor, arrayKey, values ) );
 					}
 				}
 			}
@@ -1526,8 +1833,7 @@ public class Parser
 		*/
 
 		Token matchFunction = Check( TokenKind.Function );
-
-		funcbody( matchFunction, false );
+		funcbody( matchFunction, "", null );
 	}
 
 
@@ -1550,7 +1856,6 @@ public class Parser
 		while ( true )
 		{
 			Token name;
-			int argumentcount = 0;
 
 			switch ( Get() )
 			{
@@ -1674,7 +1979,7 @@ public class Parser
 
 		default:
 			Error( "Function arguments expected" );
-			break;
+			return;
 		}
 
 

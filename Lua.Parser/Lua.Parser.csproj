@@ -84,9 +84,9 @@
     <Compile Include="AST\Statements\Declare.cs" />
     <Compile Include="AST\Statements\DeclareAssign.cs" />
     <Compile Include="AST\Statements\Evaluate.cs" />
+    <Compile Include="AST\Statements\IndexList.cs" />
     <Compile Include="AST\Statements\Return.cs" />
-    <Compile Include="AST\Statements\ReturnMultipleResults.cs" />
-    <Compile Include="AST\Statements\AssignList.cs" />
+    <Compile Include="AST\Statements\ReturnMultipleValues.cs" />
     <Compile Include="AST\Variable.cs" />
     <Compile Include="Lexer.cs" />
     <Compile Include="Parser.cs" />
