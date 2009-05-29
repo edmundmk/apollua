@@ -69,6 +69,9 @@ public abstract class Statement
 		SourceSpan = s;
 	}
 
+
+	public abstract void Accept( StatementVisitor s );
+
 }
 
 

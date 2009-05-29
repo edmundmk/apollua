@@ -26,6 +26,12 @@ public class Index
 		Key		= key;
 	}
 
+
+	public override void Accept( ExpressionVisitor v )
+	{
+		v.Visit( this );
+	}
+
 }
 
 

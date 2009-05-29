@@ -24,6 +24,12 @@ public class ValueListElement
 		Index = index;
 	}
 
+
+	public override void Accept( ExpressionVisitor v )
+	{
+		v.Visit( this );
+	}
+
 }
 
 }

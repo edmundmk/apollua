@@ -24,6 +24,12 @@ public class Global
 		Name = name;
 	}
 
+
+	public override void Accept( ExpressionVisitor v )
+	{
+		v.Visit( this );
+	}
+	
 }
 
 

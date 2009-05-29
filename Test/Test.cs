@@ -23,6 +23,7 @@ static class EntryPoint
 		StringWriter errors = new StringWriter();
 		Parser parser = new Parser( errors, File.OpenText( args[ 0 ] ), args[ 0 ] );
 		AST.Function f = parser.Parse();
+		AST.ASTWriter.Write( Console.Out, f );
 		return 0;
 	}
 

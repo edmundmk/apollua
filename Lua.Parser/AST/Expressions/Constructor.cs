@@ -37,6 +37,12 @@ public class Constructor
 		HashCount += 1;
 	}
 
+
+	public override void Accept( ExpressionVisitor v )
+	{
+		v.Visit( this );
+	}
+
 }
 
 

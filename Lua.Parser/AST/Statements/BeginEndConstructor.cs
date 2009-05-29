@@ -24,6 +24,12 @@ public class BeginConstructor
 		Constructor = constructor;
 	}
 
+
+	public override void Accept( StatementVisitor s )
+	{
+		s.Visit( this );
+	}
+
 }
 
 
@@ -33,6 +39,12 @@ public class EndConstructor
 	public EndConstructor( SourceSpan s )
 		:	base( s )
 	{
+	}
+
+
+	public override void Accept( StatementVisitor s )
+	{
+		s.Visit( this );
 	}
 
 }

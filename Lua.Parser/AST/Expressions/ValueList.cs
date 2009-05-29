@@ -19,6 +19,13 @@ public class ValueList
 		:	base( s )
 	{
 	}
+
+
+	public override void Accept( ExpressionVisitor v )
+	{
+		v.Visit( this );
+	}
+
 }
 
 

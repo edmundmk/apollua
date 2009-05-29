@@ -24,6 +24,12 @@ public class BeginTest
 		Condition = condition;
 	}
 
+
+	public override void Accept( StatementVisitor s )
+	{
+		s.Visit( this );
+	}
+
 }
 
 
@@ -33,6 +39,12 @@ public class EndTest
 	public EndTest( SourceSpan s )
 		:	base( s )
 	{
+	}
+
+
+	public override void Accept( StatementVisitor s )
+	{
+		s.Visit( this );
 	}
 
 }

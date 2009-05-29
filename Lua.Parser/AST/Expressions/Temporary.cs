@@ -19,6 +19,13 @@ public class Temporary
 		:	base( s )
 	{
 	}
+
+
+	public override void Accept( ExpressionVisitor v )
+	{
+		v.Visit( this );
+	}
+
 }
 
 

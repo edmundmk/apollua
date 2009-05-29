@@ -24,6 +24,12 @@ public class Return
 		Result = result;
 	}
 
+
+	public override void Accept( StatementVisitor s )
+	{
+		s.Visit( this );
+	}
+
 }
 
 

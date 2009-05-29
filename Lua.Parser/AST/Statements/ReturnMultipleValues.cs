@@ -27,6 +27,12 @@ public class ReturnMultipleValues
 		ResultValues	= resultValues;
 	}
 
+
+	public override void Accept( StatementVisitor s )
+	{
+		s.Visit( this );
+	}
+
 }
 
 

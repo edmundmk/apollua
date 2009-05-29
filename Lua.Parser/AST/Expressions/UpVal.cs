@@ -24,6 +24,12 @@ public class UpVal
 		Variable = variable;
 	}
 
+
+	public override void Accept( ExpressionVisitor v )
+	{
+		v.Visit( this );
+	}
+
 }
 
 

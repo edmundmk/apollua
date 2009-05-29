@@ -24,6 +24,12 @@ public class ToNumber
 		Operand = operand;
 	}
 
+
+	public override void Accept( ExpressionVisitor v )
+	{
+		v.Visit( this );
+	}
+
 }
 
 

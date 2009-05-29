@@ -28,6 +28,12 @@ public class IndexMultipleValues
 		Values	= values;
 	}
 
+
+	public override void Accept( StatementVisitor s )
+	{
+		s.Visit( this );
+	}
+
 }
 
 

@@ -28,6 +28,12 @@ public class Binary
 		Right	= right;
 	}
 
+
+	public override void Accept( ExpressionVisitor v )
+	{
+		v.Visit( this );
+	}
+
 }
 
 

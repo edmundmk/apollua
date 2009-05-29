@@ -20,6 +20,12 @@ public class BeginScope
 	{
 	}
 
+
+	public override void Accept( StatementVisitor s )
+	{
+		s.Visit( this );
+	}
+
 }
 
 
@@ -29,6 +35,12 @@ public class EndScope
 	public EndScope( SourceSpan s )
 		:	base( s )
 	{
+	}
+
+
+	public override void Accept( StatementVisitor s )
+	{
+		s.Visit( this );
 	}
 
 }

@@ -24,6 +24,12 @@ public class FunctionClosure
 		Function = function;
 	}
 
+
+	public override void Accept( ExpressionVisitor v )
+	{
+		v.Visit( this );
+	}
+
 }
 
 

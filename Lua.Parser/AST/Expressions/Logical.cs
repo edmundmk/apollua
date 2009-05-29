@@ -27,6 +27,12 @@ public class Logical
 		Right	= right;
 	}
 
+
+	public override void Accept( ExpressionVisitor v )
+	{
+		v.Visit( this );
+	}
+
 }
 
 

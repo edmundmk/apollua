@@ -136,7 +136,15 @@ public sealed class BoxedInteger
 	{
 		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return new BoxedNumber( (double)Value / (double)( (BoxedInteger)o ).Value );
+			int oValue = ( (BoxedInteger)o ).Value;
+			if ( Value % oValue == 0 )
+			{
+				return new BoxedInteger( Value / oValue );
+			}
+			else
+			{
+				return new BoxedNumber( (double)Value / (double)oValue );
+			}
 		}
 		if ( o.GetType() == typeof( BoxedNumber ) )
 		{

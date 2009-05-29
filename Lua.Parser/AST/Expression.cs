@@ -30,6 +30,9 @@ public abstract class Expression
 	{
 		SourceSpan = s;
 	}
+
+
+	public abstract void Accept( ExpressionVisitor v );
 }
 
 

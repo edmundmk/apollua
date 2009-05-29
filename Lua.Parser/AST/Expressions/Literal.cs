@@ -24,6 +24,12 @@ public class Literal
 		Value = value;
 	}
 
+
+	public override void Accept( ExpressionVisitor v )
+	{
+		v.Visit( this );
+	}
+
 }
 
 

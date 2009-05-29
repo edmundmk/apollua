@@ -24,6 +24,12 @@ public class Evaluate
 		Expression = expression;
 	}
 
+
+	public override void Accept( StatementVisitor s )
+	{
+		s.Visit( this );
+	}
+
 }
 
 }

@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AST\ASTWriter.cs" />
     <Compile Include="AST\Expression.cs" />
     <Compile Include="AST\Expressions\Binary.cs" />
     <Compile Include="AST\Expressions\BinaryOp.cs" />
@@ -70,9 +71,8 @@
     <Compile Include="AST\Expressions\ValueListElement.cs" />
     <Compile Include="AST\Expressions\Vararg.cs" />
     <Compile Include="AST\Expressions\VarargElement.cs" />
+    <Compile Include="AST\ExpressionVisitor.cs" />
     <Compile Include="AST\Function.cs" />
-    <Compile Include="AST\IExpressionVisitor.cs" />
-    <Compile Include="AST\IStatementVisitor.cs" />
     <Compile Include="AST\SourceLocation.cs" />
     <Compile Include="AST\SourceSpan.cs" />
     <Compile Include="AST\Statement.cs" />
@@ -86,6 +86,7 @@
     <Compile Include="AST\Statements\IndexMultipleValues.cs" />
     <Compile Include="AST\Statements\Return.cs" />
     <Compile Include="AST\Statements\ReturnMultipleValues.cs" />
+    <Compile Include="AST\StatementVisitor.cs" />
     <Compile Include="AST\Variable.cs" />
     <Compile Include="Lexer.cs" />
     <Compile Include="Parser.cs" />

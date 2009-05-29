@@ -31,6 +31,12 @@ public class CallSelf
 		ArgumentValues	= argumentValues;
 	}
 
+
+	public override void Accept( ExpressionVisitor v )
+	{
+		v.Visit( this );
+	}
+
 }
 
 

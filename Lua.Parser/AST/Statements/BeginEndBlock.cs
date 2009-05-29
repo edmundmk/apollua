@@ -24,6 +24,12 @@ public class BeginBlock
 		Name = name;
 	}
 
+
+	public override void Accept( StatementVisitor s )
+	{
+		s.Visit( this );
+	}
+
 }
 
 
@@ -37,6 +43,12 @@ public class Break
 		:	base( s )
 	{
 		BlockName = blockName;
+	}
+
+
+	public override void Accept( StatementVisitor s )
+	{
+		s.Visit( this );
 	}
 
 }
@@ -54,6 +66,12 @@ public class Continue
 		BlockName	= blockName;
 	}
 
+
+	public override void Accept( StatementVisitor s )
+	{
+		s.Visit( this );
+	}
+
 }
 
 
@@ -65,6 +83,12 @@ public class EndBlock
 	{
 	}
 	
+
+	public override void Accept( StatementVisitor s )
+	{
+		s.Visit( this );
+	}
+
 }
 
 

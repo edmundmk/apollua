@@ -26,6 +26,12 @@ public class Declare
 		Value		= value;
 	}
 
+
+	public override void Accept( StatementVisitor s )
+	{
+		s.Visit( this );
+	}
+
 }
 
 

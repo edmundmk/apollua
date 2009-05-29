@@ -654,6 +654,25 @@ public class Parser
 				;
 		*/
 
+		/*	scope
+			{
+				local (for generator), (for state), (for control) = <expressionlist>
+				block forin
+				{
+					scope
+					{
+						local <variablelist> = (for generator) ( (for state), (for control) )
+						(for control) = <variablelist>[ 0 ]
+						test ( (for control) == nil )
+						{
+							break forin
+						}
+		...
+						continue forin
+					}
+				}
+			}
+		*/	
 		
 		IList< Token > namelist = new List< Token >();
 		namelist.Add( Check( TokenKind.Identifier ) );
@@ -1843,7 +1862,7 @@ public class Parser
 		*/
 
 		Token matchFunction = Check( TokenKind.Function );
-		funcbody( matchFunction, "", null );
+		funcbody( matchFunction, null, null );
 	}
 
 
@@ -2167,6 +2186,12 @@ public class Parser
 			:	base( s )
 		{
 			Expression = expression;
+		}
+
+
+		public override void Accept( ExpressionVisitor v )
+		{
+			throw new NotSupportedException( "Nested expressions are internal parser objects." );
 		}
 
 	}
