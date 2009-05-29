@@ -2161,6 +2161,7 @@ public class Parser
 					{
 						// Is an upval.
 						variable.SetUpVal();
+						function.UpVal( variable );
 						return new UpVal( nameToken.SourceSpan, variable );
 					}
 				}
