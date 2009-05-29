@@ -115,7 +115,17 @@ public static class ASTWriter
 			o.Write( "( " );
 			e.Left.Accept( this );
 			o.Write( " " );
-			o.Write( e.Op );
+			switch ( e.Op )
+			{
+			case BinaryOp.Add:				o.Write( "+" );		break;
+			case BinaryOp.Subtract:			o.Write( "-" );		break;
+			case BinaryOp.Multiply:			o.Write( "*" );		break;
+			case BinaryOp.Divide:			o.Write( "/" );		break;
+			case BinaryOp.IntegerDivide:	o.Write( "\\" );	break;
+			case BinaryOp.Modulus:			o.Write( "%" );		break;
+			case BinaryOp.RaiseToPower:		o.Write( "^" );		break;
+			case BinaryOp.Concatenate:		o.Write( ".." );	break;
+			}
 			o.Write( " " );
 			e.Right.Accept( this );
 			o.Write( " )" );
@@ -184,7 +194,15 @@ public static class ASTWriter
 			o.Write( "( " );
 			e.Left.Accept( this );
 			o.Write( " " );
-			o.Write( e.Op );
+			switch ( e.Op )
+			{
+				case ComparisonOp.Equal:				o.Write( "==" );	break;
+				case ComparisonOp.NotEqual:				o.Write( "!=" );	break;
+				case ComparisonOp.LessThan:				o.Write( "<" );		break;
+				case ComparisonOp.GreaterThan:			o.Write( ">" );		break;
+				case ComparisonOp.LessThanOrEqual:		o.Write( "<=" );	break;
+				case ComparisonOp.GreaterThanOrEqual:	o.Write( ">=" );	break;
+			}
 			o.Write( " " );
 			e.Right.Accept( this );
 			o.Write( " )" );
@@ -250,7 +268,11 @@ public static class ASTWriter
 			o.Write( "( " );
 			e.Left.Accept( this );
 			o.Write( " " );
-			o.Write( e.Op );
+			switch ( e.Op )
+			{
+			case LogicalOp.And:		o.Write( "and" );	break;
+			case LogicalOp.Or:		o.Write( "or" );	break;
+			}
 			o.Write( " " );
 			e.Right.Accept( this );
 			o.Write( " )" );
