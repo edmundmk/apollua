@@ -1,7 +1,7 @@
 // Parser.private.cs
 //
 // Lua is copyright © 1994-2008 Lua.org, PUC-Rio
-// Modifications copyright © 2009 Edmund Kapusniak
+// This version copyright © 2009 Edmund Kapusniak
 
 
 using System;

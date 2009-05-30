@@ -10,7 +10,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration( "" )]
 [assembly: AssemblyCompany( "" )]
 [assembly: AssemblyProduct( "Lua.Compiler" )]
-[assembly: AssemblyCopyright( "Copyright ©  2009" )]
+[assembly: AssemblyCopyright( "Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license.\n" +
+"LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license.\n" +
+"This version copyright © 2009 Edmund Kapusniak." )]
 [assembly: AssemblyTrademark( "" )]
 [assembly: AssemblyCulture( "" )]
 
