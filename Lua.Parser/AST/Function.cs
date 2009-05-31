@@ -14,6 +14,21 @@ namespace Lua.Parser.AST
 {
 
 
+/*	An intermediate representation is built from the results of parsing.  Each
+	function is represented as a list of statements, referencing a tree-based
+	representation of expressions.
+
+	All control structures map to configurations of two structural statements:
+	blocks (which be continued to emulate loops or broken to skip unnecessary
+	clauses) and tests (which are like a single if statement).
+	
+	Temporaries are inserted into expressions in order that the details of
+	multiple assignments and multiple returns are transparent to the consuming
+	code.
+*/
+
+
+
 public class Function
 {
 	// Properties.

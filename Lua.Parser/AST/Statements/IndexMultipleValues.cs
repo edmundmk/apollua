@@ -6,6 +6,7 @@
 
 
 using System;
+using Lua.Parser.AST.Expressions;
 
 
 namespace Lua.Parser.AST.Statements
@@ -15,17 +16,17 @@ namespace Lua.Parser.AST.Statements
 public class IndexMultipleValues
 	:	Statement
 {
-	public Expression	Table		{ get; private set; }
+	public Constructor	Constructor	{ get; private set; }
 	public int			Key			{ get; private set; }
 	public Expression	Values		{ get; private set; }
 
 
-	public IndexMultipleValues( SourceSpan s, Expression table, int key, Expression values )
+	public IndexMultipleValues( SourceSpan s, Constructor constructor, int key, Expression values )
 		:	base( s )
 	{
-		Table	= table;
-		Key		= key;
-		Values	= values;
+		Constructor	= constructor;
+		Key			= key;
+		Values		= values;
 	}
 
 

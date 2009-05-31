@@ -6,6 +6,7 @@
 
 
 using System;
+using Lua.Parser.AST.Expressions;
 
 
 namespace Lua.Parser.AST.Statements
@@ -15,10 +16,10 @@ namespace Lua.Parser.AST.Statements
 public class BeginConstructor
 	:	Statement
 {
-	public Expression Constructor { get; private set; }
+	public Constructor Constructor { get; private set; }
 
 
-	public BeginConstructor( SourceSpan s, Expression constructor )
+	public BeginConstructor( SourceSpan s, Constructor constructor )
 		:	base( s )
 	{
 		Constructor = constructor;

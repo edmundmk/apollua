@@ -9,6 +9,7 @@ using System.IO;
 using Lua;
 using Lua.Parser;
 using AST = Lua.Parser.AST;
+using Lua.Compiler.CLR;
 
 
 namespace Test
@@ -23,6 +24,7 @@ static class EntryPoint
 		StringWriter errors = new StringWriter();
 		Parser parser = new Parser( errors, File.OpenText( args[ 0 ] ), args[ 0 ] );
 		AST.Function f = parser.Parse();
+		f = ANormalTransform.Transform( f );
 		AST.ASTWriter.Write( Console.Out, f );
 		return 0;
 	}
