@@ -1,4 +1,4 @@
-// Lexer.cs
+// LuaLexer.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -18,7 +18,7 @@ namespace Lua.Parser
 {
 
 
-class Lexer
+class LuaLexer
 {
 	// Constants.
 
@@ -52,7 +52,7 @@ class Lexer
 
 	// Public.
 	
-	public Lexer( TextWriter errorWriter, TextReader sourceReader, string sourceName )
+	public LuaLexer( TextWriter errorWriter, TextReader sourceReader, string sourceName )
 	{
 		this.errorWriter	= errorWriter;
 		hasError			= false;

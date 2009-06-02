@@ -18,7 +18,7 @@ namespace Lua.Parser.AST
 public static class ASTWriter
 {
 
-	public static void Write( TextWriter o, Function function )
+	public static void Write( TextWriter o, FunctionAST function )
 	{
 		ExpressionWriter	ew = new ExpressionWriter( o );
 		StatementWriter		sw = new StatementWriter( o, ew );
@@ -92,7 +92,7 @@ public static class ASTWriter
 		o.WriteLine();
 		
 		
-		foreach ( Function child in function.Functions )
+		foreach ( FunctionAST child in function.Functions )
 		{
 			Write( o, child );
 		}
@@ -400,7 +400,7 @@ public static class ASTWriter
 			}
 		}
 
-		public override void Visit( Global e )
+		public override void Visit( GlobalRef e )
 		{
 			o.Write( e.Name );
 		}
@@ -431,7 +431,7 @@ public static class ASTWriter
 			}
 		}
 
-		public override void Visit( Local e )
+		public override void Visit( LocalRef e )
 		{
 			o.Write( e.Variable.Name );
 		}
@@ -476,7 +476,7 @@ public static class ASTWriter
 			e.Operand.Accept( this );
 		}
 
-		public override void Visit( UpVal e )
+		public override void Visit( UpValRef e )
 		{
 			o.Write( e.Variable.Name );
 		}

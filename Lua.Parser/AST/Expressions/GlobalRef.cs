@@ -1,4 +1,4 @@
-// Local.cs
+// GlobalRef.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -12,16 +12,16 @@ namespace Lua.Parser.AST.Expressions
 {
 
 
-public class Local
+public class GlobalRef
 	:	Expression
 {
-	public Variable Variable { get; private set; }
+	public string Name { get; private set; }
 
 
-	public Local( SourceSpan s, Variable variable )
+	public GlobalRef( SourceSpan s, string name )
 		:	base( s )
 	{
-		Variable = variable;
+		Name = name;
 	}
 
 
@@ -29,7 +29,8 @@ public class Local
 	{
 		v.Visit( this );
 	}
-
+	
 }
+
 
 }

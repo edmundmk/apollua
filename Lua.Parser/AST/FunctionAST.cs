@@ -1,4 +1,4 @@
-// Function.cs
+// FunctionAST.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -29,13 +29,13 @@ namespace Lua.Parser.AST
 
 
 
-public class Function
+public class FunctionAST
 {
 	// Properties.
 
 	public string				Name					{ get; private set; }
-	public Function				Parent					{ get; private set; }
-	public IList< Function >	Functions				{ get; private set; }
+	public FunctionAST			Parent					{ get; private set; }
+	public IList< FunctionAST >	Functions				{ get; private set; }
 	public IList< Variable >	UpVals					{ get; private set; }
 	public IList< Variable >	Parameters				{ get; private set; }
 	public bool					IsVararg				{ get; private set; }
@@ -46,7 +46,7 @@ public class Function
 
 	// Mutable collections.
 
-	List< Function >	functions;
+	List< FunctionAST >	functions;
 	List< Variable >	upvals;
 	List< Variable >	parameters;
 	List< Variable >	locals;
@@ -55,9 +55,9 @@ public class Function
 
 	// Construtor.
 
-	public Function( string name, Function parent )
+	public FunctionAST( string name, FunctionAST parent )
 	{
-		functions	= new List< Function >();
+		functions	= new List< FunctionAST >();
 		upvals		= new List< Variable >();
 		parameters	= new List< Variable >();
 		locals		= new List< Variable >();
@@ -77,7 +77,7 @@ public class Function
 
 	// Building interface.
 
-	public void ChildFunction( Function function )
+	public void ChildFunction( FunctionAST function )
 	{
 		functions.Add( function );
 	}
@@ -92,7 +92,7 @@ public class Function
 
 	public void UpVal( Variable upval )
 	{
-		for ( Function f = this; ! f.ContainsUpVal( upval ); f = f.Parent )
+		for ( FunctionAST f = this; ! f.ContainsUpVal( upval ); f = f.Parent )
 		{
 			f.upvals.Add( upval );
 		}

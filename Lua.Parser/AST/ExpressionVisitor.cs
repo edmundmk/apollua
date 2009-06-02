@@ -21,16 +21,16 @@ public abstract class ExpressionVisitor
 	public virtual void Visit( Comparison e )			{}
 	public virtual void Visit( Constructor e )			{}
 	public virtual void Visit( FunctionClosure e )		{}
-	public virtual void Visit( Global e )				{}
+	public virtual void Visit( GlobalRef e )				{}
 	public virtual void Visit( Index e )				{}
 	public virtual void Visit( Literal e )				{}
-	public virtual void Visit( Local e )				{}
+	public virtual void Visit( LocalRef e )				{}
 	public virtual void Visit( Logical e )				{}
 	public virtual void Visit( Not e )					{}
 	public virtual void Visit( Temporary e )			{}
 	public virtual void Visit( ToNumber e )				{}
 	public virtual void Visit( Unary e )				{}
-	public virtual void Visit( UpVal e )				{}
+	public virtual void Visit( UpValRef e )				{}
 	public virtual void Visit( ValueList e )			{}
 	public virtual void Visit( ValueListElement e )		{}
 	public virtual void Visit( Vararg e )				{}

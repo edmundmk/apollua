@@ -1,4 +1,4 @@
-// Parser.cs
+// LuaParser.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -19,7 +19,7 @@ namespace Lua.Parser
 {
 
 
-public class Parser
+public class LuaParser
 {
 	// Errors.
 
@@ -30,14 +30,14 @@ public class Parser
 	// Lexer.
 	
 	string		sourceName;
-	Lexer		lexer;
+	LuaLexer		lexer;
 	Token		lookahead;
 	Token		token;
 
 
 	// Parse state.
 
-	Function					function;
+	FunctionAST					function;
 	Scope						scope;
 	ParseStack< Expression >	expression;
 
@@ -45,13 +45,13 @@ public class Parser
 
 	// Public.
 
-	public Parser( TextWriter errorWriter, TextReader sourceReader, string sourceName )
+	public LuaParser( TextWriter errorWriter, TextReader sourceReader, string sourceName )
 	{
 		this.errorWriter	= errorWriter;
 		hasError			= false;
 
 		this.sourceName		= sourceName;
-		lexer				= new Lexer( errorWriter, sourceReader, sourceName );
+		lexer				= new LuaLexer( errorWriter, sourceReader, sourceName );
 		Next();
 
 		function			= null;
@@ -66,9 +66,17 @@ public class Parser
 	}
 
 
-	public Function Parse()
+	public FunctionAST Parse()
 	{
-		return chunk();
+		FunctionAST functionAST = chunk();
+		if ( ! hasError )
+		{
+			return functionAST;
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 
@@ -76,7 +84,7 @@ public class Parser
 
 	// Chunk
 
-	Function chunk()
+	FunctionAST chunk()
 	{
 		/*	goal chunk
 				: block eof
@@ -86,7 +94,7 @@ public class Parser
 		Debug.Assert( function == null );
 		Debug.Assert( scope == null );
 
-		function = new Function( "<chunk>", function );
+		function = new FunctionAST( "<chunk>", function );
 		scope = new Scope( function, null );
 	
 		function.SetVararg();
@@ -95,7 +103,7 @@ public class Parser
 
 		Token eof = Check( TokenKind.EOF );
 
-		Function result = function;
+		FunctionAST result = function;
 		function = function.Parent;
 		scope = scope.Parent;
 
@@ -471,7 +479,7 @@ public class Parser
 		
 		if ( Get() != TokenKind.Identifier )
 		{
-			Error( "{0} expected", Lexer.GetTokenName( TokenKind.Identifier ) );
+			Error( "{0} expected", LuaLexer.GetTokenName( TokenKind.Identifier ) );
 			return;
 		}
 
@@ -487,8 +495,8 @@ public class Parser
 			break;
 
 		default:
-			Error( "{0}, {1} or {2} expected", Lexer.GetTokenName( TokenKind.In ),
-				Lexer.GetTokenName( TokenKind.Comma ), Lexer.GetTokenName( TokenKind.EqualSign ) );
+			Error( "{0}, {1} or {2} expected", LuaLexer.GetTokenName( TokenKind.In ),
+				LuaLexer.GetTokenName( TokenKind.Comma ), LuaLexer.GetTokenName( TokenKind.EqualSign ) );
 			return;
 		}
 		
@@ -577,18 +585,18 @@ public class Parser
 			new Logical( s, LogicalOp.Or,
 				new Logical( s, LogicalOp.And, 
 					new Comparison( s, ComparisonOp.GreaterThan,
-						new Local( s, forStep ),
+						new LocalRef( s, forStep ),
 						new Literal( s, 0.0 ) ),
 					new Comparison( s, ComparisonOp.LessThanOrEqual,
-						new Local( s, forIndex ),
-						new Local( s, forLimit ) ) ),
+						new LocalRef( s, forIndex ),
+						new LocalRef( s, forLimit ) ) ),
 				new Logical( s, LogicalOp.And,
 					new Comparison( s, ComparisonOp.LessThan,
-						new Local( s, forStep ),
+						new LocalRef( s, forStep ),
 						new Literal( s, 0.0 ) ),
 					new Comparison( s, ComparisonOp.GreaterThanOrEqual,
-						new Local( s, forIndex ),
-						new Local( s, forLimit ) ) ) );
+						new LocalRef( s, forIndex ),
+						new LocalRef( s, forLimit ) ) ) );
 
 
 		// Loop body.
@@ -606,7 +614,7 @@ public class Parser
 			new BreakContinueAction( BreakOrContinue.Break, "forbody" ) );
 		Variable userIndex = new Variable( (string)name.Value );
 		function.Local( userIndex ); scope.Local( userIndex );
-		Expression indexExpression = new Local( s, forIndex );
+		Expression indexExpression = new LocalRef( s, forIndex );
 		function.Statement( new Declare( s, userIndex, indexExpression ) );
 
 
@@ -626,11 +634,11 @@ public class Parser
 		
 		// Increment index.
 
-		Expression indexVariable = new Local( s, forIndex );
+		Expression indexVariable = new LocalRef( s, forIndex );
 		Expression incrementExpression  =
 			new Binary( s, BinaryOp.Add,
-				new Local( s, forIndex ),
-				new Local( s, forStep ) );
+				new LocalRef( s, forIndex ),
+				new LocalRef( s, forStep ) );
 
 		function.Statement( new Assign( s, indexVariable, incrementExpression ) );
 
@@ -724,10 +732,10 @@ public class Parser
 
 		Expression generator =
 			new Call( s,
-				new Local( s, forGenerator ),
+				new LocalRef( s, forGenerator ),
 				new Expression[] {
-					new Local( s, forState ),
-					new Local( s, forControl ) },
+					new LocalRef( s, forState ),
+					new LocalRef( s, forControl ) },
 				null );
 
 
@@ -747,14 +755,14 @@ public class Parser
 
 		Expression test =
 			new Comparison( s, ComparisonOp.Equal,
-				new Local( s, forControl ),
+				new LocalRef( s, forControl ),
 				new Literal( s, null ) );
 
 
 		// Update control and test.
 
-		Expression controlVariable	= new Local( s, forControl );
-		Expression updateExpression	= new Local( s, userControl );
+		Expression controlVariable	= new LocalRef( s, forControl );
+		Expression updateExpression	= new LocalRef( s, userControl );
 
 		function.Statement( new Assign( s, controlVariable, updateExpression ) );
 		function.Statement( new BeginTest( s, test ) );
@@ -874,7 +882,7 @@ public class Parser
 
 		// Function.
 
-		function = new Function( functionName, function );
+		function = new FunctionAST( functionName, function );
 		function.Parent.ChildFunction( function );
 		scope = new Scope( function, scope );
 
@@ -888,7 +896,7 @@ public class Parser
 		}
 		else
 		{
-			Error( "{0} expected", Lexer.GetTokenName( TokenKind.LeftParenthesis ) );
+			Error( "{0} expected", LuaLexer.GetTokenName( TokenKind.LeftParenthesis ) );
 		}
 
 		if ( methodName.HasValue )
@@ -917,8 +925,8 @@ public class Parser
 				}
 				else
 				{
-					Error( "{0} or {1} expected", Lexer.GetTokenName( TokenKind.Identifier ),
-						Lexer.GetTokenName( TokenKind.Ellipsis ) );
+					Error( "{0} or {1} expected", LuaLexer.GetTokenName( TokenKind.Identifier ),
+						LuaLexer.GetTokenName( TokenKind.Ellipsis ) );
 					break;
 				}
 
@@ -1698,7 +1706,7 @@ public class Parser
 			else
 			{
 				PushExpression( new Literal( ellipsisToken.SourceSpan, null ) );
-				Error( "Cannot use '{0}' outside a vararg function", Lexer.GetTokenName( TokenKind.Ellipsis ) );
+				Error( "Cannot use '{0}' outside a vararg function", LuaLexer.GetTokenName( TokenKind.Ellipsis ) );
 			}
 			break;
 
@@ -2071,7 +2079,7 @@ public class Parser
 		default:
 		{
 			PushExpression( new Literal( GetToken().SourceSpan, null ) );
-			Error( "Unexpected token '{0}'", Lexer.GetTokenName( Get() ) );
+			Error( "Unexpected token '{0}'", LuaLexer.GetTokenName( Get() ) );
 			return ExpressionType.None;
 		}
 
@@ -2108,7 +2116,7 @@ public class Parser
 	
 	class Scope
 	{
-		public Function				Function	{ get; private set; }
+		public FunctionAST				Function	{ get; private set; }
 		public Scope				Parent		{ get; private set; }
 		public IList< Variable >	Locals		{ get; private set; }
 		public BreakContinueAction	Break		{ get; private set; }
@@ -2117,12 +2125,12 @@ public class Parser
 		List< Variable > locals;
 
 
-		public Scope( Function function, Scope parent )
+		public Scope( FunctionAST function, Scope parent )
 			:	this( function, parent, new BreakContinueAction(), new BreakContinueAction() )
 		{
 		}
 
-		public Scope( Function function, Scope parent, BreakContinueAction b, BreakContinueAction c )
+		public Scope( FunctionAST function, Scope parent, BreakContinueAction b, BreakContinueAction c )
 		{
 			Function	= function;
 			Parent		= parent;
@@ -2155,21 +2163,21 @@ public class Parser
 					if ( s.Function == function )
 					{
 						// Is a local.
-						return new Local( nameToken.SourceSpan, variable );
+						return new LocalRef( nameToken.SourceSpan, variable );
 					}
 					else
 					{
 						// Is an upval.
 						variable.SetUpVal();
 						function.UpVal( variable );
-						return new UpVal( nameToken.SourceSpan, variable );
+						return new UpValRef( nameToken.SourceSpan, variable );
 					}
 				}
 			}
 		}
 
 		// Is a global.
-		return new Global( nameToken.SourceSpan, name );
+		return new GlobalRef( nameToken.SourceSpan, name );
 	}
 
 
@@ -2319,7 +2327,7 @@ public class Parser
 	{
 		if ( Get() != kind )
 		{
-			Error( "'{0}' expected", Lexer.GetTokenName( kind ) );
+			Error( "'{0}' expected", LuaLexer.GetTokenName( kind ) );
 			return GetToken();
 		}
 
@@ -2330,8 +2338,8 @@ public class Parser
 	{
 		if ( Get() != kind )
 		{
-			Error( "'{0}' expected to close", Lexer.GetTokenName( kind ) );
-			Error( matchTo.SourceSpan.Start, "    '{0}' here", Lexer.GetTokenName( matchTo.Kind ) );
+			Error( "'{0}' expected to close", LuaLexer.GetTokenName( kind ) );
+			Error( matchTo.SourceSpan.Start, "    '{0}' here", LuaLexer.GetTokenName( matchTo.Kind ) );
 			return GetToken();
 		}
 

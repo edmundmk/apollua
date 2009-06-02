@@ -1,4 +1,4 @@
-// Global.cs
+// UpValRef.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -12,16 +12,16 @@ namespace Lua.Parser.AST.Expressions
 {
 
 
-public class Global
+public class UpValRef
 	:	Expression
 {
-	public string Name { get; private set; }
+	public Variable Variable { get; private set; }
 
-
-	public Global( SourceSpan s, string name )
+	
+	public UpValRef( SourceSpan s, Variable variable )
 		:	base( s )
 	{
-		Name = name;
+		Variable = variable;
 	}
 
 
@@ -29,7 +29,7 @@ public class Global
 	{
 		v.Visit( this );
 	}
-	
+
 }
 
 

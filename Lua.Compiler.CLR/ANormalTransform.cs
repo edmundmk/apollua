@@ -25,16 +25,16 @@ namespace Lua.Compiler.CLR
 public static class ANormalTransform
 {
 
-	public static Function Transform( Function function )
+	public static FunctionAST Transform( FunctionAST function )
 	{
 		return Transform( function, null );
 	}
 
-	public static Function Transform( Function function, Function parent )
+	public static FunctionAST Transform( FunctionAST function, FunctionAST parent )
 	{
 		// Copy function.
 
-		Function f = new Function( function.Name, parent );
+		FunctionAST f = new FunctionAST( function.Name, parent );
 		
 		foreach ( Variable upval in function.UpVals )
 		{
@@ -77,11 +77,11 @@ public static class ANormalTransform
 	sealed class TransformStatement
 		:	StatementVisitor
 	{
-		Function			f;
+		FunctionAST			f;
 		TransformExpression	t;
 		
 
-		public TransformStatement( Function f, TransformExpression t )
+		public TransformStatement( FunctionAST f, TransformExpression t )
 		{
 			this.f	= f;
 			this.t	= t;
@@ -110,7 +110,7 @@ public static class ANormalTransform
 
 		public override void Visit( Assign s )
 		{
-			if ( ( s.Target is Global ) || ( s.Target is Index ) )
+			if ( ( s.Target is GlobalRef ) || ( s.Target is Index ) )
 			{
 				// Assigning to these targets requires pushing things onto the stack
 				// before the value, so if the value is a function call, it needs to
@@ -179,11 +179,11 @@ public static class ANormalTransform
 	sealed class TransformExpression
 		:	ExpressionVisitor
 	{
-		Function	f;
+		FunctionAST	f;
 		Expression	result;
 
 
-		public TransformExpression( Function f )
+		public TransformExpression( FunctionAST f )
 		{
 			this.f	= f;
 			result	= null;
@@ -276,12 +276,12 @@ public static class ANormalTransform
 		{
 			// Transform nested function.
 
-			Function childFunction = ANormalTransform.Transform( e.Function, f );
+			FunctionAST childFunction = ANormalTransform.Transform( e.Function, f );
 			f.ChildFunction( childFunction );
 			result = new FunctionClosure( e.SourceSpan, childFunction );
 		}
 
-		public override void Visit( Global e )
+		public override void Visit( GlobalRef e )
 		{
 			result = e;
 		}
@@ -297,7 +297,7 @@ public static class ANormalTransform
 			result = e;
 		}
 
-		public override void Visit( Local e )
+		public override void Visit( LocalRef e )
 		{
 			result = e;
 		}
@@ -328,7 +328,7 @@ public static class ANormalTransform
 			result = new Unary( e.SourceSpan, e.Op, TransformSingleValue( e.Operand ) );
 		}
 
-		public override void Visit( UpVal e )
+		public override void Visit( UpValRef e )
 		{
 			result = e;
 		}

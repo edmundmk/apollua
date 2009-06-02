@@ -7,8 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Lua;
-using Lua.Parser;
-using AST = Lua.Parser.AST;
 using Lua.Compiler.CLR;
 
 
@@ -22,10 +20,7 @@ static class EntryPoint
 	static int Main( string[] args )
 	{
 		StringWriter errors = new StringWriter();
-		Parser parser = new Parser( errors, File.OpenText( args[ 0 ] ), args[ 0 ] );
-		AST.Function f = parser.Parse();
-		f = ANormalTransform.Transform( f );
-		AST.ASTWriter.Write( Console.Out, f );
+		Function function = LuaCompilerCLR.Compile( errors, File.OpenText( args[ 0 ] ), args[ 0 ] );
 		return 0;
 	}
 

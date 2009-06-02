@@ -45,7 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Compiler.cs" />
+    <Compile Include="Builder.cs" />
+    <Compile Include="LuaCompilerCLR.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ANormalTransform.cs" />
   </ItemGroup>
@@ -53,6 +54,10 @@
     <ProjectReference Include="..\Lua.Parser\Lua.Parser.csproj">
       <Project>{513270D7-F857-4F5A-A6B5-24F0F16F4CEB}</Project>
       <Name>Lua.Parser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Lua\Lua.csproj">
+      <Project>{27F8B9D4-FEE3-4E1B-9A97-0604B7B4E2E4}</Project>
+      <Name>Lua</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
