@@ -22,7 +22,7 @@ namespace Lua.Compiler.CLR
 */
 
 	
-public static class ANormalTransform
+static class ANormalTransform
 {
 
 	public static FunctionAST Transform( FunctionAST function )

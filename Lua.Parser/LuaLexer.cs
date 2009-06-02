@@ -18,7 +18,7 @@ namespace Lua.Parser
 {
 
 
-class LuaLexer
+public class LuaLexer
 {
 	// Constants.
 

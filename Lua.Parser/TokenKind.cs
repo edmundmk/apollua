@@ -12,7 +12,7 @@ namespace Lua.Parser
 {
 
 
-enum TokenKind
+public enum TokenKind
 {
 	None = 0,
 

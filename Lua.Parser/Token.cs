@@ -13,7 +13,7 @@ namespace Lua.Parser
 {
 
 
-struct Token
+public struct Token
 {
 	public SourceSpan	SourceSpan	{ get; private set; }
 	public TokenKind	Kind		{ get; private set; }

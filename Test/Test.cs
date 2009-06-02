@@ -19,8 +19,9 @@ static class EntryPoint
 
 	static int Main( string[] args )
 	{
-		StringWriter errors = new StringWriter();
-		Function function = LuaCompilerCLR.Compile( errors, File.OpenText( args[ 0 ] ), args[ 0 ] );
+		StringWriter	errors		= new StringWriter();
+		LuaCompilerCLR	compiler	= new LuaCompilerCLR( errors, File.OpenText( args[ 0 ] ), args[ 0 ] );
+		Function		function	= compiler.Compile();
 		return 0;
 	}
 

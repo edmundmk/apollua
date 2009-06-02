@@ -30,7 +30,7 @@ public class LuaParser
 	// Lexer.
 	
 	string		sourceName;
-	LuaLexer		lexer;
+	LuaLexer	lexer;
 	Token		lookahead;
 	Token		token;
 
@@ -62,7 +62,7 @@ public class LuaParser
 
 	public bool HasError
 	{
-		get { return hasError; }
+		get { return hasError || lexer.HasError; }
 	}
 
 
