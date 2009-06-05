@@ -6,6 +6,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
+using System.Reflection.Emit;
 using Lua;
 using Lua.Compiler.CLR;
 
@@ -19,9 +21,15 @@ static class EntryPoint
 
 	static int Main( string[] args )
 	{
+		AssemblyBuilder	a = AppDomain.CurrentDomain.DefineDynamicAssembly( new AssemblyName( "TestCompiled" ), AssemblyBuilderAccess.Save );
+		ModuleBuilder	m = a.DefineDynamicModule( "TestCompiled", "TestCompiled.dll", true );
+		
 		StringWriter	errors		= new StringWriter();
-		LuaCompilerCLR	compiler	= new LuaCompilerCLR( errors, File.OpenText( args[ 0 ] ), args[ 0 ] );
+		LuaCompilerCLR	compiler	= new LuaCompilerCLR( m, errors, File.OpenText( args[ 0 ] ), args[ 0 ] );
 		Function		function	= compiler.Compile();
+
+		a.Save( "TestCompiled.dll" );
+
 		return 0;
 	}
 

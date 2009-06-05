@@ -91,10 +91,8 @@ public abstract class Function
 	public override abstract Value[] InvokeM( Value arg1, Value arg2, Value arg3 );
 	public override abstract Value[] InvokeM( Value arg1, Value arg2, Value arg3, Value arg4 );
 	public override abstract Value[] InvokeM( Value[] arguments );
-
-//	public override abstract Value ResumeS( StackFrame frame );
-//	public override abstract Value[] ResumeM( StackFrame frame );
 */
+
 }
 
 

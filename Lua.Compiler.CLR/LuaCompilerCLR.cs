@@ -6,6 +6,7 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -26,8 +27,8 @@ namespace Lua.Compiler.CLR
 	Instead any function that can potentially return multiple values is compiled
 	as a multi-return function.
 	
-	Coroutine implementation follows http://www.ccs.neu.edu/scheme/pubs/stackhack4.html,
-	however when yielding a coroutine, we do not use exceptions because they are slow
+	Coroutine implementation follows http://www.ccs.neu.edu/scheme/pubs/stackhack4.html.
+	However, when yielding a coroutine, we do not use exceptions because they are slow
 	and impose constraints on the generated code.  Instead yielding functions return
 	StackFrame values, which are explicitly checked for (which slows down the normal,
 	non-yield path, but is simpler and allows the stack frame saving code to be shared).
@@ -38,19 +39,21 @@ public class LuaCompilerCLR
 {
 	// Errors.
 
-	TextWriter		errorWriter;
-	bool			hasError;
+	TextWriter				errorWriter;
+	bool					hasError;
 
 
 	// Parser.
 
-	string			sourceName;
-	LuaParser		parser;
+	string					sourceName;
+	LuaParser				parser;
 
 
 	// Type building.
 
-	ModuleBuilder	moduleBuilder;
+	static object			defaultModuleBuilderLock = new Object();
+	static ModuleBuilder	defaultModuleBuilder;
+	ModuleBuilder			moduleBuilder;
 
 
 	public LuaCompilerCLR( TextWriter errorWriter, TextReader source, string sourceName )
@@ -66,7 +69,21 @@ public class LuaCompilerCLR
 		this.sourceName		= sourceName;
 		parser				= new LuaParser( errorWriter, source, sourceName );
 
-		this.moduleBuilder	= moduleBuilder;
+		if ( moduleBuilder != null )
+		{
+			this.moduleBuilder	= moduleBuilder;
+		}
+		else
+		{
+			lock ( defaultModuleBuilderLock )
+			{
+				AssemblyBuilder	assemblyBuilder =
+					AppDomain.CurrentDomain.DefineDynamicAssembly(
+						new AssemblyName( "LuaCompilerCLR.Default" ), AssemblyBuilderAccess.Run );
+				defaultModuleBuilder = assemblyBuilder.DefineDynamicModule( "Lua.CLR" );
+				this.moduleBuilder = defaultModuleBuilder;
+			}
+		}
 	}
 
 
@@ -89,119 +106,286 @@ public class LuaCompilerCLR
 
 		// A-normal transform.
 
-		ANormalTransform.Transform( functionAST );
+		functionAST = ANormalTransform.Transform( functionAST );
 		ASTWriter.Write( Console.Out, functionAST );
 
 
 		// Compile to CLR.
 
-		/*
+		string typeName = Path.GetFileNameWithoutExtension( sourceName );
+		TypeBuilder typeBuilder = moduleBuilder.DefineType( typeName,
+			TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.Class |
+			TypeAttributes.AutoLayout | TypeAttributes.AutoClass, typeof( Function ) );
+		IList< TypeBuilder > nestedTypes = new List< TypeBuilder >();
+		CompileFunction( typeBuilder, functionAST, nestedTypes );
 
-		The general structure of a compiled function class is:
 
+		// Create types in the correct order (parent types before nested types).
 
-		class <name>
-			:	Lua.Function
+		Type type = typeBuilder.CreateType();
+		foreach ( TypeBuilder nestedType in nestedTypes )
 		{
-			// All constants are initialized only once, when the function is loaded.
-
-			[ const Value constant = <constant>; ]*
+			nestedType.CreateType();
+		}
 		
 
 
+		// We have created a type for the function.
+
+		return null;
+	}
 
 
-
-			// Function parameters are declared exactly as in the Lua declaration, though each
-			// function must declare at least one parameter so that we can check for StackFrames.
-
-			[ Value | Value[] ] Invoke( Value argument0, [ Value argument, ]* [ params Value[] vararg ]? )
+	void CompileFunction( TypeBuilder typeBuilder, FunctionAST functionAST, IList< TypeBuilder > outNestedTypes )
+	{
+		/*
+			class <name>
+				:	Lua.Function
 			{
-				// If the first argument is a StackFrame, we are resuming a suspended continuation.
-
-				if ( argument0 != null && argument0.GetType() == typeof( StackFrame ) )
-				{
-					goto resume;
-				}
+		*/
 
 
-				[ Compiled lua code goes here. ]
+		/*
+			class <nestedfunction> : Lua.Function { ... }
+			class <nestedfunction> : Lua.Function { ... }
+		*/
 
+		Dictionary< FunctionAST, TypeBuilder > functions = new Dictionary< FunctionAST, TypeBuilder >();
+		foreach ( FunctionAST nestedFunctionAST in functionAST.Functions )
+		{			
+			// Find appropriate name.
+
+			string typeName = nestedFunctionAST.Name;
+			if ( typeName == null )
+			{
+				typeName = String.Format( "x{0:X}", nestedFunctionAST.GetHashCode() );
+			}
+
+
+			// Declare nested type and compile function.
+
+			TypeBuilder nestedTypeBuilder = typeBuilder.DefineNestedType( typeName,
+				TypeAttributes.NestedPrivate | TypeAttributes.Sealed | TypeAttributes.Class |
+				TypeAttributes.AutoLayout | TypeAttributes.AutoClass, typeof( Function ) );
+
+			functions[ nestedFunctionAST ] = nestedTypeBuilder;
+			outNestedTypes.Add( nestedTypeBuilder );
+			
+			CompileFunction( nestedTypeBuilder, nestedFunctionAST, outNestedTypes );
+		}
+
+
+
+		/*
+			UpVal <upvalname>;
+			UpVal <upvalname>;
+		*/
+
+		Dictionary< Variable, FieldBuilder > upvals = new Dictionary< Variable, FieldBuilder >();
+		foreach ( Variable upval in functionAST.UpVals )
+		{
+			FieldBuilder fieldBuilder = typeBuilder.DefineField( upval.Name,
+				typeof( UpVal ), FieldAttributes.Private );
+			upvals[ upval ] = fieldBuilder;
+		}
+
+
+
+		/*
+			public <name>( UpVal <upvalname>, UpVal <upvalname> )
+			{
+				this.<upvalname> = <upvalname>;
+				this.<upvalname> = <upvalname>;
+			}
+		*/
+
+		Type[] constructorParamTypes = new Type[ functionAST.UpVals.Count ];
+		for ( int i = 0; i < constructorParamTypes.Length; ++i )
+		{
+			constructorParamTypes[ i ] = typeof( UpVal );
+		}
+
+		ConstructorBuilder constructorBuilder = typeBuilder.DefineConstructor(
+			MethodAttributes.Public | MethodAttributes.HideBySig,
+			CallingConventions.Standard, constructorParamTypes );
+
+		for ( int i = 0; i < constructorParamTypes.Length; ++i )
+		{
+			constructorBuilder.DefineParameter( i + 1, ParameterAttributes.None,
+				functionAST.UpVals[ i ].Name );
+		}
+
+
+		ConstructorInfo functionConstructor = typeof( Function ).GetConstructor(
+			BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+			Type.DefaultBinder, Type.EmptyTypes, null );
+
+		ILGenerator constructorIL = constructorBuilder.GetILGenerator();
+		constructorIL.Emit( OpCodes.Ldarg_0 );
+		constructorIL.Emit( OpCodes.Call, functionConstructor );
+		constructorIL.Emit( OpCodes.Ret );
 		
-				// Values that are used as upvals must be declared as upvals everywhere they are used.
 
-				Value local0;
-				UpVal local1;
+
+		/*
+			Value[] Invoke( Value <argumentname>, Value <argumentname> ( , params Value[] vararg )? )
+			{
+		*/
+
+
+		// Return type.
+
+		Type returnType;
+		if ( ! functionAST.ReturnsMultipleValues )
+		{
+			returnType = typeof( Value );
+		}
+		else
+		{
+			returnType = typeof( Value[] );
+		}
+
+
+		// Parameter types.
+
+		int parameterCount = functionAST.Parameters.Count;
+		if ( functionAST.IsVararg )
+		{
+			parameterCount += 1;
+		}
 		
+		Type[] parameterTypes = new Type[ parameterCount ];
+		for ( int i = 0; i < functionAST.Parameters.Count; ++i )
+		{
+			parameterTypes[ i ] = typeof( Value );
+		}
+		if ( functionAST.IsVararg )
+		{
+			parameterTypes[ functionAST.Parameters.Count ] = typeof( Value[] );
+		}
 
-				// Operations are compiled:
 
-				Value result = [ left ].[ Op ]( right );
+		// Define method.
+
+		MethodBuilder methodBuilder = typeBuilder.DefineMethod( "Invoke",
+			MethodAttributes.Private | MethodAttributes.HideBySig,
+			CallingConventions.HasThis, returnType, parameterTypes );
+
+
+		// Declare parameters
+
+		for ( int i = 0; i < functionAST.Parameters.Count; ++i )
+		{
+			methodBuilder.DefineParameter( i + 1, ParameterAttributes.None,
+				functionAST.Parameters[ i ].Name );
+		}
 		
+		if ( functionAST.IsVararg )
+		{
+			ParameterBuilder varargParameter = methodBuilder.DefineParameter(
+				functionAST.Parameters.Count + 1, ParameterAttributes.None, "..." );
+			varargParameter.SetCustomAttribute( new CustomAttributeBuilder(
+				typeof( ParamArrayAttribute ).GetConstructor( Type.EmptyTypes ), new Object[] {} ) );
+		}
 
-				// Functions are compiled:
-
-				Value result = [ function ].InvokeS( [ argument, ]* );
-			continuation0:
-				if ( result != null && result.GetType() == typeof( StackFrame ) )
-				{
-					goto yield; ( result, 0 )
-				}
+		ILGenerator methodIL = methodBuilder.GetILGenerator();
 
 
-				// Or for multi-return:
-
-				Value[] results = [ function ].InvokeM( [ argument, ]* )
-			continuation1:
-				if ( results.Length > 0 && results[ 0 ].GetType() == typeof( StackFrame ) )
-				{
-					goto yield; ( results[ 0 ], 1 )
-				}
-		
-		
-				// Saves the stack frame and indicates that the calling function should also yield.
-
-			yield: ( stackFrame, continuation )
-				stackFrame = new StackFrame( stackFrame, continuation );
-				[ All arguments and locals are stored into stackFrame. ]
-				[ return stackFrame; | return new Value[]{ stackFrame }; ]
-		
-					
-				// Restores the stack frame and continues from where we left off.
-
-			resume: ( stackFrame )
-				int continuation = stackFrame.Continuation;
-				[ Restore all arguments and locals. ]
-				stackFrame = stackFrame.Next;
-
-				switch ( continuation )
-				{
-				case 0: result = [ function ].ResumeS( stackFrame ); goto continuation0;
-				case 1: results = [ function ].ResumeM( stackFrame ); goto continuation1;
-				}
-
-				throw new InvalidContinuationException();
 				
-			}
+		/*
+			// Check if we are resuming a suspended continuation.
 
-
-
-			// All the various overloads of Invoke are emitted to forward the request
-			// directly to the generated function.
-
-			public override Value InvokeS( Value argument )
+			if ( StackFrame != null )
 			{
-				[ Marshal parameters and/or return values while calling Invoke ].
+				goto resume;
 			}
+		*/
+
+
+
+		/*
+			// Compiled code.
+		*/
+
+		methodIL.Emit( OpCodes.Ldnull );
+		methodIL.Emit( OpCodes.Ret );
+
+		
+
+		/*
+	
+			// Values that are used as upvals must be declared as upvals everywhere they are used.
+
+			Value local0;
+			UpVal local1;
+	
+
+			// Operations are compiled:
+
+			Value result = [ left ].[ Op ]( right );
+	
+
+			// Functions are compiled:
+
+			Value result = [ function ].InvokeS( [ argument, ]* );
+		continuation0:
+			if ( result != null && result.GetType() == typeof( StackFrame ) )
+			{
+				goto yield; ( result, 0 )
+			}
+
+
+			// Or for multi-return:
+
+			Value[] results = [ function ].InvokeM( [ argument, ]* )
+		continuation1:
+			if ( results.Length > 0 && results[ 0 ].GetType() == typeof( StackFrame ) )
+			{
+				goto yield; ( results[ 0 ], 1 )
+			}
+	
+	
+			// Saves the stack frame and indicates that the calling function should also yield.
+
+		yield: ( stackFrame, continuation )
+			stackFrame = new StackFrame( stackFrame, continuation );
+			[ All arguments and locals are stored into stackFrame. ]
+			[ return stackFrame; | return new Value[]{ stackFrame }; ]
+	
+				
+			// Restores the stack frame and continues from where we left off.
+
+		resume:
+			int continuation = StackFrame.Continuation;
+			[ Restore all arguments and locals. ]
+			StackFrame = StackFrame.Next;
+
+			switch ( continuation )
+			{
+			case 0: result = [ function ].ResumeS( stackFrame ); goto continuation0;
+			case 1: results = [ function ].ResumeM( stackFrame ); goto continuation1;
+			}
+
+			throw new InvalidContinuationException();
+			
+		}
+
+
+
+		// All the various overloads of Invoke are emitted to forward the request
+		// directly to the generated function.
+
+		public override Value InvokeS( Value argument )
+		{
+			[ Marshal parameters and/or return values while calling Invoke ].
+		}
 
 
 		}
 
 		
 		*/
-		
-
-		return null;
+	
 	}
 
 
