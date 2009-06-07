@@ -11,6 +11,7 @@ using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
 using Lua;
+using Lua.CLR;
 using Lua.Parser;
 using Lua.Parser.AST;
 using Lua.Parser.AST.Expressions;
@@ -81,8 +82,8 @@ public class LuaCLRCompiler
 			{
 				AssemblyBuilder	assemblyBuilder =
 					AppDomain.CurrentDomain.DefineDynamicAssembly(
-						new AssemblyName( "LuaCompilerCLR.Default" ), AssemblyBuilderAccess.Run );
-				defaultModuleBuilder = assemblyBuilder.DefineDynamicModule( "Lua.CLR" );
+						new AssemblyName( "LuaCLRFunctions" ), AssemblyBuilderAccess.Run );
+				defaultModuleBuilder = assemblyBuilder.DefineDynamicModule( "LuaCLRFunctions" );
 				this.moduleBuilder = defaultModuleBuilder;
 			}
 		}
