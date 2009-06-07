@@ -13,6 +13,8 @@ using System.Reflection.Emit;
 using Lua;
 using Lua.Parser;
 using Lua.Parser.AST;
+using Lua.Parser.AST.Expressions;
+using Lua.Parser.AST.Statements;
 
 
 namespace Lua.Compiler.CLR
@@ -150,7 +152,7 @@ public class LuaCompilerCLR
 			class <nestedfunction> : Lua.Function { ... }
 		*/
 
-		Dictionary< FunctionAST, TypeBuilder > functions = new Dictionary< FunctionAST, TypeBuilder >();
+		IDictionary< FunctionAST, TypeBuilder > functions = new Dictionary< FunctionAST, TypeBuilder >();
 		foreach ( FunctionAST nestedFunctionAST in functionAST.Functions )
 		{			
 			// Find appropriate name.
@@ -181,7 +183,7 @@ public class LuaCompilerCLR
 			UpVal <upvalname>;
 		*/
 
-		Dictionary< Variable, FieldBuilder > upvals = new Dictionary< Variable, FieldBuilder >();
+		IDictionary< Variable, FieldBuilder > upvals = new Dictionary< Variable, FieldBuilder >();
 		foreach ( Variable upval in functionAST.UpVals )
 		{
 			FieldBuilder fieldBuilder = typeBuilder.DefineField( upval.Name,
@@ -289,7 +291,7 @@ public class LuaCompilerCLR
 		}
 
 		ILGenerator methodIL = methodBuilder.GetILGenerator();
-
+		
 
 				
 		/*
@@ -306,6 +308,17 @@ public class LuaCompilerCLR
 		/*
 			// Compiled code.
 		*/
+
+
+		Builder builder = new Builder( functionAST, functions, upvals );
+		ExpressionCompiler	ec = new ExpressionCompiler( methodIL, builder );
+		StatementCompiler	sc = new StatementCompiler( methodIL, builder );
+
+		foreach ( Statement statement in functionAST.Statements )
+		{
+			statement.Accept( sc );
+		}
+
 
 		methodIL.Emit( OpCodes.Ldnull );
 		methodIL.Emit( OpCodes.Ret );
@@ -389,6 +402,131 @@ public class LuaCompilerCLR
 	}
 
 
+	class Builder
+	{
+		public FunctionAST								FunctionAST		{ get; private set; }
+		public IDictionary< FunctionAST, TypeBuilder >	Functions		{ get; private set; }
+		public IDictionary< Variable, FieldBuilder >	UpVals			{ get; private set; }
+
+
+		public Builder( FunctionAST functionAST, IDictionary< FunctionAST, TypeBuilder > functions,
+			IDictionary< Variable, FieldBuilder > upvals )
+		{
+			FunctionAST	= functionAST;
+			Functions	= functions;
+			UpVals		= upvals;
+		}
+
+	}
+
+
+
+	class Block
+	{
+		public Label Break			{ get; private set; }
+		public Label Continue		{ get; private set; }
+
+
+		public Block( Label breakLabel, Label continueLabel )
+		{
+			Break		= breakLabel;
+			Continue	= continueLabel;
+		}
+	}
+
+
+
+	sealed class StatementCompiler
+		:	StatementVisitor
+	{
+		ILGenerator								il;
+		Builder									b;
+		IDictionary< string, Stack< Block > >	block;
+
+		public StatementCompiler( ILGenerator ilGenerator, Builder builder )
+		{
+			il		= ilGenerator;
+			b		= builder;
+
+			block	= new Dictionary< string, Stack< Block > >();
+		}
+
+
+		public override void Visit( BeginBlock s )
+		{
+			// Track this block.
+
+			if ( ! block.ContainsKey( s.Name ) )
+			{
+				block[ s.Name ] = new Stack< Block >();
+			}
+
+			block[ s.Name ].Push( new Block( il.DefineLabel(), il.DefineLabel() ) );
+			
+
+			// Mark the continue label.
+
+			il.MarkLabel( block[ s.Name ].Peek().Continue );
+		}
+		
+		public override void Visit( EndBlock s )
+		{
+			il.MarkLabel( block[ s.Name ].Peek().Break );
+			block[ s.Name ].Pop();
+		}
+
+		public override void Visit( BeginConstructor s )		{}
+		public override void Visit( EndConstructor s )			{}
+		public override void Visit( BeginScope s )				{}
+		public override void Visit( EndScope s )				{}
+		public override void Visit( BeginTest s )				{}
+		public override void Visit( EndTest s )					{}
+
+		public override void Visit( Assign s )					{}
+		public override void Visit( Break s )					{}
+		public override void Visit( Continue s )				{}
+		public override void Visit( Declare s )					{}
+		public override void Visit( Evaluate s )				{}
+		public override void Visit( IndexMultipleValues s )		{}
+		public override void Visit( Return s )					{}
+		public override void Visit( ReturnMultipleValues s )	{}
+	}
+
+
+	sealed class ExpressionCompiler
+		:	ExpressionVisitor
+	{
+		ILGenerator	il;
+		Builder		b;
+
+		public ExpressionCompiler( ILGenerator ilGenerator, Builder builder )
+		{
+			il	= ilGenerator;
+			b	= builder;
+		}
+
+
+		public override void Visit( Binary e )					{}
+		public override void Visit( Call e )					{}
+		public override void Visit( CallSelf e )				{}
+		public override void Visit( Comparison e )				{}
+		public override void Visit( Constructor e )				{}
+		public override void Visit( FunctionClosure e )			{}
+		public override void Visit( GlobalRef e )				{}
+		public override void Visit( Index e )					{}
+		public override void Visit( Literal e )					{}
+		public override void Visit( LocalRef e )				{}
+		public override void Visit( Logical e )					{}
+		public override void Visit( Not e )						{}
+		public override void Visit( Temporary e )				{}
+		public override void Visit( ToNumber e )				{}
+		public override void Visit( Unary e )					{}
+		public override void Visit( UpValRef e )				{}
+		public override void Visit( ValueList e )				{}
+		public override void Visit( ValueListElement e )		{}
+		public override void Visit( Vararg e )					{}
+		public override void Visit( VarargElement e )			{}
+	}
 	
 
 

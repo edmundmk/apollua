@@ -301,18 +301,6 @@ public abstract class Value
 		throw new InvalidOperationException();
 	}
 
-/*
-	public virtual Value ResumeS( StackFrame frame )
-	{
-		throw new InvalidContinuationException();
-	}
-	
-	public virtual Value[] ResumeM( StackFrame frame )
-	{
-		throw new InvalidContinuationException();
-	}
-*/
-
 
 
 

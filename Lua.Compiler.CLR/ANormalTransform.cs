@@ -59,8 +59,8 @@ static class ANormalTransform
 
 		// Transform the statements into a-normal form.
 
-		TransformExpression	t = new TransformExpression( f );
-		TransformStatement	s = new TransformStatement( f, t );
+		ExpressionTransformation	t = new ExpressionTransformation( f );
+		StatementTransformation	s = new StatementTransformation( f, t );
 
 		foreach ( Statement statement in function.Statements )
 		{
@@ -74,14 +74,14 @@ static class ANormalTransform
 	}
 
 
-	sealed class TransformStatement
+	sealed class StatementTransformation
 		:	StatementVisitor
 	{
 		FunctionAST			f;
-		TransformExpression	t;
+		ExpressionTransformation	t;
 		
 
-		public TransformStatement( FunctionAST f, TransformExpression t )
+		public StatementTransformation( FunctionAST f, ExpressionTransformation t )
 		{
 			this.f	= f;
 			this.t	= t;
@@ -176,14 +176,14 @@ static class ANormalTransform
 	}
 
 
-	sealed class TransformExpression
+	sealed class ExpressionTransformation
 		:	ExpressionVisitor
 	{
 		FunctionAST	f;
 		Expression	result;
 
 
-		public TransformExpression( FunctionAST f )
+		public ExpressionTransformation( FunctionAST f )
 		{
 			this.f	= f;
 			result	= null;

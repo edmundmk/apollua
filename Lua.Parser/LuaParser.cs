@@ -305,7 +305,7 @@ public class LuaParser
 		function.Statement( new Continue( s, "while" ) );
 		function.Statement( new EndTest( s ) );
 		function.Statement( new EndScope( s ) );
-		function.Statement( new EndBlock( s ) );
+		function.Statement( new EndBlock( s, "while" ) );
 		scope = scope.Parent;
 	}
 
@@ -351,12 +351,12 @@ public class LuaParser
 
 		s = new SourceSpan( until.SourceSpan.Start, condition.SourceSpan.End );
 
-		function.Statement( new EndBlock( s ) );
+		function.Statement( new EndBlock( s, "repeatbody" ) );
 		function.Statement( new BeginTest( s, condition ) );
 		function.Statement( new Continue( s, "repeat" ) );
 		function.Statement( new EndTest( s ) );
 		function.Statement( new EndScope( s ) );
-		function.Statement( new EndBlock( s ) );
+		function.Statement( new EndBlock( s, "repeat" ) );
 		scope = scope.Parent;
 	}
 
@@ -462,7 +462,7 @@ public class LuaParser
 
 
 		function.Statement( new EndScope( s ) );
-		function.Statement( new EndBlock( s ) );
+		function.Statement( new EndBlock( s, "if" ) );
 		scope = scope.Parent;
 	}
 
@@ -629,7 +629,7 @@ public class LuaParser
 
 		s = endFor.SourceSpan;
 
-		function.Statement( new EndBlock( s ) );
+		function.Statement( new EndBlock( s, "forbody" ) );
 	
 		
 		// Increment index.
@@ -649,7 +649,7 @@ public class LuaParser
 		function.Statement( new Continue( s, "for" ) );
 		function.Statement( new EndTest( s ) );
 		function.Statement( new EndScope( s ) );
-		function.Statement( new EndBlock( s ) );	
+		function.Statement( new EndBlock( s, "for" ) );	
 		function.Statement( new EndScope( s ) );
 		scope = scope.Parent;
 	}
@@ -783,7 +783,7 @@ public class LuaParser
 
 		function.Statement( new Continue( s, "forin" ) );
 		function.Statement( new EndScope( s ) );
-		function.Statement( new EndBlock( s ) );
+		function.Statement( new EndBlock( s, "forin" ) );
 		function.Statement( new EndScope( s ) );
 		scope = scope.Parent;
 	}
@@ -2116,7 +2116,7 @@ public class LuaParser
 	
 	class Scope
 	{
-		public FunctionAST				Function	{ get; private set; }
+		public FunctionAST			Function	{ get; private set; }
 		public Scope				Parent		{ get; private set; }
 		public IList< Variable >	Locals		{ get; private set; }
 		public BreakContinueAction	Break		{ get; private set; }

@@ -78,9 +78,13 @@ public class Continue
 public class EndBlock
 	:	Statement
 {
-	public EndBlock( SourceSpan s )
+	public string Name { get; private set; }
+
+
+	public EndBlock( SourceSpan s, string name )
 		:	base( s )
 	{
+		Name = name;
 	}
 	
 

@@ -21,7 +21,7 @@ public abstract class ExpressionVisitor
 	public virtual void Visit( Comparison e )			{}
 	public virtual void Visit( Constructor e )			{}
 	public virtual void Visit( FunctionClosure e )		{}
-	public virtual void Visit( GlobalRef e )				{}
+	public virtual void Visit( GlobalRef e )			{}
 	public virtual void Visit( Index e )				{}
 	public virtual void Visit( Literal e )				{}
 	public virtual void Visit( LocalRef e )				{}
