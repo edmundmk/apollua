@@ -9,7 +9,7 @@ using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
 using Lua;
-using Lua.Compiler.CLR;
+using Lua.CLR.Compiler;
 
 
 namespace Test
@@ -25,7 +25,7 @@ static class EntryPoint
 		ModuleBuilder	m = a.DefineDynamicModule( "TestCompiled", "TestCompiled.dll", true );
 		
 		StringWriter	errors		= new StringWriter();
-		LuaCompilerCLR	compiler	= new LuaCompilerCLR( m, errors, File.OpenText( args[ 0 ] ), args[ 0 ] );
+		LuaCLRCompiler	compiler	= new LuaCLRCompiler( m, errors, File.OpenText( args[ 0 ] ), args[ 0 ] );
 		Function		function	= compiler.Compile();
 
 		a.Save( "TestCompiled.dll" );

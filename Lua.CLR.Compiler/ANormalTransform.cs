@@ -11,7 +11,7 @@ using Lua.Parser.AST.Expressions;
 using Lua.Parser.AST.Statements;
 
 
-namespace Lua.Compiler.CLR
+namespace Lua.CLR.Compiler
 {
 
 

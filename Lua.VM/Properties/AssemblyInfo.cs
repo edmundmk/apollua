@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle( "Lua.Compiler.CLR" )]
+[assembly: AssemblyTitle( "Lua.VM" )]
 [assembly: AssemblyDescription( "" )]
 [assembly: AssemblyConfiguration( "" )]
 [assembly: AssemblyCompany( "" )]
-[assembly: AssemblyProduct( "Lua.Compiler.CLR" )]
+[assembly: AssemblyProduct( "Lua.VM" )]
 [assembly: AssemblyCopyright( "Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license.\n" +
 "LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license.\n" +
 "This version copyright © 2009 Edmund Kapusniak." )]
@@ -22,7 +22,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible( false )]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid( "d644b5bd-617e-4d2a-be93-8570a194b798" )]
+[assembly: Guid( "34a1eef2-459c-40b7-9a24-a69f4e39b1b4" )]
 
 // Version information for an assembly consists of the following four values:
 //

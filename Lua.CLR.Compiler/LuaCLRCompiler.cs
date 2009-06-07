@@ -1,4 +1,4 @@
-﻿// LuaCompilerCLR.cs
+﻿// LuaCLRCompiler.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -17,7 +17,7 @@ using Lua.Parser.AST.Expressions;
 using Lua.Parser.AST.Statements;
 
 
-namespace Lua.Compiler.CLR
+namespace Lua.CLR.Compiler
 {
 
 
@@ -37,7 +37,7 @@ namespace Lua.Compiler.CLR
 */
 
 
-public class LuaCompilerCLR
+public class LuaCLRCompiler
 {
 	// Errors.
 
@@ -58,12 +58,12 @@ public class LuaCompilerCLR
 	ModuleBuilder			moduleBuilder;
 
 
-	public LuaCompilerCLR( TextWriter errorWriter, TextReader source, string sourceName )
+	public LuaCLRCompiler( TextWriter errorWriter, TextReader source, string sourceName )
 		:	this( null, errorWriter, source, sourceName )
 	{
 	}
 
-	public LuaCompilerCLR( ModuleBuilder moduleBuilder, TextWriter errorWriter, TextReader source, string sourceName )
+	public LuaCLRCompiler( ModuleBuilder moduleBuilder, TextWriter errorWriter, TextReader source, string sourceName )
 	{
 		this.errorWriter	= errorWriter;
 		hasError			= false;

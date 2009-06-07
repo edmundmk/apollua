@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0E92C9B8-7B47-4556-A6E9-D23AC43038F2}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{A52CE447-5082-4A22-A044-B019C2F87EFA}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Test</RootNamespace>
-    <AssemblyName>Test</AssemblyName>
+    <RootNamespace>Lua.VM.Compiler</RootNamespace>
+    <AssemblyName>Lua.VM.Compiler</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -45,18 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Lua.CLR.Compiler\Lua.CLR.Compiler.csproj">
-      <Project>{C79018B8-CD8D-4573-A7F2-3F7C4A2B8C29}</Project>
-      <Name>Lua.CLR.Compiler</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Lua\Lua.csproj">
-      <Project>{27F8B9D4-FEE3-4E1B-9A97-0604B7B4E2E4}</Project>
-      <Name>Lua</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
