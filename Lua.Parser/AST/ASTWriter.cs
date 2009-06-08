@@ -23,6 +23,9 @@ public static class ASTWriter
 		ExpressionWriter	ew = new ExpressionWriter( o );
 		StatementWriter		sw = new StatementWriter( o, ew );
 
+
+		// Function signature.
+
 		o.Write( "function " );
 		if ( function.Name != null )
 		{
@@ -30,6 +33,7 @@ public static class ASTWriter
 		}
 		else
 		{
+			o.Write( "x" );
 			o.Write( function.GetHashCode().ToString( "X" ) );
 		}
 		o.Write( "(" );
@@ -55,6 +59,9 @@ public static class ASTWriter
 		}
 		o.WriteLine( ")" );
 
+
+		// Upvals.
+
 		if ( function.UpVals.Count > 0 )
 		{
 			o.Write( "  -- upval " );
@@ -68,6 +75,9 @@ public static class ASTWriter
 			}
 			o.WriteLine();
 		}
+
+
+		// Locals.
 
 		if ( function.Locals.Count > 0 )
 		{
@@ -83,14 +93,22 @@ public static class ASTWriter
 			o.WriteLine( "" );
 		}
 		
+
+		// Statements.
+
 		foreach ( Statement statement in function.Statements )
 		{
 			statement.Accept( sw );
 		}
 
+
+		// Final.
+
 		o.WriteLine( "end" );
 		o.WriteLine();
 		
+
+		// Other functions.
 		
 		foreach ( FunctionAST child in function.Functions )
 		{
