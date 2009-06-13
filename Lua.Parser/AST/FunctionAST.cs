@@ -40,7 +40,9 @@ public class FunctionAST
 	public IList< Variable >	Parameters				{ get; private set; }
 	public bool					IsVararg				{ get; private set; }
 	public IList< Variable >	Locals					{ get; private set; }
-	public IList< Statement >	Statements				{ get; private set; }
+	public IList< Constructor >	Constructors			{ get; private set; }
+	public IList< LabelAST >	Labels					{ get; private set; }
+	public Block				Block					{ get; private set; }
 	public bool					ReturnsMultipleValues	{ get; private set; }
 	
 
@@ -50,18 +52,18 @@ public class FunctionAST
 	List< Variable >	upvals;
 	List< Variable >	parameters;
 	List< Variable >	locals;
-	List< Statement >	statements;
+	List< LabelAST >	labels;
 
 
 	// Construtor.
 
-	public FunctionAST( string name, FunctionAST parent )
+	public FunctionAST( string name, FunctionAST parent, Block block )
 	{
-		functions	= new List< FunctionAST >();
-		upvals		= new List< Variable >();
-		parameters	= new List< Variable >();
-		locals		= new List< Variable >();
-		statements	= new List< Statement >();
+		functions				= new List< FunctionAST >();
+		upvals					= new List< Variable >();
+		parameters				= new List< Variable >();
+		locals					= new List< Variable >();
+		labels					= new List< LabelAST >();
 		
 		Name					= name;
 		Parent					= parent;
@@ -70,7 +72,8 @@ public class FunctionAST
 		Parameters				= parameters.AsReadOnly();
 		IsVararg				= false;
 		Locals					= locals.AsReadOnly();
-		Statements				= statements.AsReadOnly();
+		Labels					= labels.AsReadOnly();
+		Block					= block;
 		ReturnsMultipleValues	= false;
 	}
 
@@ -81,7 +84,6 @@ public class FunctionAST
 	{
 		functions.Add( function );
 	}
-
 
 	bool ContainsUpVal( Variable upval )
 	{
@@ -98,7 +100,6 @@ public class FunctionAST
 		}
 	}
 
-
 	public void Parameter( Variable parameter )
 	{
 		parameters.Add( parameter );
@@ -109,20 +110,19 @@ public class FunctionAST
 		IsVararg = true;
 	}
 
-
 	public void Local( Variable local )
 	{
 		locals.Add( local );
 	}
 
-
-	public void Statement( Statement statement )
+	public void Label( LabelAST label )
 	{
-		statements.Add( statement );
-		if ( statement is ReturnMultipleValues )
-		{
-			ReturnsMultipleValues = true;
-		}
+		labels.Add( label );
+	}
+
+	public void SetReturnsMultipleValues()
+	{
+		ReturnsMultipleValues = true;
 	}
 	
 }

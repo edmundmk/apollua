@@ -60,6 +60,31 @@ public static class ASTWriter
 		o.WriteLine( ")" );
 
 
+		// Returns multiple values.
+
+		if ( function.ReturnsMultipleValues )
+		{
+			o.WriteLine( "  -- multiple return" );
+		}
+
+		
+		// Labels.
+		
+		if ( function.Labels.Count > 0 )
+		{
+			o.Write( "  -- label " );
+			bool bFirst = true;
+			foreach ( LabelAST label in function.Labels )
+			{
+				if ( ! bFirst )
+					o.Write( ", " );
+				bFirst = false;
+				o.Write( label.Name );
+			}
+			o.WriteLine();
+		}
+
+
 		// Upvals.
 
 		if ( function.UpVals.Count > 0 )
@@ -90,16 +115,13 @@ public static class ASTWriter
 				bFirst = false;
 				o.Write( local.Name );
 			}
-			o.WriteLine( "" );
+			o.WriteLine();
 		}
-		
+
 
 		// Statements.
 
-		foreach ( Statement statement in function.Statements )
-		{
-			statement.Accept( sw );
-		}
+		sw.WriteBlock( function.Block );
 
 
 		// Final.
@@ -117,6 +139,8 @@ public static class ASTWriter
 	}
 
 
+
+
 	sealed class StatementWriter
 		:	StatementVisitor
 	{
@@ -129,67 +153,6 @@ public static class ASTWriter
 			this.o	= o;
 			this.x	= x;
 			indent	= 1;
-		}
-
-
-		public override void Visit( BeginBlock s )
-		{
-			Indent();
-			o.Write( "block " );
-			o.WriteLine( s.Name );
-			indent += 1;
-		}
-
-		public override void Visit( EndBlock s )
-		{
-			indent -= 1;
-			Indent();
-			o.WriteLine( "end" );
-		}
-
-		public override void Visit( BeginConstructor s )
-		{
-			Indent();
-			o.Write( "constructor " );
-			o.WriteLine( s.Constructor.GetHashCode().ToString( "X" ) );
-			indent += 1;
-		}
-
-		public override void Visit( EndConstructor s )
-		{
-			indent -= 1;
-			Indent();
-			o.WriteLine( "end" );
-		}
-
-		public override void Visit( BeginScope s )
-		{
-			Indent();
-			o.WriteLine( "scope" );
-			indent += 1;
-		}
-
-		public override void Visit( EndScope s )
-		{
-			indent -= 1;
-			Indent();
-			o.WriteLine( "end" );
-		}
-
-		public override void Visit( BeginTest s )
-		{
-			Indent();
-			o.Write( "test " );
-			s.Condition.Accept( x );
-			o.WriteLine();
-			indent += 1;
-		}
-
-		public override void Visit( EndTest s )
-		{
-			indent -= 1;
-			Indent();
-			o.WriteLine( "end" );
 		}
 
 
@@ -206,20 +169,49 @@ public static class ASTWriter
 			o.WriteLine();
 		}
 
-		public override void Visit( Break s )
+		public override void Visit( Block s )
 		{
 			Indent();
-			o.Write( "break " );
-			o.WriteLine( s.BlockName );
+			o.WriteLine( "block" );
+			indent += 1;
+
+			WriteBlock( s );
+
+			indent -= 1;
+			Indent();
+			o.WriteLine( "end" );
 		}
 
-		public override void Visit( Continue s )
+		public void WriteBlock( Block s )
+		{
+			if ( s.Locals.Count > 0 )
+			{
+				Indent();
+				o.Write( "-- local " );
+				bool bFirst = true;
+				foreach ( Variable local in s.Locals )
+				{
+					if ( ! bFirst )
+						o.Write( ", " );
+					bFirst = false;
+					o.Write( local.Name );
+				}
+				o.WriteLine();
+			}
+			
+			foreach ( Statement statement in s.Statements )
+			{
+				statement.Accept( this );
+			}
+		}
+
+		public override void Visit( Branch s )
 		{
 			Indent();
-			o.Write( "continue " );
-			o.WriteLine( s.BlockName );
+			o.Write( "b " );
+			o.WriteLine( s.Target.Name );
 		}
-
+		
 		public override void Visit( Declare s )
 		{
 			Indent();
@@ -240,12 +232,19 @@ public static class ASTWriter
 		public override void Visit( IndexMultipleValues s )
 		{
 			Indent();
-			s.Constructor.Accept( x );
+			o.Write( "constructor " );
+			o.Write( s.Constructor.GetHashCode().ToString( "X" ) );
 			o.Write( "[ " );
 			o.Write( s.Key );
 			o.Write( " ... ] = values " );
 			s.Values.Accept( x );
 			o.WriteLine();
+		}
+
+		public override void Visit( MarkLabel s )
+		{
+			o.Write( s.Label.Name );
+			o.WriteLine( ":" );
 		}
 
 		public override void Visit( Return s )
@@ -277,6 +276,15 @@ public static class ASTWriter
 				s.ResultValues.Accept( x );
 			}
 			o.WriteLine();
+		}
+
+		public override void Visit( Test s )
+		{
+			Indent();
+			o.Write( "bfalse " );
+			s.Condition.Accept( x );
+			o.Write( " " );
+			o.WriteLine( s.Target.Name );
 		}
 
 
@@ -399,10 +407,14 @@ public static class ASTWriter
 			o.Write( " )" );
 		}
 
-		public override void Visit( Constructor e )
+		public override void Visit( ConstructorRef e )
 		{
+			if ( e.IsLastReference )
+			{
+				o.Write( "retire " );
+			}
 			o.Write( "constructor " );
-			o.Write( e.GetHashCode().ToString( "X" ) );
+			o.Write( e.Constructor.GetHashCode().ToString( "X" ) );
 		}
 
 		public override void Visit( FunctionClosure e )
@@ -414,6 +426,7 @@ public static class ASTWriter
 			}
 			else
 			{
+				o.Write( "x" );
 				o.Write( e.Function.GetHashCode().ToString( "X" ) );
 			}
 		}

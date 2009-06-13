@@ -12,14 +12,14 @@ namespace Lua.VM
 {
 
 
-public struct DebugLocalScope
+public struct DebugLocal
 {
 	public string	Name				{ get; private set; }
 	public int		StartInstruction	{ get; private set; }
 	public int		EndInstruction		{ get; private set; }
 
 
-	public DebugLocalScope( string name, int startInstruction, int endInstruction )
+	public DebugLocal( string name, int startInstruction, int endInstruction )
 		:	this()
 	{
 		Name				= name;

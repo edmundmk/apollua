@@ -19,30 +19,30 @@ public class Prototype
 
 	// Parameters.
 
-	public int					UpValCount				{ get; set; }
-	public int					ParameterCount			{ get; set; }
-	public bool					IsVararg				{ get; set; }
+	public int					UpValCount					{ get; set; }
+	public int					ParameterCount				{ get; set; }
+	public bool					IsVararg					{ get; set; }
 
 
 	// Constants.
 
-	public Value[]				Constants				{ get; set; }
-	public Prototype[]			Prototypes				{ get; set; }
+	public Value[]				Constants					{ get; set; }
+	public Prototype[]			Prototypes					{ get; set; }
 
 
 	// VM opcodes.
 
-	public int					StackSize				{ get; set; }
-	public Instruction[]		Instructions			{ get; set; }
+	public int					StackSize					{ get; set; }
+	public Instruction[]		Instructions				{ get; set; }
 
 
 	// Debug information.
 
-	public string				DebugName				{ get; set; }
-	public DebugSourceSpan		DebugSourceSpan			{ get; set; }
-	public DebugSourceSpan[]	DebugOpcodeSourceSpans	{ get; set; }
-	public string				DebugUpValNames			{ get; set; }
-	public DebugLocalScope[]	DebugLocalScopes		{ get; set; }
+	public string				DebugName					{ get; set; }
+	public DebugSourceSpan		DebugSourceSpan				{ get; set; }
+	public DebugSourceSpan[]	DebugInstructionSourceSpans	{ get; set; }
+	public string				DebugUpValNames				{ get; set; }
+	public DebugLocal[]			DebugLocals					{ get; set; }
 
 }
 

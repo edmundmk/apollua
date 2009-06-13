@@ -70,6 +70,12 @@ public abstract class Statement
 	}
 
 
+	public void SetSourceSpan( SourceSpan s )
+	{
+		SourceSpan = s;
+	}
+
+
 	public abstract void Accept( StatementVisitor s );
 
 }

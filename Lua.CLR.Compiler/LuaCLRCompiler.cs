@@ -21,7 +21,7 @@ using Lua.Parser.AST.Statements;
 namespace Lua.CLR.Compiler
 {
 
-
+#if false
 /*	Each function is compiled to a class deriving from Lua.Function.
 	
 	Only one version of each function is compiled.  This is simpler than LuaCLR as
@@ -533,5 +533,5 @@ public class LuaCLRCompiler
 
 }
 
-
+#endif
 }

@@ -21,7 +21,7 @@ namespace Lua.CLR.Compiler
 	on the evaluation stack is the result of the call.
 */
 
-	
+/*	
 static class ANormalTransform
 {
 
@@ -357,6 +357,6 @@ static class ANormalTransform
 
 
 }
-
+*/
 
 }

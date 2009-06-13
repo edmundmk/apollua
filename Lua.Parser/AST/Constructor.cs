@@ -8,19 +8,17 @@
 using System;
 
 
-namespace Lua.Parser.AST.Expressions
+namespace Lua.Parser.AST
 {
 
 
 public class Constructor
-	:	Expression
 {
 	public int ArrayCount	{ get; private set; }
 	public int HashCount	{ get; private set; }
 
 
-	public Constructor( SourceSpan s )
-		:	base( s )
+	public Constructor()
 	{
 		ArrayCount	= 0;
 		HashCount	= 0;
@@ -35,12 +33,6 @@ public class Constructor
 	public void IncrementHashCount()
 	{
 		HashCount += 1;
-	}
-
-
-	public override void Accept( ExpressionVisitor v )
-	{
-		v.Visit( this );
 	}
 
 }

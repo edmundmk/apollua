@@ -38,7 +38,8 @@ public class LuaParser
 	// Parse state.
 
 	FunctionAST					function;
-	Scope						scope;
+	Block						block;
+	LoopScope					loopScope;
 	ParseStack< Expression >	expression;
 
 
@@ -55,7 +56,8 @@ public class LuaParser
 		Next();
 
 		function			= null;
-		scope				= null;
+		block				= null;
+		loopScope			= null;
 		expression			= new ParseStack< Expression >();
 	}
 
@@ -92,23 +94,26 @@ public class LuaParser
 		*/
 
 		Debug.Assert( function == null );
-		Debug.Assert( scope == null );
+		Debug.Assert( block == null );
+		Debug.Assert( loopScope == null );
 
-		function = new FunctionAST( "<chunk>", function );
-		scope = new Scope( function, null );
-	
+		block = new Block( new SourceSpan(), null );
+		function = new FunctionAST( "<chunk>", function, block );
+
 		function.SetVararg();
 
-		block();
+		blockstat();
 
 		Token eof = Check( TokenKind.EOF );
 
 		FunctionAST result = function;
 		function = function.Parent;
-		scope = scope.Parent;
+		block.SetSourceSpan( new SourceSpan( new SourceLocation( sourceName, 0, 0 ), eof.SourceSpan.End ) );
+		block = block.Parent;
 
 		Debug.Assert( function == null );
-		Debug.Assert( scope == null );
+		Debug.Assert( block == null );
+		Debug.Assert( loopScope == null );
 		Debug.Assert( expression.Count == 0 );
 		
 		return result;
@@ -135,7 +140,7 @@ public class LuaParser
 		}
 	}
 
-	void block()
+	void blockstat()
 	{
 		/*  block
 				: ( stat ';'? )*  ( laststat ';'? )?
@@ -146,6 +151,7 @@ public class LuaParser
 		while ( ! isLastStatement && ! block_follow_set() )
 		{
 			isLastStatement = statement();
+			Debug.Assert( block != null );
 			Test( TokenKind.Semicolon );
 		}
 	}
@@ -251,14 +257,14 @@ public class LuaParser
 		*/
 
 		Token matchDo = Check( TokenKind.Do );
-		function.Statement( new BeginScope( matchDo.SourceSpan ) );
-		scope = new Scope( function, scope );
+		block = new Block( new SourceSpan(), block );
+		block.Parent.Statement( block );
 		
-		block();
+		blockstat();
 	
 		Token endDo = Check( TokenKind.End, matchDo );
-		function.Statement( new EndScope( endDo.SourceSpan ) );
-		scope = scope.Parent;
+		block.SetSourceSpan( new SourceSpan( matchDo.SourceSpan.Start, endDo.SourceSpan.End ) );
+		block = block.Parent;
 	}
 
 
@@ -269,17 +275,13 @@ public class LuaParser
 				;
 		*/
 
-		/*	block while
-			{
-				scope
-				{
-					test <condition>
-					{
-		...
-						continue while
-					}
-				}
-			}
+		/*	whileContinue:
+				bfalse <condition> whileBreak
+				block
+					...
+				end
+				b loopContinue
+			whileBreak:
 		*/
 
 		Token matchWhile = Check( TokenKind.While );
@@ -287,26 +289,28 @@ public class LuaParser
 		Expression condition = PopValue();
 		Token doToken = Check( TokenKind.Do );
 
-		SourceSpan s = new SourceSpan( matchWhile.SourceSpan.Start, doToken.SourceSpan.End );
+		SourceSpan s			= new SourceSpan( matchWhile.SourceSpan.Start, doToken.SourceSpan.End );
+		LabelAST whileBreak		= new LabelAST( "whileBreak" );		function.Label( whileBreak );
+		LabelAST whileContinue	= new LabelAST( "whileContinue" );	function.Label( whileContinue );
+		
 
-		function.Statement( new BeginBlock( s, "while" ) );
-		function.Statement( new BeginScope( s ) );
-		function.Statement( new BeginTest( s, condition ) );
-		scope = new Scope( function, scope,
-			new BreakContinueAction( BreakOrContinue.Break, "while" ),
-			new BreakContinueAction( BreakOrContinue.Continue, "while" ) );
+		block.Statement( new MarkLabel( s, whileContinue ) );
+		block.Statement( new Test( s, condition, whileBreak ) );
+		
+		block = new Block( new SourceSpan(), block );
+		block.Parent.Statement( block );
+		loopScope = new LoopScope( function, loopScope, whileBreak, whileContinue );
 				
-		block();
+		blockstat();
 
 		Token endWhile = Check( TokenKind.End, matchWhile );
+
+		loopScope = loopScope.Parent;
+		block.SetSourceSpan( new SourceSpan( doToken.SourceSpan.Start, endWhile.SourceSpan.End ) );
+		block = block.Parent;
 		
-		s = endWhile.SourceSpan;
-		
-		function.Statement( new Continue( s, "while" ) );
-		function.Statement( new EndTest( s ) );
-		function.Statement( new EndScope( s ) );
-		function.Statement( new EndBlock( s, "while" ) );
-		scope = scope.Parent;
+		block.Statement( new Branch( endWhile.SourceSpan, whileContinue ) );
+		block.Statement( new MarkLabel( endWhile.SourceSpan, whileBreak ) );
 	}
 
 
@@ -317,47 +321,44 @@ public class LuaParser
 				;
 		*/
 
-		/*	block repeat
-			{
-				scope
-				{
-					block repeatbody
-					{
-		...
-					}
-					test <condition>
-					{
-						continue repeat
-					}
-				}
-			}
+		/*	repeat:
+				block
+					...
+			repeatContinue:
+					bfalse <condition> loopTop
+				end
+			repeatBreak:
 		*/
 
 		Token matchRepeat = Check( TokenKind.Repeat );
 
-		SourceSpan s = matchRepeat.SourceSpan;
+		SourceSpan s			= matchRepeat.SourceSpan;
+		LabelAST repeat			= new LabelAST( "repeat" );			function.Label( repeat );
+		LabelAST repeatBreak	= new LabelAST( "repeatBreak" );	function.Label( repeatBreak );
+		LabelAST repeatContinue	= new LabelAST( "repeatContinue" );	function.Label( repeatContinue );
+		
+		block.Statement( new MarkLabel( s, repeat ) );
 
-		function.Statement( new BeginBlock( s, "repeat" ) );
-		function.Statement( new BeginScope( s ) );
-		function.Statement( new BeginBlock( s, "repeatbody" ) );
-		scope = new Scope( function, scope, 
-			new BreakContinueAction( BreakOrContinue.Break, "repeat" ),
-			new BreakContinueAction( BreakOrContinue.Break, "repeatbody" ) );
+		block = new Block( new SourceSpan(), block );
+		block.Parent.Statement( block );
+		loopScope = new LoopScope( function, loopScope, repeatBreak, repeatContinue );
 
-		block();
+		blockstat();
+	
 		Token until = Check( TokenKind.Until, matchRepeat );
 		exp();
 		Expression condition = PopValue();
 
 		s = new SourceSpan( until.SourceSpan.Start, condition.SourceSpan.End );
 
-		function.Statement( new EndBlock( s, "repeatbody" ) );
-		function.Statement( new BeginTest( s, condition ) );
-		function.Statement( new Continue( s, "repeat" ) );
-		function.Statement( new EndTest( s ) );
-		function.Statement( new EndScope( s ) );
-		function.Statement( new EndBlock( s, "repeat" ) );
-		scope = scope.Parent;
+		block.Statement( new MarkLabel( s, repeatContinue ) );
+		block.Statement( new Test( s, condition, repeat ) );
+
+		loopScope = loopScope.Parent;
+		block.SetSourceSpan( new SourceSpan( matchRepeat.SourceSpan.Start, s.End ) );
+		block = block.Parent;
+
+		block.Statement( new MarkLabel( s, repeatBreak ) );
 	}
 
 
@@ -368,29 +369,22 @@ public class LuaParser
 				;
 		*/
 
-		/*	block if
-			{
-				scope
-				{
-					test <condition>
-					{
-		...	
-						break if
-					}
-				}
-				scope
-				{
-					test <condition>
-					{
-		...
-						break if
-					}
-				}
-				scope
-				{
-			...
-				}
-			}
+		/*		bfalse <condition> nextClause
+				block
+					...
+				end
+				b endIf
+			ifClause:
+				bfalse <condition> nextClause
+				block
+					...
+				end
+				b endIf
+			ifClause:
+				block
+					...
+				end
+			ifEnd:
 		*/
 
 		Token match = Check( TokenKind.If );
@@ -398,72 +392,73 @@ public class LuaParser
 		Expression condition = PopValue();
 		Token thenToken = Check( TokenKind.Then );
 
-		SourceSpan s = new SourceSpan( match.SourceSpan.Start, thenToken.SourceSpan.End );
+		SourceSpan s		= new SourceSpan( match.SourceSpan.Start, thenToken.SourceSpan.End );
+		LabelAST ifClause	= new LabelAST( "ifClause" );	function.Label( ifClause );
+		LabelAST ifEnd		= new LabelAST( "ifEnd" );		function.Label( ifEnd );
 
-		function.Statement( new BeginBlock( s, "if" ) );
-		function.Statement( new BeginScope( s ) );
-		function.Statement( new BeginTest( s, condition ) );
-		scope = new Scope( function, scope );
+		block.Statement( new Test( s, condition, ifClause ) );
 
-		block();
+		block = new Block( new SourceSpan(), block );
+		block.Parent.Statement( block );
+
+		blockstat();
 
 		while ( Get() == TokenKind.Elseif )
 		{
 			Token elseIf = Check( TokenKind.Elseif );
 
-			s = elseIf.SourceSpan;
+			block.SetSourceSpan( new SourceSpan( thenToken.SourceSpan.Start, elseIf.SourceSpan.End ) );
+			block = block.Parent;
 
-			function.Statement( new Break( s, "if" ) );
-			function.Statement( new EndTest( s ) );
-			function.Statement( new EndScope( s ) );
-			scope = scope.Parent;
-			
+			block.Statement( new Branch( elseIf.SourceSpan, ifEnd ) );
+			block.Statement( new MarkLabel( elseIf.SourceSpan, ifClause ) );
+
 			exp();
 			condition = PopValue();
 			thenToken = Check( TokenKind.Then );
 
-			s = new SourceSpan( elseIf.SourceSpan.Start, thenToken.SourceSpan.End );
-	
-			function.Statement( new BeginScope( s ) );
-			function.Statement( new BeginTest( s, condition ) );
-			scope = new Scope( function, scope );
+			s			= new SourceSpan( elseIf.SourceSpan.Start, thenToken.SourceSpan.End );
+			ifClause	= new LabelAST( "ifClause" );	function.Label( ifClause );
 			
-			block();
+			block.Statement( new Test( s, condition, ifClause ) );
+
+			block = new Block( new SourceSpan(), block );
+			block.Parent.Statement( block );
+
+			blockstat();
 		}
 
 		if ( Get() == TokenKind.Else )
 		{
 			Token elseToken = Check( TokenKind.Else );
 
-			s = elseToken.SourceSpan;
+			block.SetSourceSpan( new SourceSpan( thenToken.SourceSpan.Start, elseToken.SourceSpan.End ) );
+			block = block.Parent;
 
-			function.Statement( new Break( s, "if" ) );
-			function.Statement( new EndTest( s ) );
-			function.Statement( new EndScope( s ) );
-			scope = scope.Parent;
+			block.Statement( new Branch( elseToken.SourceSpan, ifEnd ) );
+			block.Statement( new MarkLabel( elseToken.SourceSpan, ifClause ) );
 
-			function.Statement( new BeginScope( s ) );
-			scope = new Scope( function, scope );
+			block = new Block( new SourceSpan(), block );
+			block.Parent.Statement( block );
 
-			block();
+			blockstat();
 
 			Token endIf = Check( TokenKind.End, match );
 
-			s = endIf.SourceSpan;
+			block.SetSourceSpan( new SourceSpan( elseToken.SourceSpan.Start, endIf.SourceSpan.End ) );
+			block = block.Parent;
+			
+			block.Statement( new MarkLabel( endIf.SourceSpan, ifEnd ) );
 		}
 		else
 		{
 			Token endIf = Check( TokenKind.End, match );
 
-			s = endIf.SourceSpan;
+			block.SetSourceSpan( new SourceSpan( thenToken.SourceSpan.Start, endIf.SourceSpan.End ) );
+			block = block.Parent;
 
-			function.Statement( new EndTest( s ) );
+			block.Statement( new MarkLabel( endIf.SourceSpan, ifEnd ) );
 		}
-
-
-		function.Statement( new EndScope( s ) );
-		function.Statement( new EndBlock( s, "if" ) );
-		scope = scope.Parent;
 	}
 
 
@@ -510,29 +505,22 @@ public class LuaParser
 				;
 		*/
 
-		/*	scope
-			{
-				local (for index)	= tonumber( <index> )
-				local (for limit)	= tonumber( <limit> )
-				local (for step)	= tonumber( <step> )
-				block for
-				{
-					scope
-					{
-						test (    ( (for step) > 0 and (for index) <= (for limit) )
-							   or ( (for step) < 0 and (for index) >= (for limit) ) )
-						{
-							block forbody
-							{
-								local <index> = (for index)
-		...
-							}
-							(for index) = (for index) + (for step)
-							continue for
-						}
-					}
-				}
-			}
+		/*		block
+					local (for index)	= tonumber( <index> )
+					local (for limit)	= tonumber( <limit> )
+					local (for step)	= tonumber( <step> )
+			fornum:
+					bfalse (    ( (for step) > 0 and (for index) <= (for limit) )
+							 or ( (for step) < 0 and (for index) >= (for limit) ) ) fornumBreak
+					block
+						local <index> = (for index)
+						...
+			fornumContinue:
+					end
+					(for index) = (for index) + (for step)
+					b loopTop
+			fornumBreak:
+				end
 		*/
 
 		Token name = Check( TokenKind.Identifier );
@@ -559,29 +547,36 @@ public class LuaParser
 		
 		// Construct AST.
 
-		SourceSpan s = new SourceSpan( matchFor.SourceSpan.Start, doToken.SourceSpan.End );
+		SourceSpan s			= new SourceSpan( matchFor.SourceSpan.Start, doToken.SourceSpan.End );
+		LabelAST fornum			= new LabelAST( "fornum" );			function.Label( fornum );
+		LabelAST fornumBreak	= new LabelAST( "fornumBreak" );	function.Label( fornumBreak );
+		LabelAST fornumContinue	= new LabelAST( "fornumContinue" );	function.Label( fornumContinue );
 
-		function.Statement( new BeginScope( s ) );
+		block = new Block( new SourceSpan(), block );
+		block.Parent.Statement( block );
+
 		
-
 		// Delcare internal variables.
 
-		Variable forIndex = new Variable( "(for index)" );	function.Local( forIndex );
-		Variable forLimit = new Variable( "(for limit)" );	function.Local( forLimit );
-		Variable forStep  = new Variable( "(for step)" );	function.Local( forStep );
+		Variable forIndex = new Variable( "(for index)" );
+		function.Local( forIndex ); block.Local( forIndex );
+		Variable forLimit = new Variable( "(for limit)" );
+		function.Local( forLimit ); block.Local( forLimit );
+		Variable forStep  = new Variable( "(for step)" );
+		function.Local( forStep ); block.Local( forStep );
 
 		Expression startExpression = new ToNumber( start.SourceSpan, start );
 		Expression limitExpression = new ToNumber( limit.SourceSpan, limit );
 		Expression stepExpression  = new ToNumber( step.SourceSpan, step );
 
-		function.Statement( new Declare( start.SourceSpan, forIndex, startExpression ) );
-		function.Statement( new Declare( limit.SourceSpan, forLimit, limitExpression ) );
-		function.Statement( new Declare( step.SourceSpan, forStep, stepExpression ) );
+		block.Statement( new Declare( start.SourceSpan, forIndex, startExpression ) );
+		block.Statement( new Declare( limit.SourceSpan, forLimit, limitExpression ) );
+		block.Statement( new Declare( step.SourceSpan, forStep, stepExpression ) );
 
 
 		// Test expression.
 
-		Expression test =
+		Expression condition =
 			new Logical( s, LogicalOp.Or,
 				new Logical( s, LogicalOp.And, 
 					new Comparison( s, ComparisonOp.GreaterThan,
@@ -601,26 +596,25 @@ public class LuaParser
 
 		// Loop body.
 
-		function.Statement( new BeginBlock( s, "for" ) );
-		function.Statement( new BeginScope( s ) );
-		function.Statement( new BeginTest( s, test ) );
-		function.Statement( new BeginBlock( s, "forbody" ) );
+		block.Statement( new MarkLabel( s, fornum ) );
+		block.Statement( new Test( s, condition, fornumBreak ) );
+
+		block = new Block( new SourceSpan(), block );
+		block.Parent.Statement( block );
+		loopScope = new LoopScope( function, loopScope, fornumBreak, fornumContinue );
 		
 
 		// Declare index variable.
 
-		scope = new Scope( function, scope,
-			new BreakContinueAction( BreakOrContinue.Break, "for" ),
-			new BreakContinueAction( BreakOrContinue.Break, "forbody" ) );
 		Variable userIndex = new Variable( (string)name.Value );
-		function.Local( userIndex ); scope.Local( userIndex );
+		function.Local( userIndex ); block.Local( userIndex );
 		Expression indexExpression = new LocalRef( s, forIndex );
-		function.Statement( new Declare( s, userIndex, indexExpression ) );
+		block.Statement( new Declare( s, userIndex, indexExpression ) );
 
 
 		// Loop body.
 
-		block();
+		blockstat();
 
 		Token endFor = Check( TokenKind.End, matchFor );
 
@@ -629,8 +623,12 @@ public class LuaParser
 
 		s = endFor.SourceSpan;
 
-		function.Statement( new EndBlock( s, "forbody" ) );
-	
+		block.Statement( new MarkLabel( s, fornumContinue ) );
+
+		loopScope = loopScope.Parent;
+		block.SetSourceSpan( new SourceSpan( doToken.SourceSpan.Start, endFor.SourceSpan.End ) );
+		block = block.Parent;
+
 		
 		// Increment index.
 
@@ -640,18 +638,16 @@ public class LuaParser
 				new LocalRef( s, forIndex ),
 				new LocalRef( s, forStep ) );
 
-		function.Statement( new Assign( s, indexVariable, incrementExpression ) );
-
+		block.Statement( new Assign( s, indexVariable, incrementExpression ) );
 
 
 		// Finish loop.
 
-		function.Statement( new Continue( s, "for" ) );
-		function.Statement( new EndTest( s ) );
-		function.Statement( new EndScope( s ) );
-		function.Statement( new EndBlock( s, "for" ) );	
-		function.Statement( new EndScope( s ) );
-		scope = scope.Parent;
+		block.Statement( new Branch( s, fornum ) );
+		block.Statement( new MarkLabel( s, fornumBreak ) );
+
+		block.SetSourceSpan( new SourceSpan( matchFor.SourceSpan.Start, endFor.SourceSpan.End ) );
+		block = block.Parent;
 	}
 
 
@@ -662,24 +658,18 @@ public class LuaParser
 				;
 		*/
 
-		/*	scope
-			{
-				local (for generator), (for state), (for control) = <expressionlist>
-				block forin
-				{
-					scope
-					{
+		/*		block
+					local (for generator), (for state), (for control) = <expressionlist>
+			forlistContinue:
+					block
 						local <variablelist> = (for generator) ( (for state), (for control) )
 						(for control) = <variablelist>[ 0 ]
-						test ( (for control) == nil )
-						{
-							break forin
-						}
-		...
-						continue forin
-					}
-				}
-			}
+						btrue ( (for control) == nil ) forlistBreak
+						...
+					end
+					b forlistContinue
+			forlistBreak:
+				end
 		*/	
 		
 		IList< Token > namelist = new List< Token >();
@@ -698,12 +688,16 @@ public class LuaParser
 
 		// Build AST
 
-		SourceSpan s = new SourceSpan( matchFor.SourceSpan.Start, doToken.SourceSpan.End );
+		SourceSpan s				= new SourceSpan( matchFor.SourceSpan.Start, doToken.SourceSpan.End );
+		LabelAST forlistBreak		= new LabelAST( "forlistBreak" );		function.Label( forlistBreak );
+		LabelAST forlistContinue	= new LabelAST( "forlistContinue" );	function.Label( forlistContinue );
+
+		block = new Block( new SourceSpan(), block );
+		block.Parent.Statement( block );
 
 
 		// Declare internal variables.
 
-		scope = new Scope( function, scope );
 		Token[] internalNameList = new Token[]
 		{
 			new Token( s, TokenKind.Identifier, "(for generator)" ),
@@ -712,23 +706,25 @@ public class LuaParser
 		};
 		LocalStatementAST( s, internalNameList, expressioncount );
 
-		Debug.Assert( scope.Locals.Count == 3 );
-		Variable forGenerator	= scope.Locals[ 0 ];
-		Variable forState		= scope.Locals[ 1 ];
-		Variable forControl		= scope.Locals[ 2 ];
+		Debug.Assert( block.Locals.Count == 3 );
+		Variable forGenerator	= block.Locals[ 0 ];
+		Variable forState		= block.Locals[ 1 ];
+		Variable forControl		= block.Locals[ 2 ];
 		Debug.Assert( forGenerator.Name	== "(for generator)" );
 		Debug.Assert( forState.Name		== "(for state)" );
 		Debug.Assert( forControl.Name	== "(for control)" );
-		scope = scope.Parent;
 
 
-		// For loop block.
+		// Loop block
 
-		function.Statement( new BeginBlock( s, "forin" ) );
-		function.Statement( new BeginScope( s ) );
+		block.Statement( new MarkLabel( s, forlistContinue ) );
+
+		block = new Block( new SourceSpan(), block );
+		block.Parent.Statement( block );
+		loopScope = new LoopScope( function, loopScope, forlistBreak, forlistContinue );
 
 
-		// Generator expressin.
+		// Generator expression.
 
 		Expression generator =
 			new Call( s,
@@ -738,41 +734,30 @@ public class LuaParser
 					new LocalRef( s, forControl ) },
 				null );
 
-
-		// Declare user variables.
-
-		scope = new Scope( function, scope,
-			new BreakContinueAction( BreakOrContinue.Break, "forin" ),
-			new BreakContinueAction( BreakOrContinue.Continue, "forin" ) );
 		PushExpression( generator );
 		LocalStatementAST( s, namelist, 1 );
 
-		Debug.Assert( scope.Locals.Count == namelist.Count );
-		Variable userControl = scope.Locals[ 0 ];
-
-
-		// Test expression.
-
-		Expression test =
-			new Comparison( s, ComparisonOp.Equal,
-				new LocalRef( s, forControl ),
-				new Literal( s, null ) );
+		Debug.Assert( block.Locals.Count == namelist.Count );
+		Variable userControl = block.Locals[ 0 ];
 
 
 		// Update control and test.
 
+		Expression condition =
+			new Comparison( s, ComparisonOp.NotEqual,
+				new LocalRef( s, forControl ),
+				new Literal( s, null ) );
+
 		Expression controlVariable	= new LocalRef( s, forControl );
 		Expression updateExpression	= new LocalRef( s, userControl );
 
-		function.Statement( new Assign( s, controlVariable, updateExpression ) );
-		function.Statement( new BeginTest( s, test ) );
-		function.Statement( new Break( s, "forin" ) );
-		function.Statement( new EndTest( s ) );
+		block.Statement( new Assign( s, controlVariable, updateExpression ) );
+		block.Statement( new Test( s, condition, forlistBreak ) );
 
 
 		// Loop body.
 
-		block();
+		blockstat();
 
 		Token endFor = Check( TokenKind.End, matchFor );
 
@@ -781,11 +766,15 @@ public class LuaParser
 
 		s = endFor.SourceSpan;
 
-		function.Statement( new Continue( s, "forin" ) );
-		function.Statement( new EndScope( s ) );
-		function.Statement( new EndBlock( s, "forin" ) );
-		function.Statement( new EndScope( s ) );
-		scope = scope.Parent;
+		loopScope = loopScope.Parent;
+		block.SetSourceSpan( new SourceSpan( doToken.SourceSpan.Start, endFor.SourceSpan.End ) );
+		block = block.Parent;
+
+		block.Statement( new Branch( s, forlistContinue ) );
+		block.Statement( new MarkLabel( s, forlistBreak ) );
+
+		block.SetSourceSpan( new SourceSpan( matchFor.SourceSpan.Start, endFor.SourceSpan.End ) );
+		block = block.Parent;
 	}
 
 
@@ -840,7 +829,7 @@ public class LuaParser
 		funcbody( matchFunction, functionName.ToString(), methodName );
 		Expression f = PopValue();
 	
-		function.Statement( new Assign( variable.SourceSpan, variable, f ) );
+		block.Statement( new Assign( variable.SourceSpan, variable, f ) );
 	}
 
 
@@ -859,8 +848,8 @@ public class LuaParser
 		Expression f = PopValue();
 
 		Variable local = new Variable( (string)localName.Value );
-		function.Local( local ); scope.Local( local );
-		function.Statement( new Declare( localName.SourceSpan, local, f ) );
+		function.Local( local ); block.Local( local );
+		block.Statement( new Declare( localName.SourceSpan, local, f ) );
 	}
 
 
@@ -882,10 +871,9 @@ public class LuaParser
 
 		// Function.
 
-		function = new FunctionAST( functionName, function );
+		block = new Block( new SourceSpan(), block );
+		function = new FunctionAST( functionName, function, block );
 		function.Parent.ChildFunction( function );
-		scope = new Scope( function, scope );
-
 
 
 		// Parameters.
@@ -902,7 +890,7 @@ public class LuaParser
 		if ( methodName.HasValue )
 		{
 			Variable self = new Variable( "self" );
-			function.Parameter( self ); scope.Local( self );
+			function.Parameter( self );
 		}
 
 		if ( Get() != TokenKind.RightParenthesis )
@@ -915,7 +903,7 @@ public class LuaParser
 				{
 					Token parameterToken = Check( TokenKind.Identifier );
 					Variable parameter = new Variable( (string)parameterToken.Value );
-					function.Parameter( parameter ); scope.Local( parameter );
+					function.Parameter( parameter );
 				}
 				else if ( Get() == TokenKind.Ellipsis )
 				{
@@ -944,7 +932,7 @@ public class LuaParser
 
 		// Statements.
 
-		block();
+		blockstat();
 
 		Token endFunction = Check( TokenKind.End, matchFunction );
 
@@ -952,29 +940,30 @@ public class LuaParser
 		// End function.
 
 		Statement lastStatement = null;
-		if ( function.Statements.Count > 0 )
+		if ( block.Statements.Count > 0 )
 		{
-			lastStatement = function.Statements[ function.Statements.Count - 1 ];
+			lastStatement = block.Statements[ block.Statements.Count - 1 ];
 		}
 
 		if (    !( lastStatement is Return )
 			 && !( lastStatement is ReturnMultipleValues ) )
 		{
-			function.Statement( new Return( endFunction.SourceSpan,
+			block.Statement( new Return( endFunction.SourceSpan,
 				new Literal( endFunction.SourceSpan, null ) ) );
 		}
 
+		SourceSpan s = new SourceSpan( matchFunction.SourceSpan.Start, endFunction.SourceSpan.End );
 
+		FunctionAST result = function;
+		function = function.Parent;
+		block.SetSourceSpan( s );
+		block = block.Parent;
+
+		
 		// Push a function expression.
 
-		SourceSpan s = new SourceSpan( matchFunction.SourceSpan.Start, endFunction.SourceSpan.End );
-		PushExpression( new FunctionClosure( s, function ) );
+		PushExpression( new FunctionClosure( s, result ) );
 
-
-		// Finished.
-
-		scope = scope.Parent;
-		function = function.Parent;
 	}
 
 
@@ -1036,7 +1025,7 @@ public class LuaParser
 		for ( int variable = 0; variable < namelist.Count; ++variable )
 		{
 			Variable local = new Variable( (string)namelist[ variable ].Value );
-			function.Local( local ); scope.Local( local );
+			function.Local( local ); block.Local( local );
 			locallist[ variable ] = local;
 		}
 		
@@ -1050,7 +1039,7 @@ public class LuaParser
 
 			for ( int local = 0; local < locallist.Count; ++local )
 			{
-				function.Statement( new Declare( s, locallist[ local ],
+				block.Statement( new Declare( s, locallist[ local ],
 					new Literal( s, null ) ) );
 			}
 
@@ -1073,7 +1062,7 @@ public class LuaParser
 			for ( int expression = 0; expression < expressionlist.Count; ++expression )
 			{
 				Expression value = expressionlist[ expression ];
-				function.Statement( new Declare( s, locallist[ expression ], value ) );
+				block.Statement( new Declare( s, locallist[ expression ], value ) );
 			}
 
 
@@ -1087,7 +1076,7 @@ public class LuaParser
 
 					for ( int local = expressionlist.Count; local < locallist.Count; ++local )
 					{
-						function.Statement( new Declare( s, locallist[ local ],
+						block.Statement( new Declare( s, locallist[ local ],
 							new VarargElement( s, local - expressionlist.Count ) ) );
 					}
 				}
@@ -1095,14 +1084,14 @@ public class LuaParser
 				{
 					// Evaluate multiple values.
 
-					function.Statement( new Assign( s, new ValueList( s ), multipleValues ) );
+					block.Statement( new Assign( s, new ValueList( s ), multipleValues ) );
 
 
 					// Assign from value list.
 
 					for ( int local = expressionlist.Count; local < locallist.Count; ++local )
 					{
-						function.Statement( new Declare( s, locallist[ local ],
+						block.Statement( new Declare( s, locallist[ local ],
 							new ValueListElement( s, local - expressionlist.Count ) ) );
 					}
 				}
@@ -1113,7 +1102,7 @@ public class LuaParser
 
 				for ( int local = expressionlist.Count; local < locallist.Count; ++local )
 				{
-					function.Statement( new Declare( s, locallist[ local ],
+					block.Statement( new Declare( s, locallist[ local ],
 						new Literal( s, null ) ) );
 				}
 			}
@@ -1128,7 +1117,7 @@ public class LuaParser
 			for ( int local = 0; local < locallist.Count; ++local )
 			{
 				Expression value = expressionlist[ local ];
-				function.Statement( new Declare( s, locallist[ local ], value ) );
+				block.Statement( new Declare( s, locallist[ local ], value ) );
 			}
 
 
@@ -1137,7 +1126,7 @@ public class LuaParser
 			for ( int expression = locallist.Count; expression < expressionlist.Count; ++expression )
 			{
 				Expression value = expressionlist[ expression ];
-				function.Statement( new Evaluate( s, value ) );
+				block.Statement( new Evaluate( s, value ) );
 			}
 
 		}
@@ -1167,7 +1156,7 @@ public class LuaParser
 		if ( expressionType == ExpressionType.FunctionCall )
 		{
 			Expression e = PopValue();
-			function.Statement( new Evaluate( e.SourceSpan, e ) );
+			block.Statement( new Evaluate( e.SourceSpan, e ) );
 			return;
 		}
 		
@@ -1222,7 +1211,7 @@ public class LuaParser
 		{
 			Expression expression	= PopValue();
 			Expression variable		= PopValue();			
-			function.Statement( new Assign( s, variable, expression ) );	
+			block.Statement( new Assign( s, variable, expression ) );	
 			return;
 		}
 
@@ -1254,8 +1243,8 @@ public class LuaParser
 				Temporary temporaryTable	= new Temporary( index.Table.SourceSpan );
 				Temporary temporaryKey		= new Temporary( index.Key.SourceSpan );
 
-				function.Statement( new Assign( index.SourceSpan, temporaryTable, index.Table ) );
-				function.Statement( new Assign( index.SourceSpan, temporaryKey, index.Key ) );
+				block.Statement( new Assign( index.SourceSpan, temporaryTable, index.Table ) );
+				block.Statement( new Assign( index.SourceSpan, temporaryKey, index.Key ) );
 
 				variablelist[ variable ] = new Index( index.SourceSpan, temporaryTable, temporaryKey );
 			}
@@ -1278,7 +1267,7 @@ public class LuaParser
 				Expression e			= expressionlist[ expression ];
 				Expression temporary	= new Temporary( e.SourceSpan );
 			
-				function.Statement( new Assign( s, temporary, e ) );
+				block.Statement( new Assign( s, temporary, e ) );
 				
 				temporarylist[ expression ] = temporary;
 			}
@@ -1288,7 +1277,7 @@ public class LuaParser
 
 			if ( multipleValues != null )
 			{
-				function.Statement( new Assign( s, new ValueList( s ), multipleValues ) );
+				block.Statement( new Assign( s, new ValueList( s ), multipleValues ) );
 			}
 
 
@@ -1296,7 +1285,7 @@ public class LuaParser
 
 			for ( int expression = 0; expression < expressionlist.Count; ++expression )
 			{
-				function.Statement( new Assign( s,
+				block.Statement( new Assign( s,
 					variablelist[ expression ], temporarylist[ expression ] ) );
 			}
 			
@@ -1308,7 +1297,7 @@ public class LuaParser
 
 					for ( int variable = expressionlist.Count; variable < variablelist.Count; ++variable )
 					{
-						function.Statement( new Assign( s, variablelist[ variable ],
+						block.Statement( new Assign( s, variablelist[ variable ],
 							new VarargElement( s, variable - expressionlist.Count ) ) );
 					}
 				}
@@ -1316,14 +1305,14 @@ public class LuaParser
 				{
 					// Evaluate multiple values.
 
-					function.Statement( new Assign( s, new ValueList( s ), multipleValues ) );
+					block.Statement( new Assign( s, new ValueList( s ), multipleValues ) );
 
 
 					// Assign from value list.
 
 					for ( int variable = expressionlist.Count; variable < variablelist.Count; ++variable )
 					{
-						function.Statement( new Assign( s, variablelist[ variable ],
+						block.Statement( new Assign( s, variablelist[ variable ],
 							new ValueListElement( s, variable - expressionlist.Count ) ) );
 					}
 				}
@@ -1334,7 +1323,7 @@ public class LuaParser
 
 				for ( int variable = expressionlist.Count; variable < variablelist.Count; ++variable )
 				{
-					function.Statement( new Assign( s, variablelist[ variable ],
+					block.Statement( new Assign( s, variablelist[ variable ],
 						new Literal( s, null ) ) );
 				}
 			}
@@ -1350,7 +1339,7 @@ public class LuaParser
 				Expression e			= expressionlist[ variable ];
 				Expression temporary	= new Temporary( e.SourceSpan );
 
-				function.Statement( new Assign( s, temporary, e ) );
+				block.Statement( new Assign( s, temporary, e ) );
 				
 				temporarylist[ variable ] = temporary;
 			}
@@ -1361,7 +1350,7 @@ public class LuaParser
 			for ( int expression = variablelist.Count; expression < expressionlist.Count; ++expression )
 			{
 				Expression e = expressionlist[ expression ];
-				function.Statement( new Evaluate( e.SourceSpan, e ) );
+				block.Statement( new Evaluate( e.SourceSpan, e ) );
 			}
 
 
@@ -1369,7 +1358,7 @@ public class LuaParser
 
 			for ( int variable = 0; variable < variablelist.Count; ++variable )
 			{
-				function.Statement( new Assign( s, variablelist[ variable ], temporarylist[ variable ] ) );
+				block.Statement( new Assign( s, variablelist[ variable ], temporarylist[ variable ] ) );
 			}
 
 		}
@@ -1398,7 +1387,7 @@ public class LuaParser
 			// Return null.
 
 			SourceSpan s = returnToken.SourceSpan;
-			function.Statement( new Return( s, new Literal( s, null ) ) );
+			block.Statement( new Return( s, new Literal( s, null ) ) );
 		}
 		else
 		{
@@ -1419,12 +1408,13 @@ public class LuaParser
 			if ( resultValues == null && expressioncount == 1 )
 			{
 				Expression result = PopValue();
-				function.Statement( new Return( s, result ) );
+				block.Statement( new Return( s, result ) );
 			}
 			else
 			{
 				IList< Expression > results = PopValues( expressioncount );
-				function.Statement( new ReturnMultipleValues( s, results, resultValues ) );
+				block.Statement( new ReturnMultipleValues( s, results, resultValues ) );
+				function.SetReturnsMultipleValues();
 			}
 		}
 	}
@@ -1439,21 +1429,13 @@ public class LuaParser
 
 		Token breakToken = Check( TokenKind.Break );
 
-		for ( Scope loop = scope; loop != null; loop = loop.Parent )
+		if ( ( loopScope == null ) || ( loopScope.Function != function ) )
 		{
-			if ( loop.Break.BreakOrContinue == BreakOrContinue.Break )
-			{
-				function.Statement( new Break( breakToken.SourceSpan, loop.Break.BlockName ) );
-				return;
-			}
-			else if ( loop.Break.BreakOrContinue == BreakOrContinue.Continue )
-			{
-				function.Statement( new Continue( breakToken.SourceSpan, loop.Break.BlockName ) );
-				return;
-			}
+			Error( "No loop to break" );
+			return;
 		}
 
-		Error( "No loop to break" );
+		block.Statement( new Branch( breakToken.SourceSpan, loopScope.Break ) );
 	}
 
 
@@ -1466,21 +1448,13 @@ public class LuaParser
 
 		Token continueToken = Check( TokenKind.Continue );
 
-		for ( Scope loop = scope; loop != null; loop = loop.Parent )
+		if ( ( loopScope == null ) || ( loopScope.Function != function ) )
 		{
-			if ( loop.Continue.BreakOrContinue == BreakOrContinue.Break )
-			{
-				function.Statement( new Break( continueToken.SourceSpan, loop.Break.BlockName ) );
-				return;
-			}
-			else if ( loop.Continue.BreakOrContinue == BreakOrContinue.Continue )
-			{
-				function.Statement( new Continue( continueToken.SourceSpan, loop.Break.BlockName ) );
-				return;
-			}
+			Error( "No loop to continue" );
+			return;
 		}
 
-		Error( "No loop to continue" );
+		block.Statement( new Branch( continueToken.SourceSpan, loopScope.Continue ) );
 	}
 
 
@@ -1747,9 +1721,9 @@ public class LuaParser
 		*/
 
 		Token matchConstructor = Check( TokenKind.LeftCurlyBracket );
-		Constructor constructor = new Constructor( matchConstructor.SourceSpan );
-		function.Statement( new BeginConstructor( matchConstructor.SourceSpan, constructor ) );
+		Constructor constructor = new Constructor();
 
+		SourceSpan s;
 		int arrayKey = 1;
 
 		while ( true )
@@ -1770,10 +1744,10 @@ public class LuaParser
 				Expression value = PopValue();
 
 				constructor.IncrementHashCount();
-				function.Statement(
+				block.Statement(
 					new Assign( new SourceSpan( key.SourceSpan.Start, value.SourceSpan.End ),
 						new Index( key.SourceSpan,
-							constructor,
+							new ConstructorRef( key.SourceSpan, constructor, false ),
 							new Literal( key.SourceSpan, (string)key.Value ) ),
 						value ) );
 			}
@@ -1789,10 +1763,12 @@ public class LuaParser
 				exp();
 				Expression value = PopValue();
 
-				function.Statement(
+				s = new SourceSpan( leftBracket.SourceSpan.Start, rightBracket.SourceSpan.End );
+
+				block.Statement(
 					new Assign( new SourceSpan( leftBracket.SourceSpan.Start, value.SourceSpan.End ),
-						new Index( new SourceSpan( leftBracket.SourceSpan.Start, rightBracket.SourceSpan.End ),
-							constructor,
+						new Index( s,
+							new ConstructorRef( s, constructor, false ),
 							key ),
 						value ) );
 			}
@@ -1809,10 +1785,10 @@ public class LuaParser
 					Expression value = PopValue();
 
 					constructor.IncrementArrayCount();
-					function.Statement(
+					block.Statement(
 						new Assign( value.SourceSpan,
 							new Index( value.SourceSpan,
-								constructor,
+								new ConstructorRef( value.SourceSpan, constructor, false ),
 								new Literal( value.SourceSpan, arrayKey ) ),
 							value ) );
 
@@ -1828,16 +1804,16 @@ public class LuaParser
 						Expression value = PopValue();
 
 						constructor.IncrementArrayCount();
-						function.Statement(
+						block.Statement(
 							new Assign( value.SourceSpan,
 								new Index( value.SourceSpan,
-									constructor,
+									new ConstructorRef( value.SourceSpan, constructor, false ),
 									new Literal( value.SourceSpan, arrayKey ) ),
 								value ) );
 					}
 					else
 					{
-						function.Statement( new IndexMultipleValues( values.SourceSpan, constructor, arrayKey, values ) );
+						block.Statement( new IndexMultipleValues( values.SourceSpan, constructor, arrayKey, values ) );
 					}
 				}
 			}
@@ -1856,9 +1832,8 @@ public class LuaParser
 		}
 
 		Token endConstructor = Check( TokenKind.RightCurlyBracket, matchConstructor );
-		function.Statement( new EndConstructor( endConstructor.SourceSpan ) );
-		constructor.SetSourceSpan( new SourceSpan( matchConstructor.SourceSpan.Start, endConstructor.SourceSpan.End ) );
-		PushExpression( constructor );
+		s = new SourceSpan( matchConstructor.SourceSpan.Start, endConstructor.SourceSpan.End );
+		PushExpression( new ConstructorRef( s, constructor, true ) );
 	}
 
 
@@ -2093,56 +2068,20 @@ public class LuaParser
 
 	// Scopes.
 
-	enum BreakOrContinue
+	class LoopScope
 	{
-		Invalid,
-		Break,
-		Continue,
-	}
-
-	struct BreakContinueAction
-	{
-		public BreakOrContinue		BreakOrContinue	{ get; private set; }
-		public string				BlockName		{ get; private set; }
+		public FunctionAST	Function	{ get; private set; }
+		public LoopScope	Parent		{ get; private set; }
+		public LabelAST		Break		{ get; private set; }
+		public LabelAST		Continue	{ get; private set; }
 
 
-		public BreakContinueAction( BreakOrContinue breakOrContinue, string blockName )
-			:	this()
-		{
-			BreakOrContinue	= breakOrContinue;
-			BlockName		= blockName;
-		}
-	}
-	
-	class Scope
-	{
-		public FunctionAST			Function	{ get; private set; }
-		public Scope				Parent		{ get; private set; }
-		public IList< Variable >	Locals		{ get; private set; }
-		public BreakContinueAction	Break		{ get; private set; }
-		public BreakContinueAction	Continue	{ get; private set; }
-
-		List< Variable > locals;
-
-
-		public Scope( FunctionAST function, Scope parent )
-			:	this( function, parent, new BreakContinueAction(), new BreakContinueAction() )
-		{
-		}
-
-		public Scope( FunctionAST function, Scope parent, BreakContinueAction b, BreakContinueAction c )
+		public LoopScope( FunctionAST function, LoopScope parent, LabelAST b, LabelAST c )
 		{
 			Function	= function;
 			Parent		= parent;
-			locals		= new List< Variable >();
-			Locals		= locals.AsReadOnly();
 			Break		= b;
 			Continue	= c;
-		}
-
-		public void Local( Variable local )
-		{
-			locals.Add( local );
 		}
 	}
 
@@ -2152,15 +2091,16 @@ public class LuaParser
 		string name = (string)nameToken.Value;
 
 		// Search through scopes.
-		for ( Scope s = scope; s != null; s = s.Parent )
+		FunctionAST f = function;
+		for ( Block b = block; b != null; b = b.Parent )
 		{
-			for ( int i = s.Locals.Count - 1; i >= 0; --i )
+			for ( int i = b.Locals.Count - 1; i >= 0; --i )
 			{
-				Variable variable = s.Locals[ i ];
+				Variable variable = b.Locals[ i ];
 
 				if ( variable.Name == name )
 				{
-					if ( s.Function == function )
+					if ( f == function )
 					{
 						// Is a local.
 						return new LocalRef( nameToken.SourceSpan, variable );
@@ -2173,6 +2113,35 @@ public class LuaParser
 						return new UpValRef( nameToken.SourceSpan, variable );
 					}
 				}
+			}
+
+			// Check parameters.
+			if ( b == f.Block )
+			{
+				for ( int i = f.Parameters.Count - 1; i >= 0; --i )
+				{
+					Variable variable = f.Parameters[ i ];
+
+					if ( variable.Name == name )
+					{
+						if ( f == function )
+						{
+							// Is a local.
+							return new LocalRef( nameToken.SourceSpan, variable );
+						}
+						else
+						{
+							// Is an upval.
+							variable.SetUpVal();
+							function.UpVal( variable );
+							return new UpValRef( nameToken.SourceSpan, variable );
+						}
+					}
+				}
+
+				
+				// Continue search in outer function.
+				f = f.Parent;
 			}
 		}
 

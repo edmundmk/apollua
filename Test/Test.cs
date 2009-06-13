@@ -9,7 +9,8 @@ using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
 using Lua;
-using Lua.CLR.Compiler;
+using Lua.Parser;
+using Lua.Parser.AST;
 
 
 namespace Test
@@ -21,6 +22,12 @@ static class EntryPoint
 
 	static int Main( string[] args )
 	{
+		LuaParser parser = new LuaParser( Console.Error, File.OpenText( args[ 0 ] ), args[ 0 ] );
+		FunctionAST function = parser.Parse();
+		ASTWriter.Write( Console.Out, function );
+
+	
+/*		
 		AssemblyBuilder	a = AppDomain.CurrentDomain.DefineDynamicAssembly( new AssemblyName( "TestCompiled" ), AssemblyBuilderAccess.Save );
 		ModuleBuilder	m = a.DefineDynamicModule( "TestCompiled", "TestCompiled.dll", true );
 		
@@ -29,7 +36,7 @@ static class EntryPoint
 		Function		function	= compiler.Compile();
 
 		a.Save( "TestCompiled.dll" );
-
+*/
 		return 0;
 	}
 

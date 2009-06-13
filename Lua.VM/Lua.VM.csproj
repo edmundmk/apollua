@@ -45,7 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DebugLocalScope.cs" />
+    <Compile Include="DebugLocal.cs" />
     <Compile Include="DebugSourceLocation.cs" />
     <Compile Include="DebugSourceSpan.cs" />
     <Compile Include="Instruction.cs" />
