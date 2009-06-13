@@ -14,7 +14,6 @@ using Lua.Parser.AST.Statements;
 namespace Lua.CLR.Compiler
 {
 
-#if false
 
 /*	The Lua VM has some specialized bytecodes to implement language features.  However
 	our very general AST has moved away from the specifics of the language.  So transform
@@ -30,20 +29,25 @@ namespace Lua.CLR.Compiler
 
 */
 
-	
+#if false
 static class BytecodeTransform
 {
 
 	public static FunctionAST Transform( FunctionAST function )
 	{
-		return Transform( function, null );
+		return Transform( function, null, null );
 	}
 
-	public static FunctionAST Transform( FunctionAST function, FunctionAST parent )
+	public static FunctionAST Transform( FunctionAST function, FunctionAST parent, Block parentBlock )
 	{
+		
+
+
+
 		// Copy function.
 
-		FunctionAST f = new FunctionAST( function.Name, parent );
+		Block b = new Block( function.Block.SourceSpan, parentBlock, function.Block.Name );
+		FunctionAST f = new FunctionAST( function.Name, parent, b );
 		
 		foreach ( Variable upval in function.UpVals )
 		{
@@ -69,51 +73,40 @@ static class BytecodeTransform
 		// Transform general statements into specific ones.
 		
 		
-		/*	scope
-			{
-				local (for index)	= tonumber( <index> )
-				local (for limit)	= tonumber( <limit> )
-				local (for step)	= tonumber( <step> )
-				block for
-				{
-					scope
-					{
-						test (    ( (for step) > 0 and (for index) <= (for limit) )
-							   or ( (for step) < 0 and (for index) >= (for limit) ) )
-						{
-							block forbody
-							{
-								local <index> = (for index)
-		...
-							}
-							(for index) = (for index) + (for step)
-							continue for
-						}
-					}
-				}
-			}
+		/*		block
+					local (for index)	= tonumber( <index> )
+					local (for limit)	= tonumber( <limit> )
+					local (for step)	= tonumber( <step> )
+			fornum:
+					bfalse (    ( (for step) > 0 and (for index) <= (for limit) )
+						 or ( (for step) < 0 and (for index) >= (for limit) ) ) loopBreak
+					block
+						local <index> = (for index)
+						...
+			fornumContinue:
+					end
+					(for index) = (for index) + (for step)
+					b loopTop
+			fornumBreak:
+				end
 
-		-->
+			-->
 
-			scope
-			{
-				local (for index)	= tonumber( <index> )
-				local (for limit)	= tonumber( <limit> )
-				local (for step)	= tonumber( <step> )
-				forprep (for index), (for limit), (for step)
-				block for
-				{
-					scope
-					{
-						block forbody
-						{
-							forindex <index>
-		...
-						}
-						for (for index), (for limit), (for step), <index> continue for
-					}
-				}
-			}
+				block
+					local (for index)	= tonumber( <index> )
+					local (for limit)	= tonumber( <limit> )
+					local (for step)	= tonumber( <step> )
+					forprep (for index), (for limit), (for step) fornumTest
+			fornum:
+					block
+						forindex <index>
+						...
+			fornumContinue:
+					end
+			fornumTest:
+					for (for index), (for limit), (for step), <index> fornum
+			fornumBreak:
+				end
 		*/
 
 
@@ -169,7 +162,146 @@ static class BytecodeTransform
 	}
 
 
-}
+	sealed class StatementTransform
+		:	IStatementVisitor
+	{
+		Block				block;
+		ExpressionTransform	e;
+		Statement			result;
 
+
+		public StatementTransform( Block b )
+		{
+			block	= b;
+			result	= null;
+		}
+
+
+		public Statement Transform( Statement s )
+		{
+			s.Accept( this );
+			Statement r = result;
+			result = null;
+			return r;
+		}
+
+		public Statement TransformBlock( Block b )
+		{
+			block = new Block( b.SourceSpan, block, b.Name );
+			
+			// Locals.
+			foreach ( Variable local in b.Locals )
+			{
+				block.Local( local );
+			}
+
+			// Statements.
+			foreach ( Statement statement in b.Statements )
+			{
+				block.Statement( Transform( statement ) );
+			}
+			
+			// Return.
+			b = block;
+			block = block.Parent;
+			return b;
+		}
+
+	
+
+		public override void Visit( Assign s )
+		{
+		}
+
+		public override void Visit( Block s )
+		{
+			if ( s.Name == "fornum" )
+			{
+				result = TransformForNum( s );
+			}
+			else if ( s.Name == "forlist" )
+			{
+				result = TransformForList( s );
+			}
+			else
+			{
+				result = TransformBlock( s );
+			}
+		}
+
+		public override void Visit( Constructor s )
+		{
+		}
+
+		public override void Visit( Branch s )
+		{
+		}
+
+		public override void Visit( Declare s )
+		{
+		}
+
+		public override void Visit( Evaluate s )
+		{
+		}
+
+		public override void Visit( IndexMultipleValues s )
+		{
+		}
+
+		public override void Visit( MarkLabel s )
+		{
+		}
+
+		public override void Visit( Return s )
+		{
+		}
+
+		public override void Visit( ReturnMultipleValues s )
+		{
+		}
+
+		public override void Visit( Test s )
+		{
+		}
+
+
+
+		Statement TransformForNum( Block fornum )
+		{
+			return null;
+		}
+
+
+		Statement TransformForList( Block forlist )
+		{
+			return null;
+		}
+
+
+
+
+
+
+	}
+
+	sealed class ExpressionTransform
+		:	IExpressionVisitor
+	{
+		Expression result;
+		
+
+		public Expression Transform( Expression e )
+		{
+			e.Accept( this );
+			Expression r = result;
+			result = null;
+			return r;
+		}
+
+	}
+
+
+}
 #endif
 }

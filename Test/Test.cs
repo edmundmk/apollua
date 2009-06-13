@@ -11,6 +11,7 @@ using System.Reflection.Emit;
 using Lua;
 using Lua.Parser;
 using Lua.Parser.AST;
+using Lua.CLR.Compiler;
 
 
 namespace Test
@@ -24,7 +25,12 @@ static class EntryPoint
 	{
 		LuaParser parser = new LuaParser( Console.Error, File.OpenText( args[ 0 ] ), args[ 0 ] );
 		FunctionAST function = parser.Parse();
-		ASTWriter.Write( Console.Out, function );
+		ASTWriter writer = new ASTWriter( Console.Out );
+		writer.Write( function );
+		ANormalTransform aNormalTransform = new ANormalTransform();
+		function = aNormalTransform.Transform( function );
+		writer.Write( function );
+
 
 	
 /*		

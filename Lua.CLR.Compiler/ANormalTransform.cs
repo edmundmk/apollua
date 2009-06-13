@@ -21,342 +21,150 @@ namespace Lua.CLR.Compiler
 	on the evaluation stack is the result of the call.
 */
 
-/*	
-static class ANormalTransform
+
+public class ANormalTransform
+	:	FunctionTransform
 {
 
-	public static FunctionAST Transform( FunctionAST function )
+	Expression TransformSingleValue( Expression e )
 	{
-		return Transform( function, null );
+		e = Transform( e );
+		if ( ( e is Call ) || ( e is CallSelf ) )
+		{
+			// Hoist out of line.
+			
+			Temporary t = new Temporary( e.SourceSpan );
+			block.Statement( new Assign( e.SourceSpan, t, e ) );
+			return t;
+		}
+		return e;
 	}
 
-	public static FunctionAST Transform( FunctionAST function, FunctionAST parent )
+	Expression TransformMultipleValues( Expression e )
 	{
-		// Copy function.
-
-		FunctionAST f = new FunctionAST( function.Name, parent );
-		
-		foreach ( Variable upval in function.UpVals )
+		e = Transform( e );
+		if ( ( e is Call ) || ( e is CallSelf ) )
 		{
-			f.UpVal( upval );
+			// Hoist out of line.
+
+			ValueList v = new ValueList( e.SourceSpan );
+			block.Statement( new Assign( e.SourceSpan, v, e ) );
+			return v;
 		}
-
-		foreach ( Variable parameter in function.Parameters )
-		{
-			f.Parameter( parameter );
-		}
-
-		if ( function.IsVararg )
-		{
-			f.SetVararg();
-		}
-
-		foreach ( Variable local in function.Locals )
-		{
-			f.Local( local );
-		}
-
-
-		// Transform the statements into a-normal form.
-
-		ExpressionTransformation	t = new ExpressionTransformation( f );
-		StatementTransformation	s = new StatementTransformation( f, t );
-
-		foreach ( Statement statement in function.Statements )
-		{
-			statement.Accept( s );
-		}
-
-
-		// Return transformed expression.
-
-		return f;
+		return e;
 	}
 
 
-	sealed class StatementTransformation
-		:	StatementVisitor
+
+	public override void Visit( Assign s )
 	{
-		FunctionAST			f;
-		ExpressionTransformation	t;
-		
-
-		public StatementTransformation( FunctionAST f, ExpressionTransformation t )
+		if ( ( s.Target is GlobalRef ) || ( s.Target is Index ) )
 		{
-			this.f	= f;
-			this.t	= t;
+			// Assigning to these targets requires pushing things onto the stack
+			// before the value, so if the value is a function call, it needs to
+			// be hoisted into its own statement.
+			result = new Assign( s.SourceSpan, Transform( s.Target ), TransformSingleValue( s.Value ) );
 		}
-
-
-		public override void Visit( BeginBlock s )			{ f.Statement( s ); }
-		public override void Visit( Break s )				{ f.Statement( s ); }
-		public override void Visit( Continue s )			{ f.Statement( s ); }
-		public override void Visit( EndBlock s )			{ f.Statement( s ); }
-		public override void Visit( BeginConstructor s )	{ f.Statement( s ); }
-		public override void Visit( EndConstructor s )		{ f.Statement( s ); }
-		public override void Visit( BeginScope s )			{ f.Statement( s ); }
-		public override void Visit( EndScope s )			{ f.Statement( s ); }
-		
-
-		public override void Visit( BeginTest s )
+		else
 		{
-			f.Statement( new BeginTest( s.SourceSpan, t.Transform( s.Condition ) ) );
+			// Otherwise just hoist any nested function calls, as usual.
+			base.Visit( s );
 		}
+	}
 
-		public override void Visit( EndTest s )
-		{
-			f.Statement( s );
-		}
+	public override void Visit( IndexMultipleValues s )
+	{
+		// Hoist any multiple values out.
+		result = new IndexMultipleValues( s.SourceSpan, s.Temporary, s.Key, TransformMultipleValues( s.Values ) );
+	}
 
-		public override void Visit( Assign s )
+	public override void Visit( ReturnMultipleValues s )
+	{
+		if ( s.Results.Count > 0 )
 		{
-			if ( ( s.Target is GlobalRef ) || ( s.Target is Index ) )
+			// Not a tail call, transform.
+			Expression[] results = new Expression[ s.Results.Count ];
+			for ( int i = 0; i < s.Results.Count; ++i )
 			{
-				// Assigning to these targets requires pushing things onto the stack
-				// before the value, so if the value is a function call, it needs to
-				// be hoisted into its own statement.
-
-				f.Statement( new Assign( s.SourceSpan,
-					t.Transform( s.Target ), t.TransformSingleValue( s.Value ) ) );
+				results[ i ] = TransformSingleValue( s.Results[ i ] );
 			}
-			else
-			{
-				// Otherwise just hoist any nested function calls, as usual.
-
-				f.Statement( new Assign( s.SourceSpan,
-					t.Transform( s.Target ), t.Transform( s.Value ) ) );
-			}
+			Expression resultValues = s.ResultValues != null ? TransformMultipleValues( s.ResultValues ) : null;
+			result = new ReturnMultipleValues( s.SourceSpan, Array.AsReadOnly( results ), resultValues );
 		}
-
-		public override void Visit( Declare s )
+		else
 		{
-			f.Statement( new Declare( s.SourceSpan, s.Variable, t.Transform( s.Value ) ) );
+			// If the multiple values are a function call, it will be a tail call and so
+			// shouldn't be hoisted.  If it's ..., it doesn't need to be transformed anyway.
+			base.Visit( s );
 		}
-
-		public override void Visit( Evaluate s )
-		{
-			f.Statement( new Evaluate( s.SourceSpan, t.Transform( s.Expression ) ) );
-		}
-
-		public override void Visit( IndexMultipleValues s )
-		{
-			f.Statement( new IndexMultipleValues( s.SourceSpan, s.Constructor, s.Key,
-				t.TransformMultipleValues( s.Values ) ) );
-		}
-
-		public override void Visit( Return s )
-		{
-			f.Statement( new Return( s.SourceSpan, t.Transform( s.Result ) ) );
-		}
-
-		public override void Visit( ReturnMultipleValues s )
-		{
-			if ( s.Results.Count > 0 )
-			{
-				// Not a tail call, transform.
-
-				Expression[] results = new Expression[ s.Results.Count ];
-				for ( int i = 0; i < s.Results.Count; ++i )
-				{
-					results[ i ] = t.Transform( s.Results[ i ] );
-				}
-
-				f.Statement( new ReturnMultipleValues( s.SourceSpan,
-					Array.AsReadOnly( results ), t.TransformMultipleValues( s.ResultValues ) ) );
-			}
-			else
-			{
-				// If the multiple values are a function call, it will be a tail call and so
-				// shouldn't be hoisted.  If it's ..., it doesn't need to be transformed anyway.
-
-				f.Statement( s );
-			}
-		}
-
 	}
 
 
-	sealed class ExpressionTransformation
-		:	ExpressionVisitor
+	public override void Visit( Binary e )
 	{
-		FunctionAST	f;
-		Expression	result;
-
-
-		public ExpressionTransformation( FunctionAST f )
-		{
-			this.f	= f;
-			result	= null;
-		}
-
-
-		public Expression Transform( Expression e )
-		{
-			if ( e == null)
-			{
-				return null;
-			}
-
-			e.Accept( this );
-			Expression r = result;
-			result = null;
-			return r;
-		}
-		
-		public Expression TransformSingleValue( Expression e )
-		{
-			e = Transform( e );
-			if ( ( e is Call ) || ( e is CallSelf ) )
-			{
-				// Hoist out of line.
-
-				Temporary t = new Temporary( e.SourceSpan );
-				f.Statement( new Assign( e.SourceSpan, t, e ) );
-				return t;
-			}
-			return e;
-		}
-
-		public Expression TransformMultipleValues( Expression e )
-		{
-			e = Transform( e );
-			if ( ( e is Call ) || ( e is CallSelf ) )
-			{
-				// Hoist out of line.
-
-				ValueList v = new ValueList( e.SourceSpan );
-				f.Statement( new Assign( e.SourceSpan, v, e ) );
-				return v;
-			}
-			return e;
-		}
-
-
-		
-		public override void Visit( Binary e )
-		{
-			result = new Binary( e.SourceSpan, e.Op,
-				TransformSingleValue( e.Left ), TransformSingleValue( e.Right ) );
-		}
-
-		public override void Visit( Call e )
-		{
-			Expression[] arguments = new Expression[ e.Arguments.Count ];
-			for ( int i = 0; i < e.Arguments.Count; ++i )
-			{
-				arguments[ i ] = TransformSingleValue( e.Arguments[ i ] );
-			}
-			result = new Call( e.SourceSpan, TransformSingleValue( e.Function ),
-				Array.AsReadOnly( arguments ), TransformMultipleValues( e.ArgumentValues ) );
-		}
-
-		public override void Visit( CallSelf e )
-		{
-			Expression[] arguments = new Expression[ e.Arguments.Count ];
-			for ( int i = 0; i < e.Arguments.Count; ++i )
-			{
-				arguments[ i ] = TransformSingleValue( e.Arguments[ i ] );
-			}
-			result = new CallSelf( e.SourceSpan, TransformSingleValue( e.Function ), e.MethodName,
-				Array.AsReadOnly( arguments ), TransformMultipleValues( e.ArgumentValues ) );
-		}
-
-		public override void Visit( Comparison e )
-		{
-			result = new Comparison( e.SourceSpan, e.Op,
-				TransformSingleValue( e.Left ), TransformSingleValue( e.Right ) );
-		}
-
-		public override void Visit( Constructor e )
-		{
-			result = e;
-		}
-
-		public override void Visit( FunctionClosure e )
-		{
-			// Transform nested function.
-
-			FunctionAST childFunction = ANormalTransform.Transform( e.Function, f );
-			f.ChildFunction( childFunction );
-			result = new FunctionClosure( e.SourceSpan, childFunction );
-		}
-
-		public override void Visit( GlobalRef e )
-		{
-			result = e;
-		}
-
-		public override void Visit( Index e )
-		{
-			result = new Index( e.SourceSpan,
-				TransformSingleValue( e.Table ), TransformSingleValue( e.Key ) );
-		}
-
-		public override void Visit( Literal e )
-		{
-			result = e;
-		}
-
-		public override void Visit( LocalRef e )
-		{
-			result = e;
-		}
-
-		public override void Visit( Logical e )
-		{
-			result = new Logical( e.SourceSpan, e.Op,
-				TransformSingleValue( e.Left ), TransformSingleValue( e.Right ) );
-		}
-
-		public override void Visit( Not e )
-		{
-			result = new Not( e.SourceSpan, TransformSingleValue( e.Operand ) );
-		}
-
-		public override void Visit( Temporary e )
-		{
-			result = e;
-		}
-
-		public override void Visit( ToNumber e )
-		{
-			result = new ToNumber( e.SourceSpan, TransformSingleValue( e.Operand ) );
-		}
-
-		public override void Visit( Unary e )
-		{
-			result = new Unary( e.SourceSpan, e.Op, TransformSingleValue( e.Operand ) );
-		}
-
-		public override void Visit( UpValRef e )
-		{
-			result = e;
-		}
-
-		public override void Visit( ValueList e )
-		{
-			result = e;
-		}
-
-		public override void Visit( ValueListElement e )
-		{
-			result = e;
-		}
-
-		public override void Visit( Vararg e )
-		{
-			result = e;
-		}
-
-		public override void Visit( VarargElement e )
-		{
-			result = e;
-		}
-
+		result = new Binary( e.SourceSpan, e.Op,
+			TransformSingleValue( e.Left ), TransformSingleValue( e.Right ) );
 	}
 
+	public override void Visit( Call e )
+	{
+		Expression function = Transform( e.Function );
+		Expression[] arguments = new Expression[ e.Arguments.Count ];
+		for ( int i = 0; i < e.Arguments.Count; ++i )
+		{
+			arguments[ i ] = TransformSingleValue( e.Arguments[ i ] );
+		}
+		Expression argumentValues = e.ArgumentValues != null ? TransformMultipleValues( e.ArgumentValues ) : null;
+		result = new Call( e.SourceSpan, function, Array.AsReadOnly( arguments ), argumentValues );
+	}
+
+	public override void Visit( CallSelf e )
+	{
+		Expression function = Transform( e.Function );
+		Expression[] arguments = new Expression[ e.Arguments.Count ];
+		for ( int i = 0; i < e.Arguments.Count; ++i )
+		{
+			arguments[ i ] = TransformSingleValue( e.Arguments[ i ] );
+		}
+		Expression argumentValues = e.ArgumentValues != null ? TransformMultipleValues( e.ArgumentValues ) : null;
+		result = new CallSelf( e.SourceSpan, function, e.MethodName, Array.AsReadOnly( arguments ), argumentValues );
+	}
+
+	public override void Visit( Comparison e )
+	{
+		result = new Comparison( e.SourceSpan, e.Op,
+			TransformSingleValue( e.Left ), TransformSingleValue( e.Right ) );
+	}
+
+	public override void Visit( Index e )
+	{
+		result = new Index( e.SourceSpan,
+			TransformSingleValue( e.Table ), TransformSingleValue( e.Key ) );
+	}
+
+	public override void Visit( Logical e )
+	{
+		result = new Logical( e.SourceSpan, e.Op,
+			TransformSingleValue( e.Left ), TransformSingleValue( e.Right ) );
+	}
+
+	public override void Visit( Not e )
+	{
+		result = new Not( e.SourceSpan, TransformSingleValue( e.Operand ) );
+	}
+
+	public override void Visit( ToNumber e )
+	{
+		result = new ToNumber( e.SourceSpan, TransformSingleValue( e.Operand ) );
+	}
+
+	public override void Visit( Unary e )
+	{
+		result = new Unary( e.SourceSpan, e.Op, TransformSingleValue( e.Operand ) );
+	}
 
 }
-*/
+
+
 
 }

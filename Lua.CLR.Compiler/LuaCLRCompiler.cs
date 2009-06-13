@@ -438,7 +438,7 @@ public class LuaCLRCompiler
 
 
 	sealed class StatementCompiler
-		:	StatementVisitor
+		:	IStatementVisitor
 	{
 		ILGenerator								il;
 		Builder									b;
@@ -495,7 +495,7 @@ public class LuaCLRCompiler
 
 
 	sealed class ExpressionCompiler
-		:	ExpressionVisitor
+		:	IExpressionVisitor
 	{
 		ILGenerator	il;
 		Builder		b;

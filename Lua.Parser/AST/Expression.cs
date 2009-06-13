@@ -32,7 +32,7 @@ public abstract class Expression
 	}
 
 
-	public abstract void Accept( ExpressionVisitor v );
+	public abstract void Accept( IExpressionVisitor v );
 }
 
 

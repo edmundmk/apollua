@@ -46,7 +46,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AST\ASTWriter.cs" />
-    <Compile Include="AST\Constructor.cs" />
     <Compile Include="AST\Expression.cs" />
     <Compile Include="AST\Expressions\Binary.cs" />
     <Compile Include="AST\Expressions\BinaryOp.cs" />
@@ -54,7 +53,6 @@
     <Compile Include="AST\Expressions\CallSelf.cs" />
     <Compile Include="AST\Expressions\Comparison.cs" />
     <Compile Include="AST\Expressions\ComparisonOp.cs" />
-    <Compile Include="AST\Expressions\ConstructorRef.cs" />
     <Compile Include="AST\Expressions\FunctionClosure.cs" />
     <Compile Include="AST\Expressions\GlobalRef.cs" />
     <Compile Include="AST\Expressions\Index.cs" />
@@ -72,8 +70,10 @@
     <Compile Include="AST\Expressions\ValueListElement.cs" />
     <Compile Include="AST\Expressions\Vararg.cs" />
     <Compile Include="AST\Expressions\VarargElement.cs" />
-    <Compile Include="AST\ExpressionVisitor.cs" />
     <Compile Include="AST\FunctionAST.cs" />
+    <Compile Include="AST\FunctionTransform.cs" />
+    <Compile Include="AST\IExpressionVisitor.cs" />
+    <Compile Include="AST\IStatementVisitor.cs" />
     <Compile Include="AST\LabelAST.cs" />
     <Compile Include="AST\SourceLocation.cs" />
     <Compile Include="AST\SourceSpan.cs" />
@@ -81,6 +81,7 @@
     <Compile Include="AST\Statements\Assign.cs" />
     <Compile Include="AST\Statements\Block.cs" />
     <Compile Include="AST\Statements\Branch.cs" />
+    <Compile Include="AST\Statements\Constructor.cs" />
     <Compile Include="AST\Statements\Declare.cs" />
     <Compile Include="AST\Statements\Evaluate.cs" />
     <Compile Include="AST\Statements\IndexMultipleValues.cs" />
@@ -88,7 +89,6 @@
     <Compile Include="AST\Statements\Return.cs" />
     <Compile Include="AST\Statements\ReturnMultipleValues.cs" />
     <Compile Include="AST\Statements\Test.cs" />
-    <Compile Include="AST\StatementVisitor.cs" />
     <Compile Include="AST\Variable.cs" />
     <Compile Include="LuaLexer.cs" />
     <Compile Include="LuaParser.cs" />

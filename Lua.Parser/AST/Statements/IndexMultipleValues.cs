@@ -16,21 +16,21 @@ namespace Lua.Parser.AST.Statements
 public class IndexMultipleValues
 	:	Statement
 {
-	public Constructor	Constructor	{ get; private set; }
+	public Temporary	Temporary	{ get; private set; }
 	public int			Key			{ get; private set; }
 	public Expression	Values		{ get; private set; }
 
 
-	public IndexMultipleValues( SourceSpan s, Constructor constructor, int key, Expression values )
+	public IndexMultipleValues( SourceSpan s, Temporary temporary, int key, Expression values )
 		:	base( s )
 	{
-		Constructor	= constructor;
+		Temporary	= temporary;
 		Key			= key;
 		Values		= values;
 	}
 
 
-	public override void Accept( StatementVisitor s )
+	public override void Accept( IStatementVisitor s )
 	{
 		s.Visit( this );
 	}

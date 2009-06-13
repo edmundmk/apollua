@@ -29,7 +29,7 @@ public class Binary
 	}
 
 
-	public override void Accept( ExpressionVisitor v )
+	public override void Accept( IExpressionVisitor v )
 	{
 		v.Visit( this );
 	}

@@ -30,7 +30,7 @@ public class Test
 	}
 	
 
-	public override void Accept( StatementVisitor s )
+	public override void Accept( IStatementVisitor s )
 	{
 		s.Visit( this );
 	}

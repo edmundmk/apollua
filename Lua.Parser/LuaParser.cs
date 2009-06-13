@@ -97,8 +97,9 @@ public class LuaParser
 		Debug.Assert( block == null );
 		Debug.Assert( loopScope == null );
 
-		block = new Block( new SourceSpan(), null );
-		function = new FunctionAST( "<chunk>", function, block );
+		function = new FunctionAST( "<chunk>", function );
+		block = new Block( new SourceSpan(), null, "function" );
+		function.SetBlock( block );
 
 		function.SetVararg();
 
@@ -106,10 +107,10 @@ public class LuaParser
 
 		Token eof = Check( TokenKind.EOF );
 
-		FunctionAST result = function;
-		function = function.Parent;
 		block.SetSourceSpan( new SourceSpan( new SourceLocation( sourceName, 0, 0 ), eof.SourceSpan.End ) );
 		block = block.Parent;
+		FunctionAST result = function;
+		function = function.Parent;
 
 		Debug.Assert( function == null );
 		Debug.Assert( block == null );
@@ -257,7 +258,7 @@ public class LuaParser
 		*/
 
 		Token matchDo = Check( TokenKind.Do );
-		block = new Block( new SourceSpan(), block );
+		block = new Block( new SourceSpan(), block, "do" );
 		block.Parent.Statement( block );
 		
 		blockstat();
@@ -297,7 +298,7 @@ public class LuaParser
 		block.Statement( new MarkLabel( s, whileContinue ) );
 		block.Statement( new Test( s, condition, whileBreak ) );
 		
-		block = new Block( new SourceSpan(), block );
+		block = new Block( new SourceSpan(), block, "while" );
 		block.Parent.Statement( block );
 		loopScope = new LoopScope( function, loopScope, whileBreak, whileContinue );
 				
@@ -339,7 +340,7 @@ public class LuaParser
 		
 		block.Statement( new MarkLabel( s, repeat ) );
 
-		block = new Block( new SourceSpan(), block );
+		block = new Block( new SourceSpan(), block, "repeat" );
 		block.Parent.Statement( block );
 		loopScope = new LoopScope( function, loopScope, repeatBreak, repeatContinue );
 
@@ -398,7 +399,7 @@ public class LuaParser
 
 		block.Statement( new Test( s, condition, ifClause ) );
 
-		block = new Block( new SourceSpan(), block );
+		block = new Block( new SourceSpan(), block, "if" );
 		block.Parent.Statement( block );
 
 		blockstat();
@@ -422,7 +423,7 @@ public class LuaParser
 			
 			block.Statement( new Test( s, condition, ifClause ) );
 
-			block = new Block( new SourceSpan(), block );
+			block = new Block( new SourceSpan(), block, "elseif" );
 			block.Parent.Statement( block );
 
 			blockstat();
@@ -438,7 +439,7 @@ public class LuaParser
 			block.Statement( new Branch( elseToken.SourceSpan, ifEnd ) );
 			block.Statement( new MarkLabel( elseToken.SourceSpan, ifClause ) );
 
-			block = new Block( new SourceSpan(), block );
+			block = new Block( new SourceSpan(), block, "else" );
 			block.Parent.Statement( block );
 
 			blockstat();
@@ -552,7 +553,7 @@ public class LuaParser
 		LabelAST fornumBreak	= new LabelAST( "fornumBreak" );	function.Label( fornumBreak );
 		LabelAST fornumContinue	= new LabelAST( "fornumContinue" );	function.Label( fornumContinue );
 
-		block = new Block( new SourceSpan(), block );
+		block = new Block( new SourceSpan(), block, "fornum" );
 		block.Parent.Statement( block );
 
 		
@@ -599,7 +600,7 @@ public class LuaParser
 		block.Statement( new MarkLabel( s, fornum ) );
 		block.Statement( new Test( s, condition, fornumBreak ) );
 
-		block = new Block( new SourceSpan(), block );
+		block = new Block( new SourceSpan(), block, "fornumBody" );
 		block.Parent.Statement( block );
 		loopScope = new LoopScope( function, loopScope, fornumBreak, fornumContinue );
 		
@@ -692,7 +693,7 @@ public class LuaParser
 		LabelAST forlistBreak		= new LabelAST( "forlistBreak" );		function.Label( forlistBreak );
 		LabelAST forlistContinue	= new LabelAST( "forlistContinue" );	function.Label( forlistContinue );
 
-		block = new Block( new SourceSpan(), block );
+		block = new Block( new SourceSpan(), block, "forlist" );
 		block.Parent.Statement( block );
 
 
@@ -719,7 +720,7 @@ public class LuaParser
 
 		block.Statement( new MarkLabel( s, forlistContinue ) );
 
-		block = new Block( new SourceSpan(), block );
+		block = new Block( new SourceSpan(), block, "forlistBody" );
 		block.Parent.Statement( block );
 		loopScope = new LoopScope( function, loopScope, forlistBreak, forlistContinue );
 
@@ -871,9 +872,10 @@ public class LuaParser
 
 		// Function.
 
-		block = new Block( new SourceSpan(), block );
-		function = new FunctionAST( functionName, function, block );
+		function = new FunctionAST( functionName, function );
 		function.Parent.ChildFunction( function );
+		block = new Block( new SourceSpan(), block, "function" );
+		function.SetBlock( block );
 
 
 		// Parameters.
@@ -954,10 +956,10 @@ public class LuaParser
 
 		SourceSpan s = new SourceSpan( matchFunction.SourceSpan.Start, endFunction.SourceSpan.End );
 
-		FunctionAST result = function;
-		function = function.Parent;
 		block.SetSourceSpan( s );
 		block = block.Parent;
+		FunctionAST result = function;
+		function = function.Parent;
 
 		
 		// Push a function expression.
@@ -1414,7 +1416,10 @@ public class LuaParser
 			{
 				IList< Expression > results = PopValues( expressioncount );
 				block.Statement( new ReturnMultipleValues( s, results, resultValues ) );
-				function.SetReturnsMultipleValues();
+				if ( ! function.ReturnsMultipleValues )
+				{
+					function.SetReturnsMultipleValues();
+				}
 			}
 		}
 	}
@@ -1721,7 +1726,9 @@ public class LuaParser
 		*/
 
 		Token matchConstructor = Check( TokenKind.LeftCurlyBracket );
-		Constructor constructor = new Constructor();
+		Temporary constructorValue = new Temporary( new SourceSpan() );
+		Constructor constructor = new Constructor( new SourceSpan(), constructorValue );
+		block.Statement( constructor );
 
 		SourceSpan s;
 		int arrayKey = 1;
@@ -1744,10 +1751,10 @@ public class LuaParser
 				Expression value = PopValue();
 
 				constructor.IncrementHashCount();
-				block.Statement(
+				constructor.Statement(
 					new Assign( new SourceSpan( key.SourceSpan.Start, value.SourceSpan.End ),
 						new Index( key.SourceSpan,
-							new ConstructorRef( key.SourceSpan, constructor, false ),
+							constructorValue,
 							new Literal( key.SourceSpan, (string)key.Value ) ),
 						value ) );
 			}
@@ -1765,11 +1772,10 @@ public class LuaParser
 
 				s = new SourceSpan( leftBracket.SourceSpan.Start, rightBracket.SourceSpan.End );
 
-				block.Statement(
+				constructor.IncrementHashCount();
+				constructor.Statement(
 					new Assign( new SourceSpan( leftBracket.SourceSpan.Start, value.SourceSpan.End ),
-						new Index( s,
-							new ConstructorRef( s, constructor, false ),
-							key ),
+						new Index( s, constructorValue, key ),
 						value ) );
 			}
 			else
@@ -1785,10 +1791,10 @@ public class LuaParser
 					Expression value = PopValue();
 
 					constructor.IncrementArrayCount();
-					block.Statement(
+					constructor.Statement(
 						new Assign( value.SourceSpan,
 							new Index( value.SourceSpan,
-								new ConstructorRef( value.SourceSpan, constructor, false ),
+								constructorValue,
 								new Literal( value.SourceSpan, arrayKey ) ),
 							value ) );
 
@@ -1804,16 +1810,16 @@ public class LuaParser
 						Expression value = PopValue();
 
 						constructor.IncrementArrayCount();
-						block.Statement(
+						constructor.Statement(
 							new Assign( value.SourceSpan,
 								new Index( value.SourceSpan,
-									new ConstructorRef( value.SourceSpan, constructor, false ),
+									constructorValue,
 									new Literal( value.SourceSpan, arrayKey ) ),
 								value ) );
 					}
 					else
 					{
-						block.Statement( new IndexMultipleValues( values.SourceSpan, constructor, arrayKey, values ) );
+						block.Statement( new IndexMultipleValues( values.SourceSpan, constructorValue, arrayKey, values ) );
 					}
 				}
 			}
@@ -1833,7 +1839,9 @@ public class LuaParser
 
 		Token endConstructor = Check( TokenKind.RightCurlyBracket, matchConstructor );
 		s = new SourceSpan( matchConstructor.SourceSpan.Start, endConstructor.SourceSpan.End );
-		PushExpression( new ConstructorRef( s, constructor, true ) );
+		constructor.SetSourceSpan( s );
+		constructorValue.SetSourceSpan( s );
+		PushExpression( constructorValue );
 	}
 
 
@@ -2167,7 +2175,7 @@ public class LuaParser
 		}
 
 
-		public override void Accept( ExpressionVisitor v )
+		public override void Accept( IExpressionVisitor v )
 		{
 			throw new NotSupportedException( "Nested expressions are internal parser objects." );
 		}

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Lua.Parser.AST.Statements;
 
 
@@ -40,7 +41,6 @@ public class FunctionAST
 	public IList< Variable >	Parameters				{ get; private set; }
 	public bool					IsVararg				{ get; private set; }
 	public IList< Variable >	Locals					{ get; private set; }
-	public IList< Constructor >	Constructors			{ get; private set; }
 	public IList< LabelAST >	Labels					{ get; private set; }
 	public Block				Block					{ get; private set; }
 	public bool					ReturnsMultipleValues	{ get; private set; }
@@ -57,7 +57,7 @@ public class FunctionAST
 
 	// Construtor.
 
-	public FunctionAST( string name, FunctionAST parent, Block block )
+	public FunctionAST( string name, FunctionAST parent )
 	{
 		functions				= new List< FunctionAST >();
 		upvals					= new List< Variable >();
@@ -73,7 +73,7 @@ public class FunctionAST
 		IsVararg				= false;
 		Locals					= locals.AsReadOnly();
 		Labels					= labels.AsReadOnly();
-		Block					= block;
+		Block					= null;
 		ReturnsMultipleValues	= false;
 	}
 
@@ -107,6 +107,7 @@ public class FunctionAST
 
 	public void SetVararg()
 	{
+		Debug.Assert( IsVararg == false );
 		IsVararg = true;
 	}
 
@@ -120,8 +121,15 @@ public class FunctionAST
 		labels.Add( label );
 	}
 
+	public void SetBlock( Block block )
+	{
+		Debug.Assert( Block == null && block != null );
+		Block = block;
+	}
+
 	public void SetReturnsMultipleValues()
 	{
+		Debug.Assert( ReturnsMultipleValues == false );
 		ReturnsMultipleValues = true;
 	}
 	

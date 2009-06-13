@@ -17,6 +17,7 @@ public class Block
 	:	Statement
 {
 	public Block				Parent			{ get; private set; }
+	public string				Name			{ get; private set; }
 	public IList< Variable >	Locals			{ get; private set; }
 	public IList< Statement >	Statements		{ get; private set; }
 
@@ -24,13 +25,14 @@ public class Block
 	List< Statement >	statements;
 	
 		
-	public Block( SourceSpan s, Block parent )
+	public Block( SourceSpan s, Block parent, string name )
 		:	base( s )
 	{
 		locals		= new List< Variable >();
 		statements	= new List< Statement >();
 
 		Parent		= parent;
+		Name		= name;
 		Locals		= locals.AsReadOnly();
 		Statements	= statements.AsReadOnly();
 	}
@@ -47,7 +49,7 @@ public class Block
 	}
 
 
-	public override void Accept( StatementVisitor s )
+	public override void Accept( IStatementVisitor s )
 	{
 		s.Visit( this );
 	}

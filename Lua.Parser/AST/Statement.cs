@@ -76,7 +76,7 @@ public abstract class Statement
 	}
 
 
-	public abstract void Accept( StatementVisitor s );
+	public abstract void Accept( IStatementVisitor s );
 
 }
 
