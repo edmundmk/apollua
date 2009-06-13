@@ -395,7 +395,7 @@ public class LuaParser
 
 		SourceSpan s		= new SourceSpan( match.SourceSpan.Start, thenToken.SourceSpan.End );
 		LabelAST ifClause	= new LabelAST( "ifClause" );	function.Label( ifClause );
-		LabelAST ifEnd		= new LabelAST( "ifEnd" );		function.Label( ifEnd );
+		LabelAST ifEnd		= null;
 
 		block.Statement( new Test( s, condition, ifClause ) );
 
@@ -411,6 +411,10 @@ public class LuaParser
 			block.SetSourceSpan( new SourceSpan( thenToken.SourceSpan.Start, elseIf.SourceSpan.End ) );
 			block = block.Parent;
 
+			if ( ifEnd == null )
+			{
+				ifEnd = new LabelAST( "ifEnd" ); function.Label( ifEnd );
+			}
 			block.Statement( new Branch( elseIf.SourceSpan, ifEnd ) );
 			block.Statement( new MarkLabel( elseIf.SourceSpan, ifClause ) );
 
@@ -419,7 +423,7 @@ public class LuaParser
 			thenToken = Check( TokenKind.Then );
 
 			s			= new SourceSpan( elseIf.SourceSpan.Start, thenToken.SourceSpan.End );
-			ifClause	= new LabelAST( "ifClause" );	function.Label( ifClause );
+			ifClause	= new LabelAST( "ifClause" ); function.Label( ifClause );
 			
 			block.Statement( new Test( s, condition, ifClause ) );
 
@@ -436,8 +440,13 @@ public class LuaParser
 			block.SetSourceSpan( new SourceSpan( thenToken.SourceSpan.Start, elseToken.SourceSpan.End ) );
 			block = block.Parent;
 
+			if ( ifEnd == null )
+			{
+				ifEnd = new LabelAST( "ifEnd" ); function.Label( ifEnd );
+			}
 			block.Statement( new Branch( elseToken.SourceSpan, ifEnd ) );
 			block.Statement( new MarkLabel( elseToken.SourceSpan, ifClause ) );
+			ifClause = null;
 
 			block = new Block( new SourceSpan(), block, "else" );
 			block.Parent.Statement( block );
@@ -458,7 +467,15 @@ public class LuaParser
 			block.SetSourceSpan( new SourceSpan( thenToken.SourceSpan.Start, endIf.SourceSpan.End ) );
 			block = block.Parent;
 
-			block.Statement( new MarkLabel( endIf.SourceSpan, ifEnd ) );
+			if ( ifClause != null )
+			{
+				block.Statement( new MarkLabel( endIf.SourceSpan, ifClause ) );
+			}
+
+			if ( ifEnd != null )
+			{
+				block.Statement( new MarkLabel( endIf.SourceSpan, ifEnd ) );
+			}
 		}
 	}
 

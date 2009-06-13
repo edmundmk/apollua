@@ -34,6 +34,11 @@ public class DeclareForIndex
 		{
 			w.Visit( this );
 		}
+		LuaVMCompiler c = s as LuaVMCompiler;
+		if ( c != null )
+		{
+			c.Visit( this );
+		}
 	}
 
 }

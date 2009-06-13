@@ -8,7 +8,7 @@ end
 
 function bisect( f, a, b, fa, fb )
   -- multiple return
-  -- label ifClause, ifEnd, ifClause, ifEnd
+  -- label ifClause, ifClause, ifEnd
   -- local c, fc
   -- local c, fc
   local c = ( ( a + b ) / 2 )
@@ -17,7 +17,7 @@ function bisect( f, a, b, fa, fb )
   block -- if
       return multiple c, ( b - a )
   end
-ifEnd:
+ifClause:
   n = ( n + 1 )
   local fc = f( c )
   bfalse ( ( fa * fc ) < 0 ) ifClause
@@ -58,7 +58,7 @@ end
 
 function bisect( f, a, b, fa, fb )
   -- multiple return
-  -- label ifClause, ifEnd, ifClause, ifEnd
+  -- label ifClause, ifClause, ifEnd
   -- local c, fc
   -- local c, fc
   local c = ( ( a + b ) / 2 )
@@ -67,7 +67,7 @@ function bisect( f, a, b, fa, fb )
   block -- if
       return multiple c, ( b - a )
   end
-ifEnd:
+ifClause:
   n = ( n + 1 )
   local fc = f( c )
   bfalse ( ( fa * fc ) < 0 ) ifClause
@@ -480,7 +480,7 @@ function cache( f )
 end
 
 function x11C7A8C( x )
-  -- label ifClause, ifEnd
+  -- label ifClause
   -- upval c, f
   -- local y
   -- local y
@@ -490,7 +490,7 @@ function x11C7A8C( x )
       y = f( x )
       c[ x ] = y
   end
-ifEnd:
+ifClause:
   return y
 end
 
@@ -543,7 +543,7 @@ function cache( f )
 end
 
 function x2004EEE( x )
-  -- label ifClause, ifEnd
+  -- label ifClause
   -- upval c, f
   -- local y
   -- local y
@@ -553,7 +553,7 @@ function x2004EEE( x )
       y = f( x )
       c[ x ] = y
   end
-ifEnd:
+ifClause:
   return y
 end
 
@@ -666,7 +666,7 @@ whileBreak:
 end
 
 function <chunk>( ... )
-  -- label whileBreak, whileContinue, ifClause, ifEnd, ifClause, ifEnd, ifClause, ifEnd
+  -- label whileBreak, whileContinue, ifClause, ifClause, ifClause, ifEnd
   -- local s, ok, _, l, op, g
 whileContinue:
   bfalse 1 whileBreak
@@ -677,7 +677,7 @@ whileContinue:
       block -- if
           b whileBreak
       end
-ifEnd:
+ifClause:
       valuelist = values string[ "find" ]( s, "%[%-?(%d*)%]%s*([GS])ETGLOBAL.-;%s+(.*)$" )
       local ok = valuelist[ 0 ]
       local _ = valuelist[ 1 ]
@@ -698,14 +698,14 @@ ifClause:
 ifEnd:
           io[ "write" ]( g, "	", l, op, "\n" )
       end
-ifEnd:
+ifClause:
   end
   b whileContinue
 whileBreak:
 end
 
 function <chunk>( ... )
-  -- label whileBreak, whileContinue, ifClause, ifEnd, ifClause, ifEnd, ifClause, ifEnd
+  -- label whileBreak, whileContinue, ifClause, ifClause, ifClause, ifEnd
   -- local s, ok, _, l, op, g
 whileContinue:
   bfalse 1 whileBreak
@@ -716,7 +716,7 @@ whileContinue:
       block -- if
           b whileBreak
       end
-ifEnd:
+ifClause:
       valuelist = values string[ "find" ]( s, "%[%-?(%d*)%]%s*([GS])ETGLOBAL.-;%s+(.*)$" )
       local ok = valuelist[ 0 ]
       local _ = valuelist[ 1 ]
@@ -737,7 +737,7 @@ ifClause:
 ifEnd:
           io[ "write" ]( g, "	", l, op, "\n" )
       end
-ifEnd:
+ifClause:
   end
   b whileContinue
 whileBreak:
@@ -1083,7 +1083,7 @@ function CELLS( w, h )
 end
 
 function LIFE( w, h )
-  -- label whileBreak, whileContinue, ifClause, ifEnd
+  -- label whileBreak, whileContinue, ifClause
   -- upval write
   -- local thisgen, nextgen, gen
   -- local thisgen, nextgen, gen
@@ -1110,7 +1110,7 @@ whileContinue:
       block -- if
           b whileBreak
       end
-ifEnd:
+ifClause:
   end
   b whileContinue
 whileBreak:
@@ -1520,7 +1520,7 @@ function CELLS( w, h )
 end
 
 function LIFE( w, h )
-  -- label whileBreak, whileContinue, ifClause, ifEnd
+  -- label whileBreak, whileContinue, ifClause
   -- upval write
   -- local thisgen, nextgen, gen
   -- local thisgen, nextgen, gen
@@ -1547,7 +1547,7 @@ whileContinue:
       block -- if
           b whileBreak
       end
-ifEnd:
+ifClause:
   end
   b whileContinue
 whileBreak:
@@ -1637,7 +1637,7 @@ function x202C666( t, i )
 end
 
 function <chunk>( ... )
-  -- label whileBreak, whileContinue, ifClause, ifEnd
+  -- label whileBreak, whileContinue, ifClause
   -- local n
   gen = function gen
   filter = function filter
@@ -1652,7 +1652,7 @@ whileContinue:
       block -- if
           b whileBreak
       end
-ifEnd:
+ifClause:
       print( n )
       x = filter( n, x )
   end
@@ -1695,7 +1695,7 @@ function filter( p, g )
 end
 
 function x11C7A8C()
-  -- label whileBreak, whileContinue, ifClause, ifEnd, ifClause, ifEnd
+  -- label whileBreak, whileContinue, ifClause, ifClause
   -- upval g, p
   -- local n
 whileContinue:
@@ -1707,12 +1707,12 @@ whileContinue:
       block -- if
           return nil
       end
-ifEnd:
+ifClause:
       bfalse ( math[ "mod" ]( n, p ) != 0 ) ifClause
       block -- if
           coroutine[ "yield" ]( n )
       end
-ifEnd:
+ifClause:
   end
   b whileContinue
 whileBreak:
@@ -1720,7 +1720,7 @@ whileBreak:
 end
 
 function <chunk>( ... )
-  -- label whileBreak, whileContinue, ifClause, ifEnd
+  -- label whileBreak, whileContinue, ifClause
   -- local n
   gen = function gen
   filter = function filter
@@ -1735,7 +1735,7 @@ whileContinue:
       block -- if
           b whileBreak
       end
-ifEnd:
+ifClause:
       print( n )
       x = filter( n, x )
   end
@@ -1776,7 +1776,7 @@ function filter( p, g )
 end
 
 function x202C666()
-  -- label whileBreak, whileContinue, ifClause, ifEnd, ifClause, ifEnd
+  -- label whileBreak, whileContinue, ifClause, ifClause
   -- upval g, p
   -- local n
 whileContinue:
@@ -1788,12 +1788,12 @@ whileContinue:
       block -- if
           return nil
       end
-ifEnd:
+ifClause:
       bfalse ( math[ "mod" ]( n, p ) != 0 ) ifClause
       block -- if
           coroutine[ "yield" ]( n )
       end
-ifEnd:
+ifClause:
   end
   b whileContinue
 whileBreak:
@@ -1824,7 +1824,7 @@ function <chunk>( ... )
 end
 
 function qsort( x, l, u, f )
-  -- label ifClause, ifEnd, whileBreak, whileContinue, ifClause, ifEnd
+  -- label ifClause, whileBreak, whileContinue, ifClause
   -- local m, t, i
   bfalse ( l < u ) ifClause
   block -- if
@@ -1856,7 +1856,7 @@ whileContinue:
               temporary 11ECF05[ temporary 215472D ] = temporary 297B065
               temporary 2BF8098[ temporary BB8560 ] = temporary 3553390
           end
-ifEnd:
+ifClause:
           i = ( i + 1 )
       end
       b whileContinue
@@ -1872,12 +1872,12 @@ whileBreak:
       qsort( x, l, ( m - 1 ), f )
       qsort( x, ( m + 1 ), u, f )
   end
-ifEnd:
+ifClause:
   return nil
 end
 
 function selectionsort( x, n, f )
-  -- label whileBreak, whileContinue, whileBreak, whileContinue, ifClause, ifEnd
+  -- label whileBreak, whileContinue, whileBreak, whileContinue, ifClause
   -- local i, m, j
   -- local i
   local i = 1
@@ -1894,7 +1894,7 @@ whileContinue:
           block -- if
               m = j
           end
-ifEnd:
+ifClause:
           j = ( j + 1 )
       end
       b whileContinue
@@ -1915,7 +1915,7 @@ whileBreak:
 end
 
 function show( m, x )
-  -- label whileBreak, whileContinue, ifClause, ifEnd
+  -- label whileBreak, whileContinue, ifClause
   -- local i
   -- local i
   io[ "write" ]( m, "\n	" )
@@ -1929,7 +1929,7 @@ whileContinue:
       block -- if
           io[ "write" ]( "," )
       end
-ifEnd:
+ifClause:
   end
   b whileContinue
 whileBreak:
@@ -2010,7 +2010,7 @@ function <chunk>( ... )
 end
 
 function qsort( x, l, u, f )
-  -- label ifClause, ifEnd, whileBreak, whileContinue, ifClause, ifEnd
+  -- label ifClause, whileBreak, whileContinue, ifClause
   -- local m, t, i
   bfalse ( l < u ) ifClause
   block -- if
@@ -2042,7 +2042,7 @@ whileContinue:
               temporary 11ECF05[ temporary 215472D ] = temporary 297B065
               temporary 2BF8098[ temporary BB8560 ] = temporary 3553390
           end
-ifEnd:
+ifClause:
           i = ( i + 1 )
       end
       b whileContinue
@@ -2058,12 +2058,12 @@ whileBreak:
       qsort( x, l, ( m - 1 ), f )
       qsort( x, ( m + 1 ), u, f )
   end
-ifEnd:
+ifClause:
   return nil
 end
 
 function selectionsort( x, n, f )
-  -- label whileBreak, whileContinue, whileBreak, whileContinue, ifClause, ifEnd
+  -- label whileBreak, whileContinue, whileBreak, whileContinue, ifClause
   -- local i, m, j
   -- local i
   local i = 1
@@ -2080,7 +2080,7 @@ whileContinue:
           block -- if
               m = j
           end
-ifEnd:
+ifClause:
           j = ( j + 1 )
       end
       b whileContinue
@@ -2101,7 +2101,7 @@ whileBreak:
 end
 
 function show( m, x )
-  -- label whileBreak, whileContinue, ifClause, ifEnd
+  -- label whileBreak, whileContinue, ifClause
   -- local i
   -- local i
   io[ "write" ]( m, "\n	" )
@@ -2115,7 +2115,7 @@ whileContinue:
       block -- if
           io[ "write" ]( "," )
       end
-ifEnd:
+ifClause:
   end
   b whileContinue
 whileBreak:
@@ -2159,7 +2159,7 @@ function x1D364F7( x, y )
 end
 
 function <chunk>( ... )
-  -- label whileBreak, whileContinue, ifClause, ifEnd, ifClause, ifEnd
+  -- label whileBreak, whileContinue, ifClause, ifClause
   -- local A, l, _, _, a, b
   -- local A
   local A = nil
@@ -2172,7 +2172,7 @@ whileContinue:
       block -- if
           b whileBreak
       end
-ifEnd:
+ifClause:
       valuelist = values string[ "find" ]( l, "\"?([_%w]+)\"?%s*(.*)$" )
       local _ = valuelist[ 0 ]
       local _ = valuelist[ 1 ]
@@ -2183,7 +2183,7 @@ ifEnd:
           A = a
           io[ "write" ]( "\n", a, ":" )
       end
-ifEnd:
+ifClause:
       io[ "write" ]( " ", b )
   end
   b whileContinue
@@ -2192,7 +2192,7 @@ whileBreak:
 end
 
 function <chunk>( ... )
-  -- label whileBreak, whileContinue, ifClause, ifEnd, ifClause, ifEnd
+  -- label whileBreak, whileContinue, ifClause, ifClause
   -- local A, l, _, _, a, b
   -- local A
   local A = nil
@@ -2205,7 +2205,7 @@ whileContinue:
       block -- if
           b whileBreak
       end
-ifEnd:
+ifClause:
       valuelist = values string[ "find" ]( l, "\"?([_%w]+)\"?%s*(.*)$" )
       local _ = valuelist[ 0 ]
       local _ = valuelist[ 1 ]
@@ -2216,7 +2216,7 @@ ifEnd:
           A = a
           io[ "write" ]( "\n", a, ":" )
       end
-ifEnd:
+ifClause:
       io[ "write" ]( " ", b )
   end
   b whileContinue
@@ -2234,7 +2234,7 @@ function <chunk>( ... )
 end
 
 function hook( event )
-  -- label ifClause, ifEnd, ifClause, ifEnd, ifClause, ifEnd, ifClause, ifEnd, ifClause, ifEnd, ifClause
+  -- label ifClause, ifClause, ifEnd, ifClause, ifClause, ifClause, ifEnd, ifEnd, ifClause
   -- upval level
   -- local t
   -- local t
@@ -2244,7 +2244,7 @@ function hook( event )
   block -- if
       io[ "write" ]( t[ "short_src" ], ":", t[ "currentline" ], " " )
   end
-ifEnd:
+ifClause:
   t = debug[ "getinfo" ]( 2 )
   bfalse ( event == "call" ) ifClause
   block -- if
@@ -2258,7 +2258,7 @@ ifClause:
       block -- if
           level = 0
       end
-ifEnd:
+ifClause:
   end
 ifEnd:
   bfalse ( t[ "what" ] == "main" ) ifClause
@@ -2300,7 +2300,7 @@ function <chunk>( ... )
 end
 
 function hook( event )
-  -- label ifClause, ifEnd, ifClause, ifEnd, ifClause, ifEnd, ifClause, ifEnd, ifClause, ifEnd, ifClause
+  -- label ifClause, ifClause, ifEnd, ifClause, ifClause, ifClause, ifEnd, ifEnd, ifClause
   -- upval level
   -- local t
   -- local t
@@ -2310,7 +2310,7 @@ function hook( event )
   block -- if
       io[ "write" ]( t[ "short_src" ], ":", t[ "currentline" ], " " )
   end
-ifEnd:
+ifClause:
   t = debug[ "getinfo" ]( 2 )
   bfalse ( event == "call" ) ifClause
   block -- if
@@ -2324,7 +2324,7 @@ ifClause:
       block -- if
           level = 0
       end
-ifEnd:
+ifClause:
   end
 ifEnd:
   bfalse ( t[ "what" ] == "main" ) ifClause
@@ -2400,7 +2400,7 @@ ifEnd:
 end
 
 function x11C7A8C( name, old, new )
-  -- label ifClause, ifEnd
+  -- label ifClause
   -- upval tostring
   -- local t, line
   -- local t, line
@@ -2411,7 +2411,7 @@ function x11C7A8C( name, old, new )
   block -- if
       io[ "write" ]( ":", line )
   end
-ifEnd:
+ifClause:
   io[ "write" ]( ": ", name, " is now ", tostring( new ), " (was ", tostring( old ), ")", "\n" )
   return nil
 end
@@ -2467,7 +2467,7 @@ ifEnd:
 end
 
 function x1E6FA8E( name, old, new )
-  -- label ifClause, ifEnd
+  -- label ifClause
   -- upval tostring
   -- local t, line
   -- local t, line
@@ -2478,7 +2478,7 @@ function x1E6FA8E( name, old, new )
   block -- if
       io[ "write" ]( ":", line )
   end
-ifEnd:
+ifClause:
   io[ "write" ]( ": ", name, " is now ", tostring( new ), " (was ", tostring( old ), ")", "\n" )
   return nil
 end
@@ -2491,7 +2491,7 @@ function x11ECF05( t, name, value )
 end
 
 function <chunk>( ... )
-  -- label whileBreak, whileContinue, ifClause, ifEnd
+  -- label whileBreak, whileContinue, ifClause
   -- local offset, s
   -- local offset
   local offset = 0
@@ -2504,7 +2504,7 @@ whileContinue:
       block -- if
           return nil
       end
-ifEnd:
+ifClause:
       io[ "write" ]( values string[ "format" ]( "%08X  ", offset ) )
       string[ "gsub" ]( s, "(.)", function x33C0D9D )
       io[ "write" ]( values string[ "rep" ]( " ", ( 3 * ( 16 - string[ "len" ]( s ) ) ) ) )
@@ -2521,7 +2521,7 @@ function x33C0D9D( c )
 end
 
 function <chunk>( ... )
-  -- label whileBreak, whileContinue, ifClause, ifEnd
+  -- label whileBreak, whileContinue, ifClause
   -- local offset, s
   -- local offset
   local offset = 0
@@ -2534,7 +2534,7 @@ whileContinue:
       block -- if
           return nil
       end
-ifEnd:
+ifClause:
       io[ "write" ]( values string[ "format" ]( "%08X  ", offset ) )
       string[ "gsub" ]( s, "(.)", function x11C7A8C )
       io[ "write" ]( values string[ "rep" ]( " ", ( 3 * ( 16 - string[ "len" ]( s ) ) ) ) )
