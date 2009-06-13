@@ -49,13 +49,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Lua.CLR.Compiler\Lua.CLR.Compiler.csproj">
-      <Project>{C79018B8-CD8D-4573-A7F2-3F7C4A2B8C29}</Project>
-      <Name>Lua.CLR.Compiler</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Lua.Parser\Lua.Parser.csproj">
       <Project>{513270D7-F857-4F5A-A6B5-24F0F16F4CEB}</Project>
       <Name>Lua.Parser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Lua.VM.Compiler\Lua.VM.Compiler.csproj">
+      <Project>{A52CE447-5082-4A22-A044-B019C2F87EFA}</Project>
+      <Name>Lua.VM.Compiler</Name>
     </ProjectReference>
     <ProjectReference Include="..\Lua\Lua.csproj">
       <Project>{27F8B9D4-FEE3-4E1B-9A97-0604B7B4E2E4}</Project>

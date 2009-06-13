@@ -19,8 +19,8 @@ public class ASTWriter
 	:	IStatementVisitor
 	,	IExpressionVisitor
 {
-	TextWriter	o;
-	int			indent;
+	protected TextWriter	o;
+	int						indent;
 
 
 	public ASTWriter( TextWriter oWriter )
@@ -527,7 +527,7 @@ public class ASTWriter
 
 
 
-	void Indent()
+	protected void Indent()
 	{
 		for ( int i = 0; i < indent * 2; ++i )
 		{

@@ -141,7 +141,7 @@ public class FunctionTransform
 			Statement transformed = Transform( statement );
 			if ( transformed != null )
 			{
-				block.Statement( transformed );
+				constructor.Statement( transformed );
 			}
 		}
 
@@ -221,7 +221,6 @@ public class FunctionTransform
 	public virtual void Visit( Comparison e )
 	{
 		result = new Comparison( e.SourceSpan, e.Op, Transform( e.Left ), Transform( e.Right ) );
-		throw new NotImplementedException();
 	}
 
 	public virtual void Visit( FunctionClosure e )

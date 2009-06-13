@@ -106,6 +106,9 @@ public enum Opcode
 	Closure,	// A Bx		R( A ) := function closure from P( Bx ), followed by upval initialization with Move or GetUpVal
 
 	Vararg,		// A B		R( A ), ..., R( A + B - 1 ) = vararg
+
+	IDiv,		// A B C	R( A ) := RK( B ) \ RK( C )
+
 }
 
 

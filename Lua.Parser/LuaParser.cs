@@ -326,7 +326,7 @@ public class LuaParser
 				block
 					...
 			repeatContinue:
-					bfalse <condition> loopTop
+					bfalse <condition> repeat
 				end
 			repeatBreak:
 		*/
@@ -516,8 +516,8 @@ public class LuaParser
 					block
 						local <index> = (for index)
 						...
-			fornumContinue:
 					end
+			fornumContinue:
 					(for index) = (for index) + (for step)
 					b loopTop
 			fornumBreak:
@@ -624,11 +624,11 @@ public class LuaParser
 
 		s = endFor.SourceSpan;
 
-		block.Statement( new MarkLabel( s, fornumContinue ) );
-
 		loopScope = loopScope.Parent;
 		block.SetSourceSpan( new SourceSpan( doToken.SourceSpan.Start, endFor.SourceSpan.End ) );
 		block = block.Parent;
+
+		block.Statement( new MarkLabel( s, fornumContinue ) );
 
 		
 		// Increment index.
