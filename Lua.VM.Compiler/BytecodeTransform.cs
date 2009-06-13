@@ -289,7 +289,79 @@ public class BytecodeTransform
 
 	public override void Visit( Constructor s )
 	{
-		base.Visit( s );
+		Constructor constructor = new Constructor( s.SourceSpan, s.Temporary, s.ArrayCount, s.HashCount );
+		
+
+		// Check if the constructor ends with a multiple values expression.
+
+		Expression values = null;
+		int assignCount = s.Statements.Count;
+		if ( assignCount > 0 )
+		{
+			IndexMultipleValues imv = s.Statements[ assignCount - 1 ] as IndexMultipleValues;
+			if ( imv != null )
+			{
+				values = imv.Values;
+				assignCount -= 1;
+			}
+		}
+
+
+		// Batch up array-type assignments.
+
+		int key		= 1;
+		int nextkey	= 1;
+		List< Expression > operands = new List< Expression >();
+
+		for ( int i = 0; i < assignCount; ++i )
+		{
+			Statement	statement	= s.Statements[ i ];
+			Assign		assign		= (Assign)statement;
+			Index		target		= (Index)assign.Target;
+			Expression	value		= assign.Value;
+			Literal		literal		= target.Key as Literal;
+
+			if ( ( literal != null ) && literal.Value.Equals( nextkey ) )
+			{
+				// Assign to temporaries so we don't mess up the order of execution, this
+				// will be translated by the compiler to subsequent stack locations.
+
+				Temporary temporary = new Temporary( statement.SourceSpan );
+				constructor.Statement( new Assign( statement.SourceSpan, temporary, value ) );
+				operands.Add( temporary );
+				nextkey += 1;
+
+				if ( operands.Count == Instruction.FieldsPerFlush )
+				{
+					// Set all accumulated operands and reset.
+
+					constructor.Statement( new OpcodeSetList(
+						s.SourceSpan, s.Temporary, key, operands.AsReadOnly(), null ) );
+					
+					key += operands.Count;
+					operands = new List< Expression >();
+				}
+
+			}
+			else
+			{
+				constructor.Statement( Transform( s.Statements[ i ] ) );
+			}
+		}
+
+
+		// Set remaining batched values as well as multiple values, if necessary.
+
+		if ( ( values != null ) || ( operands.Count > 0 ) )
+		{
+			constructor.Statement( new OpcodeSetList(
+				s.SourceSpan, s.Temporary, key, operands.AsReadOnly(), values ) );
+		}
+
+
+		// Return.
+
+		result = constructor;
 	}
 
 

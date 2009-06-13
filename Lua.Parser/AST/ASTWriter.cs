@@ -257,7 +257,7 @@ public class ASTWriter
 		s.Temporary.Accept( this );
 		o.Write( "[ " );
 		o.Write( s.Key );
-		o.Write( " ... ] = values " );
+		o.Write( " -> ] = values " );
 		s.Values.Accept( this );
 		o.WriteLine();
 	}

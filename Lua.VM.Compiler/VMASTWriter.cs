@@ -59,6 +59,32 @@ public class VMASTWriter
 		o.WriteLine( s.Target.Name );
 	}
 
+	public virtual void Visit( OpcodeSetList s )
+	{
+		Indent();
+		o.Write( "setlist " );
+		s.Temporary.Accept( this );
+		o.Write( "[ " );
+		o.Write( s.Key );
+		o.WriteLine( " -> ]" );
+		foreach ( Expression operand in s.Operands )
+		{
+			Indent();
+			o.Write( "  " );
+			operand.Accept( this );
+			o.WriteLine();
+		}
+		if ( s.Values != null )
+		{
+			Indent();
+			o.Write( "  values " );
+			s.Values.Accept( this );
+			o.WriteLine();
+		}
+		Indent();
+		o.WriteLine( "end" );
+	}
+
 	public virtual void Visit( OpcodeTForLoop s )
 	{
 		Indent();

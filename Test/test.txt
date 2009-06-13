@@ -1135,103 +1135,188 @@ function <chunk>( ... )
   _CELLS[ "draw" ] = function _CELLS:draw
   CELLS = function CELLS
   constructor temporary 11C7A8C array 9 hash 2
-    temporary 11C7A8C[ 1 ] = 1
-    temporary 11C7A8C[ 2 ] = 0
-    temporary 11C7A8C[ 3 ] = 1
-    temporary 11C7A8C[ 4 ] = 1
-    temporary 11C7A8C[ 5 ] = 0
-    temporary 11C7A8C[ 6 ] = 1
-    temporary 11C7A8C[ 7 ] = 1
-    temporary 11C7A8C[ 8 ] = 1
-    temporary 11C7A8C[ 9 ] = 1
+    temporary 27C59A = 1
+    temporary 165F26B = 0
+    temporary 9585CB = 1
+    temporary 141B42A = 1
+    temporary 34F5582 = 0
+    temporary 1CA0192 = 1
+    temporary 1A0E24 = 1
+    temporary EA7F4A = 1
+    temporary 3E799B = 1
     temporary 11C7A8C[ "w" ] = 3
     temporary 11C7A8C[ "h" ] = 3
+    setlist temporary 11C7A8C[ 1 -> ]
+      temporary 27C59A
+      temporary 165F26B
+      temporary 9585CB
+      temporary 141B42A
+      temporary 34F5582
+      temporary 1CA0192
+      temporary 1A0E24
+      temporary EA7F4A
+      temporary 3E799B
+    end
   end
   HEART = temporary 11C7A8C
   constructor temporary 2004EEE array 9 hash 2
-    temporary 2004EEE[ 1 ] = 0
-    temporary 2004EEE[ 2 ] = 0
-    temporary 2004EEE[ 3 ] = 1
-    temporary 2004EEE[ 4 ] = 1
-    temporary 2004EEE[ 5 ] = 0
-    temporary 2004EEE[ 6 ] = 1
-    temporary 2004EEE[ 7 ] = 0
-    temporary 2004EEE[ 8 ] = 1
-    temporary 2004EEE[ 9 ] = 1
+    temporary 232467A = 0
+    temporary 3C47A4F = 0
+    temporary 1E84CCB = 1
+    temporary 12AB327 = 1
+    temporary 2804C64 = 0
+    temporary 282AF8C = 1
+    temporary 2982BEE = 0
+    temporary 3598B65 = 1
+    temporary 225E691 = 1
     temporary 2004EEE[ "w" ] = 3
     temporary 2004EEE[ "h" ] = 3
+    setlist temporary 2004EEE[ 1 -> ]
+      temporary 232467A
+      temporary 3C47A4F
+      temporary 1E84CCB
+      temporary 12AB327
+      temporary 2804C64
+      temporary 282AF8C
+      temporary 2982BEE
+      temporary 3598B65
+      temporary 225E691
+    end
   end
   GLIDER = temporary 2004EEE
   constructor temporary 202C666 array 12 hash 2
-    temporary 202C666[ 1 ] = 0
-    temporary 202C666[ 2 ] = 1
-    temporary 202C666[ 3 ] = 0
-    temporary 202C666[ 4 ] = 1
-    temporary 202C666[ 5 ] = 1
-    temporary 202C666[ 6 ] = 1
-    temporary 202C666[ 7 ] = 1
-    temporary 202C666[ 8 ] = 0
-    temporary 202C666[ 9 ] = 1
-    temporary 202C666[ 10 ] = 0
-    temporary 202C666[ 11 ] = 1
-    temporary 202C666[ 12 ] = 0
+    temporary 3551B1B = 0
+    temporary 1FDF3F4 = 1
+    temporary 1ED9395 = 0
+    temporary 15A303F = 1
+    temporary 2BB23B = 1
+    temporary 189441B = 1
+    temporary 1D364F7 = 1
+    temporary 6E8CAF = 0
+    temporary 3E2F22E = 1
+    temporary 2FA83A4 = 0
+    temporary 2CEA0CA = 1
+    temporary 143A722 = 0
     temporary 202C666[ "w" ] = 3
     temporary 202C666[ "h" ] = 4
+    setlist temporary 202C666[ 1 -> ]
+      temporary 3551B1B
+      temporary 1FDF3F4
+      temporary 1ED9395
+      temporary 15A303F
+      temporary 2BB23B
+      temporary 189441B
+      temporary 1D364F7
+      temporary 6E8CAF
+      temporary 3E2F22E
+      temporary 2FA83A4
+      temporary 2CEA0CA
+      temporary 143A722
+    end
   end
   EXPLODE = temporary 202C666
   constructor temporary 218F99C array 20 hash 2
-    temporary 218F99C[ 1 ] = 0
-    temporary 218F99C[ 2 ] = 1
-    temporary 218F99C[ 3 ] = 1
-    temporary 218F99C[ 4 ] = 1
-    temporary 218F99C[ 5 ] = 1
-    temporary 218F99C[ 6 ] = 1
-    temporary 218F99C[ 7 ] = 0
-    temporary 218F99C[ 8 ] = 0
-    temporary 218F99C[ 9 ] = 0
-    temporary 218F99C[ 10 ] = 1
-    temporary 218F99C[ 11 ] = 0
-    temporary 218F99C[ 12 ] = 0
-    temporary 218F99C[ 13 ] = 0
-    temporary 218F99C[ 14 ] = 0
-    temporary 218F99C[ 15 ] = 1
-    temporary 218F99C[ 16 ] = 1
-    temporary 218F99C[ 17 ] = 0
-    temporary 218F99C[ 18 ] = 0
-    temporary 218F99C[ 19 ] = 1
-    temporary 218F99C[ 20 ] = 0
+    temporary 360E033 = 0
+    temporary 267E1D0 = 1
+    temporary 1A6F050 = 1
+    temporary 2DE72D6 = 1
+    temporary 1D2098A = 1
+    temporary 6255DD = 1
+    temporary 37504C8 = 0
+    temporary 31D2B0C = 0
+    temporary 68373 = 0
+    temporary 3A9F0C = 1
+    temporary 20F9772 = 0
+    temporary 28C5305 = 0
+    temporary 2EEEB2E = 0
+    temporary 266449E = 0
+    temporary 198698E = 1
+    temporary 25BB5FF = 1
+    temporary 13965FA = 0
+    temporary 30495D1 = 0
+    temporary 329445B = 1
+    temporary 73673B = 0
     temporary 218F99C[ "w" ] = 5
     temporary 218F99C[ "h" ] = 4
+    setlist temporary 218F99C[ 1 -> ]
+      temporary 360E033
+      temporary 267E1D0
+      temporary 1A6F050
+      temporary 2DE72D6
+      temporary 1D2098A
+      temporary 6255DD
+      temporary 37504C8
+      temporary 31D2B0C
+      temporary 68373
+      temporary 3A9F0C
+      temporary 20F9772
+      temporary 28C5305
+      temporary 2EEEB2E
+      temporary 266449E
+      temporary 198698E
+      temporary 25BB5FF
+      temporary 13965FA
+      temporary 30495D1
+      temporary 329445B
+      temporary 73673B
+    end
   end
   FISH = temporary 218F99C
   constructor temporary 2E0C681 array 25 hash 2
-    temporary 2E0C681[ 1 ] = 1
-    temporary 2E0C681[ 2 ] = 0
-    temporary 2E0C681[ 3 ] = 0
-    temporary 2E0C681[ 4 ] = 0
-    temporary 2E0C681[ 5 ] = 1
-    temporary 2E0C681[ 6 ] = 0
-    temporary 2E0C681[ 7 ] = 1
-    temporary 2E0C681[ 8 ] = 1
-    temporary 2E0C681[ 9 ] = 1
-    temporary 2E0C681[ 10 ] = 0
-    temporary 2E0C681[ 11 ] = 1
-    temporary 2E0C681[ 12 ] = 0
-    temporary 2E0C681[ 13 ] = 0
-    temporary 2E0C681[ 14 ] = 0
-    temporary 2E0C681[ 15 ] = 1
-    temporary 2E0C681[ 16 ] = 1
-    temporary 2E0C681[ 17 ] = 0
-    temporary 2E0C681[ 18 ] = 1
-    temporary 2E0C681[ 19 ] = 0
-    temporary 2E0C681[ 20 ] = 1
-    temporary 2E0C681[ 21 ] = 1
-    temporary 2E0C681[ 22 ] = 0
-    temporary 2E0C681[ 23 ] = 0
-    temporary 2E0C681[ 24 ] = 0
-    temporary 2E0C681[ 25 ] = 1
+    temporary EA119 = 1
+    temporary 83A9E6 = 0
+    temporary A0F91B = 0
+    temporary 1A8C1FA = 0
+    temporary 2EED1CA = 1
+    temporary 265601D = 0
+    temporary 190610D = 1
+    temporary 213697A = 1
+    temporary 2AEB54D = 1
+    temporary 245FB7 = 0
+    temporary 1475D71 = 1
+    temporary 38248FC = 0
+    temporary 39490E2 = 0
+    temporary 3917F2 = 0
+    temporary 201D787 = 1
+    temporary 21093C0 = 1
+    temporary 29531C8 = 0
+    temporary 33EC00F = 1
+    temporary 134C08F = 0
+    temporary 2DAC507 = 1
+    temporary 1B0ED41 = 1
+    temporary 338574F = 0
+    temporary FB11C8 = 0
+    temporary D3A00F = 0
+    temporary 370A08C = 1
     temporary 2E0C681[ "w" ] = 5
     temporary 2E0C681[ "h" ] = 5
+    setlist temporary 2E0C681[ 1 -> ]
+      temporary EA119
+      temporary 83A9E6
+      temporary A0F91B
+      temporary 1A8C1FA
+      temporary 2EED1CA
+      temporary 265601D
+      temporary 190610D
+      temporary 213697A
+      temporary 2AEB54D
+      temporary 245FB7
+      temporary 1475D71
+      temporary 38248FC
+      temporary 39490E2
+      temporary 3917F2
+      temporary 201D787
+      temporary 21093C0
+      temporary 29531C8
+      temporary 33EC00F
+      temporary 134C08F
+      temporary 2DAC507
+      temporary 1B0ED41
+      temporary 338574F
+      temporary FB11C8
+      temporary D3A00F
+      temporary 370A08C
+    end
   end
   BUTTERFLY = temporary 2E0C681
   LIFE = function LIFE
@@ -1893,18 +1978,32 @@ function <chunk>( ... )
   show = function show
   testsorts = function testsorts
   constructor temporary 33C0D9D array 12 hash 0
-    temporary 33C0D9D[ 1 ] = "Jan"
-    temporary 33C0D9D[ 2 ] = "Feb"
-    temporary 33C0D9D[ 3 ] = "Mar"
-    temporary 33C0D9D[ 4 ] = "Apr"
-    temporary 33C0D9D[ 5 ] = "May"
-    temporary 33C0D9D[ 6 ] = "Jun"
-    temporary 33C0D9D[ 7 ] = "Jul"
-    temporary 33C0D9D[ 8 ] = "Aug"
-    temporary 33C0D9D[ 9 ] = "Sep"
-    temporary 33C0D9D[ 10 ] = "Oct"
-    temporary 33C0D9D[ 11 ] = "Nov"
-    temporary 33C0D9D[ 12 ] = "Dec"
+    temporary 3C47A4F = "Jan"
+    temporary 1E84CCB = "Feb"
+    temporary 12AB327 = "Mar"
+    temporary 2804C64 = "Apr"
+    temporary 282AF8C = "May"
+    temporary 2982BEE = "Jun"
+    temporary 3598B65 = "Jul"
+    temporary 225E691 = "Aug"
+    temporary 3551B1B = "Sep"
+    temporary 1FDF3F4 = "Oct"
+    temporary 1ED9395 = "Nov"
+    temporary 15A303F = "Dec"
+    setlist temporary 33C0D9D[ 1 -> ]
+      temporary 3C47A4F
+      temporary 1E84CCB
+      temporary 12AB327
+      temporary 2804C64
+      temporary 282AF8C
+      temporary 2982BEE
+      temporary 3598B65
+      temporary 225E691
+      temporary 3551B1B
+      temporary 1FDF3F4
+      temporary 1ED9395
+      temporary 15A303F
+    end
   end
   x = temporary 33C0D9D
   testsorts( x )
@@ -2038,24 +2137,24 @@ whileContinue:
 whileBreak:
   n = ( n - 1 )
   show( "original", x )
-  qsort( x, 1, n, function x3C47A4F )
+  qsort( x, 1, n, function x2BB23B )
   show( "after quicksort", x )
-  selectionsort( x, n, function x1E84CCB )
+  selectionsort( x, n, function x189441B )
   show( "after reverse selection sort", x )
-  qsort( x, 1, n, function x12AB327 )
+  qsort( x, 1, n, function x1D364F7 )
   show( "after quicksort again", x )
   return nil
 end
 
-function x3C47A4F( x, y )
+function x2BB23B( x, y )
   return ( x < y )
 end
 
-function x1E84CCB( x, y )
+function x189441B( x, y )
   return ( x > y )
 end
 
-function x12AB327( x, y )
+function x1D364F7( x, y )
   return ( x < y )
 end
 

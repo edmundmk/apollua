@@ -51,6 +51,7 @@
     <Compile Include="OpcodeForPrep.cs" />
     <Compile Include="BytecodeTransform.cs" />
     <Compile Include="LuaVMCompiler.cs" />
+    <Compile Include="OpcodeSetList.cs" />
     <Compile Include="OpcodeTForLoop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VMASTWriter.cs" />
