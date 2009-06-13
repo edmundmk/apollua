@@ -81,6 +81,19 @@ public class VMASTWriter
 		o.WriteLine( s.Target.Name );
 	}
 
+	public virtual void Visit( OpcodeConcat e )
+	{
+		o.Write( "concat " );
+		bool bFirst = true;
+		foreach ( Expression operand in e.Operands )
+		{
+			if ( ! bFirst )
+				o.Write( " .. " );
+			bFirst = false;
+			operand.Accept( this );
+		}
+	}
+
 }
 
 

@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DeclareForIndex.cs" />
+    <Compile Include="OpcodeConcat.cs" />
     <Compile Include="OpcodeForLoop.cs" />
     <Compile Include="OpcodeForPrep.cs" />
     <Compile Include="BytecodeTransform.cs" />

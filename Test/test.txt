@@ -1408,13 +1408,13 @@ fornum:
               block -- fornumBody
                   -- local x
                   local forindex x
-                  out = ( out .. ( ( ( self[ y ][ x ] > 0 ) and ALIVE ) or DEAD ) )
+                  out = concat out .. ( ( ( self[ y ][ x ] > 0 ) and ALIVE ) or DEAD )
               end
 fornumContinue:
               forloop (for index), (for limit), (for step), x b fornum
 fornumBreak:
           end
-          out = ( out .. "\n" )
+          out = concat out .. "\n"
       end
 fornumContinue:
       forloop (for index), (for limit), (for step), y b fornum
@@ -1547,7 +1547,7 @@ function <chunk>( ... )
 end
 
 function x202C666( t, i )
-  error( ( "cannot redefine global variable `" .. ( i .. "'" ) ), 2 )
+  error( concat "cannot redefine global variable `" .. i .. "'", 2 )
   return nil
 end
 

@@ -300,11 +300,30 @@ public class BytecodeTransform
 	{
 		if ( e.Op == BinaryOp.Concatenate )
 		{
-			base.Visit( e );
+			List< Expression > operands = new List< Expression >();
+			ConcatenateList( operands, e );
+			SourceSpan s = new SourceSpan( operands[ 0 ].SourceSpan.Start,
+									operands[ operands.Count - 1 ].SourceSpan.End );
+			result = new OpcodeConcat( s, operands.AsReadOnly() );
 		}
 		else
 		{
 			base.Visit( e );
+		}
+	}
+
+
+	void ConcatenateList( List< Expression > operands, Expression e )
+	{
+		Binary binary = e as Binary;
+		if ( ( binary != null ) && ( binary.Op == BinaryOp.Concatenate ) )
+		{
+			ConcatenateList( operands, binary.Left );
+			ConcatenateList( operands, binary.Right );
+		}
+		else
+		{
+			operands.Add( Transform( e ) );
 		}
 	}
 
