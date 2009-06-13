@@ -169,11 +169,9 @@ public class ASTWriter
 		o.Write( "block -- " );
 		o.Write( s.Name );
 		o.WriteLine();
-		indent += 1;
 
 		WriteBlock( s );
 
-		indent -= 1;
 		Indent();
 		o.WriteLine( "end" );
 	}
