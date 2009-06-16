@@ -47,7 +47,7 @@ public class ANormalTransform
 		{
 			// Hoist out of line.
 
-			ValueList v = new ValueList( e.SourceSpan );
+			ValueList v = new ValueList( e.SourceSpan, 0 );
 			block.Statement( new Assign( e.SourceSpan, v, e ) );
 			return v;
 		}

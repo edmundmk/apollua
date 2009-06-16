@@ -107,7 +107,7 @@ public enum Opcode
 
 	Vararg,		// A B		R( A ), ..., R( A + B - 1 ) = vararg
 
-	IDiv,		// A B C	R( A ) := RK( B ) \ RK( C )
+	IntDiv,		// A B C	R( A ) := RK( B ) \ RK( C )
 
 }
 

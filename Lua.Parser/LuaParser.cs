@@ -1089,30 +1089,18 @@ public class LuaParser
 
 			if ( multipleValues != null )
 			{
-				if ( multipleValues is Vararg )
+				// Evaluate multiple values.
+
+				block.Statement( new Assign( s,
+					new ValueList( s, locallist.Count - expressionlist.Count ), multipleValues ) );
+
+
+				// Assign from value list.
+
+				for ( int local = expressionlist.Count; local < locallist.Count; ++local )
 				{
-					// Assign from vararg.
-
-					for ( int local = expressionlist.Count; local < locallist.Count; ++local )
-					{
-						block.Statement( new Declare( s, locallist[ local ],
-							new VarargElement( s, local - expressionlist.Count ) ) );
-					}
-				}
-				else
-				{
-					// Evaluate multiple values.
-
-					block.Statement( new Assign( s, new ValueList( s ), multipleValues ) );
-
-
-					// Assign from value list.
-
-					for ( int local = expressionlist.Count; local < locallist.Count; ++local )
-					{
-						block.Statement( new Declare( s, locallist[ local ],
-							new ValueListElement( s, local - expressionlist.Count ) ) );
-					}
+					block.Statement( new Declare( s, locallist[ local ],
+						new ValueListElement( s, local - expressionlist.Count ) ) );
 				}
 			}
 			else
@@ -1296,7 +1284,8 @@ public class LuaParser
 
 			if ( multipleValues != null )
 			{
-				block.Statement( new Assign( s, new ValueList( s ), multipleValues ) );
+				block.Statement( new Assign( s,
+					new ValueList( s, variablelist.Count - expressionlist.Count ), multipleValues ) );
 			}
 
 
@@ -1310,30 +1299,12 @@ public class LuaParser
 			
 			if ( multipleValues != null )
 			{
-				if ( multipleValues is Vararg )
+				// Assign from value list.
+
+				for ( int variable = expressionlist.Count; variable < variablelist.Count; ++variable )
 				{
-					// Assign from vararg.
-
-					for ( int variable = expressionlist.Count; variable < variablelist.Count; ++variable )
-					{
-						block.Statement( new Assign( s, variablelist[ variable ],
-							new VarargElement( s, variable - expressionlist.Count ) ) );
-					}
-				}
-				else
-				{
-					// Evaluate multiple values.
-
-					block.Statement( new Assign( s, new ValueList( s ), multipleValues ) );
-
-
-					// Assign from value list.
-
-					for ( int variable = expressionlist.Count; variable < variablelist.Count; ++variable )
-					{
-						block.Statement( new Assign( s, variablelist[ variable ],
-							new ValueListElement( s, variable - expressionlist.Count ) ) );
-					}
+					block.Statement( new Assign( s, variablelist[ variable ],
+						new ValueListElement( s, variable - expressionlist.Count ) ) );
 				}
 			}
 			else
@@ -2213,11 +2184,6 @@ public class LuaParser
 		if ( value is Nested )
 		{
 			value = ( (Nested)value ).Expression;
-		}
-
-		if ( value is Vararg )
-		{
-			value = new VarargElement( value.SourceSpan, 0 );
 		}
 
 		return value;

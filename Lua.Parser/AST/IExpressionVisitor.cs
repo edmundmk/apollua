@@ -33,7 +33,6 @@ public interface IExpressionVisitor
 	void Visit( ValueList e );
 	void Visit( ValueListElement e );
 	void Visit( Vararg e );
-	void Visit( VarargElement e );
 }
 
 

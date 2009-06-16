@@ -37,7 +37,7 @@ function solve( f, a, b )
   -- local z, e
   -- local z, e
   n = 0
-  valuelist = values bisect( f, a, b, f( a ), values f( b ) )
+  valuelist[ 0 -> 1 ] = values bisect( f, a, b, f( a ), values f( b ) )
   local z = valuelist[ 0 ]
   local e = valuelist[ 1 ]
   io[ "write" ]( values string[ "format" ]( "after %d steps, root is %.17g with error %.1e, f=%.1e\n", n, z, e, values f( z ) ) )
@@ -87,7 +87,7 @@ function solve( f, a, b )
   -- local z, e
   -- local z, e
   n = 0
-  valuelist = values bisect( f, a, b, f( a ), values f( b ) )
+  valuelist[ 0 -> 1 ] = values bisect( f, a, b, f( a ), values f( b ) )
   local z = valuelist[ 0 ]
   local e = valuelist[ 1 ]
   io[ "write" ]( values string[ "format" ]( "after %d steps, root is %.17g with error %.1e, f=%.1e\n", n, z, e, values f( z ) ) )
@@ -574,7 +574,7 @@ function <chunk>( ... )
   generatefib = function generatefib
   block -- forlist
     -- local (for generator), (for state), (for control)
-    valuelist = values generatefib( 1000 )
+    valuelist[ 0 -> 2 ] = values generatefib( 1000 )
     local (for generator) = valuelist[ 0 ]
     local (for state) = valuelist[ 1 ]
     local (for control) = valuelist[ 2 ]
@@ -622,7 +622,7 @@ function <chunk>( ... )
   -- local (for generator), (for state), (for control), i
   generatefib = function generatefib
   block -- forlist
-    valuelist = values generatefib( 1000 )
+    valuelist[ 0 -> 2 ] = values generatefib( 1000 )
     local (for generator) = valuelist[ 0 ]
     local (for state) = valuelist[ 1 ]
     local (for control) = valuelist[ 2 ]
@@ -678,7 +678,7 @@ whileContinue:
       b whileBreak
     end
 ifClause:
-    valuelist = values string[ "find" ]( s, "%[%-?(%d*)%]%s*([GS])ETGLOBAL.-;%s+(.*)$" )
+    valuelist[ 0 -> 4 ] = values string[ "find" ]( s, "%[%-?(%d*)%]%s*([GS])ETGLOBAL.-;%s+(.*)$" )
     local ok = valuelist[ 0 ]
     local _ = valuelist[ 1 ]
     local l = valuelist[ 2 ]
@@ -717,7 +717,7 @@ whileContinue:
       b whileBreak
     end
 ifClause:
-    valuelist = values string[ "find" ]( s, "%[%-?(%d*)%]%s*([GS])ETGLOBAL.-;%s+(.*)$" )
+    valuelist[ 0 -> 4 ] = values string[ "find" ]( s, "%[%-?(%d*)%]%s*([GS])ETGLOBAL.-;%s+(.*)$" )
     local ok = valuelist[ 0 ]
     local _ = valuelist[ 1 ]
     local l = valuelist[ 2 ]
@@ -2173,7 +2173,7 @@ whileContinue:
       b whileBreak
     end
 ifClause:
-    valuelist = values string[ "find" ]( l, "\"?([_%w]+)\"?%s*(.*)$" )
+    valuelist[ 0 -> 3 ] = values string[ "find" ]( l, "\"?([_%w]+)\"?%s*(.*)$" )
     local _ = valuelist[ 0 ]
     local _ = valuelist[ 1 ]
     local a = valuelist[ 2 ]
@@ -2206,7 +2206,7 @@ whileContinue:
       b whileBreak
     end
 ifClause:
-    valuelist = values string[ "find" ]( l, "\"?([_%w]+)\"?%s*(.*)$" )
+    valuelist[ 0 -> 3 ] = values string[ "find" ]( l, "\"?([_%w]+)\"?%s*(.*)$" )
     local _ = valuelist[ 0 ]
     local _ = valuelist[ 1 ]
     local a = valuelist[ 2 ]

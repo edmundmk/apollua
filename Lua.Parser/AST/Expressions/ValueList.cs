@@ -15,9 +15,13 @@ namespace Lua.Parser.AST.Expressions
 public class ValueList
 	:	Expression
 {
-	public ValueList( SourceSpan s )
+	public int ElementCount		{ get; private set; }
+
+
+	public ValueList( SourceSpan s, int elementCount )
 		:	base( s )
 	{
+		ElementCount = elementCount;
 	}
 
 

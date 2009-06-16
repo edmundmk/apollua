@@ -295,10 +295,6 @@ public class FunctionTransform
 		result = e;
 	}
 
-	public virtual void Visit( VarargElement e )
-	{
-		result = e;
-	}
 }
 
 

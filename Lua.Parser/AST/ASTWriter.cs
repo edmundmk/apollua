@@ -502,6 +502,12 @@ public class ASTWriter
 	public void Visit( ValueList e )
 	{
 		o.Write( "valuelist" );
+		if ( e.ElementCount != 0 )
+		{
+			o.Write( "[ 0 -> " );
+			o.Write( e.ElementCount - 1 );
+			o.Write( " ]" );
+		}
 	}
 
 	public void Visit( ValueListElement e )
@@ -514,13 +520,6 @@ public class ASTWriter
 	public void Visit( Vararg e )
 	{
 		o.Write( "..." );
-	}
-
-	public void Visit( VarargElement e )
-	{
-		o.Write( "...[ " );
-		o.Write( e.Index );
-		o.Write( " ]" );
 	}
 
 
