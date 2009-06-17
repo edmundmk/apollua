@@ -88,7 +88,7 @@ public class LuaVMCompiler
 
 	// Builder.
 
-	struct Allocation
+	class Allocation
 	{
 		public Builder	Builder		{ get; private set; }
 		public int		Value		{ get; private set; }
@@ -96,14 +96,12 @@ public class LuaVMCompiler
 
 
 		public Allocation( int value )
-			:	this()
 		{
 			Builder	= null;
 			Value	= value;
 		}
 
 		public Allocation( Builder builder )
-			:	this()
 		{
 			Builder	= builder;
 			Value	= builder.Top;
@@ -111,7 +109,6 @@ public class LuaVMCompiler
 		}
 
 		public Allocation( Builder builder, int value )
-			:	this()
 		{
 			Builder	= builder;
 			Value	= value;
@@ -142,25 +139,39 @@ public class LuaVMCompiler
 	}
 
 	
-	enum UpValLocatorSource
+	enum UpValSource
 	{
 		Local,
 		UpVal
 	}
 
-	struct UpValLocator
+	struct UpValBuilder
 	{
-		public int					TargetIndex		{ get; private set; }
-		public UpValLocatorSource	Source			{ get; private set; }
-		public int					SourceIndex		{ get; private set; }
+		public int			TargetIndex		{ get; private set; }
+		public UpValSource	Source			{ get; private set; }
+		public int			SourceIndex		{ get; private set; }
 	}
 
 
+	class LabelBuilder
+	{
+		public Builder		Builder			{ get; private set; }
+		public IList< int >	PatchOffsets	{ get; private set; }
+		public int			LabelOffset		{ get; private set; }
+
+
+		public LabelBuilder( Builder builder )
+		{
+		}
+		
+	}
+
+	
 	class Builder
 	{
 		public Builder							Parent			{ get; private set; }
 		public FunctionAST						FunctionAST		{ get; private set; }
-		public UpValLocator[]					UpValLocators	{ get; private set; }
+		public UpValBuilder[]					UpValLocators	{ get; private set; }
 		public IList< Variable >				Locals			{ get; private set; }
 		public IDictionary< Temporary, int >	Temporaries		{ get; private set; }
 		public int								Top				{ get; private set; }
@@ -170,17 +181,17 @@ public class LuaVMCompiler
 
 		public Allocation Allocate()
 		{
-			return new Allocation();
+			return new Allocation( this );
 		}
 
 		public Allocation LocalRef( Variable variable )
 		{
-			return new Allocation();
+			return new Allocation( this );
 		}
 
 		public Allocation TemporaryRef( Temporary temporary )
 		{
-			return new Allocation();
+			return new Allocation( this );
 		}
 
 		public void Release( int count )
@@ -223,13 +234,18 @@ public class LuaVMCompiler
 		{
 		}
 
-		public void InstructionAsBx( Opcode opcode, int sBx )
-		{
-		}
-
 		public void InstructionIndex( int C )
 		{
 		}
+
+		public void Label( LabelBuilder label )
+		{
+		}
+
+		public void InstructionAsBx( Opcode opcode, int A, LabelBuilder label )
+		{
+		}
+
 
 
 	}
@@ -239,10 +255,17 @@ public class LuaVMCompiler
 
 	// Expression evaluation.
 
-	void Push( ref Allocation allocation, Expression e )
+	void Move( int r, Expression e )
 	{
-		target = builder.Top;
+		int oldtarget = target;
+		target = r;
 		e.Accept( this );
+		target = oldtarget;
+	}
+
+	void Push( Allocation allocation, Expression e )
+	{
+		Move( builder.Top, e );
 		allocation.Push();
 	}
 
@@ -257,9 +280,9 @@ public class LuaVMCompiler
 			return builder.TemporaryRef( (Temporary)e );
 		}
 
-		target = builder.Top;
-		e.Accept( this );
-		return builder.Allocate();
+		Allocation a = new Allocation( builder );
+		Push( a, e );
+		return a;
 	}
 
 	Allocation RK( Expression e )
@@ -276,6 +299,98 @@ public class LuaVMCompiler
 		return R( e );
 	}
 
+	void Branch( Expression e, bool ifTrue, LabelBuilder label )
+	{
+		if ( e is Comparison )
+		{
+			// Perform comparison.
+			Comparison comparison = (Comparison)e;
+
+			Opcode op; int A;
+			switch ( comparison.Op )
+			{
+			case ComparisonOp.Equal:				op = Opcode.Eq; A = 1;	break;
+			case ComparisonOp.NotEqual:				op = Opcode.Eq; A = 0;	break;
+			case ComparisonOp.LessThan:				op = Opcode.Lt; A = 1;	break;
+			case ComparisonOp.GreaterThan:			op = Opcode.Le; A = 0;	break;
+			case ComparisonOp.LessThanOrEqual:		op = Opcode.Le; A = 1;	break;
+			case ComparisonOp.GreaterThanOrEqual:	op = Opcode.Lt; A = 0;	break;
+			default: throw new ArgumentException();
+			}
+
+			if ( ! ifTrue )
+			{
+				A = ~A;
+			}
+
+			Allocation left		= RK( comparison.Left );
+			Allocation right	= RK( comparison.Right );
+			builder.InstructionABC( op, A, left, right );
+			builder.InstructionAsBx( Opcode.Jmp, 0, label );
+			right.Release();
+			left.Release();
+
+		}
+		else if ( e is Logical )
+		{
+			// Perform shortcut evaluation.
+			Logical logical = (Logical)e;
+
+			if ( logical.Op == LogicalOp.And )
+			{
+				if ( ifTrue )
+				{
+					// left and right
+					LabelBuilder noBranch = new LabelBuilder( builder );
+					Branch( logical.Left, false, noBranch );
+					Branch( logical.Right, true, label );
+					builder.Label( noBranch );
+				}
+				else
+				{
+					// not( left and right ) == not( left ) or not( right )
+					Branch( logical.Left, false, label );
+					Branch( logical.Right, false, label );
+				}
+			}
+			else if ( logical.Op == LogicalOp.Or )
+			{
+				if ( ifTrue )
+				{
+					// left or right
+					Branch( logical.Left, true, label );
+					Branch( logical.Right, true, label );
+				}
+				else
+				{
+					// not( left or right ) == not( left ) and not( right )
+					LabelBuilder noBranch = new LabelBuilder( builder );
+					Branch( logical.Left, true, noBranch );
+					Branch( logical.Right, false, label );
+					builder.Label( noBranch );
+				}
+			}
+			else
+			{
+				throw new ArgumentException();
+			}
+		}
+		else if ( e is Not )
+		{
+			// Branch in the opposite sense.
+
+			Branch( ( (Not)e ).Operand, ! ifTrue, label );
+		}
+		else
+		{
+			// Test an actual value.
+
+			Allocation expression = R( e );
+			builder.InstructionABC( Opcode.Test, expression, 0, ifTrue ? 1 : 0 );
+			builder.InstructionAsBx( Opcode.Jmp, 0, label );
+			expression.Release();
+		}
+	}
 
 
 
@@ -401,7 +516,12 @@ public class LuaVMCompiler
 
 	public void Visit( Comparison e )
 	{
-		throw new NotImplementedException();
+		// Convert a branch into a value.
+		LabelBuilder returnTrue = new LabelBuilder( builder );
+		Branch( e, true, returnTrue );
+		builder.InstructionABC( Opcode.LoadBool, target, 0, 1 );
+		builder.Label( returnTrue );
+		builder.InstructionABC( Opcode.LoadBool, target, 1, 0 );
 	}
 
 	public void Visit( FunctionClosure e )
@@ -411,13 +531,13 @@ public class LuaVMCompiler
 		builder.InstructionABx( Opcode.Closure, target, builder.Prototype( prototypeBuilder ) );
 
 		// Initialize upvals.
-		foreach ( UpValLocator locator in builder.UpValLocators )
+		foreach ( UpValBuilder locator in builder.UpValLocators )
 		{
-			if ( locator.Source == UpValLocatorSource.Local )
+			if ( locator.Source == UpValSource.Local )
 			{
 				builder.InstructionABC( Opcode.Move, locator.TargetIndex, locator.SourceIndex, 0 );
 			}
-			else if ( locator.Source == UpValLocatorSource.UpVal )
+			else if ( locator.Source == UpValSource.UpVal )
 			{
 				builder.InstructionABC( Opcode.GetUpVal, locator.TargetIndex, locator.SourceIndex, 0 );
 			}
@@ -450,12 +570,21 @@ public class LuaVMCompiler
 
 	public void Visit( Logical e )
 	{
-		throw new NotImplementedException();
+		// Perform shortcut evaluation.
+		LabelBuilder shortcutEvaluation = new LabelBuilder( builder );
+		Allocation left = R( e.Left );
+		builder.InstructionABC( Opcode.TestSet, target, left, e.Op == LogicalOp.Or ? 1 : 0 );
+		builder.InstructionAsBx( Opcode.Jmp, 0, shortcutEvaluation );
+		left.Release();
+		Move( target, e.Right );
+		builder.Label( shortcutEvaluation );
 	}
 
 	public void Visit( Not e )
 	{
-		throw new NotImplementedException();
+		Allocation operand = R( e.Operand );
+		builder.InstructionABC( Opcode.Not, target, operand, 0 );
+		operand.Release();
 	}
 
 	public void Visit( OpcodeConcat e )
@@ -464,7 +593,7 @@ public class LuaVMCompiler
 		Allocation operands = new Allocation( builder );
 		for ( int operand = 0; operand < e.Operands.Count; ++operand )
 		{
-			Push( ref operands, e.Operands[ operand ] );
+			Push( operands, e.Operands[ operand ] );
 		}
 
 		// Instruction.
@@ -479,7 +608,7 @@ public class LuaVMCompiler
 
 	public void Visit( ToNumber e )
 	{
-		throw new ArgumentException();
+		throw new NotImplementedException();
 	}
 
 	public void Visit( Unary e )
@@ -504,7 +633,7 @@ public class LuaVMCompiler
 
 	public void Visit( ValueList e )
 	{
-		throw new ArgumentException();
+		throw new NotImplementedException();
 	}
 
 	public void Visit( ValueListElement e )
