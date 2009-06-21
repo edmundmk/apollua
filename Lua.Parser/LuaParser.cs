@@ -1920,10 +1920,10 @@ public class LuaParser
 			{
 				expressionType = ExpressionType.FunctionCall;
 
-				Expression function = PopValue();
+				Expression o = PopValue();
 				Check( TokenKind.Colon );
 				name = Check( TokenKind.Identifier );
-				callexpr( function, (string)name.Value );
+				callexpr( o, (string)name.Value );
 				
 				break;
 			}
@@ -1940,7 +1940,7 @@ public class LuaParser
 	}
 
 
-	void callexpr( Expression function, string methodName )
+	void callexpr( Expression functionOrObject, string methodName )
 	{
 		/*	funcargs
 				: { no newline } '(' ( explist )? ')'
@@ -1991,7 +1991,7 @@ public class LuaParser
 		}
 
 
-		SourceSpan s = new SourceSpan( function.SourceSpan.Start, end );
+		SourceSpan s = new SourceSpan( functionOrObject.SourceSpan.Start, end );
 	
 		// Check for multiple results.
 		Expression values = null;
@@ -2007,11 +2007,11 @@ public class LuaParser
 		// Create a call or self-call expression.
 		if ( methodName == null )
 		{
-			PushExpression( new Call( s, function, PopValues( argumentcount ), values ) );
+			PushExpression( new Call( s, functionOrObject, PopValues( argumentcount ), values ) );
 		}
 		else
 		{
-			PushExpression( new CallSelf( s, function, methodName, PopValues( argumentcount ), values ) );
+			PushExpression( new CallSelf( s, functionOrObject, methodName, PopValues( argumentcount ), values ) );
 		}
 	}
 

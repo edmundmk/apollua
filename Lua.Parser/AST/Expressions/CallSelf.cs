@@ -16,16 +16,16 @@ namespace Lua.Parser.AST.Expressions
 public class CallSelf
 	:	Expression
 {
-	public Expression			Function			{ get; private set; }
+	public Expression			Object				{ get; private set; }
 	public string				MethodName			{ get; private set; }
 	public IList< Expression >	Arguments			{ get; private set; }
 	public Expression			ArgumentValues		{ get; private set; }
 
 
-	public CallSelf( SourceSpan s, Expression function, string methodName, IList< Expression > arguments, Expression argumentValues )
+	public CallSelf( SourceSpan s, Expression o, string methodName, IList< Expression > arguments, Expression argumentValues )
 		:	base( s )
 	{
-		Function		= function;
+		Object			= o;
 		MethodName		= methodName;
 		Arguments		= arguments;
 		ArgumentValues	= argumentValues;

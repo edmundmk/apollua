@@ -357,7 +357,7 @@ public class ASTWriter
 
 	public void Visit( CallSelf e )
 	{
-		e.Function.Accept( this );
+		e.Object.Accept( this );
 		o.Write( ":" );
 		o.Write( e.MethodName );
 		o.Write( "(" );

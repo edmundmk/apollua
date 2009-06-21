@@ -208,14 +208,14 @@ public class FunctionTransform
 
 	public virtual void Visit( CallSelf e )
 	{
-		Expression function = Transform( e.Function );
+		Expression o = Transform( e.Object );
 		Expression[] arguments = new Expression[ e.Arguments.Count ];
 		for ( int i = 0; i < e.Arguments.Count; ++i )
 		{
 			arguments[ i ] = Transform( e.Arguments[ i ] );
 		}
 		Expression argumentValues = e.ArgumentValues != null ? Transform( e.ArgumentValues ) : null;
-		result = new CallSelf( e.SourceSpan, function, e.MethodName, Array.AsReadOnly( arguments ), argumentValues );
+		result = new CallSelf( e.SourceSpan, o, e.MethodName, Array.AsReadOnly( arguments ), argumentValues );
 	}
 
 	public virtual void Visit( Comparison e )
