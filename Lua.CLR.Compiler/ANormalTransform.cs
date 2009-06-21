@@ -120,7 +120,7 @@ public class ANormalTransform
 
 	public override void Visit( CallSelf e )
 	{
-		Expression function = Transform( e.Function );
+		Expression function = Transform( e.Object );
 		Expression[] arguments = new Expression[ e.Arguments.Count ];
 		for ( int i = 0; i < e.Arguments.Count; ++i )
 		{
