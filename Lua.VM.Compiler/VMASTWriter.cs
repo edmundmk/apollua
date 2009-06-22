@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using Lua.Parser.AST;
+using Lua.Parser.AST.Expressions;
 
 
 namespace Lua.VM.Compiler
@@ -94,7 +95,7 @@ public class VMASTWriter
 		{
 			if ( ! bFirst )
 				o.Write( ", " );
-			bFirst = true;
+			bFirst = false;
 			o.Write( variable.Name );
 		}
 		o.Write( " = " );
@@ -117,6 +118,18 @@ public class VMASTWriter
 				o.Write( " .. " );
 			bFirst = false;
 			operand.Accept( this );
+		}
+	}
+
+	public virtual void Visit( TemporaryList e )
+	{
+		bool bFirst = true;
+		foreach ( Temporary temporary in e.Temporaries )
+		{
+			if ( ! bFirst )
+				o.Write( ", " );
+			bFirst = false;
+			temporary.Accept( this );
 		}
 	}
 

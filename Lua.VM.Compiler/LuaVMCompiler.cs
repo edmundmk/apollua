@@ -227,14 +227,22 @@ public class LuaVMCompiler
 
 
 
+		// Local variables and suchlike.
+
+
+
+
+
+
+
 		// Values that are already on the stack.
 	
-		public Allocation LocalRef( Variable variable )
+		public Allocation LocalRef( LocalRef local )
 		{
 			return new Allocation( this );
 		}
 
-		public Allocation TemporaryRef( Temporary temporary )
+		public Allocation Temporary( Temporary temporary )
 		{
 			return new Allocation( this );
 		}
@@ -309,11 +317,11 @@ public class LuaVMCompiler
 	{
 		if ( e is LocalRef )
 		{
-			return builder.LocalRef( ( (LocalRef)e ).Variable );
+			return builder.LocalRef( (LocalRef)e );
 		}
 		else if ( e is Temporary )
 		{
-			return builder.TemporaryRef( (Temporary)e );
+			return builder.Temporary( (Temporary)e );
 		}
 
 		Allocation a = new Allocation( builder );
@@ -358,8 +366,10 @@ public class LuaVMCompiler
 			builder.InstructionABC( Opcode.Vararg, builder.Top, 0, 0 );
 			allocation.SetTop();
 		}
-
-		throw new ArgumentException();
+		else
+		{
+			throw new InvalidOperationException();
+		}
 	}
 
 	void Branch( Expression e, bool ifTrue, LabelBuilder label )
@@ -460,7 +470,22 @@ public class LuaVMCompiler
 	
 	public void Visit( Assign s )
 	{
-		throw new NotImplementedException();
+		if ( s.Target is GlobalRef )
+		{
+		}
+		else if ( s.Target is Index )
+		{
+		}
+		else if ( s.Target is LocalRef )
+		{
+		}
+		else if ( s.Target is Temporary )
+		{
+		}
+		else 
+		{
+			throw new InvalidOperationException();
+		}
 	}
 
 	public void Visit( Block s )
@@ -691,7 +716,7 @@ public class LuaVMCompiler
 
 	public void Visit( LocalRef e )
 	{
-		int local = builder.LocalRef( e.Variable );
+		int local = builder.LocalRef( e );
 		if ( target != local )
 		{
 			builder.InstructionABC( Opcode.Move, target, local, 0 );
@@ -733,16 +758,21 @@ public class LuaVMCompiler
 
 	public void Visit( Temporary e )
 	{
-		int temporary = builder.TemporaryRef( e );
+		int temporary = builder.Temporary( e );
 		if ( target != temporary )
 		{
 			builder.InstructionABC( Opcode.Move, target, temporary, 0 );
 		}
 	}
 
+	public void Visit( TemporaryList e )
+	{
+		throw new InvalidOperationException();
+	}
+
 	public void Visit( ToNumber e )
 	{
-		throw new NotImplementedException();
+		throw new InvalidOperationException();
 	}
 
 	public void Visit( Unary e )
@@ -767,11 +797,12 @@ public class LuaVMCompiler
 
 	public void Visit( ValueList e )
 	{
-		throw new NotImplementedException();
+		throw new InvalidOperationException();
 	}
 
 	public void Visit( ValueListElement e )
 	{
+		throw new InvalidOperationException();
 	}
 
 	public void Visit( Vararg e )

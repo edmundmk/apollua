@@ -87,9 +87,9 @@ function solve( f, a, b )
   -- local z, e
   -- local z, e
   n = 0
-  valuelist[ 0 -> 1 ] = values bisect( f, a, b, f( a ), values f( b ) )
-  local z = valuelist[ 0 ]
-  local e = valuelist[ 1 ]
+  temporary 33C0D9D, temporary 11C7A8C = bisect( f, a, b, f( a ), values f( b ) )
+  local z = temporary 33C0D9D
+  local e = temporary 11C7A8C
   io[ "write" ]( values string[ "format" ]( "after %d steps, root is %.17g with error %.1e, f=%.1e\n", n, z, e, values f( z ) ) )
   return nil
 end
@@ -622,10 +622,10 @@ function <chunk>( ... )
   -- local (for generator), (for state), (for control), i
   generatefib = function generatefib
   block -- forlist
-    valuelist[ 0 -> 2 ] = values generatefib( 1000 )
-    local (for generator) = valuelist[ 0 ]
-    local (for state) = valuelist[ 1 ]
-    local (for control) = valuelist[ 2 ]
+    temporary 202C666, temporary 218F99C, temporary 2E0C681 = generatefib( 1000 )
+    local (for generator) = temporary 202C666
+    local (for state) = temporary 218F99C
+    local (for control) = temporary 2E0C681
     b forlistContinue
 forlist:
     block -- forlistBody
@@ -641,10 +641,10 @@ end
 
 function generatefib( n )
   -- multiple return
-  return multiple values coroutine[ "wrap" ]( function x202C666 )
+  return multiple values coroutine[ "wrap" ]( function x1E6FA8E )
 end
 
-function x202C666()
+function x1E6FA8E()
   -- label whileBreak, whileContinue
   -- upval n
   -- local a, b
@@ -717,12 +717,12 @@ whileContinue:
       b whileBreak
     end
 ifClause:
-    valuelist[ 0 -> 4 ] = values string[ "find" ]( s, "%[%-?(%d*)%]%s*([GS])ETGLOBAL.-;%s+(.*)$" )
-    local ok = valuelist[ 0 ]
-    local _ = valuelist[ 1 ]
-    local l = valuelist[ 2 ]
-    local op = valuelist[ 3 ]
-    local g = valuelist[ 4 ]
+    temporary 33C0D9D, temporary 11C7A8C, temporary 2004EEE, temporary 202C666, temporary 218F99C = string[ "find" ]( s, "%[%-?(%d*)%]%s*([GS])ETGLOBAL.-;%s+(.*)$" )
+    local ok = temporary 33C0D9D
+    local _ = temporary 11C7A8C
+    local l = temporary 2004EEE
+    local op = temporary 202C666
+    local g = temporary 218F99C
     bfalse ok ifClause
     block -- if
       bfalse ( op == "S" ) ifClause
@@ -2206,11 +2206,11 @@ whileContinue:
       b whileBreak
     end
 ifClause:
-    valuelist[ 0 -> 3 ] = values string[ "find" ]( l, "\"?([_%w]+)\"?%s*(.*)$" )
-    local _ = valuelist[ 0 ]
-    local _ = valuelist[ 1 ]
-    local a = valuelist[ 2 ]
-    local b = valuelist[ 3 ]
+    temporary 33C0D9D, temporary 11C7A8C, temporary 2004EEE, temporary 202C666 = string[ "find" ]( l, "\"?([_%w]+)\"?%s*(.*)$" )
+    local _ = temporary 33C0D9D
+    local _ = temporary 11C7A8C
+    local a = temporary 2004EEE
+    local b = temporary 202C666
     bfalse ( a != A ) ifClause
     block -- if
       A = a

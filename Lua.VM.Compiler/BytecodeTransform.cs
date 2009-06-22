@@ -21,14 +21,18 @@ namespace Lua.VM.Compiler
 	some constructions back to more specific statements so the compiler can be as
 	simple as possible.
 
+		->  For loops are transformed to use the specific bytecodes.
+		->  SetList used to set multiple array-like keys at once in constructors
 		->  Concatenation expressions merged to concatenate whole lists.
-		->  SetList used to set multiple array-like keys at once.
+		->  Valuelist expressions transformed into TemporaryList.
 
 */
 
 public class BytecodeTransform
 	:	FunctionTransform
 {
+	TemporaryList valueList;
+
 
 
 	// For loops are transformed to use specific opcodes.
@@ -366,6 +370,7 @@ public class BytecodeTransform
 
 
 
+
 	// String concatenation operations are merged to concatenate full lists.
 
 	public override void Visit( Binary e )
@@ -398,6 +403,34 @@ public class BytecodeTransform
 			operands.Add( Transform( e ) );
 		}
 	}
+
+
+
+	// ValueLists become TemporaryLists so the compiler has less to worry about.
+
+	public override void Visit( ValueList e )
+	{
+		// Construct list of temporaries.
+
+		Temporary[] temporaries = new Temporary[ e.ElementCount ];
+		for ( int element = 0; element < e.ElementCount; ++element )
+		{
+			temporaries[ element ] = new Temporary( e.SourceSpan );
+		}
+
+
+		// Replace valuelist with it.
+
+		valueList = new TemporaryList( e.SourceSpan, Array.AsReadOnly( temporaries ) );
+		result = valueList;
+	}
+
+	public override void Visit( ValueListElement e )
+	{
+		result = valueList.Temporaries[ e.Index ];
+	}
+	
+
 
 }
 
