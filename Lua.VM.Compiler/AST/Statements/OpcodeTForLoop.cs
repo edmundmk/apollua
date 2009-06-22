@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using Lua.Parser.AST;
 
 
-namespace Lua.VM.Compiler
+namespace Lua.VM.Compiler.AST.Statements
 {
 
 

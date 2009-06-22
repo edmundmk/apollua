@@ -6,12 +6,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Reflection.Emit;
 using Lua;
 using Lua.Parser;
 using Lua.Parser.AST;
 using Lua.VM.Compiler;
+using Lua.VM.Compiler.AST;
 
 
 namespace Test

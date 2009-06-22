@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using Lua.Parser.AST;
 using Lua.Parser.AST.Expressions;
 using Lua.Parser.AST.Statements;
+using Lua.VM.Compiler.AST.Expressions;
+using Lua.VM.Compiler.AST.Statements;
 
 
 namespace Lua.VM.Compiler
