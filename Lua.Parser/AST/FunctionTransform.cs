@@ -102,10 +102,32 @@ public class FunctionTransform
 		result = new Assign( s.SourceSpan, Transform( s.Target ), Transform( s.Value ) );
 	}
 
+	public virtual void Visit( AssignList s )
+	{
+		Expression[] targets = new Expression[ s.Targets.Count ];
+		for ( int i = 0; i < s.Targets.Count; ++i )
+		{
+			targets[ i ] = Transform( s.Targets[ i ] );
+		}
+		Expression[] values = new Expression[ s.Values.Count ];
+		for ( int i = 0; i < s.Values.Count; ++i )
+		{
+			values[ i ] = Transform( s.Values[ i ] );
+		}
+		Expression valueList = s.ValueList != null ? Transform( s.ValueList ) : null;
+		result = new AssignList( s.SourceSpan, Array.AsReadOnly( targets ), Array.AsReadOnly( values ), valueList );
+	}
+
 	public virtual void Visit( Block s )
 	{
 		block = new Block( s.SourceSpan, block, s.Name );
+		TransformBlock( s );
+		result = block;
+		block = block.Parent;
+	}
 
+	void TransformBlock( Block s )
+	{
 		// Locals
 		foreach ( Variable local in s.Locals )
 		{
@@ -121,9 +143,6 @@ public class FunctionTransform
 				block.Statement( transformed );
 			}
 		}
-
-		result = block;
-		block = block.Parent;
 	}
 
 	public virtual void Visit( Branch s )
@@ -131,26 +150,15 @@ public class FunctionTransform
 		result = s;
 	}
 
-	public virtual void Visit( Constructor s )
-	{
-		Constructor constructor = new Constructor( s.SourceSpan, s.Temporary, s.ArrayCount, s.HashCount );
-
-		// Statements.
-		foreach ( Statement statement in s.Statements )
-		{
-			Statement transformed = Transform( statement );
-			if ( transformed != null )
-			{
-				constructor.Statement( transformed );
-			}
-		}
-
-		result = constructor;
-	}
-
 	public virtual void Visit( Declare s )
 	{
 		result = new Declare( s.SourceSpan, s.Variable, Transform( s.Value ) );
+	}
+
+	public virtual void Visit( DeclareList s )
+	{
+		Expression valueList = s.ValueList != null ? Transform( s.ValueList ) : null;
+		result = new DeclareList( s.SourceSpan, s.Variables, valueList );
 	}
 
 	public virtual void Visit( Evaluate s )
@@ -158,9 +166,31 @@ public class FunctionTransform
 		result = new Evaluate( s.SourceSpan, Transform( s.Expression ) );
 	}
 
-	public virtual void Visit( IndexMultipleValues s )
+	public virtual void Visit( ForBlock s )
 	{
-		result = new IndexMultipleValues( s.SourceSpan, s.Temporary, s.Key, Transform( s.Values ) );
+		block = new ForBlock( s.SourceSpan, block, s.Name,
+			Transform( s.Index ), Transform( s.Limit ), Transform( s.Step ),
+			s.UserIndex, s.BreakLabel, s.ContinueLabel );
+		TransformBlock( s );
+		result = block;
+		block = block.Parent;
+	}
+
+	public virtual void Visit( ForListBlock s )
+	{
+		Expression[] expressions = new Expression[ s.Expressions.Count ];
+		for ( int i = 0; i < s.Expressions.Count; ++i )
+		{
+			expressions[ i ] = Transform( s.Expressions[ i ] );
+		}
+		Expression expressionList = s.ExpressionList != null ? Transform( s.ExpressionList ) : null;
+
+		block = new ForListBlock( s.SourceSpan, block, s.Name,
+			s.UserVariables, Array.AsReadOnly( expressions ), expressionList,
+			s.BreakLabel, s.ContinueLabel );
+		TransformBlock( s );
+		result = block;
+		block = block.Parent;
 	}
 
 	public virtual void Visit( MarkLabel s )
@@ -173,21 +203,25 @@ public class FunctionTransform
 		result = new Return( s.SourceSpan, Transform( s.Result ) );
 	}
 
-	public virtual void Visit( ReturnMultipleValues s )
+	public virtual void Visit( ReturnList s )
 	{
 		Expression[] results = new Expression[ s.Results.Count ];
 		for ( int i = 0; i < s.Results.Count; ++i )
 		{
 			results[ i ] = Transform( s.Results[ i ] );
 		}
-		Expression resultValues = s.ResultValues != null ? Transform( s.ResultValues ) : null;
-		result = new ReturnMultipleValues( s.SourceSpan, Array.AsReadOnly( results ), resultValues );
+		Expression resultValues = s.ResultList != null ? Transform( s.ResultList ) : null;
+		result = new ReturnList( s.SourceSpan, Array.AsReadOnly( results ), resultValues );
 	}
 
 	public virtual void Visit( Test s )
 	{
 		result = new Test( s.SourceSpan, Transform( s.Condition ), s.Target );
 	}
+
+
+
+
 
 	public virtual void Visit( Binary e )
 	{
@@ -221,6 +255,26 @@ public class FunctionTransform
 	public virtual void Visit( Comparison e )
 	{
 		result = new Comparison( e.SourceSpan, e.Op, Transform( e.Left ), Transform( e.Right ) );
+	}
+
+	public virtual void Visit( Constructor e )
+	{
+		ConstructorElement[] elements = new ConstructorElement[ e.Elements.Count ];
+		for ( int i = 0; i < e.Elements.Count; ++i )
+		{
+			if ( e.Elements[ i ].HashKey != null )
+			{
+				elements[ i ] = new ConstructorElement(
+					e.Elements[ i ].SourceSpan, Transform( e.Elements[ i ].Value ) );
+			}
+			else
+			{
+				elements[ i ] = new ConstructorElement( e.Elements[ i ].SourceSpan,
+					Transform( e.Elements[ i ].HashKey ), Transform( e.Elements[ i ].Value ) );
+			}
+		}
+		Expression elementList = e.ElementList != null ? Transform( e.ElementList ) : null;
+		result = new Constructor( e.SourceSpan, e.ArrayCount, e.HashCount, Array.AsReadOnly( elements ), elementList );
 	}
 
 	public virtual void Visit( FunctionClosure e )
@@ -260,32 +314,12 @@ public class FunctionTransform
 		result = new Not( e.SourceSpan, Transform( e.Operand ) );
 	}
 
-	public virtual void Visit( Temporary e )
-	{
-		result = e;
-	}
-
-	public virtual void Visit( ToNumber e )
-	{
-		result = new ToNumber( e.SourceSpan, Transform( e.Operand ) );
-	}
-
 	public virtual void Visit( Unary e )
 	{
 		result = new Unary( e.SourceSpan, e.Op, Transform( e.Operand ) );
 	}
 
 	public virtual void Visit( UpValRef e )
-	{
-		result = e;
-	}
-
-	public virtual void Visit( ValueList e )
-	{
-		result = e;
-	}
-
-	public virtual void Visit( ValueListElement e )
 	{
 		result = e;
 	}

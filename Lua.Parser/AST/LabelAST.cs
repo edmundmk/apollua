@@ -6,6 +6,7 @@
 
 
 using System;
+using Lua.Parser.AST.Statements;
 
 
 namespace Lua.Parser.AST
@@ -14,12 +15,19 @@ namespace Lua.Parser.AST
 
 public class LabelAST
 {
-	public string Name	{ get; private set; }
+	public string	Name	{ get; private set; }
+	public Block	Block	{ get; private set; }
 
 
 	public LabelAST( string name )
 	{
 		Name = name;
+	}
+
+
+	public void SetBlock( Block block )
+	{
+		Block = block;
 	}
 
 }

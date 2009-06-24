@@ -45,7 +45,8 @@ public class LuaVMCompiler
 	// Prototype building.
 
 	Builder					builder;
-	int						target;
+	BlockBuilder			blockBuilder;
+	Allocation				target;
 
 
 
@@ -91,80 +92,26 @@ public class LuaVMCompiler
 
 	class Allocation
 	{
-		public Builder	Builder		{ get; private set; }
-		public int		Value		{ get; private set; }
-		public int		Count		{ get; private set; }
-		public bool		IsSetTop	{ get; private set; }
-
-
-		public Allocation( int rk )
+		public void Allocate()
 		{
-			Builder		= null;
-			Value		= rk;
-			Count		= 1;
-			IsSetTop	= false;
+			Allocate( 1 );
 		}
 
-		public Allocation( Builder builder )
+		public void Allocate( int count )
 		{
-			Builder		= builder;
-			Value		= builder.Top;
-			Count		= 0;
-			IsSetTop	= false;
-		}
-
-		public Allocation( Builder builder, int value )
-		{
-			Builder		= builder;
-			Value		= value;
-			Count		= 1;
-			IsSetTop	= false;
-		}
-
-
-		public void Push()
-		{
-			Push( 1 );
-		}
-
-		public void Push( int count )
-		{
-			if (    ( Builder == null )
-				 || ( Value + Count != Builder.Top ) )
-				throw new InvalidOperationException();
-
-			Builder.Allocate( count );
-			Count += count;
 		}
 
 		public void SetTop()
 		{
-			if (    ( Builder == null )
-				 || ( Value + Count != Builder.Top ) )
-				throw new InvalidOperationException();
-
-			Builder.AllocateSetTop();
-			IsSetTop = true;
 		}
 
 		public void Release()
 		{
-			if ( Builder != null )
-			{
-				if ( IsSetTop )
-				{
-					Builder.ReleaseSetTop();
-					IsSetTop = false;
-				}
-
-				Builder.Release( Count );
-				Count = 0;
-			}
 		}
 
 		public static implicit operator int( Allocation a )
 		{
-			return a.Value;
+			return 0;
 		}
 	}
 
@@ -175,7 +122,7 @@ public class LuaVMCompiler
 		UpVal
 	}
 
-	struct UpValBuilder
+	struct UpValLocator
 	{
 		public int			TargetIndex		{ get; private set; }
 		public UpValSource	Source			{ get; private set; }
@@ -183,73 +130,83 @@ public class LuaVMCompiler
 	}
 
 
-	class LabelBuilder
+	class Builder
 	{
-		public Builder		Builder			{ get; private set; }
-		public IList< int >	PatchOffsets	{ get; private set; }
-		public int			LabelOffset		{ get; private set; }
+		public Builder			Parent			{ get; private set; }
+		public FunctionAST		Function		{ get; private set; }
 
 
-		public LabelBuilder( Builder builder )
+		public Builder( Builder parent, FunctionAST function, BlockBuilder functionBlock )
+		{
+			Parent			= parent;
+			Function		= function;			
+		}
+
+
+
+		// Local and temporary lifetime.
+
+		public bool DeclareLocal( Variable local )
+		{
+			return false;
+		}
+
+		public void DeclareLocalFromTemporary( Variable local, Temporary temporary )
 		{
 		}
 		
-	}
-
-	
-	class Builder
-	{
-		public Builder							Parent			{ get; private set; }
-		public FunctionAST						FunctionAST		{ get; private set; }
-		public UpValBuilder[]					UpValLocators	{ get; private set; }
-		public IList< Variable >				Locals			{ get; private set; }
-		public IDictionary< Temporary, int >	Temporaries		{ get; private set; }
-		public int								Top				{ get; private set; }
-
-
-
-		// Register allocation.
-
-		public void Allocate( int count )
+		public void RetireLocal( Variable local )
 		{
 		}
 
-		public void Release( int count )
+		public void DeclareTemporary( Temporary temporary )
 		{
 		}
 
-		public void AllocateSetTop()
+		public void LockTemporary( Temporary temporary )
 		{
 		}
 
-		public void ReleaseSetTop()
+		public void UnlockTemporary( Temporary temporary )
+		{
+		}
+
+		public void RetireTemporary( Temporary temporary )
 		{
 		}
 
 
 
-		// Local variables and suchlike.
+		// Registers.
 
-
-
-
-
-
-
-		// Values that are already on the stack.
-	
-		public Allocation LocalRef( LocalRef local )
+		public Allocation Local( Variable local )
 		{
-			return new Allocation( this );
+			return new Allocation();
 		}
 
 		public Allocation Temporary( Temporary temporary )
 		{
-			return new Allocation( this );
+			return new Allocation();
+		}
+
+		public Allocation Top()
+		{
+			return new Allocation();
 		}
 
 
+		// RK values.
 
+		public Allocation ConstantRK( object constant )
+		{
+			int k = Constant( constant );
+			if ( Instruction.InRangeRK( k ) )
+			{
+			}
+			return new Allocation();
+		}
+
+		
 		// Values referenced by special instructions.
 
 		public int UpVal( Variable upval )
@@ -266,8 +223,7 @@ public class LuaVMCompiler
 		{
 			return 0;
 		}
-
-
+		
 
 		// Opcodes.
 
@@ -283,16 +239,62 @@ public class LuaVMCompiler
 		{
 		}
 
-		public void Label( LabelBuilder label )
+		public void Label( LabelAST label )
 		{
 		}
 
-		public void InstructionAsBx( Opcode opcode, int A, LabelBuilder label )
+		public void InstructionAsBx( Opcode opcode, int A, LabelAST label )
 		{
 		}
 
+	}
 
 
+	class BlockBuilder
+	{
+		public BlockBuilder	Parent		{ get; private set; }
+		public Block		Block		{ get; private set; }
+		public int			Base		{ get; private set; }
+		public bool			NeedsClose	{ get; private set; }
+
+
+		public BlockBuilder( BlockBuilder parent, Block block, int blockBase )
+		{
+			Parent		= parent;
+			Block		= block;
+			Base		= blockBase;
+			NeedsClose	= false;
+		}
+
+		public void SetNeedsClose()
+		{
+			NeedsClose	= true;
+		}
+	}
+
+
+	// Closing blocks.
+
+	void Close( Block block )
+	{
+		bool needsClose = false;
+		int	 closeBase  = 0;
+
+		for ( BlockBuilder outer = blockBuilder; outer.Block != block; outer = outer.Parent )
+		{
+			if ( outer == null )
+			{
+				return;
+			}
+
+			needsClose |= outer.NeedsClose;
+			closeBase = outer.Base;
+		}
+
+		if ( needsClose )
+		{
+			builder.InstructionABC( Opcode.Close, closeBase, 0, 0 );
+		}
 	}
 
 
@@ -300,80 +302,75 @@ public class LuaVMCompiler
 
 	// Expression evaluation.
 
-	void Move( int r, Expression e )
+	void Move( Allocation allocation, Expression e )
 	{
-		int oldtarget = target;
-		target = r;
+		Allocation oldtarget = target;
+		target = allocation;
 		e.Accept( this );
-		target = oldtarget;
+		target = oldtarget;		
 	}
 
-	void Push( Allocation allocation, Expression e )
+	Allocation Push( Expression e )
 	{
-		Move( builder.Top, e );
-		allocation.Push();
+		Allocation allocation = builder.Top();
+		Move( allocation, e );
+		allocation.Allocate();
+		return allocation;
 	}
 
 	Allocation R( Expression e )
 	{
 		if ( e is LocalRef )
 		{
-			return builder.LocalRef( (LocalRef)e );
+			return builder.Local( ( (LocalRef)e ).Variable );
 		}
 		else if ( e is Temporary )
 		{
 			return builder.Temporary( (Temporary)e );
 		}
 
-		Allocation a = new Allocation( builder );
-		Push( a, e );
-		return a;
+		return Push( e );
 	}
 
 	Allocation RK( Expression e )
 	{
 		if ( e is Literal )
 		{
-			int k = builder.Constant( ( (Literal)e ).Value );
-			if ( Instruction.InRangeRK( k ) )
-			{
-				return new Allocation( Instruction.ConstantToRK( k ) );
-			}
+			return builder.ConstantRK( ( (Literal)e ).Value ); 
 		}
 
 		return R( e );
 	}
 
-	void SetTop( Allocation allocation, Expression e )
+	Allocation SetTop( Expression e )
 	{
+		Allocation results;
+
 		if ( e is Call )
 		{
 			Call call = (Call)e;
-			Allocation results = BuildCall( 0, call.Function, null, call.Arguments, call.ArgumentValues );
-			Debug.Assert( results == builder.Top );
-			results.Release();
-			allocation.SetTop();
+			results = BuildCall( 0, call.Function, null, call.Arguments, call.ArgumentValues );
 		}
 		else if ( e is CallSelf )
 		{
 			CallSelf call = (CallSelf)e;
-			Allocation results = BuildCall( 0, call.Object, call.MethodName, call.Arguments, call.ArgumentValues );
-			Debug.Assert( results == builder.Top );
-			results.Release();
-			allocation.SetTop();
+			results = BuildCall( 0, call.Object, call.MethodName, call.Arguments, call.ArgumentValues );
 		}
 		else if ( e is Vararg )
 		{
-			builder.InstructionABC( Opcode.Vararg, builder.Top, 0, 0 );
-			allocation.SetTop();
+			results = builder.Top();
+			builder.InstructionABC( Opcode.Vararg, results, 0, 0 );
+			results.SetTop();
 		}
 		else
 		{
 			throw new InvalidOperationException();
 		}
+
+		return results;
 	}
 
-	void Branch( Expression e, bool ifTrue, LabelBuilder label )
+	void Branch( Expression e, bool ifTrue, LabelAST label )
 	{
 		if ( e is Comparison )
 		{
@@ -415,7 +412,7 @@ public class LuaVMCompiler
 				if ( ifTrue )
 				{
 					// left and right
-					LabelBuilder noBranch = new LabelBuilder( builder );
+					LabelAST noBranch = new LabelAST( "noBranch" );
 					Branch( logical.Left, false, noBranch );
 					Branch( logical.Right, true, label );
 					builder.Label( noBranch );
@@ -438,7 +435,7 @@ public class LuaVMCompiler
 				else
 				{
 					// not( left or right ) == not( left ) and not( right )
-					LabelBuilder noBranch = new LabelBuilder( builder );
+					LabelAST noBranch = new LabelAST( "noBranch" );
 					Branch( logical.Left, true, noBranch );
 					Branch( logical.Right, false, label );
 					builder.Label( noBranch );
@@ -473,15 +470,79 @@ public class LuaVMCompiler
 	{
 		if ( s.Target is GlobalRef )
 		{
+			// Assign to global.
+			GlobalRef global = (GlobalRef)s.Target;
+			int constant		= builder.Constant( ( (GlobalRef)s.Target ).Name );
+			Allocation value	= R( s.Value );
+			builder.InstructionABx( Opcode.SetGlobal, value, constant );
+			value.Release();
 		}
 		else if ( s.Target is Index )
 		{
+			// Assign to table index.
+			Index index = (Index)s.Target;
+			Allocation table	= R( index.Table );
+			Allocation key		= RK( index.Key );
+			Allocation value	= RK( s.Value );
+			builder.InstructionABC( Opcode.SetTable, table, key, value );
+			value.Release();
+			key.Release();
+			table.Release();
 		}
 		else if ( s.Target is LocalRef )
 		{
+			// Assign to local.
+			LocalRef local = (LocalRef)s.Target;
+			Allocation target = builder.Local( local.Variable );
+			Move( target, s.Value );
+			target.Release();
 		}
 		else if ( s.Target is Temporary )
 		{
+			// Assign to temporary.
+			Temporary temporary = (Temporary)s.Target;
+			builder.DeclareTemporary( temporary );
+			Allocation target = builder.Temporary( temporary );
+			Move( target, s.Value );
+			target.Release();
+		}
+		else if ( s.Target is TemporaryList )
+		{
+			// Assign to temporary list.
+			TemporaryList temporaryList = (TemporaryList)s.Target;
+
+			// Evaluate results.
+			Allocation results;
+			if ( s.Value is Call )
+			{
+				Call call = (Call)s.Value;
+				results = BuildCall( temporaryList.Temporaries.Count + 1,
+					call.Function, null, call.Arguments, call.ArgumentValues );
+			}
+			else if ( s.Value is CallSelf )
+			{
+				CallSelf call = (CallSelf)s.Value;
+				results = BuildCall( temporaryList.Temporaries.Count + 1,
+					call.Object, call.MethodName, call.Arguments, call.ArgumentValues );
+			}
+			else if ( s.Value is Vararg )
+			{
+				results = builder.Top();
+				builder.InstructionABC( Opcode.Vararg, results, temporaryList.Temporaries.Count, 0 );
+				results.Allocate( temporaryList.Temporaries.Count );
+			}
+			else
+			{
+				throw new InvalidOperationException();
+			}
+
+			
+			// Replace results with temporaries.
+			results.Release();
+			foreach ( Temporary temporary in temporaryList.Temporaries )
+			{
+				builder.DeclareTemporary( temporary );
+			}
 		}
 		else 
 		{
@@ -491,42 +552,85 @@ public class LuaVMCompiler
 
 	public void Visit( Block s )
 	{
-		throw new NotImplementedException();
+		// Enter block.
+		Allocation blockBase = builder.Top();
+		blockBuilder = new BlockBuilder( blockBuilder, s, blockBase );
+		blockBase.Release();
+
+		// Build statements.
+		foreach ( Statement statement in s.Statements )
+		{
+			statement.Accept( this );
+		}
+
+		// Close block if necessary.
+		if ( blockBuilder.NeedsClose )
+		{
+			builder.InstructionABC( Opcode.Close, blockBuilder.Base, 0, 0 );
+		}
+		
+		// Retire locals.
+		for ( int local = s.Locals.Count - 1; local >= 0; --local )
+		{
+			builder.RetireLocal( s.Locals[ local ] );
+		}
+
+		// End of block.
+		blockBuilder = blockBuilder.Parent;
 	}
 
 	public void Visit( Branch s )
 	{
-		throw new NotImplementedException();
+		// If we are jumping out of the block, close upvals.
+		Close( s.Target.Block );
+
+		// Jump.
+		builder.InstructionAsBx( Opcode.Jmp, 0, s.Target );
 	}
 
 	public void Visit( Constructor s )
 	{
-		throw new NotImplementedException();
+		// Create constructor.
+		builder.DeclareTemporary( s.Temporary );
+		builder.LockTemporary( s.Temporary );
+		Allocation constructor = builder.Temporary( s.Temporary );
+		builder.InstructionABC( Opcode.NewTable, constructor, s.ArrayCount, s.HashCount );
+		constructor.Release();
+
+		// Initialization statements.
+		foreach ( Statement statement in s.Statements )
+		{
+			statement.Accept( this );
+		}
+
+		// Next use of the constructor temporary retires it.
+		builder.UnlockTemporary( s.Temporary );
 	}
 
 	public void Visit( Declare s )
 	{
-		throw new NotImplementedException();
 	}
 
 	public void Visit( DeclareForIndex s )
 	{
-		throw new NotImplementedException();
+		builder.DeclareLocal( s.Variable );
 	}
 	
 	public void Visit( Evaluate s )
 	{
-		Move( builder.Top, s.Expression );
+		// Evaluate and throw away result.
+		Allocation allocation = R( s.Expression );
+		allocation.Release();
 	}
 
-	public void Visit( IndexMultipleValues s )
+	public void Visit( ConstructList s )
 	{
 		throw new NotImplementedException();
 	}
 
 	public void Visit( MarkLabel s )
 	{
-		throw new NotImplementedException();
+		builder.Label( s.Label );
 	}
 
 	public void Visit( OpcodeForLoop s )
@@ -551,12 +655,53 @@ public class LuaVMCompiler
 
 	public void Visit( Return s )
 	{
-		throw new NotImplementedException();
+		// Close upvals.
+		Close( builder.Function.Block.Parent );
+
+		// Return.
+		if ( ( s.Result is Literal ) && ( ( (Literal)s.Result ).Value == null ) )
+		{
+			builder.InstructionABC( Opcode.Return, 0, 1, 0 );
+		}
+		else
+		{
+			Allocation result = R( s.Result );
+			builder.InstructionABC( Opcode.Return, result, 2, 0 );
+			result.Release();
+		}
 	}
 
-	public void Visit( ReturnMultipleValues s )
+	public void Visit( ReturnList s )
 	{
-		throw new NotImplementedException();
+		// Close upvals.
+		Close( builder.Function.Block.Parent );
+
+		// Push results onto the stack.
+		Allocation allocation = builder.Top();
+		foreach ( Expression result in s.Results )
+		{
+			Allocation allocResult = Push( result );
+			allocResult.Release();
+			allocation.Allocate();
+		}
+
+		// Push result values onto the stack.
+		int B;
+		if ( s.ResultList != null )
+		{
+			Allocation allocValues = SetTop( s.ResultList );
+			allocValues.Release();
+			allocation.SetTop();
+			B = 0;
+		}
+		else
+		{
+			B = s.Results.Count + 1;
+		}
+
+		// Return.
+		builder.InstructionABC( Opcode.Return, allocation, B, 0 );
+		allocation.Release();
 	}
 
 	public void Visit( Test s )
@@ -594,7 +739,7 @@ public class LuaVMCompiler
 	public void Visit( Call e )
 	{
 		Allocation result = BuildCall( 2, e.Function, null, e.Arguments, e.ArgumentValues );
-		if ( target != result )
+		if ( (int)target != (int)result )
 		{
 			builder.InstructionABC( Opcode.Move, target, result, 0 );
 		}
@@ -604,7 +749,7 @@ public class LuaVMCompiler
 	public void Visit( CallSelf e )
 	{
 		Allocation result = BuildCall( 2, e.Object, e.MethodName, e.Arguments, e.ArgumentValues );
-		if ( target != result )
+		if ( (int)target != (int)result )
 		{
 			builder.InstructionABC( Opcode.Move, target, result, 0 );
 		}
@@ -616,32 +761,38 @@ public class LuaVMCompiler
 			IList< Expression > arguments, Expression argumentValues )
 	{
 		// Push function (or method) onto the stack.
-		int A = builder.Top;
-		Allocation allocation = new Allocation( builder );
+		Allocation allocation = builder.Top();
 		if ( methodName == null )
 		{
-			Push( allocation, functionOrObject );
+			Allocation allocFunction = R( functionOrObject );
+			allocFunction.Release();
+			allocation.Allocate();
 		}
 		else
 		{
-			Allocation o = R( functionOrObject );
-			builder.InstructionABC( Opcode.Self, A, o,
-				Instruction.ConstantToRK( builder.Constant( methodName ) ) );
-			o.Release();
-			allocation.Push();
+			Allocation allocObject = R( functionOrObject );
+			Allocation allocMethod = builder.ConstantRK( methodName );
+			builder.InstructionABC( Opcode.Self, allocation, allocObject, allocMethod );
+			allocMethod.Release();
+			allocObject.Release();
+			allocation.Allocate();
 		}
 
 		// Push arguments onto the stack.
-		for ( int argument = 0; argument < arguments.Count; ++argument )
+		foreach ( Expression argument in arguments )
 		{
-			Push( allocation, arguments[ argument ] );
+			Allocation allocArgument = Push( argument );
+			allocArgument.Release();
+			allocation.Allocate();
 		}
 
 		// Push variable arguments onto the stack.
 		int B;
 		if ( argumentValues != null )
 		{
-			SetTop( allocation, argumentValues );
+			Allocation allocValues = SetTop( argumentValues );
+			allocValues.Release();
+			allocation.SetTop();
 			B = 0;
 		}
 		else
@@ -650,14 +801,14 @@ public class LuaVMCompiler
 		}
 
 		// Call.
-		builder.InstructionABC( Opcode.Call, A, B, C );
+		builder.InstructionABC( Opcode.Call, allocation, B, C );
 		allocation.Release();
 
 		// Return appropriate number of values.
-		Allocation results = new Allocation( builder );
+		Allocation results = builder.Top();
 		if ( C > 0 )
 		{
-			results.Push( C - 1 );
+			results.Allocate( C - 1 );
 		}
 		else
 		{
@@ -669,7 +820,7 @@ public class LuaVMCompiler
 	public void Visit( Comparison e )
 	{
 		// Convert a branch into a value.
-		LabelBuilder returnTrue = new LabelBuilder( builder );
+		LabelAST returnTrue = new LabelAST( "returnTrue" );
 		Branch( e, true, returnTrue );
 		builder.InstructionABC( Opcode.LoadBool, target, 0, 1 );
 		builder.Label( returnTrue );
@@ -683,7 +834,7 @@ public class LuaVMCompiler
 		builder.InstructionABx( Opcode.Closure, target, builder.Prototype( prototypeBuilder ) );
 
 		// Initialize upvals.
-		foreach ( UpValBuilder locator in builder.UpValLocators )
+/*		foreach ( UpValLocator locator in builder.BuildUpValLocators() )
 		{
 			if ( locator.Source == UpValSource.Local )
 			{
@@ -694,6 +845,7 @@ public class LuaVMCompiler
 				builder.InstructionABC( Opcode.GetUpVal, locator.TargetIndex, locator.SourceIndex, 0 );
 			}
 		}
+*/
 	}
 
 	public void Visit( GlobalRef e )
@@ -717,22 +869,23 @@ public class LuaVMCompiler
 
 	public void Visit( LocalRef e )
 	{
-		int local = builder.LocalRef( e );
+		Allocation local = builder.Local( e.Variable );
 		if ( target != local )
 		{
 			builder.InstructionABC( Opcode.Move, target, local, 0 );
 		}
+		local.Release();
 	}
 
 	public void Visit( Logical e )
 	{
 		// Perform shortcut evaluation.
-		LabelBuilder shortcutEvaluation = new LabelBuilder( builder );
+		LabelAST shortcutEvaluation = new LabelAST( "shortcutEvaluation" );
 		Allocation left = R( e.Left );
 		builder.InstructionABC( Opcode.TestSet, target, left, e.Op == LogicalOp.Or ? 1 : 0 );
 		builder.InstructionAsBx( Opcode.Jmp, 0, shortcutEvaluation );
 		left.Release();
-		Move( target, e.Right );
+		e.Right.Accept( this );
 		builder.Label( shortcutEvaluation );
 	}
 
@@ -746,24 +899,28 @@ public class LuaVMCompiler
 	public void Visit( OpcodeConcat e )
 	{
 		// Get operand list.
-		Allocation operands = new Allocation( builder );
-		for ( int operand = 0; operand < e.Operands.Count; ++operand )
+		Allocation allocation = builder.Top();
+		foreach ( Expression operand in e.Operands )
 		{
-			Push( operands, e.Operands[ operand ] );
+			Allocation allocOperand = Push( operand );
+			allocOperand.Release();
+			allocation.Allocate();
 		}
 
 		// Instruction.
-		builder.InstructionABC( Opcode.Concat, target, operands, operands.Value + operands.Count - 1 );
-		operands.Release();
+		builder.InstructionABC( Opcode.Concat, target, allocation, allocation + e.Operands.Count - 1 );
+		allocation.Release();
 	}
 
 	public void Visit( Temporary e )
 	{
-		int temporary = builder.Temporary( e );
+		Allocation temporary = builder.Temporary( e );
 		if ( target != temporary )
 		{
 			builder.InstructionABC( Opcode.Move, target, temporary, 0 );
 		}
+		temporary.Release();
+		builder.RetireTemporary( e );
 	}
 
 	public void Visit( TemporaryList e )
@@ -793,6 +950,17 @@ public class LuaVMCompiler
 
 	public void Visit( UpValRef e )
 	{
+		// The block where the upval was declared needs to be closed.
+		for ( BlockBuilder outer = blockBuilder; outer != null; outer = outer.Parent )
+		{
+			if ( outer.Block == e.Variable.Block )
+			{
+				outer.SetNeedsClose();
+				break;
+			}
+		}
+
+		// Get upval.
 		builder.InstructionABC( Opcode.GetUpVal, target, builder.UpVal( e.Variable ), 0 );
 	}
 

@@ -9,8 +9,8 @@ using System.IO;
 using Lua;
 using Lua.Parser;
 using Lua.Parser.AST;
-using Lua.VM.Compiler;
-using Lua.VM.Compiler.AST;
+//using Lua.VM.Compiler;
+//using Lua.VM.Compiler.AST;
 
 
 namespace Test
@@ -24,11 +24,11 @@ static class EntryPoint
 	{
 		LuaParser parser = new LuaParser( Console.Error, File.OpenText( args[ 0 ] ), args[ 0 ] );
 		FunctionAST function = parser.Parse();
-		VMASTWriter writer = new VMASTWriter( Console.Out );
+		ASTWriter writer = new ASTWriter( Console.Out );
 		writer.Write( function );
-		BytecodeTransform transform = new BytecodeTransform();
-		function = transform.Transform( function );
-		writer.Write( function );
+//		BytecodeTransform transform = new BytecodeTransform();
+//		function = transform.Transform( function );
+//		writer.Write( function );
 
 
 	

@@ -155,18 +155,44 @@ public class ASTWriter
 		Indent();
 		s.Target.Accept( this );
 		o.Write( " = " );
-		if ( s.Target is ValueList )
-		{
-			o.Write( "values " );
-		}
 		s.Value.Accept( this );
+		o.WriteLine();
+	}
+
+	public void Visit( AssignList s )
+	{
+		Indent();
+		bool bFirst = true;
+		foreach ( Expression target in s.Targets )
+		{
+			if ( ! bFirst )
+				o.Write( ", " );
+			bFirst = false;
+			target.Accept( this );
+		}
+		o.Write( " = " );
+		bFirst = true;
+		foreach ( Expression value in s.Values )
+		{
+			if ( ! bFirst )
+				o.Write( ", " );
+			bFirst = false;
+			value.Accept( this );
+		}
+		if ( s.ValueList != null )
+		{
+			if ( ! bFirst )
+				o.Write( ", " );
+			o.Write( "values " );
+			s.ValueList.Accept( this );
+		}
 		o.WriteLine();
 	}
 
 	public void Visit( Block s )
 	{
 		Indent();
-		o.Write( "block -- " );
+		o.Write( "do -- " );
 		o.Write( s.Name );
 		o.WriteLine();
 
@@ -210,28 +236,6 @@ public class ASTWriter
 		o.WriteLine( s.Target.Name );
 	}
 
-	public void Visit( Constructor s )
-	{
-		Indent();
-		o.Write( "constructor " );
-		s.Temporary.Accept( this );
-		o.Write( " array " );
-		o.Write( s.ArrayCount );
-		o.Write( " hash " );
-		o.Write( s.HashCount );
-		o.WriteLine();
-		indent += 1;
-
-		foreach ( Statement statement in s.Statements )
-		{
-			statement.Accept( this );
-		}
-
-		indent -= 1;
-		Indent();
-		o.WriteLine( "end" );
-	}
-	
 	public void Visit( Declare s )
 	{
 		Indent();
@@ -242,6 +246,24 @@ public class ASTWriter
 		o.WriteLine();
 	}
 
+	public void Visit( DeclareList s )
+	{
+		Indent();
+		o.Write( "local " );
+		bool bFirst = true;
+		foreach ( Variable variable in s.Variables )
+		{
+			if ( ! bFirst )
+				o.Write( ", " );
+			bFirst = false;
+			o.Write( variable.Name );
+		}
+		o.Write( " = " );
+		o.Write( "values " );
+		s.ValueList.Accept( this );
+		o.WriteLine();
+	}
+
 	public void Visit( Evaluate s )
 	{
 		Indent();
@@ -249,15 +271,59 @@ public class ASTWriter
 		o.WriteLine();
 	}
 
-	public void Visit( IndexMultipleValues s )
+	public void Visit( ForBlock s )
 	{
 		Indent();
-		s.Temporary.Accept( this );
-		o.Write( "[ " );
-		o.Write( s.Key );
-		o.Write( " -> ] = values " );
-		s.Values.Accept( this );
+		o.Write( "for " );
+		o.Write( s.UserIndex.Name );
+		o.Write( " = " );
+		s.Index.Accept( this );
+		o.Write( ", " );
+		s.Limit.Accept( this );
+		o.Write( ", " );
+		s.Step.Accept( this );
 		o.WriteLine();
+
+		WriteBlock( s );
+
+		Indent();
+		o.WriteLine( "end" );
+	}
+
+	public void Visit( ForListBlock s )
+	{
+		Indent();
+		o.Write( "forlist " );
+		bool bFirst = true;
+		foreach ( Variable variable in s.UserVariables )
+		{
+			if ( ! bFirst )
+				o.Write( ", " );
+			bFirst = false;
+			o.Write( variable.Name );
+		}
+		o.Write( " = " );
+		bFirst = true;
+		foreach ( Expression expression in s.Expressions )
+		{
+			if ( ! bFirst )
+				o.Write( ", " );
+			bFirst = false;
+			expression.Accept( this );
+		}
+		if ( s.ExpressionList != null )
+		{
+			if ( ! bFirst )
+				o.Write( ", " );
+			o.Write( "values " );
+			s.ExpressionList.Accept( this );
+		}
+		o.WriteLine();
+
+		WriteBlock( s );
+
+		Indent();
+		o.WriteLine( "end" );
 	}
 
 	public void Visit( MarkLabel s )
@@ -274,10 +340,10 @@ public class ASTWriter
 		o.WriteLine();
 	}
 
-	public void Visit( ReturnMultipleValues s )
+	public void Visit( ReturnList s )
 	{
 		Indent();
-		o.Write( "return multiple " );
+		o.Write( "return " );
 		bool bFirst = true;
 		foreach ( Expression result in s.Results )
 		{
@@ -286,13 +352,13 @@ public class ASTWriter
 			bFirst = false;
 			result.Accept( this );
 		}
-		if ( s.ResultValues != null )
+		if ( s.ResultList != null )
 		{
 			if ( ! bFirst )
 				o.Write( ", " );
 			bFirst = false;
 			o.Write( "values " );
-			s.ResultValues.Accept( this );
+			s.ResultList.Accept( this );
 		}
 		o.WriteLine();
 	}
@@ -305,6 +371,9 @@ public class ASTWriter
 		o.Write( " " );
 		o.WriteLine( s.Target.Name );
 	}
+
+
+
 
 	public void Visit( Binary e )
 	{
@@ -404,6 +473,39 @@ public class ASTWriter
 		o.Write( " )" );
 	}
 
+	public void Visit( Constructor e )
+	{
+		o.Write( "{" );
+		o.WriteLine();
+		indent += 1;
+
+		foreach ( ConstructorElement element in e.Elements )
+		{
+			Indent();
+			if ( element.HashKey != null )
+			{
+				o.Write( "[ " );
+				element.HashKey.Accept( this );
+				o.Write( " ] = " );
+			}
+			element.Value.Accept( this );
+			o.Write( ";" );
+			o.WriteLine();
+		}
+		if ( e.ElementList != null )
+		{
+			Indent();
+			o.Write( "values " );
+			e.ElementList.Accept( this );
+			o.Write( ";" );
+			o.WriteLine();
+		}
+
+		indent -= 1;
+		Indent();
+		o.Write( "}" );
+	}
+
 	public void Visit( FunctionClosure e )
 	{
 		o.Write( "function " );
@@ -475,46 +577,19 @@ public class ASTWriter
 		e.Operand.Accept( this );
 	}
 
-	public void Visit( Temporary e )
-	{
-		o.Write( "temporary " );
-		o.Write( e.GetHashCode().ToString( "X" ) );
-	}
-
-	public void Visit( ToNumber e )
-	{
-		o.Write( "tonumber " );
-		e.Operand.Accept( this );
-	}
-
 	public void Visit( Unary e )
 	{
-		o.Write( e.Op );
-		o.Write( " " );
+		switch ( e.Op )
+		{
+		case UnaryOp.Minus:		o.Write( "-" );		break;
+		case UnaryOp.Length:	o.Write( "#" );		break;
+		}
 		e.Operand.Accept( this );
 	}
 
 	public void Visit( UpValRef e )
 	{
 		o.Write( e.Variable.Name );
-	}
-
-	public void Visit( ValueList e )
-	{
-		o.Write( "valuelist" );
-		if ( e.ElementCount != 0 )
-		{
-			o.Write( "[ 0 -> " );
-			o.Write( e.ElementCount - 1 );
-			o.Write( " ]" );
-		}
-	}
-
-	public void Visit( ValueListElement e )
-	{
-		o.Write( "valuelist[ " );
-		o.Write( e.Index );
-		o.Write( " ]" );
 	}
 
 	public void Visit( Vararg e )

@@ -41,11 +41,16 @@ public class Block
 	public void Local( Variable local )
 	{
 		locals.Add( local );
+		local.SetBlock( this );
 	}
 
 	public void Statement( Statement statement )
 	{
 		statements.Add( statement );
+		if ( statement is MarkLabel )
+		{
+			( (MarkLabel)statement ).SetBlock( this );
+		}
 	}
 
 

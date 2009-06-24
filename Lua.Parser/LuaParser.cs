@@ -555,79 +555,34 @@ public class LuaParser
 			exp();
 			step = PopValue();
 		}
-		else
-		{
-			step = new Literal( matchFor.SourceSpan, (int)1 );
-		}
 
 		Token doToken = Check( TokenKind.Do );
 
-		
+
 		// Construct AST.
 
-		SourceSpan s			= new SourceSpan( matchFor.SourceSpan.Start, doToken.SourceSpan.End );
-		LabelAST fornum			= new LabelAST( "fornum" );			function.Label( fornum );
-		LabelAST fornumBreak	= new LabelAST( "fornumBreak" );	function.Label( fornumBreak );
-		LabelAST fornumContinue	= new LabelAST( "fornumContinue" );	function.Label( fornumContinue );
-
-		block = new Block( new SourceSpan(), block, "fornum" );
-		block.Parent.Statement( block );
-
+		SourceSpan s = new SourceSpan( matchFor.SourceSpan.Start, doToken.SourceSpan.End );
 		
-		// Delcare internal variables.
+		Variable userIndex	= new Variable( (string)name.Value );
 
-		Variable forIndex = new Variable( "(for index)" );
-		function.Local( forIndex ); block.Local( forIndex );
-		Variable forLimit = new Variable( "(for limit)" );
-		function.Local( forLimit ); block.Local( forLimit );
-		Variable forStep  = new Variable( "(for step)" );
-		function.Local( forStep ); block.Local( forStep );
+		if ( step == null )
+		{
+			step = new Literal( s, (int)1 );
+		}
 
-		Expression startExpression = new ToNumber( start.SourceSpan, start );
-		Expression limitExpression = new ToNumber( limit.SourceSpan, limit );
-		Expression stepExpression  = new ToNumber( step.SourceSpan, step );
-
-		block.Statement( new Declare( start.SourceSpan, forIndex, startExpression ) );
-		block.Statement( new Declare( limit.SourceSpan, forLimit, limitExpression ) );
-		block.Statement( new Declare( step.SourceSpan, forStep, stepExpression ) );
-
-
-		// Test expression.
-
-		Expression condition =
-			new Logical( s, LogicalOp.Or,
-				new Logical( s, LogicalOp.And, 
-					new Comparison( s, ComparisonOp.GreaterThan,
-						new LocalRef( s, forStep ),
-						new Literal( s, 0.0 ) ),
-					new Comparison( s, ComparisonOp.LessThanOrEqual,
-						new LocalRef( s, forIndex ),
-						new LocalRef( s, forLimit ) ) ),
-				new Logical( s, LogicalOp.And,
-					new Comparison( s, ComparisonOp.LessThan,
-						new LocalRef( s, forStep ),
-						new Literal( s, 0.0 ) ),
-					new Comparison( s, ComparisonOp.GreaterThanOrEqual,
-						new LocalRef( s, forIndex ),
-						new LocalRef( s, forLimit ) ) ) );
-
-
-		// Loop body.
-
-		block.Statement( new MarkLabel( s, fornum ) );
-		block.Statement( new Test( s, condition, fornumBreak ) );
-
-		block = new Block( new SourceSpan(), block, "fornumBody" );
-		block.Parent.Statement( block );
-		loopScope = new LoopScope( function, loopScope, fornumBreak, fornumContinue );
+		LabelAST breakLabel		= new LabelAST( "forBreak" );
+		LabelAST continueLabel	= new LabelAST( "forContinue" );
 		
+		block = new ForBlock( s, block, "for",
+			start, limit, step, userIndex, breakLabel, continueLabel );
+		block.Parent.Statement( block );
+		loopScope = new LoopScope( function, loopScope, breakLabel, continueLabel );
 
-		// Declare index variable.
 
-		Variable userIndex = new Variable( (string)name.Value );
-		function.Local( userIndex ); block.Local( userIndex );
-		Expression indexExpression = new LocalRef( s, forIndex );
-		block.Statement( new Declare( s, userIndex, indexExpression ) );
+		// Declare user index.
+
+		function.Local( userIndex );
+		block.Local( userIndex );
 
 
 		// Loop body.
@@ -637,34 +592,10 @@ public class LuaParser
 		Token endFor = Check( TokenKind.End, matchFor );
 
 
-		// Close AST.
-
-		s = endFor.SourceSpan;
+		// End loop.
 
 		loopScope = loopScope.Parent;
 		block.SetSourceSpan( new SourceSpan( doToken.SourceSpan.Start, endFor.SourceSpan.End ) );
-		block = block.Parent;
-
-		block.Statement( new MarkLabel( s, fornumContinue ) );
-
-		
-		// Increment index.
-
-		Expression indexVariable = new LocalRef( s, forIndex );
-		Expression incrementExpression  =
-			new Binary( s, BinaryOp.Add,
-				new LocalRef( s, forIndex ),
-				new LocalRef( s, forStep ) );
-
-		block.Statement( new Assign( s, indexVariable, incrementExpression ) );
-
-
-		// Finish loop.
-
-		block.Statement( new Branch( s, fornum ) );
-		block.Statement( new MarkLabel( s, fornumBreak ) );
-
-		block.SetSourceSpan( new SourceSpan( matchFor.SourceSpan.Start, endFor.SourceSpan.End ) );
 		block = block.Parent;
 	}
 
@@ -704,73 +635,42 @@ public class LuaParser
 		Token doToken = Check( TokenKind.Do );
 
 
-		// Build AST
+		// Construct AST.
 
-		SourceSpan s				= new SourceSpan( matchFor.SourceSpan.Start, doToken.SourceSpan.End );
-		LabelAST forlistBreak		= new LabelAST( "forlistBreak" );		function.Label( forlistBreak );
-		LabelAST forlistContinue	= new LabelAST( "forlistContinue" );	function.Label( forlistContinue );
+		SourceSpan s = new SourceSpan( matchFor.SourceSpan.Start, doToken.SourceSpan.End );
 
-		block = new Block( new SourceSpan(), block, "forlist" );
-		block.Parent.Statement( block );
-
-
-		// Declare internal variables.
-
-		Token[] internalNameList = new Token[]
+		Variable[] userVariables = new Variable[ namelist.Count ];
+		for ( int i = 0; i < namelist.Count; ++i )
 		{
-			new Token( s, TokenKind.Identifier, "(for generator)" ),
-			new Token( s, TokenKind.Identifier, "(for state)" ),
-			new Token( s, TokenKind.Identifier, "(for control)" ),
-		};
-		LocalStatementAST( s, internalNameList, expressioncount );
+			userVariables[ i ] = new Variable( (string)namelist[ i ].Value );
+		}
+	
+		Expression expressionList = null;
+		if ( expressioncount < 3 )
+		{
+			expressionList = PopValueList();
+			if ( expressionList != null )
+			{
+				expressioncount -= 1;
+			}
+		}
 
-		Debug.Assert( block.Locals.Count == 3 );
-		Variable forGenerator	= block.Locals[ 0 ];
-		Variable forState		= block.Locals[ 1 ];
-		Variable forControl		= block.Locals[ 2 ];
-		Debug.Assert( forGenerator.Name	== "(for generator)" );
-		Debug.Assert( forState.Name		== "(for state)" );
-		Debug.Assert( forControl.Name	== "(for control)" );
+		LabelAST breakLabel		= new LabelAST( "forBreak" );
+		LabelAST continueLabel	= new LabelAST( "forContinue" );
 
-
-		// Loop block
-
-		block.Statement( new MarkLabel( s, forlistContinue ) );
-
-		block = new Block( new SourceSpan(), block, "forlistBody" );
+		block = new ForListBlock( s, block, "forlist",
+			Array.AsReadOnly( userVariables ), PopValues( expressioncount ), expressionList, breakLabel, continueLabel );
 		block.Parent.Statement( block );
-		loopScope = new LoopScope( function, loopScope, forlistBreak, forlistContinue );
+		loopScope = new LoopScope( function, loopScope, breakLabel, continueLabel );
 
-
-		// Generator expression.
-
-		Expression generator =
-			new Call( s,
-				new LocalRef( s, forGenerator ),
-				new Expression[] {
-					new LocalRef( s, forState ),
-					new LocalRef( s, forControl ) },
-				null );
-
-		PushExpression( generator );
-		LocalStatementAST( s, namelist, 1 );
-
-		Debug.Assert( block.Locals.Count == namelist.Count );
-		Variable userControl = block.Locals[ 0 ];
-
-
-		// Update control and test.
-
-		Expression condition =
-			new Comparison( s, ComparisonOp.NotEqual,
-				new LocalRef( s, forControl ),
-				new Literal( s, null ) );
-
-		Expression controlVariable	= new LocalRef( s, forControl );
-		Expression updateExpression	= new LocalRef( s, userControl );
-
-		block.Statement( new Assign( s, controlVariable, updateExpression ) );
-		block.Statement( new Test( s, condition, forlistBreak ) );
+		
+		// Declare user variables.
+		
+		for ( int i = 0; i < userVariables.Length; ++i )
+		{
+			function.Local( userVariables[ i ] );
+			block.Local( userVariables[ i ] );
+		}
 
 
 		// Loop body.
@@ -782,16 +682,8 @@ public class LuaParser
 
 		// Close AST.
 
-		s = endFor.SourceSpan;
-
 		loopScope = loopScope.Parent;
 		block.SetSourceSpan( new SourceSpan( doToken.SourceSpan.Start, endFor.SourceSpan.End ) );
-		block = block.Parent;
-
-		block.Statement( new Branch( s, forlistContinue ) );
-		block.Statement( new MarkLabel( s, forlistBreak ) );
-
-		block.SetSourceSpan( new SourceSpan( matchFor.SourceSpan.Start, endFor.SourceSpan.End ) );
 		block = block.Parent;
 	}
 
@@ -965,7 +857,7 @@ public class LuaParser
 		}
 
 		if (    !( lastStatement is Return )
-			 && !( lastStatement is ReturnMultipleValues ) )
+			 && !( lastStatement is ReturnList ) )
 		{
 			block.Statement( new Return( endFunction.SourceSpan,
 				new Literal( endFunction.SourceSpan, null ) ) );
@@ -1029,116 +921,75 @@ public class LuaParser
 		}
 
 
-		// Perform assignment.
+		// Construct AST
 
 		SourceSpan s = new SourceSpan( local.SourceSpan.Start, end );
-		LocalStatementAST( s, namelist, expressioncount );
-	}
-
-	void LocalStatementAST( SourceSpan s, IList< Token > namelist, int expressioncount )
-	{
-		
-		// Declare locals.
-
-		IList< Variable > locallist = new Variable[ namelist.Count ];
-		for ( int variable = 0; variable < namelist.Count; ++variable )
-		{
-			Variable local = new Variable( (string)namelist[ variable ].Value );
-			function.Local( local ); block.Local( local );
-			locallist[ variable ] = local;
-		}
 		
 
-		// Assign.
+		// Get value list.
 
-		if ( expressioncount == 0 )
+		Expression valueList = null;
+		if ( ( expressioncount > 0 ) && ( namelist.Count > expressioncount ) )
 		{
-
-			// Just declare all the variables.
-
-			for ( int local = 0; local < locallist.Count; ++local )
-			{
-				block.Statement( new Declare( s, locallist[ local ],
-					new Literal( s, null ) ) );
-			}
-
-		}
-		else if ( namelist.Count > expressioncount )
-		{
-
-			// Check for multiple results on the last expression.
-						
-			Expression multipleValues = PopMultipleValues();
-			if ( multipleValues != null )
+			valueList = PopValueList();
+			if ( valueList != null )
 			{
 				expressioncount -= 1;
 			}
+		}
+		IList< Expression > values = PopValues( expressioncount );
 
 
-			// Assign expressions.
+		// All expressions are independent since none of the variables have been declared.
+		// Declare expressions that have a value.
 
-			IList< Expression > expressionlist = PopValues( expressioncount );	
-			for ( int expression = 0; expression < expressionlist.Count; ++expression )
+		int declarecount = Math.Min( namelist.Count, values.Count );
+		for ( int i = 0; i < declarecount; ++i )
+		{
+			Variable variable = new Variable( (string)namelist[ i ].Value );
+			function.Local( variable ); block.Local( variable );
+			block.Statement( new Declare( s, variable, values[ i ] ) );
+		}
+
+		if ( namelist.Count > values.Count )
+		{
+			if ( valueList != null )
 			{
-				Expression value = expressionlist[ expression ];
-				block.Statement( new Declare( s, locallist[ expression ], value ) );
-			}
+				// Assign values from the valuelist expression to the remaining variables.
 
-
-			// Deal with remaining variables.
-
-			if ( multipleValues != null )
-			{
-				// Evaluate multiple values.
-
-				block.Statement( new Assign( s,
-					new ValueList( s, locallist.Count - expressionlist.Count ), multipleValues ) );
-
-
-				// Assign from value list.
-
-				for ( int local = expressionlist.Count; local < locallist.Count; ++local )
+				Variable[] variables = new Variable[ namelist.Count - values.Count ];
+				for ( int i = 0; i < variables.Length; ++i )
 				{
-					block.Statement( new Declare( s, locallist[ local ],
-						new ValueListElement( s, local - expressionlist.Count ) ) );
+					variables[ i ] = new Variable( (string)namelist[ values.Count + i ].Value );
+					function.Local( variables[ i ] ); block.Local( variables[ i ] );
 				}
+
+				block.Statement( new DeclareList( s, Array.AsReadOnly( variables ), valueList ) );
 			}
 			else
 			{
-				// No extra values, just declare.
+				// Assign null to the remaining variables.
 
-				for ( int local = expressionlist.Count; local < locallist.Count; ++local )
+				for ( int i = values.Count; i < namelist.Count; ++i )
 				{
-					block.Statement( new Declare( s, locallist[ local ],
-						new Literal( s, null ) ) );
+					Variable variable = new Variable( (string)namelist[ i ].Value );
+					function.Local( variable ); block.Local( variable );
+					block.Statement( new Declare( s, variable, new Literal( s, null ) ) );
 				}
 			}
-
 		}
 		else
 		{
-			
-			// Assign locals.
+			// Evaluate the remaining expressions.
 
-			IList< Expression > expressionlist = PopValues( expressioncount );
-			for ( int local = 0; local < locallist.Count; ++local )
+			for ( int i = namelist.Count; i < values.Count; ++i )
 			{
-				Expression value = expressionlist[ local ];
-				block.Statement( new Declare( s, locallist[ local ], value ) );
+				block.Statement( new Evaluate( values[ i ].SourceSpan, values[ i ] ) );
 			}
-
-
-			// Evaluate and throw away extra expressions.
-
-			for ( int expression = locallist.Count; expression < expressionlist.Count; ++expression )
-			{
-				Expression value = expressionlist[ expression ];
-				block.Statement( new Evaluate( s, value ) );
-			}
-
 		}
 
 	}
+
 
 
 
@@ -1204,156 +1055,35 @@ public class LuaParser
 		// Build AST
 
 		SourceSpan s = new SourceSpan( firstVariable.SourceSpan.Start, expression.Peek().SourceSpan.End );
-		AssignStatementAST( s, variablecount, expressioncount );
-	}
-
-	void AssignStatementAST( SourceSpan s, int variablecount, int expressioncount )
-	{
-		Debug.Assert( variablecount > 0 && expressioncount > 0 );
-
-
-		// Simpler code when there are no dependencies between expressions
-		
+	
 		if ( variablecount == 1 && expressioncount == 1 )
 		{
-			Expression expression	= PopValue();
-			Expression variable		= PopValue();			
-			block.Statement( new Assign( s, variable, expression ) );	
-			return;
-		}
+			// Single assignment is independent.
 
-
-		// Pop expressions and check for multiple values.
-
-		Expression multipleValues = null;
-		if ( variablecount > expressioncount )
-		{
-			multipleValues = PopMultipleValues();
-			if ( multipleValues != null )
-			{
-				expressioncount -= 1;
-			}
-		}
-
-		IList< Expression > expressionlist = PopValues( expressioncount );
-
-		
-		// Transform assignment expressions.
-
-		IList< Expression > vlist = PopValues( variablecount );
-		IList< Expression > variablelist = new Expression[ variablecount ];
-		for ( int variable = 0; variable < variablelist.Count; ++variable )
-		{
-			Index index = vlist[ variable ] as Index;
-			if ( index != null )
-			{
-				Temporary temporaryTable	= new Temporary( index.Table.SourceSpan );
-				Temporary temporaryKey		= new Temporary( index.Key.SourceSpan );
-
-				block.Statement( new Assign( index.SourceSpan, temporaryTable, index.Table ) );
-				block.Statement( new Assign( index.SourceSpan, temporaryKey, index.Key ) );
-
-				variablelist[ variable ] = new Index( index.SourceSpan, temporaryTable, temporaryKey );
-			}
-			else
-			{
-				variablelist[ variable ] = vlist[ variable ];
-			}
-		}
-		
-
-		// Assign.
-
-		if ( variablelist.Count > expressionlist.Count )
-		{
-			// Evaluate expression list and assign to temporaries.
-
-			IList< Expression > temporarylist = new Expression[ expressionlist.Count ];
-			for ( int expression = 0; expression < expressionlist.Count; ++expression )
-			{
-				Expression e			= expressionlist[ expression ];
-				Expression temporary	= new Temporary( e.SourceSpan );
-			
-				block.Statement( new Assign( s, temporary, e ) );
-				
-				temporarylist[ expression ] = temporary;
-			}
-
-
-			// Evaluate last (multiple value) expression.
-
-			if ( multipleValues != null )
-			{
-				block.Statement( new Assign( s,
-					new ValueList( s, variablelist.Count - expressionlist.Count ), multipleValues ) );
-			}
-
-
-			// Perform assignments.
-
-			for ( int expression = 0; expression < expressionlist.Count; ++expression )
-			{
-				block.Statement( new Assign( s,
-					variablelist[ expression ], temporarylist[ expression ] ) );
-			}
-			
-			if ( multipleValues != null )
-			{
-				// Assign from value list.
-
-				for ( int variable = expressionlist.Count; variable < variablelist.Count; ++variable )
-				{
-					block.Statement( new Assign( s, variablelist[ variable ],
-						new ValueListElement( s, variable - expressionlist.Count ) ) );
-				}
-			}
-			else
-			{
-				// No extra values, assign null.
-
-				for ( int variable = expressionlist.Count; variable < variablelist.Count; ++variable )
-				{
-					block.Statement( new Assign( s, variablelist[ variable ],
-						new Literal( s, null ) ) );
-				}
-			}
+			Expression value	= PopValue();
+			Expression target	= PopValue();
+			block.Statement( new Assign( s, target, value ) );
 		}
 		else
 		{
+			// Has to be evaluated in a certain order; we can't decompose the operation further
+			// without temporary variables.
 
-			// Evaluate expression list and assign to temporaries.
-
-			IList< Expression > temporarylist = new Expression[ variablelist.Count ];
-			for ( int variable = 0; variable < variablelist.Count; ++variable )
+			Expression valueList = null;
+			if ( variablecount > expressioncount )
 			{
-				Expression e			= expressionlist[ variable ];
-				Expression temporary	= new Temporary( e.SourceSpan );
-
-				block.Statement( new Assign( s, temporary, e ) );
-				
-				temporarylist[ variable ] = temporary;
+				valueList = PopValueList();
+				if ( valueList != null )
+				{
+					expressioncount -= 1;
+				}
 			}
-
-
-			// Evaluate and throw away extra expressions.
-
-			for ( int expression = variablelist.Count; expression < expressionlist.Count; ++expression )
-			{
-				Expression e = expressionlist[ expression ];
-				block.Statement( new Evaluate( e.SourceSpan, e ) );
-			}
-
-
-			// Preform assignments.
-
-			for ( int variable = 0; variable < variablelist.Count; ++variable )
-			{
-				block.Statement( new Assign( s, variablelist[ variable ], temporarylist[ variable ] ) );
-			}
-
+			IList< Expression > values = PopValues( expressioncount );
+			IList< Expression > targets = PopValues( variablecount );
+			block.Statement( new AssignList( s, targets, values, valueList ) );
 		}
-
 	}
+
 
 
 
@@ -1386,8 +1116,8 @@ public class LuaParser
 
 			// Check for multiple results.
 
-			Expression resultValues = PopMultipleValues();
-			if ( resultValues != null )
+			Expression resultList = PopValueList();
+			if ( resultList != null )
 			{
 				expressioncount -= 1;
 			}
@@ -1395,7 +1125,7 @@ public class LuaParser
 
 			// Return.
 
-			if ( resultValues == null && expressioncount == 1 )
+			if ( resultList == null && expressioncount == 1 )
 			{
 				Expression result = PopValue();
 				block.Statement( new Return( s, result ) );
@@ -1403,7 +1133,7 @@ public class LuaParser
 			else
 			{
 				IList< Expression > results = PopValues( expressioncount );
-				block.Statement( new ReturnMultipleValues( s, results, resultValues ) );
+				block.Statement( new ReturnList( s, results, resultList ) );
 				if ( ! function.ReturnsMultipleValues )
 				{
 					function.SetReturnsMultipleValues();
@@ -1714,12 +1444,13 @@ public class LuaParser
 		*/
 
 		Token matchConstructor = Check( TokenKind.LeftCurlyBracket );
-		Temporary constructorValue = new Temporary( new SourceSpan() );
-		Constructor constructor = new Constructor( new SourceSpan(), constructorValue );
-		block.Statement( constructor );
+
+		int							arrayCount	= 0;
+		int							hashCount	= 0;
+		List< ConstructorElement >	elements	= new List<  ConstructorElement >();
+		Expression					elementList	= null;
 
 		SourceSpan s;
-		int arrayKey = 1;
 
 		while ( true )
 		{
@@ -1738,13 +1469,10 @@ public class LuaParser
 				exp();
 				Expression value = PopValue();
 
-				constructor.IncrementHashCount();
-				constructor.Statement(
-					new Assign( new SourceSpan( key.SourceSpan.Start, value.SourceSpan.End ),
-						new Index( key.SourceSpan,
-							constructorValue,
-							new Literal( key.SourceSpan, (string)key.Value ) ),
-						value ) );
+				hashCount += 1;
+				elements.Add( new ConstructorElement( 
+					new SourceSpan( key.SourceSpan.Start, value.SourceSpan.End ),
+					new Literal( key.SourceSpan, (string)key.Value ), value ) );
 			}
 			else if ( Get() == TokenKind.LeftSquareBracket )
 			{
@@ -1760,11 +1488,10 @@ public class LuaParser
 
 				s = new SourceSpan( leftBracket.SourceSpan.Start, rightBracket.SourceSpan.End );
 
-				constructor.IncrementHashCount();
-				constructor.Statement(
-					new Assign( new SourceSpan( leftBracket.SourceSpan.Start, value.SourceSpan.End ),
-						new Index( s, constructorValue, key ),
-						value ) );
+				hashCount += 1;
+				elements.Add( new ConstructorElement(
+					new SourceSpan( leftBracket.SourceSpan.Start, rightBracket.SourceSpan.End ),
+					key, value ) );
 			}
 			else
 			{
@@ -1778,36 +1505,20 @@ public class LuaParser
 
 					Expression value = PopValue();
 
-					constructor.IncrementArrayCount();
-					constructor.Statement(
-						new Assign( value.SourceSpan,
-							new Index( value.SourceSpan,
-								constructorValue,
-								new Literal( value.SourceSpan, arrayKey ) ),
-							value ) );
-
-					arrayKey += 1;
+					arrayCount += 1;
+					elements.Add( new ConstructorElement( value.SourceSpan, value ) );
 				}
 				else
 				{
 					// last field.
 
-					Expression values = PopMultipleValues();
-					if ( values == null )
+					elementList = PopValueList();
+					if ( elementList == null )
 					{
 						Expression value = PopValue();
 
-						constructor.IncrementArrayCount();
-						constructor.Statement(
-							new Assign( value.SourceSpan,
-								new Index( value.SourceSpan,
-									constructorValue,
-									new Literal( value.SourceSpan, arrayKey ) ),
-								value ) );
-					}
-					else
-					{
-						block.Statement( new IndexMultipleValues( values.SourceSpan, constructorValue, arrayKey, values ) );
+						arrayCount += 1;
+						elements.Add( new ConstructorElement( value.SourceSpan, value ) );
 					}
 				}
 			}
@@ -1827,9 +1538,7 @@ public class LuaParser
 
 		Token endConstructor = Check( TokenKind.RightCurlyBracket, matchConstructor );
 		s = new SourceSpan( matchConstructor.SourceSpan.Start, endConstructor.SourceSpan.End );
-		constructor.SetSourceSpan( s );
-		constructorValue.SetSourceSpan( s );
-		PushExpression( constructorValue );
+		PushExpression( new Constructor( s, arrayCount, hashCount, elements.AsReadOnly(), elementList ) );
 	}
 
 
@@ -1994,11 +1703,11 @@ public class LuaParser
 		SourceSpan s = new SourceSpan( functionOrObject.SourceSpan.Start, end );
 	
 		// Check for multiple results.
-		Expression values = null;
+		Expression valueList = null;
 		if ( argumentcount > 0 )
 		{
-			values = PopMultipleValues();
-			if ( values != null )
+			valueList = PopValueList();
+			if ( valueList != null )
 			{
 				argumentcount -= 1;
 			}
@@ -2007,11 +1716,11 @@ public class LuaParser
 		// Create a call or self-call expression.
 		if ( methodName == null )
 		{
-			PushExpression( new Call( s, functionOrObject, PopValues( argumentcount ), values ) );
+			PushExpression( new Call( s, functionOrObject, PopValues( argumentcount ), valueList ) );
 		}
 		else
 		{
-			PushExpression( new CallSelf( s, functionOrObject, methodName, PopValues( argumentcount ), values ) );
+			PushExpression( new CallSelf( s, functionOrObject, methodName, PopValues( argumentcount ), valueList ) );
 		}
 	}
 
@@ -2203,7 +1912,7 @@ public class LuaParser
 	}
 
 
-	Expression PopMultipleValues()
+	Expression PopValueList()
 	{
 		Expression value = expression.Pop();
 

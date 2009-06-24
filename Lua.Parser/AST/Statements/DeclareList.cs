@@ -1,4 +1,4 @@
-﻿// MarkLabel.cs
+﻿// DeclareList.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -6,38 +6,33 @@
 
 
 using System;
+using System.Collections.Generic;
 
 
 namespace Lua.Parser.AST.Statements
 {
 
 
-public class MarkLabel
+public class DeclareList
 	:	Statement
 {
-	public LabelAST Label	{ get; private set; }
-	public Block	Block	{ get; private set; }
+	public IList< Variable >	Variables		{ get; private set; }
+	public Expression			ValueList		{ get; private set; }
 
-		
-	public MarkLabel( SourceSpan s, LabelAST label )
+
+	public DeclareList( SourceSpan s, IList< Variable > variables, Expression valueList )
 		:	base( s )
 	{
-		Label = label;
-		Block = null;
+		Variables	= variables;
+		ValueList	= valueList;
 	}
-	
 
-	public void SetBlock( Block block )
-	{
-		Block = block;
-		Label.SetBlock( Block );
-	}
-	
 
 	public override void Accept( IStatementVisitor s )
 	{
 		s.Visit( this );
 	}
+
 }
 
 

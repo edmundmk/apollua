@@ -19,6 +19,7 @@ public interface IExpressionVisitor
 	void Visit( Call e );
 	void Visit( CallSelf e );
 	void Visit( Comparison e );
+	void Visit( Constructor e );
 	void Visit( FunctionClosure e );
 	void Visit( GlobalRef e );
 	void Visit( Index e );
@@ -26,12 +27,8 @@ public interface IExpressionVisitor
 	void Visit( LocalRef e );
 	void Visit( Logical e );
 	void Visit( Not e );
-	void Visit( Temporary e );
-	void Visit( ToNumber e );
 	void Visit( Unary e );
 	void Visit( UpValRef e );
-	void Visit( ValueList e );
-	void Visit( ValueListElement e );
 	void Visit( Vararg e );
 }
 

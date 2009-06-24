@@ -46,6 +46,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ANormalTransform.cs" />
+    <Compile Include="AST\Expressions\Temporary.cs" />
+    <Compile Include="AST\Expressions\ToNumber.cs" />
+    <Compile Include="AST\Expressions\ValueList.cs" />
+    <Compile Include="AST\Expressions\ValueListElement.cs" />
     <Compile Include="LuaCLRCompiler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

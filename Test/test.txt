@@ -14,20 +14,20 @@ function bisect( f, a, b, fa, fb )
   local c = ( ( a + b ) / 2 )
   io[ "write" ]( n, " c=", c, " a=", a, " b=", b, "\n" )
   bfalse ( ( ( c == a ) or ( c == b ) ) or ( math[ "abs" ]( ( a - b ) ) < delta ) ) ifClause
-  block -- if
-    return multiple c, ( b - a )
+  do -- if
+    return c, ( b - a )
   end
 ifClause:
   n = ( n + 1 )
   local fc = f( c )
   bfalse ( ( fa * fc ) < 0 ) ifClause
-  block -- if
-    return multiple values bisect( f, a, c, fa, fc )
+  do -- if
+    return values bisect( f, a, c, fa, fc )
   end
   b ifEnd
 ifClause:
-  block -- else
-    return multiple values bisect( f, c, b, fc, fb )
+  do -- else
+    return values bisect( f, c, b, fc, fb )
   end
 ifEnd:
   return nil
@@ -37,9 +37,7 @@ function solve( f, a, b )
   -- local z, e
   -- local z, e
   n = 0
-  valuelist[ 0 -> 1 ] = values bisect( f, a, b, f( a ), values f( b ) )
-  local z = valuelist[ 0 ]
-  local e = valuelist[ 1 ]
+  local z, e = values bisect( f, a, b, f( a ), values f( b ) )
   io[ "write" ]( values string[ "format" ]( "after %d steps, root is %.17g with error %.1e, f=%.1e\n", n, z, e, values f( z ) ) )
   return nil
 end
@@ -49,208 +47,30 @@ function f( x )
 end
 
 function <chunk>( ... )
-  delta = 1E-06
-  bisect = function bisect
-  solve = function solve
-  f = function f
-  solve( f, 1, 2 )
-end
-
-function bisect( f, a, b, fa, fb )
-  -- multiple return
-  -- label ifClause, ifClause, ifEnd
-  -- local c, fc
-  -- local c, fc
-  local c = ( ( a + b ) / 2 )
-  io[ "write" ]( n, " c=", c, " a=", a, " b=", b, "\n" )
-  bfalse ( ( ( c == a ) or ( c == b ) ) or ( math[ "abs" ]( ( a - b ) ) < delta ) ) ifClause
-  block -- if
-    return multiple c, ( b - a )
-  end
-ifClause:
-  n = ( n + 1 )
-  local fc = f( c )
-  bfalse ( ( fa * fc ) < 0 ) ifClause
-  block -- if
-    return multiple values bisect( f, a, c, fa, fc )
-  end
-  b ifEnd
-ifClause:
-  block -- else
-    return multiple values bisect( f, c, b, fc, fb )
-  end
-ifEnd:
-  return nil
-end
-
-function solve( f, a, b )
-  -- local z, e
-  -- local z, e
-  n = 0
-  temporary 33C0D9D, temporary 11C7A8C = bisect( f, a, b, f( a ), values f( b ) )
-  local z = temporary 33C0D9D
-  local e = temporary 11C7A8C
-  io[ "write" ]( values string[ "format" ]( "after %d steps, root is %.17g with error %.1e, f=%.1e\n", n, z, e, values f( z ) ) )
-  return nil
-end
-
-function f( x )
-  return ( ( ( ( x * x ) * x ) - x ) - 1 )
-end
-
-function <chunk>( ... )
-  -- label fornum, fornumBreak, fornumContinue, fornum, fornumBreak, fornumContinue, fornum, fornumBreak, fornumContinue
-  -- local (for index), (for limit), (for step), c0, (for index), (for limit), (for step), c, (for index), (for limit), (for step), c
-  block -- fornum
-    -- local (for index), (for limit), (for step)
-    local (for index) = tonumber Minus 20
-    local (for limit) = tonumber ( 50 - 1 )
-    local (for step) = tonumber 10
-fornum:
-    bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) fornumBreak
-    block -- fornumBody
-      -- local c0
-      local c0 = (for index)
-      io[ "write" ]( "C " )
-      block -- fornum
-        -- local (for index), (for limit), (for step)
-        local (for index) = tonumber c0
-        local (for limit) = tonumber ( ( c0 + 10 ) - 1 )
-        local (for step) = tonumber 1
-fornum:
-        bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) fornumBreak
-        block -- fornumBody
-          -- local c
-          local c = (for index)
-          io[ "write" ]( values string[ "format" ]( "%3.0f ", c ) )
-        end
-fornumContinue:
-        (for index) = ( (for index) + (for step) )
-        b fornum
-fornumBreak:
-      end
-      io[ "write" ]( "\n" )
-      io[ "write" ]( "F " )
-      block -- fornum
-        -- local (for index), (for limit), (for step)
-        local (for index) = tonumber c0
-        local (for limit) = tonumber ( ( c0 + 10 ) - 1 )
-        local (for step) = tonumber 1
-fornum:
-        bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) fornumBreak
-        block -- fornumBody
-          -- local c
-          local c = (for index)
-          f = ( ( ( 9 / 5 ) * c ) + 32 )
-          io[ "write" ]( values string[ "format" ]( "%3.0f ", f ) )
-        end
-fornumContinue:
-        (for index) = ( (for index) + (for step) )
-        b fornum
-fornumBreak:
-      end
-      io[ "write" ]( "\n\n" )
+  -- local c0, c, c
+  for c0 = -20, ( 50 - 1 ), 10
+    -- local c0
+    io[ "write" ]( "C " )
+    for c = c0, ( ( c0 + 10 ) - 1 ), 1
+      -- local c
+      io[ "write" ]( values string[ "format" ]( "%3.0f ", c ) )
     end
-fornumContinue:
-    (for index) = ( (for index) + (for step) )
-    b fornum
-fornumBreak:
+    io[ "write" ]( "\n" )
+    io[ "write" ]( "F " )
+    for c = c0, ( ( c0 + 10 ) - 1 ), 1
+      -- local c
+      f = ( ( ( 9 / 5 ) * c ) + 32 )
+      io[ "write" ]( values string[ "format" ]( "%3.0f ", f ) )
+    end
+    io[ "write" ]( "\n\n" )
   end
 end
 
 function <chunk>( ... )
-  -- label fornum, fornumBreak, fornumContinue, fornum, fornumBreak, fornumContinue, fornum, fornumBreak, fornumContinue
-  -- local (for index), (for limit), (for step), c0, (for index), (for limit), (for step), c, (for index), (for limit), (for step), c
-  block -- fornum
-    local (for index) = tonumber Minus 20
-    local (for limit) = tonumber ( 50 - 1 )
-    local (for step) = tonumber 10
-    forprep (for index), (for limit), (for step) b fornumContinue
-fornum:
-    block -- fornumBody
-      -- local c0
-      local forindex c0
-      io[ "write" ]( "C " )
-      block -- fornum
-        local (for index) = tonumber c0
-        local (for limit) = tonumber ( ( c0 + 10 ) - 1 )
-        local (for step) = tonumber 1
-        forprep (for index), (for limit), (for step) b fornumContinue
-fornum:
-        block -- fornumBody
-          -- local c
-          local forindex c
-          io[ "write" ]( values string[ "format" ]( "%3.0f ", c ) )
-        end
-fornumContinue:
-        forloop (for index), (for limit), (for step), c b fornum
-fornumBreak:
-      end
-      io[ "write" ]( "\n" )
-      io[ "write" ]( "F " )
-      block -- fornum
-        local (for index) = tonumber c0
-        local (for limit) = tonumber ( ( c0 + 10 ) - 1 )
-        local (for step) = tonumber 1
-        forprep (for index), (for limit), (for step) b fornumContinue
-fornum:
-        block -- fornumBody
-          -- local c
-          local forindex c
-          f = ( ( ( 9 / 5 ) * c ) + 32 )
-          io[ "write" ]( values string[ "format" ]( "%3.0f ", f ) )
-        end
-fornumContinue:
-        forloop (for index), (for limit), (for step), c b fornum
-fornumBreak:
-      end
-      io[ "write" ]( "\n\n" )
-    end
-fornumContinue:
-    forloop (for index), (for limit), (for step), c0 b fornum
-fornumBreak:
-  end
-end
-
-function <chunk>( ... )
-  -- label fornum, fornumBreak, fornumContinue
-  -- local (for index), (for limit), (for step), i
-  block -- fornum
-    -- local (for index), (for limit), (for step)
-    local (for index) = tonumber 0
-    local (for limit) = tonumber table[ "getn" ]( arg )
-    local (for step) = tonumber 1
-fornum:
-    bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) fornumBreak
-    block -- fornumBody
-      -- local i
-      local i = (for index)
-      print( i, arg[ i ] )
-    end
-fornumContinue:
-    (for index) = ( (for index) + (for step) )
-    b fornum
-fornumBreak:
-  end
-end
-
-function <chunk>( ... )
-  -- label fornum, fornumBreak, fornumContinue
-  -- local (for index), (for limit), (for step), i
-  block -- fornum
-    local (for index) = tonumber 0
-    local (for limit) = tonumber table[ "getn" ]( arg )
-    local (for step) = tonumber 1
-    forprep (for index), (for limit), (for step) b fornumContinue
-fornum:
-    block -- fornumBody
-      -- local i
-      local forindex i
-      print( i, arg[ i ] )
-    end
-fornumContinue:
-    forloop (for index), (for limit), (for step), i b fornum
-fornumBreak:
+  -- local i
+  for i = 0, table[ "getn" ]( arg ), 1
+    -- local i
+    print( i, arg[ i ] )
   end
 end
 
@@ -258,57 +78,26 @@ function <chunk>( ... )
   -- local f
   -- local f
   local f = function x378734A
-  constructor temporary 33C0D9D array 0 hash 1
-    temporary 33C0D9D[ "__index" ] = f
-  end
-  setmetatable( getfenv(), temporary 33C0D9D )
+  setmetatable( getfenv(), {
+    [ "__index" ] = f;
+  } )
   print( a, USER, PATH )
 end
 
 function x378734A( t, i )
   -- multiple return
-  return multiple values os[ "getenv" ]( i )
+  return values os[ "getenv" ]( i )
 end
 
 function <chunk>( ... )
-  -- local f
-  -- local f
-  local f = function x11C7A8C
-  constructor temporary 33C0D9D array 0 hash 1
-    temporary 33C0D9D[ "__index" ] = f
-  end
-  setmetatable( getfenv(), temporary 33C0D9D )
-  print( a, USER, PATH )
-end
-
-function x11C7A8C( t, i )
-  -- multiple return
-  return multiple values os[ "getenv" ]( i )
-end
-
-function <chunk>( ... )
-  -- label fornum, fornumBreak, fornumContinue
-  -- local (for index), (for limit), (for step), n
+  -- local n
   Y = function x33C0D9D
   F = function x11C7A8C
   factorial = Y( F )
   test = function test
-  block -- fornum
-    -- local (for index), (for limit), (for step)
-    local (for index) = tonumber 0
-    local (for limit) = tonumber 16
-    local (for step) = tonumber 1
-fornum:
-    bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) fornumBreak
-    block -- fornumBody
-      -- local n
-      local n = (for index)
-      test( n )
-    end
-fornumContinue:
-    (for index) = ( (for index) + (for step) )
-    b fornum
-fornumBreak:
+  for n = 0, 16, 1
+    -- local n
+    test( n )
   end
 end
 
@@ -317,18 +106,18 @@ function x33C0D9D( g )
   -- local a
   -- local a
   local a = function x2004EEE
-  return multiple values a( function x202C666 )
+  return values a( function x202C666 )
 end
 
 function x2004EEE( f )
   -- multiple return
-  return multiple values f( f )
+  return values f( f )
 end
 
 function x202C666( f )
   -- multiple return
   -- upval g
-  return multiple values g( function x218F99C )
+  return values g( function x218F99C )
 end
 
 function x218F99C( x )
@@ -337,7 +126,7 @@ function x218F99C( x )
   -- local c
   -- local c
   local c = f( f )
-  return multiple values c( x )
+  return values c( x )
 end
 
 function x11C7A8C( f )
@@ -348,89 +137,12 @@ function x2E0C681( n )
   -- label ifClause, ifEnd
   -- upval f
   bfalse ( n == 0 ) ifClause
-  block -- if
+  do -- if
     return 1
   end
   b ifEnd
 ifClause:
-  block -- else
-    return ( n * f( ( n - 1 ) ) )
-  end
-ifEnd:
-  return nil
-end
-
-function test( x )
-  io[ "write" ]( x, "! = ", factorial( x ), "\n" )
-  return nil
-end
-
-function <chunk>( ... )
-  -- label fornum, fornumBreak, fornumContinue
-  -- local (for index), (for limit), (for step), n
-  Y = function x1E6FA8E
-  F = function x11ECF05
-  factorial = Y( F )
-  test = function test
-  block -- fornum
-    local (for index) = tonumber 0
-    local (for limit) = tonumber 16
-    local (for step) = tonumber 1
-    forprep (for index), (for limit), (for step) b fornumContinue
-fornum:
-    block -- fornumBody
-      -- local n
-      local forindex n
-      test( n )
-    end
-fornumContinue:
-    forloop (for index), (for limit), (for step), n b fornum
-fornumBreak:
-  end
-end
-
-function x1E6FA8E( g )
-  -- multiple return
-  -- local a
-  -- local a
-  local a = function x215472D
-  return multiple values a( function x2BF8098 )
-end
-
-function x215472D( f )
-  -- multiple return
-  return multiple values f( f )
-end
-
-function x2BF8098( f )
-  -- multiple return
-  -- upval g
-  return multiple values g( function xBB8560 )
-end
-
-function xBB8560( x )
-  -- multiple return
-  -- upval f
-  -- local c
-  -- local c
-  local c = f( f )
-  return multiple values c( x )
-end
-
-function x11ECF05( f )
-  return function x297B065
-end
-
-function x297B065( n )
-  -- label ifClause, ifEnd
-  -- upval f
-  bfalse ( n == 0 ) ifClause
-  block -- if
-    return 1
-  end
-  b ifEnd
-ifClause:
-  block -- else
+  do -- else
     return ( n * f( ( n - 1 ) ) )
   end
 ifEnd:
@@ -458,12 +170,12 @@ function fib( n )
   -- label ifClause, ifEnd
   N = ( N + 1 )
   bfalse ( n < 2 ) ifClause
-  block -- if
+  do -- if
     return n
   end
   b ifEnd
 ifClause:
-  block -- else
+  do -- else
     return ( fib( ( n - 1 ) ) + fib( ( n - 2 ) ) )
   end
 ifEnd:
@@ -473,20 +185,19 @@ end
 function cache( f )
   -- local c
   -- local c
-  constructor temporary 33C0D9D array 0 hash 0
-  end
-  local c = temporary 33C0D9D
-  return function x11C7A8C
+  local c = {
+  }
+  return function x33C0D9D
 end
 
-function x11C7A8C( x )
+function x33C0D9D( x )
   -- label ifClause
   -- upval c, f
   -- local y
   -- local y
   local y = c[ x ]
   bfalse not y ifClause
-  block -- if
+  do -- if
     y = f( x )
     c[ x ] = y
   end
@@ -506,94 +217,17 @@ function test( s, f )
 end
 
 function <chunk>( ... )
-  fib = function fib
-  cache = function cache
-  test = function test
-  n = ( arg[ 1 ] or 24 )
-  n = tonumber( n )
-  print( "", "n", "value", "time", "evals" )
-  test( "plain", fib )
-  fib = cache( fib )
-  test( "cached", fib )
-end
-
-function fib( n )
-  -- label ifClause, ifEnd
-  N = ( N + 1 )
-  bfalse ( n < 2 ) ifClause
-  block -- if
-    return n
-  end
-  b ifEnd
-ifClause:
-  block -- else
-    return ( fib( ( n - 1 ) ) + fib( ( n - 2 ) ) )
-  end
-ifEnd:
-  return nil
-end
-
-function cache( f )
-  -- local c
-  -- local c
-  constructor temporary 33C0D9D array 0 hash 0
-  end
-  local c = temporary 33C0D9D
-  return function x2004EEE
-end
-
-function x2004EEE( x )
-  -- label ifClause
-  -- upval c, f
-  -- local y
-  -- local y
-  local y = c[ x ]
-  bfalse not y ifClause
-  block -- if
-    y = f( x )
-    c[ x ] = y
-  end
-ifClause:
-  return y
-end
-
-function test( s, f )
-  -- local c, v, t
-  -- local c, v, t
-  N = 0
-  local c = os[ "clock" ]()
-  local v = f( n )
-  local t = ( os[ "clock" ]() - c )
-  print( s, n, v, t, N )
-  return nil
-end
-
-function <chunk>( ... )
-  -- label forlistBreak, forlistContinue
-  -- local (for generator), (for state), (for control), i
+  -- local i
   generatefib = function generatefib
-  block -- forlist
-    -- local (for generator), (for state), (for control)
-    valuelist[ 0 -> 2 ] = values generatefib( 1000 )
-    local (for generator) = valuelist[ 0 ]
-    local (for state) = valuelist[ 1 ]
-    local (for control) = valuelist[ 2 ]
-forlistContinue:
-    block -- forlistBody
-      -- local i
-      local i = (for generator)( (for state), (for control) )
-      (for control) = i
-      bfalse ( (for control) != nil ) forlistBreak
-      print( i )
-    end
-    b forlistContinue
-forlistBreak:
+  forlist i = values generatefib( 1000 )
+    -- local i
+    print( i )
   end
 end
 
 function generatefib( n )
   -- multiple return
-  return multiple values coroutine[ "wrap" ]( function x33C0D9D )
+  return values coroutine[ "wrap" ]( function x33C0D9D )
 end
 
 function x33C0D9D()
@@ -605,60 +239,9 @@ function x33C0D9D()
   local b = 1
 whileContinue:
   bfalse ( a <= n ) whileBreak
-  block -- while
+  do -- while
     coroutine[ "yield" ]( a )
-    temporary 11C7A8C = b
-    temporary 2004EEE = ( a + b )
-    a = temporary 11C7A8C
-    b = temporary 2004EEE
-  end
-  b whileContinue
-whileBreak:
-  return nil
-end
-
-function <chunk>( ... )
-  -- label forlistBreak, forlistContinue, forlist
-  -- local (for generator), (for state), (for control), i
-  generatefib = function generatefib
-  block -- forlist
-    temporary 202C666, temporary 218F99C, temporary 2E0C681 = generatefib( 1000 )
-    local (for generator) = temporary 202C666
-    local (for state) = temporary 218F99C
-    local (for control) = temporary 2E0C681
-    b forlistContinue
-forlist:
-    block -- forlistBody
-      -- local i
-      local forindex i
-      print( i )
-    end
-forlistContinue:
-    tforloop i = (for generator)( (for state), (for control) ) b forlist
-forlistBreak:
-  end
-end
-
-function generatefib( n )
-  -- multiple return
-  return multiple values coroutine[ "wrap" ]( function x1E6FA8E )
-end
-
-function x1E6FA8E()
-  -- label whileBreak, whileContinue
-  -- upval n
-  -- local a, b
-  -- local a, b
-  local a = 1
-  local b = 1
-whileContinue:
-  bfalse ( a <= n ) whileBreak
-  block -- while
-    coroutine[ "yield" ]( a )
-    temporary 11C7A8C = b
-    temporary 2004EEE = ( a + b )
-    a = temporary 11C7A8C
-    b = temporary 2004EEE
+    a, b = b, ( a + b )
   end
   b whileContinue
 whileBreak:
@@ -670,29 +253,24 @@ function <chunk>( ... )
   -- local s, ok, _, l, op, g
 whileContinue:
   bfalse 1 whileBreak
-  block -- while
+  do -- while
     -- local s, ok, _, l, op, g
     local s = io[ "read" ]()
     bfalse ( s == nil ) ifClause
-    block -- if
+    do -- if
       b whileBreak
     end
 ifClause:
-    valuelist[ 0 -> 4 ] = values string[ "find" ]( s, "%[%-?(%d*)%]%s*([GS])ETGLOBAL.-;%s+(.*)$" )
-    local ok = valuelist[ 0 ]
-    local _ = valuelist[ 1 ]
-    local l = valuelist[ 2 ]
-    local op = valuelist[ 3 ]
-    local g = valuelist[ 4 ]
+    local ok, _, l, op, g = values string[ "find" ]( s, "%[%-?(%d*)%]%s*([GS])ETGLOBAL.-;%s+(.*)$" )
     bfalse ok ifClause
-    block -- if
+    do -- if
       bfalse ( op == "S" ) ifClause
-      block -- if
+      do -- if
         op = "*"
       end
       b ifEnd
 ifClause:
-      block -- else
+      do -- else
         op = ""
       end
 ifEnd:
@@ -702,49 +280,6 @@ ifClause:
   end
   b whileContinue
 whileBreak:
-end
-
-function <chunk>( ... )
-  -- label whileBreak, whileContinue, ifClause, ifClause, ifClause, ifEnd
-  -- local s, ok, _, l, op, g
-whileContinue:
-  bfalse 1 whileBreak
-  block -- while
-    -- local s, ok, _, l, op, g
-    local s = io[ "read" ]()
-    bfalse ( s == nil ) ifClause
-    block -- if
-      b whileBreak
-    end
-ifClause:
-    temporary 33C0D9D, temporary 11C7A8C, temporary 2004EEE, temporary 202C666, temporary 218F99C = string[ "find" ]( s, "%[%-?(%d*)%]%s*([GS])ETGLOBAL.-;%s+(.*)$" )
-    local ok = temporary 33C0D9D
-    local _ = temporary 11C7A8C
-    local l = temporary 2004EEE
-    local op = temporary 202C666
-    local g = temporary 218F99C
-    bfalse ok ifClause
-    block -- if
-      bfalse ( op == "S" ) ifClause
-      block -- if
-        op = "*"
-      end
-      b ifEnd
-ifClause:
-      block -- else
-        op = ""
-      end
-ifEnd:
-      io[ "write" ]( g, "	", l, op, "\n" )
-    end
-ifClause:
-  end
-  b whileContinue
-whileBreak:
-end
-
-function <chunk>( ... )
-  io[ "write" ]( "Hello world, from ", _VERSION, "!\n" )
 end
 
 function <chunk>( ... )
@@ -761,222 +296,146 @@ function <chunk>( ... )
   DEAD = "-"
   delay = function delay
   ARRAY2D = function ARRAY2D
-  constructor temporary 33C0D9D array 0 hash 0
-  end
-  _CELLS = temporary 33C0D9D
+  _CELLS = {
+  }
   _CELLS[ "spawn" ] = function _CELLS:spawn
   _CELLS[ "evolve" ] = function _CELLS:evolve
   _CELLS[ "draw" ] = function _CELLS:draw
   CELLS = function CELLS
-  constructor temporary 11C7A8C array 9 hash 2
-    temporary 11C7A8C[ 1 ] = 1
-    temporary 11C7A8C[ 2 ] = 0
-    temporary 11C7A8C[ 3 ] = 1
-    temporary 11C7A8C[ 4 ] = 1
-    temporary 11C7A8C[ 5 ] = 0
-    temporary 11C7A8C[ 6 ] = 1
-    temporary 11C7A8C[ 7 ] = 1
-    temporary 11C7A8C[ 8 ] = 1
-    temporary 11C7A8C[ 9 ] = 1
-    temporary 11C7A8C[ "w" ] = 3
-    temporary 11C7A8C[ "h" ] = 3
-  end
-  HEART = temporary 11C7A8C
-  constructor temporary 2004EEE array 9 hash 2
-    temporary 2004EEE[ 1 ] = 0
-    temporary 2004EEE[ 2 ] = 0
-    temporary 2004EEE[ 3 ] = 1
-    temporary 2004EEE[ 4 ] = 1
-    temporary 2004EEE[ 5 ] = 0
-    temporary 2004EEE[ 6 ] = 1
-    temporary 2004EEE[ 7 ] = 0
-    temporary 2004EEE[ 8 ] = 1
-    temporary 2004EEE[ 9 ] = 1
-    temporary 2004EEE[ "w" ] = 3
-    temporary 2004EEE[ "h" ] = 3
-  end
-  GLIDER = temporary 2004EEE
-  constructor temporary 202C666 array 12 hash 2
-    temporary 202C666[ 1 ] = 0
-    temporary 202C666[ 2 ] = 1
-    temporary 202C666[ 3 ] = 0
-    temporary 202C666[ 4 ] = 1
-    temporary 202C666[ 5 ] = 1
-    temporary 202C666[ 6 ] = 1
-    temporary 202C666[ 7 ] = 1
-    temporary 202C666[ 8 ] = 0
-    temporary 202C666[ 9 ] = 1
-    temporary 202C666[ 10 ] = 0
-    temporary 202C666[ 11 ] = 1
-    temporary 202C666[ 12 ] = 0
-    temporary 202C666[ "w" ] = 3
-    temporary 202C666[ "h" ] = 4
-  end
-  EXPLODE = temporary 202C666
-  constructor temporary 218F99C array 20 hash 2
-    temporary 218F99C[ 1 ] = 0
-    temporary 218F99C[ 2 ] = 1
-    temporary 218F99C[ 3 ] = 1
-    temporary 218F99C[ 4 ] = 1
-    temporary 218F99C[ 5 ] = 1
-    temporary 218F99C[ 6 ] = 1
-    temporary 218F99C[ 7 ] = 0
-    temporary 218F99C[ 8 ] = 0
-    temporary 218F99C[ 9 ] = 0
-    temporary 218F99C[ 10 ] = 1
-    temporary 218F99C[ 11 ] = 0
-    temporary 218F99C[ 12 ] = 0
-    temporary 218F99C[ 13 ] = 0
-    temporary 218F99C[ 14 ] = 0
-    temporary 218F99C[ 15 ] = 1
-    temporary 218F99C[ 16 ] = 1
-    temporary 218F99C[ 17 ] = 0
-    temporary 218F99C[ 18 ] = 0
-    temporary 218F99C[ 19 ] = 1
-    temporary 218F99C[ 20 ] = 0
-    temporary 218F99C[ "w" ] = 5
-    temporary 218F99C[ "h" ] = 4
-  end
-  FISH = temporary 218F99C
-  constructor temporary 2E0C681 array 25 hash 2
-    temporary 2E0C681[ 1 ] = 1
-    temporary 2E0C681[ 2 ] = 0
-    temporary 2E0C681[ 3 ] = 0
-    temporary 2E0C681[ 4 ] = 0
-    temporary 2E0C681[ 5 ] = 1
-    temporary 2E0C681[ 6 ] = 0
-    temporary 2E0C681[ 7 ] = 1
-    temporary 2E0C681[ 8 ] = 1
-    temporary 2E0C681[ 9 ] = 1
-    temporary 2E0C681[ 10 ] = 0
-    temporary 2E0C681[ 11 ] = 1
-    temporary 2E0C681[ 12 ] = 0
-    temporary 2E0C681[ 13 ] = 0
-    temporary 2E0C681[ 14 ] = 0
-    temporary 2E0C681[ 15 ] = 1
-    temporary 2E0C681[ 16 ] = 1
-    temporary 2E0C681[ 17 ] = 0
-    temporary 2E0C681[ 18 ] = 1
-    temporary 2E0C681[ 19 ] = 0
-    temporary 2E0C681[ 20 ] = 1
-    temporary 2E0C681[ 21 ] = 1
-    temporary 2E0C681[ 22 ] = 0
-    temporary 2E0C681[ 23 ] = 0
-    temporary 2E0C681[ 24 ] = 0
-    temporary 2E0C681[ 25 ] = 1
-    temporary 2E0C681[ "w" ] = 5
-    temporary 2E0C681[ "h" ] = 5
-  end
-  BUTTERFLY = temporary 2E0C681
+  HEART = {
+    1;
+    0;
+    1;
+    1;
+    0;
+    1;
+    1;
+    1;
+    1;
+    [ "w" ] = 3;
+    [ "h" ] = 3;
+  }
+  GLIDER = {
+    0;
+    0;
+    1;
+    1;
+    0;
+    1;
+    0;
+    1;
+    1;
+    [ "w" ] = 3;
+    [ "h" ] = 3;
+  }
+  EXPLODE = {
+    0;
+    1;
+    0;
+    1;
+    1;
+    1;
+    1;
+    0;
+    1;
+    0;
+    1;
+    0;
+    [ "w" ] = 3;
+    [ "h" ] = 4;
+  }
+  FISH = {
+    0;
+    1;
+    1;
+    1;
+    1;
+    1;
+    0;
+    0;
+    0;
+    1;
+    0;
+    0;
+    0;
+    0;
+    1;
+    1;
+    0;
+    0;
+    1;
+    0;
+    [ "w" ] = 5;
+    [ "h" ] = 4;
+  }
+  BUTTERFLY = {
+    1;
+    0;
+    0;
+    0;
+    1;
+    0;
+    1;
+    1;
+    1;
+    0;
+    1;
+    0;
+    0;
+    0;
+    1;
+    1;
+    0;
+    1;
+    0;
+    1;
+    1;
+    0;
+    0;
+    0;
+    1;
+    [ "w" ] = 5;
+    [ "h" ] = 5;
+  }
   LIFE = function LIFE
   LIFE( 40, 20 )
 end
 
 function delay()
-  -- label fornum, fornumBreak, fornumContinue
-  -- local (for index), (for limit), (for step), i
-  block -- fornum
-    -- local (for index), (for limit), (for step)
-    local (for index) = tonumber 1
-    local (for limit) = tonumber 10000
-    local (for step) = tonumber 1
-fornum:
-    bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) fornumBreak
-    block -- fornumBody
-      -- local i
-      local i = (for index)
-    end
-fornumContinue:
-    (for index) = ( (for index) + (for step) )
-    b fornum
-fornumBreak:
+  -- local i
+  for i = 1, 10000, 1
+    -- local i
   end
   return nil
 end
 
 function ARRAY2D( w, h )
-  -- label fornum, fornumBreak, fornumContinue, fornum, fornumBreak, fornumContinue
-  -- local t, (for index), (for limit), (for step), y, (for index), (for limit), (for step), x
+  -- local t, y, x
   -- local t
-  constructor temporary 1E6FA8E array 0 hash 2
-    temporary 1E6FA8E[ "w" ] = w
-    temporary 1E6FA8E[ "h" ] = h
-  end
-  local t = temporary 1E6FA8E
-  block -- fornum
-    -- local (for index), (for limit), (for step)
-    local (for index) = tonumber 1
-    local (for limit) = tonumber h
-    local (for step) = tonumber 1
-fornum:
-    bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) fornumBreak
-    block -- fornumBody
-      -- local y
-      local y = (for index)
-      constructor temporary 11ECF05 array 0 hash 0
-      end
-      t[ y ] = temporary 11ECF05
-      block -- fornum
-        -- local (for index), (for limit), (for step)
-        local (for index) = tonumber 1
-        local (for limit) = tonumber w
-        local (for step) = tonumber 1
-fornum:
-        bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) fornumBreak
-        block -- fornumBody
-          -- local x
-          local x = (for index)
-          t[ y ][ x ] = 0
-        end
-fornumContinue:
-        (for index) = ( (for index) + (for step) )
-        b fornum
-fornumBreak:
-      end
+  local t = {
+    [ "w" ] = w;
+    [ "h" ] = h;
+  }
+  for y = 1, h, 1
+    -- local y
+    t[ y ] = {
+    }
+    for x = 1, w, 1
+      -- local x
+      t[ y ][ x ] = 0
     end
-fornumContinue:
-    (for index) = ( (for index) + (for step) )
-    b fornum
-fornumBreak:
   end
   return t
 end
 
 function _CELLS:spawn( self, shape, left, top )
-  -- label fornum, fornumBreak, fornumContinue, fornum, fornumBreak, fornumContinue
-  -- local (for index), (for limit), (for step), y, (for index), (for limit), (for step), x
-  block -- fornum
-    -- local (for index), (for limit), (for step)
-    local (for index) = tonumber 0
-    local (for limit) = tonumber ( shape[ "h" ] - 1 )
-    local (for step) = tonumber 1
-fornum:
-    bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) fornumBreak
-    block -- fornumBody
-      -- local y
-      local y = (for index)
-      block -- fornum
-        -- local (for index), (for limit), (for step)
-        local (for index) = tonumber 0
-        local (for limit) = tonumber ( shape[ "w" ] - 1 )
-        local (for step) = tonumber 1
-fornum:
-        bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) fornumBreak
-        block -- fornumBody
-          -- local x
-          local x = (for index)
-          self[ ( top + y ) ][ ( left + x ) ] = shape[ ( ( ( y * shape[ "w" ] ) + x ) + 1 ) ]
-        end
-fornumContinue:
-        (for index) = ( (for index) + (for step) )
-        b fornum
-fornumBreak:
-      end
+  -- local y, x
+  for y = 0, ( shape[ "h" ] - 1 ), 1
+    -- local y
+    for x = 0, ( shape[ "w" ] - 1 ), 1
+      -- local x
+      self[ ( top + y ) ][ ( left + x ) ] = shape[ ( ( ( y * shape[ "w" ] ) + x ) + 1 ) ]
     end
-fornumContinue:
-    (for index) = ( (for index) + (for step) )
-    b fornum
-fornumBreak:
   end
   return nil
 end
@@ -991,7 +450,7 @@ function _CELLS:evolve( self, next )
   local yi = self[ "h" ]
 whileContinue:
   bfalse ( yi > 0 ) whileBreak
-  block -- while
+  do -- while
     -- local xm1, x, xp1, xi
     local xm1 = ( self[ "w" ] - 1 )
     local x = self[ "w" ]
@@ -999,29 +458,15 @@ whileContinue:
     local xi = self[ "w" ]
 whileContinue:
     bfalse ( xi > 0 ) whileBreak
-    block -- while
+    do -- while
       -- local sum
       local sum = ( ( ( ( ( ( ( self[ ym1 ][ xm1 ] + self[ ym1 ][ x ] ) + self[ ym1 ][ xp1 ] ) + self[ y ][ xm1 ] ) + self[ y ][ xp1 ] ) + self[ yp1 ][ xm1 ] ) + self[ yp1 ][ x ] ) + self[ yp1 ][ xp1 ] )
       next[ y ][ x ] = ( ( ( ( sum == 2 ) and self[ y ][ x ] ) or ( ( sum == 3 ) and 1 ) ) or 0 )
-      temporary 215472D = x
-      temporary 2BF8098 = xp1
-      temporary BB8560 = ( xp1 + 1 )
-      temporary 297B065 = ( xi - 1 )
-      xm1 = temporary 215472D
-      x = temporary 2BF8098
-      xp1 = temporary BB8560
-      xi = temporary 297B065
+      xm1, x, xp1, xi = x, xp1, ( xp1 + 1 ), ( xi - 1 )
     end
     b whileContinue
 whileBreak:
-    temporary 3553390 = y
-    temporary 1FED012 = yp1
-    temporary 1F550A4 = ( yp1 + 1 )
-    temporary 19FD5C7 = ( yi - 1 )
-    ym1 = temporary 3553390
-    y = temporary 1FED012
-    yp1 = temporary 1F550A4
-    yi = temporary 19FD5C7
+    ym1, y, yp1, yi = y, yp1, ( yp1 + 1 ), ( yi - 1 )
   end
   b whileContinue
 whileBreak:
@@ -1029,44 +474,17 @@ whileBreak:
 end
 
 function _CELLS:draw( self )
-  -- label fornum, fornumBreak, fornumContinue, fornum, fornumBreak, fornumContinue
   -- upval write
-  -- local out, (for index), (for limit), (for step), y, (for index), (for limit), (for step), x
+  -- local out, y, x
   -- local out
   local out = ""
-  block -- fornum
-    -- local (for index), (for limit), (for step)
-    local (for index) = tonumber 1
-    local (for limit) = tonumber self[ "h" ]
-    local (for step) = tonumber 1
-fornum:
-    bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) fornumBreak
-    block -- fornumBody
-      -- local y
-      local y = (for index)
-      block -- fornum
-        -- local (for index), (for limit), (for step)
-        local (for index) = tonumber 1
-        local (for limit) = tonumber self[ "w" ]
-        local (for step) = tonumber 1
-fornum:
-        bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) fornumBreak
-        block -- fornumBody
-          -- local x
-          local x = (for index)
-          out = ( out .. ( ( ( self[ y ][ x ] > 0 ) and ALIVE ) or DEAD ) )
-        end
-fornumContinue:
-        (for index) = ( (for index) + (for step) )
-        b fornum
-fornumBreak:
-      end
-      out = ( out .. "\n" )
+  for y = 1, self[ "h" ], 1
+    -- local y
+    for x = 1, self[ "w" ], 1
+      -- local x
+      out = ( out .. ( ( ( self[ y ][ x ] > 0 ) and ALIVE ) or DEAD ) )
     end
-fornumContinue:
-    (for index) = ( (for index) + (for step) )
-    b fornum
-fornumBreak:
+    out = ( out .. "\n" )
   end
   write( out )
   return nil
@@ -1096,455 +514,15 @@ function LIFE( w, h )
   write( "[2J" )
 whileContinue:
   bfalse 1 whileBreak
-  block -- while
+  do -- while
     thisgen:evolve( nextgen )
-    temporary 29E8405 = nextgen
-    temporary 392A42D = thisgen
-    thisgen = temporary 29E8405
-    nextgen = temporary 392A42D
+    thisgen, nextgen = nextgen, thisgen
     write( "[H" )
     thisgen:draw()
     write( "Life - generation ", gen, "\n" )
     gen = ( gen + 1 )
     bfalse ( gen > 2000 ) ifClause
-    block -- if
-      b whileBreak
-    end
-ifClause:
-  end
-  b whileContinue
-whileBreak:
-  return nil
-end
-
-function <chunk>( ... )
-  -- local write
-  -- local write
-  local write = io[ "write" ]
-  ALIVE = "?"
-  DEAD = "?"
-  ALIVE = "O"
-  DEAD = "-"
-  delay = function delay
-  ARRAY2D = function ARRAY2D
-  constructor temporary 33C0D9D array 0 hash 0
-  end
-  _CELLS = temporary 33C0D9D
-  _CELLS[ "spawn" ] = function _CELLS:spawn
-  _CELLS[ "evolve" ] = function _CELLS:evolve
-  _CELLS[ "draw" ] = function _CELLS:draw
-  CELLS = function CELLS
-  constructor temporary 11C7A8C array 9 hash 2
-    temporary 27C59A = 1
-    temporary 165F26B = 0
-    temporary 9585CB = 1
-    temporary 141B42A = 1
-    temporary 34F5582 = 0
-    temporary 1CA0192 = 1
-    temporary 1A0E24 = 1
-    temporary EA7F4A = 1
-    temporary 3E799B = 1
-    temporary 11C7A8C[ "w" ] = 3
-    temporary 11C7A8C[ "h" ] = 3
-    setlist temporary 11C7A8C[ 1 -> ]
-      temporary 27C59A
-      temporary 165F26B
-      temporary 9585CB
-      temporary 141B42A
-      temporary 34F5582
-      temporary 1CA0192
-      temporary 1A0E24
-      temporary EA7F4A
-      temporary 3E799B
-    end
-  end
-  HEART = temporary 11C7A8C
-  constructor temporary 2004EEE array 9 hash 2
-    temporary 232467A = 0
-    temporary 3C47A4F = 0
-    temporary 1E84CCB = 1
-    temporary 12AB327 = 1
-    temporary 2804C64 = 0
-    temporary 282AF8C = 1
-    temporary 2982BEE = 0
-    temporary 3598B65 = 1
-    temporary 225E691 = 1
-    temporary 2004EEE[ "w" ] = 3
-    temporary 2004EEE[ "h" ] = 3
-    setlist temporary 2004EEE[ 1 -> ]
-      temporary 232467A
-      temporary 3C47A4F
-      temporary 1E84CCB
-      temporary 12AB327
-      temporary 2804C64
-      temporary 282AF8C
-      temporary 2982BEE
-      temporary 3598B65
-      temporary 225E691
-    end
-  end
-  GLIDER = temporary 2004EEE
-  constructor temporary 202C666 array 12 hash 2
-    temporary 3551B1B = 0
-    temporary 1FDF3F4 = 1
-    temporary 1ED9395 = 0
-    temporary 15A303F = 1
-    temporary 2BB23B = 1
-    temporary 189441B = 1
-    temporary 1D364F7 = 1
-    temporary 6E8CAF = 0
-    temporary 3E2F22E = 1
-    temporary 2FA83A4 = 0
-    temporary 2CEA0CA = 1
-    temporary 143A722 = 0
-    temporary 202C666[ "w" ] = 3
-    temporary 202C666[ "h" ] = 4
-    setlist temporary 202C666[ 1 -> ]
-      temporary 3551B1B
-      temporary 1FDF3F4
-      temporary 1ED9395
-      temporary 15A303F
-      temporary 2BB23B
-      temporary 189441B
-      temporary 1D364F7
-      temporary 6E8CAF
-      temporary 3E2F22E
-      temporary 2FA83A4
-      temporary 2CEA0CA
-      temporary 143A722
-    end
-  end
-  EXPLODE = temporary 202C666
-  constructor temporary 218F99C array 20 hash 2
-    temporary 360E033 = 0
-    temporary 267E1D0 = 1
-    temporary 1A6F050 = 1
-    temporary 2DE72D6 = 1
-    temporary 1D2098A = 1
-    temporary 6255DD = 1
-    temporary 37504C8 = 0
-    temporary 31D2B0C = 0
-    temporary 68373 = 0
-    temporary 3A9F0C = 1
-    temporary 20F9772 = 0
-    temporary 28C5305 = 0
-    temporary 2EEEB2E = 0
-    temporary 266449E = 0
-    temporary 198698E = 1
-    temporary 25BB5FF = 1
-    temporary 13965FA = 0
-    temporary 30495D1 = 0
-    temporary 329445B = 1
-    temporary 73673B = 0
-    temporary 218F99C[ "w" ] = 5
-    temporary 218F99C[ "h" ] = 4
-    setlist temporary 218F99C[ 1 -> ]
-      temporary 360E033
-      temporary 267E1D0
-      temporary 1A6F050
-      temporary 2DE72D6
-      temporary 1D2098A
-      temporary 6255DD
-      temporary 37504C8
-      temporary 31D2B0C
-      temporary 68373
-      temporary 3A9F0C
-      temporary 20F9772
-      temporary 28C5305
-      temporary 2EEEB2E
-      temporary 266449E
-      temporary 198698E
-      temporary 25BB5FF
-      temporary 13965FA
-      temporary 30495D1
-      temporary 329445B
-      temporary 73673B
-    end
-  end
-  FISH = temporary 218F99C
-  constructor temporary 2E0C681 array 25 hash 2
-    temporary EA119 = 1
-    temporary 83A9E6 = 0
-    temporary A0F91B = 0
-    temporary 1A8C1FA = 0
-    temporary 2EED1CA = 1
-    temporary 265601D = 0
-    temporary 190610D = 1
-    temporary 213697A = 1
-    temporary 2AEB54D = 1
-    temporary 245FB7 = 0
-    temporary 1475D71 = 1
-    temporary 38248FC = 0
-    temporary 39490E2 = 0
-    temporary 3917F2 = 0
-    temporary 201D787 = 1
-    temporary 21093C0 = 1
-    temporary 29531C8 = 0
-    temporary 33EC00F = 1
-    temporary 134C08F = 0
-    temporary 2DAC507 = 1
-    temporary 1B0ED41 = 1
-    temporary 338574F = 0
-    temporary FB11C8 = 0
-    temporary D3A00F = 0
-    temporary 370A08C = 1
-    temporary 2E0C681[ "w" ] = 5
-    temporary 2E0C681[ "h" ] = 5
-    setlist temporary 2E0C681[ 1 -> ]
-      temporary EA119
-      temporary 83A9E6
-      temporary A0F91B
-      temporary 1A8C1FA
-      temporary 2EED1CA
-      temporary 265601D
-      temporary 190610D
-      temporary 213697A
-      temporary 2AEB54D
-      temporary 245FB7
-      temporary 1475D71
-      temporary 38248FC
-      temporary 39490E2
-      temporary 3917F2
-      temporary 201D787
-      temporary 21093C0
-      temporary 29531C8
-      temporary 33EC00F
-      temporary 134C08F
-      temporary 2DAC507
-      temporary 1B0ED41
-      temporary 338574F
-      temporary FB11C8
-      temporary D3A00F
-      temporary 370A08C
-    end
-  end
-  BUTTERFLY = temporary 2E0C681
-  LIFE = function LIFE
-  LIFE( 40, 20 )
-end
-
-function delay()
-  -- label fornum, fornumBreak, fornumContinue
-  -- local (for index), (for limit), (for step), i
-  block -- fornum
-    local (for index) = tonumber 1
-    local (for limit) = tonumber 10000
-    local (for step) = tonumber 1
-    forprep (for index), (for limit), (for step) b fornumContinue
-fornum:
-    block -- fornumBody
-      -- local i
-      local forindex i
-    end
-fornumContinue:
-    forloop (for index), (for limit), (for step), i b fornum
-fornumBreak:
-  end
-  return nil
-end
-
-function ARRAY2D( w, h )
-  -- label fornum, fornumBreak, fornumContinue, fornum, fornumBreak, fornumContinue
-  -- local t, (for index), (for limit), (for step), y, (for index), (for limit), (for step), x
-  -- local t
-  constructor temporary 1E6FA8E array 0 hash 2
-    temporary 1E6FA8E[ "w" ] = w
-    temporary 1E6FA8E[ "h" ] = h
-  end
-  local t = temporary 1E6FA8E
-  block -- fornum
-    local (for index) = tonumber 1
-    local (for limit) = tonumber h
-    local (for step) = tonumber 1
-    forprep (for index), (for limit), (for step) b fornumContinue
-fornum:
-    block -- fornumBody
-      -- local y
-      local forindex y
-      constructor temporary 11ECF05 array 0 hash 0
-      end
-      t[ y ] = temporary 11ECF05
-      block -- fornum
-        local (for index) = tonumber 1
-        local (for limit) = tonumber w
-        local (for step) = tonumber 1
-        forprep (for index), (for limit), (for step) b fornumContinue
-fornum:
-        block -- fornumBody
-          -- local x
-          local forindex x
-          t[ y ][ x ] = 0
-        end
-fornumContinue:
-        forloop (for index), (for limit), (for step), x b fornum
-fornumBreak:
-      end
-    end
-fornumContinue:
-    forloop (for index), (for limit), (for step), y b fornum
-fornumBreak:
-  end
-  return t
-end
-
-function _CELLS:spawn( self, shape, left, top )
-  -- label fornum, fornumBreak, fornumContinue, fornum, fornumBreak, fornumContinue
-  -- local (for index), (for limit), (for step), y, (for index), (for limit), (for step), x
-  block -- fornum
-    local (for index) = tonumber 0
-    local (for limit) = tonumber ( shape[ "h" ] - 1 )
-    local (for step) = tonumber 1
-    forprep (for index), (for limit), (for step) b fornumContinue
-fornum:
-    block -- fornumBody
-      -- local y
-      local forindex y
-      block -- fornum
-        local (for index) = tonumber 0
-        local (for limit) = tonumber ( shape[ "w" ] - 1 )
-        local (for step) = tonumber 1
-        forprep (for index), (for limit), (for step) b fornumContinue
-fornum:
-        block -- fornumBody
-          -- local x
-          local forindex x
-          self[ ( top + y ) ][ ( left + x ) ] = shape[ ( ( ( y * shape[ "w" ] ) + x ) + 1 ) ]
-        end
-fornumContinue:
-        forloop (for index), (for limit), (for step), x b fornum
-fornumBreak:
-      end
-    end
-fornumContinue:
-    forloop (for index), (for limit), (for step), y b fornum
-fornumBreak:
-  end
-  return nil
-end
-
-function _CELLS:evolve( self, next )
-  -- label whileBreak, whileContinue, whileBreak, whileContinue
-  -- local ym1, y, yp1, yi, xm1, x, xp1, xi, sum
-  -- local ym1, y, yp1, yi
-  local ym1 = ( self[ "h" ] - 1 )
-  local y = self[ "h" ]
-  local yp1 = 1
-  local yi = self[ "h" ]
-whileContinue:
-  bfalse ( yi > 0 ) whileBreak
-  block -- while
-    -- local xm1, x, xp1, xi
-    local xm1 = ( self[ "w" ] - 1 )
-    local x = self[ "w" ]
-    local xp1 = 1
-    local xi = self[ "w" ]
-whileContinue:
-    bfalse ( xi > 0 ) whileBreak
-    block -- while
-      -- local sum
-      local sum = ( ( ( ( ( ( ( self[ ym1 ][ xm1 ] + self[ ym1 ][ x ] ) + self[ ym1 ][ xp1 ] ) + self[ y ][ xm1 ] ) + self[ y ][ xp1 ] ) + self[ yp1 ][ xm1 ] ) + self[ yp1 ][ x ] ) + self[ yp1 ][ xp1 ] )
-      next[ y ][ x ] = ( ( ( ( sum == 2 ) and self[ y ][ x ] ) or ( ( sum == 3 ) and 1 ) ) or 0 )
-      temporary 215472D = x
-      temporary 2BF8098 = xp1
-      temporary BB8560 = ( xp1 + 1 )
-      temporary 297B065 = ( xi - 1 )
-      xm1 = temporary 215472D
-      x = temporary 2BF8098
-      xp1 = temporary BB8560
-      xi = temporary 297B065
-    end
-    b whileContinue
-whileBreak:
-    temporary 3553390 = y
-    temporary 1FED012 = yp1
-    temporary 1F550A4 = ( yp1 + 1 )
-    temporary 19FD5C7 = ( yi - 1 )
-    ym1 = temporary 3553390
-    y = temporary 1FED012
-    yp1 = temporary 1F550A4
-    yi = temporary 19FD5C7
-  end
-  b whileContinue
-whileBreak:
-  return nil
-end
-
-function _CELLS:draw( self )
-  -- label fornum, fornumBreak, fornumContinue, fornum, fornumBreak, fornumContinue
-  -- upval write
-  -- local out, (for index), (for limit), (for step), y, (for index), (for limit), (for step), x
-  -- local out
-  local out = ""
-  block -- fornum
-    local (for index) = tonumber 1
-    local (for limit) = tonumber self[ "h" ]
-    local (for step) = tonumber 1
-    forprep (for index), (for limit), (for step) b fornumContinue
-fornum:
-    block -- fornumBody
-      -- local y
-      local forindex y
-      block -- fornum
-        local (for index) = tonumber 1
-        local (for limit) = tonumber self[ "w" ]
-        local (for step) = tonumber 1
-        forprep (for index), (for limit), (for step) b fornumContinue
-fornum:
-        block -- fornumBody
-          -- local x
-          local forindex x
-          out = concat out .. ( ( ( self[ y ][ x ] > 0 ) and ALIVE ) or DEAD )
-        end
-fornumContinue:
-        forloop (for index), (for limit), (for step), x b fornum
-fornumBreak:
-      end
-      out = concat out .. "\n"
-    end
-fornumContinue:
-    forloop (for index), (for limit), (for step), y b fornum
-fornumBreak:
-  end
-  write( out )
-  return nil
-end
-
-function CELLS( w, h )
-  -- local c
-  -- local c
-  local c = ARRAY2D( w, h )
-  c[ "spawn" ] = _CELLS[ "spawn" ]
-  c[ "evolve" ] = _CELLS[ "evolve" ]
-  c[ "draw" ] = _CELLS[ "draw" ]
-  return c
-end
-
-function LIFE( w, h )
-  -- label whileBreak, whileContinue, ifClause
-  -- upval write
-  -- local thisgen, nextgen, gen
-  -- local thisgen, nextgen, gen
-  local thisgen = CELLS( w, h )
-  local nextgen = CELLS( w, h )
-  thisgen:spawn( GLIDER, 5, 4 )
-  thisgen:spawn( EXPLODE, 25, 10 )
-  thisgen:spawn( FISH, 4, 12 )
-  local gen = 1
-  write( "[2J" )
-whileContinue:
-  bfalse 1 whileBreak
-  block -- while
-    thisgen:evolve( nextgen )
-    temporary 29E8405 = nextgen
-    temporary 392A42D = thisgen
-    thisgen = temporary 29E8405
-    nextgen = temporary 392A42D
-    write( "[H" )
-    thisgen:draw()
-    write( "Life - generation ", gen, "\n" )
-    gen = ( gen + 1 )
-    bfalse ( gen > 2000 ) ifClause
-    block -- if
+    do -- if
       b whileBreak
     end
 ifClause:
@@ -1559,23 +537,6 @@ function <chunk>( ... )
   f = assert( values io[ "open" ]( "luac.out", "wb" ) )
   assert( values f:write( values string[ "dump" ]( values assert( values loadfile( arg[ 1 ] ) ) ) ) )
   assert( values f:close() )
-end
-
-function <chunk>( ... )
-  assert( ( ( arg[ 1 ] != nil ) and ( arg[ 2 ] == nil ) ), "usage: lua luac.lua file.lua" )
-  f = assert( values io[ "open" ]( "luac.out", "wb" ) )
-  assert( values f:write( values string[ "dump" ]( values assert( values loadfile( arg[ 1 ] ) ) ) ) )
-  assert( values f:close() )
-end
-
-function <chunk>( ... )
-  printf = function printf
-  printf( "Hello %s from %s on %s\n", ( os[ "getenv" ]( "USER" ) or "there" ), _VERSION, values os[ "date" ]() )
-end
-
-function printf( ... )
-  io[ "write" ]( values string[ "format" ]( values ... ) )
-  return nil
 end
 
 function <chunk>( ... )
@@ -1592,15 +553,13 @@ function <chunk>( ... )
   -- local f, g, G
   -- local f, g, G
   local f = function x33C0D9D
-  constructor temporary 11C7A8C array 0 hash 0
-  end
-  local g = temporary 11C7A8C
+  local g = {
+  }
   local G = getfenv()
-  constructor temporary 2004EEE array 0 hash 2
-    temporary 2004EEE[ "__index" ] = G
-    temporary 2004EEE[ "__newindex" ] = f
-  end
-  setmetatable( g, temporary 2004EEE )
+  setmetatable( g, {
+    [ "__index" ] = G;
+    [ "__newindex" ] = f;
+  } )
   setfenv( 1, g )
   rawset( g, "x", 3 )
   x = 2
@@ -1613,30 +572,6 @@ function x33C0D9D( t, i )
 end
 
 function <chunk>( ... )
-  -- local f, g, G
-  -- local f, g, G
-  local f = function x202C666
-  constructor temporary 11C7A8C array 0 hash 0
-  end
-  local g = temporary 11C7A8C
-  local G = getfenv()
-  constructor temporary 2004EEE array 0 hash 2
-    temporary 2004EEE[ "__index" ] = G
-    temporary 2004EEE[ "__newindex" ] = f
-  end
-  setmetatable( g, temporary 2004EEE )
-  setfenv( 1, g )
-  rawset( g, "x", 3 )
-  x = 2
-  y = 1
-end
-
-function x202C666( t, i )
-  error( concat "cannot redefine global variable `" .. i .. "'", 2 )
-  return nil
-end
-
-function <chunk>( ... )
   -- label whileBreak, whileContinue, ifClause
   -- local n
   gen = function gen
@@ -1645,11 +580,11 @@ function <chunk>( ... )
   x = gen( N )
 whileContinue:
   bfalse 1 whileBreak
-  block -- while
+  do -- while
     -- local n
     local n = x()
     bfalse ( n == nil ) ifClause
-    block -- if
+    do -- if
       b whileBreak
     end
 ifClause:
@@ -1662,36 +597,22 @@ end
 
 function gen( n )
   -- multiple return
-  return multiple values coroutine[ "wrap" ]( function x33C0D9D )
+  return values coroutine[ "wrap" ]( function x33C0D9D )
 end
 
 function x33C0D9D()
-  -- label fornum, fornumBreak, fornumContinue
   -- upval n
-  -- local (for index), (for limit), (for step), i
-  block -- fornum
-    -- local (for index), (for limit), (for step)
-    local (for index) = tonumber 2
-    local (for limit) = tonumber n
-    local (for step) = tonumber 1
-fornum:
-    bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) fornumBreak
-    block -- fornumBody
-      -- local i
-      local i = (for index)
-      coroutine[ "yield" ]( i )
-    end
-fornumContinue:
-    (for index) = ( (for index) + (for step) )
-    b fornum
-fornumBreak:
+  -- local i
+  for i = 2, n, 1
+    -- local i
+    coroutine[ "yield" ]( i )
   end
   return nil
 end
 
 function filter( p, g )
   -- multiple return
-  return multiple values coroutine[ "wrap" ]( function x11C7A8C )
+  return values coroutine[ "wrap" ]( function x11C7A8C )
 end
 
 function x11C7A8C()
@@ -1700,97 +621,16 @@ function x11C7A8C()
   -- local n
 whileContinue:
   bfalse 1 whileBreak
-  block -- while
+  do -- while
     -- local n
     local n = g()
     bfalse ( n == nil ) ifClause
-    block -- if
+    do -- if
       return nil
     end
 ifClause:
     bfalse ( math[ "mod" ]( n, p ) != 0 ) ifClause
-    block -- if
-      coroutine[ "yield" ]( n )
-    end
-ifClause:
-  end
-  b whileContinue
-whileBreak:
-  return nil
-end
-
-function <chunk>( ... )
-  -- label whileBreak, whileContinue, ifClause
-  -- local n
-  gen = function gen
-  filter = function filter
-  N = ( N or 1000 )
-  x = gen( N )
-whileContinue:
-  bfalse 1 whileBreak
-  block -- while
-    -- local n
-    local n = x()
-    bfalse ( n == nil ) ifClause
-    block -- if
-      b whileBreak
-    end
-ifClause:
-    print( n )
-    x = filter( n, x )
-  end
-  b whileContinue
-whileBreak:
-end
-
-function gen( n )
-  -- multiple return
-  return multiple values coroutine[ "wrap" ]( function x2004EEE )
-end
-
-function x2004EEE()
-  -- label fornum, fornumBreak, fornumContinue
-  -- upval n
-  -- local (for index), (for limit), (for step), i
-  block -- fornum
-    local (for index) = tonumber 2
-    local (for limit) = tonumber n
-    local (for step) = tonumber 1
-    forprep (for index), (for limit), (for step) b fornumContinue
-fornum:
-    block -- fornumBody
-      -- local i
-      local forindex i
-      coroutine[ "yield" ]( i )
-    end
-fornumContinue:
-    forloop (for index), (for limit), (for step), i b fornum
-fornumBreak:
-  end
-  return nil
-end
-
-function filter( p, g )
-  -- multiple return
-  return multiple values coroutine[ "wrap" ]( function x202C666 )
-end
-
-function x202C666()
-  -- label whileBreak, whileContinue, ifClause, ifClause
-  -- upval g, p
-  -- local n
-whileContinue:
-  bfalse 1 whileBreak
-  block -- while
-    -- local n
-    local n = g()
-    bfalse ( n == nil ) ifClause
-    block -- if
-      return nil
-    end
-ifClause:
-    bfalse ( math[ "mod" ]( n, p ) != 0 ) ifClause
-    block -- if
+    do -- if
       coroutine[ "yield" ]( n )
     end
 ifClause:
@@ -1805,21 +645,20 @@ function <chunk>( ... )
   selectionsort = function selectionsort
   show = function show
   testsorts = function testsorts
-  constructor temporary 33C0D9D array 12 hash 0
-    temporary 33C0D9D[ 1 ] = "Jan"
-    temporary 33C0D9D[ 2 ] = "Feb"
-    temporary 33C0D9D[ 3 ] = "Mar"
-    temporary 33C0D9D[ 4 ] = "Apr"
-    temporary 33C0D9D[ 5 ] = "May"
-    temporary 33C0D9D[ 6 ] = "Jun"
-    temporary 33C0D9D[ 7 ] = "Jul"
-    temporary 33C0D9D[ 8 ] = "Aug"
-    temporary 33C0D9D[ 9 ] = "Sep"
-    temporary 33C0D9D[ 10 ] = "Oct"
-    temporary 33C0D9D[ 11 ] = "Nov"
-    temporary 33C0D9D[ 12 ] = "Dec"
-  end
-  x = temporary 33C0D9D
+  x = {
+    "Jan";
+    "Feb";
+    "Mar";
+    "Apr";
+    "May";
+    "Jun";
+    "Jul";
+    "Aug";
+    "Sep";
+    "Oct";
+    "Nov";
+    "Dec";
+  }
   testsorts( x )
 end
 
@@ -1827,48 +666,27 @@ function qsort( x, l, u, f )
   -- label ifClause, whileBreak, whileContinue, ifClause
   -- local m, t, i
   bfalse ( l < u ) ifClause
-  block -- if
+  do -- if
     -- local m, t, i
     local m = ( ( math[ "random" ]( ( u - ( l - 1 ) ) ) + l ) - 1 )
-    temporary 11C7A8C = x
-    temporary 2004EEE = l
-    temporary 202C666 = x
-    temporary 218F99C = m
-    temporary 2E0C681 = x[ m ]
-    temporary 1E6FA8E = x[ l ]
-    temporary 11C7A8C[ temporary 2004EEE ] = temporary 2E0C681
-    temporary 202C666[ temporary 218F99C ] = temporary 1E6FA8E
+    x[ l ], x[ m ] = x[ m ], x[ l ]
     local t = x[ l ]
     m = l
     local i = ( l + 1 )
 whileContinue:
     bfalse ( i <= u ) whileBreak
-    block -- while
+    do -- while
       bfalse f( x[ i ], t ) ifClause
-      block -- if
+      do -- if
         m = ( m + 1 )
-        temporary 11ECF05 = x
-        temporary 215472D = m
-        temporary 2BF8098 = x
-        temporary BB8560 = i
-        temporary 297B065 = x[ i ]
-        temporary 3553390 = x[ m ]
-        temporary 11ECF05[ temporary 215472D ] = temporary 297B065
-        temporary 2BF8098[ temporary BB8560 ] = temporary 3553390
+        x[ m ], x[ i ] = x[ i ], x[ m ]
       end
 ifClause:
       i = ( i + 1 )
     end
     b whileContinue
 whileBreak:
-    temporary 1FED012 = x
-    temporary 1F550A4 = l
-    temporary 19FD5C7 = x
-    temporary 29E8405 = m
-    temporary 392A42D = x[ m ]
-    temporary 27C59A = x[ l ]
-    temporary 1FED012[ temporary 1F550A4 ] = temporary 392A42D
-    temporary 19FD5C7[ temporary 29E8405 ] = temporary 27C59A
+    x[ l ], x[ m ] = x[ m ], x[ l ]
     qsort( x, l, ( m - 1 ), f )
     qsort( x, ( m + 1 ), u, f )
   end
@@ -1883,15 +701,15 @@ function selectionsort( x, n, f )
   local i = 1
 whileContinue:
   bfalse ( i <= n ) whileBreak
-  block -- while
+  do -- while
     -- local m, j
     local m = i
     local j = ( i + 1 )
 whileContinue:
     bfalse ( j <= n ) whileBreak
-    block -- while
+    do -- while
       bfalse f( x[ j ], x[ m ] ) ifClause
-      block -- if
+      do -- if
         m = j
       end
 ifClause:
@@ -1899,14 +717,7 @@ ifClause:
     end
     b whileContinue
 whileBreak:
-    temporary 165F26B = x
-    temporary 9585CB = i
-    temporary 141B42A = x
-    temporary 34F5582 = m
-    temporary 1CA0192 = x[ m ]
-    temporary 1A0E24 = x[ i ]
-    temporary 165F26B[ temporary 9585CB ] = temporary 1CA0192
-    temporary 141B42A[ temporary 34F5582 ] = temporary 1A0E24
+    x[ i ], x[ m ] = x[ m ], x[ i ]
     i = ( i + 1 )
   end
   b whileContinue
@@ -1922,11 +733,11 @@ function show( m, x )
   local i = 1
 whileContinue:
   bfalse x[ i ] whileBreak
-  block -- while
+  do -- while
     io[ "write" ]( x[ i ] )
     i = ( i + 1 )
     bfalse x[ i ] ifClause
-    block -- if
+    do -- if
       io[ "write" ]( "," )
     end
 ifClause:
@@ -1944,217 +755,31 @@ function testsorts( x )
   local n = 1
 whileContinue:
   bfalse x[ n ] whileBreak
-  block -- while
+  do -- while
     n = ( n + 1 )
   end
   b whileContinue
 whileBreak:
   n = ( n - 1 )
   show( "original", x )
-  qsort( x, 1, n, function xEA7F4A )
+  qsort( x, 1, n, function x33C0D9D )
   show( "after quicksort", x )
-  selectionsort( x, n, function x3E799B )
+  selectionsort( x, n, function x11C7A8C )
   show( "after reverse selection sort", x )
-  qsort( x, 1, n, function x232467A )
+  qsort( x, 1, n, function x2004EEE )
   show( "after quicksort again", x )
   return nil
 end
 
-function xEA7F4A( x, y )
+function x33C0D9D( x, y )
   return ( x < y )
 end
 
-function x3E799B( x, y )
+function x11C7A8C( x, y )
   return ( x > y )
 end
 
-function x232467A( x, y )
-  return ( x < y )
-end
-
-function <chunk>( ... )
-  qsort = function qsort
-  selectionsort = function selectionsort
-  show = function show
-  testsorts = function testsorts
-  constructor temporary 33C0D9D array 12 hash 0
-    temporary 3C47A4F = "Jan"
-    temporary 1E84CCB = "Feb"
-    temporary 12AB327 = "Mar"
-    temporary 2804C64 = "Apr"
-    temporary 282AF8C = "May"
-    temporary 2982BEE = "Jun"
-    temporary 3598B65 = "Jul"
-    temporary 225E691 = "Aug"
-    temporary 3551B1B = "Sep"
-    temporary 1FDF3F4 = "Oct"
-    temporary 1ED9395 = "Nov"
-    temporary 15A303F = "Dec"
-    setlist temporary 33C0D9D[ 1 -> ]
-      temporary 3C47A4F
-      temporary 1E84CCB
-      temporary 12AB327
-      temporary 2804C64
-      temporary 282AF8C
-      temporary 2982BEE
-      temporary 3598B65
-      temporary 225E691
-      temporary 3551B1B
-      temporary 1FDF3F4
-      temporary 1ED9395
-      temporary 15A303F
-    end
-  end
-  x = temporary 33C0D9D
-  testsorts( x )
-end
-
-function qsort( x, l, u, f )
-  -- label ifClause, whileBreak, whileContinue, ifClause
-  -- local m, t, i
-  bfalse ( l < u ) ifClause
-  block -- if
-    -- local m, t, i
-    local m = ( ( math[ "random" ]( ( u - ( l - 1 ) ) ) + l ) - 1 )
-    temporary 11C7A8C = x
-    temporary 2004EEE = l
-    temporary 202C666 = x
-    temporary 218F99C = m
-    temporary 2E0C681 = x[ m ]
-    temporary 1E6FA8E = x[ l ]
-    temporary 11C7A8C[ temporary 2004EEE ] = temporary 2E0C681
-    temporary 202C666[ temporary 218F99C ] = temporary 1E6FA8E
-    local t = x[ l ]
-    m = l
-    local i = ( l + 1 )
-whileContinue:
-    bfalse ( i <= u ) whileBreak
-    block -- while
-      bfalse f( x[ i ], t ) ifClause
-      block -- if
-        m = ( m + 1 )
-        temporary 11ECF05 = x
-        temporary 215472D = m
-        temporary 2BF8098 = x
-        temporary BB8560 = i
-        temporary 297B065 = x[ i ]
-        temporary 3553390 = x[ m ]
-        temporary 11ECF05[ temporary 215472D ] = temporary 297B065
-        temporary 2BF8098[ temporary BB8560 ] = temporary 3553390
-      end
-ifClause:
-      i = ( i + 1 )
-    end
-    b whileContinue
-whileBreak:
-    temporary 1FED012 = x
-    temporary 1F550A4 = l
-    temporary 19FD5C7 = x
-    temporary 29E8405 = m
-    temporary 392A42D = x[ m ]
-    temporary 27C59A = x[ l ]
-    temporary 1FED012[ temporary 1F550A4 ] = temporary 392A42D
-    temporary 19FD5C7[ temporary 29E8405 ] = temporary 27C59A
-    qsort( x, l, ( m - 1 ), f )
-    qsort( x, ( m + 1 ), u, f )
-  end
-ifClause:
-  return nil
-end
-
-function selectionsort( x, n, f )
-  -- label whileBreak, whileContinue, whileBreak, whileContinue, ifClause
-  -- local i, m, j
-  -- local i
-  local i = 1
-whileContinue:
-  bfalse ( i <= n ) whileBreak
-  block -- while
-    -- local m, j
-    local m = i
-    local j = ( i + 1 )
-whileContinue:
-    bfalse ( j <= n ) whileBreak
-    block -- while
-      bfalse f( x[ j ], x[ m ] ) ifClause
-      block -- if
-        m = j
-      end
-ifClause:
-      j = ( j + 1 )
-    end
-    b whileContinue
-whileBreak:
-    temporary 165F26B = x
-    temporary 9585CB = i
-    temporary 141B42A = x
-    temporary 34F5582 = m
-    temporary 1CA0192 = x[ m ]
-    temporary 1A0E24 = x[ i ]
-    temporary 165F26B[ temporary 9585CB ] = temporary 1CA0192
-    temporary 141B42A[ temporary 34F5582 ] = temporary 1A0E24
-    i = ( i + 1 )
-  end
-  b whileContinue
-whileBreak:
-  return nil
-end
-
-function show( m, x )
-  -- label whileBreak, whileContinue, ifClause
-  -- local i
-  -- local i
-  io[ "write" ]( m, "\n	" )
-  local i = 1
-whileContinue:
-  bfalse x[ i ] whileBreak
-  block -- while
-    io[ "write" ]( x[ i ] )
-    i = ( i + 1 )
-    bfalse x[ i ] ifClause
-    block -- if
-      io[ "write" ]( "," )
-    end
-ifClause:
-  end
-  b whileContinue
-whileBreak:
-  io[ "write" ]( "\n" )
-  return nil
-end
-
-function testsorts( x )
-  -- label whileBreak, whileContinue
-  -- local n
-  -- local n
-  local n = 1
-whileContinue:
-  bfalse x[ n ] whileBreak
-  block -- while
-    n = ( n + 1 )
-  end
-  b whileContinue
-whileBreak:
-  n = ( n - 1 )
-  show( "original", x )
-  qsort( x, 1, n, function x2BB23B )
-  show( "after quicksort", x )
-  selectionsort( x, n, function x189441B )
-  show( "after reverse selection sort", x )
-  qsort( x, 1, n, function x1D364F7 )
-  show( "after quicksort again", x )
-  return nil
-end
-
-function x2BB23B( x, y )
-  return ( x < y )
-end
-
-function x189441B( x, y )
-  return ( x > y )
-end
-
-function x1D364F7( x, y )
+function x2004EEE( x, y )
   return ( x < y )
 end
 
@@ -2165,54 +790,17 @@ function <chunk>( ... )
   local A = nil
 whileContinue:
   bfalse 1 whileBreak
-  block -- while
+  do -- while
     -- local l, _, _, a, b
     local l = io[ "read" ]()
     bfalse ( l == nil ) ifClause
-    block -- if
+    do -- if
       b whileBreak
     end
 ifClause:
-    valuelist[ 0 -> 3 ] = values string[ "find" ]( l, "\"?([_%w]+)\"?%s*(.*)$" )
-    local _ = valuelist[ 0 ]
-    local _ = valuelist[ 1 ]
-    local a = valuelist[ 2 ]
-    local b = valuelist[ 3 ]
+    local _, _, a, b = values string[ "find" ]( l, "\"?([_%w]+)\"?%s*(.*)$" )
     bfalse ( a != A ) ifClause
-    block -- if
-      A = a
-      io[ "write" ]( "\n", a, ":" )
-    end
-ifClause:
-    io[ "write" ]( " ", b )
-  end
-  b whileContinue
-whileBreak:
-  io[ "write" ]( "\n" )
-end
-
-function <chunk>( ... )
-  -- label whileBreak, whileContinue, ifClause, ifClause
-  -- local A, l, _, _, a, b
-  -- local A
-  local A = nil
-whileContinue:
-  bfalse 1 whileBreak
-  block -- while
-    -- local l, _, _, a, b
-    local l = io[ "read" ]()
-    bfalse ( l == nil ) ifClause
-    block -- if
-      b whileBreak
-    end
-ifClause:
-    temporary 33C0D9D, temporary 11C7A8C, temporary 2004EEE, temporary 202C666 = string[ "find" ]( l, "\"?([_%w]+)\"?%s*(.*)$" )
-    local _ = temporary 33C0D9D
-    local _ = temporary 11C7A8C
-    local a = temporary 2004EEE
-    local b = temporary 202C666
-    bfalse ( a != A ) ifClause
-    block -- if
+    do -- if
       A = a
       io[ "write" ]( "\n", a, ":" )
     end
@@ -2241,35 +829,35 @@ function hook( event )
   local t = debug[ "getinfo" ]( 3 )
   io[ "write" ]( level, " >>> ", values string[ "rep" ]( " ", level ) )
   bfalse ( ( t != nil ) and ( t[ "currentline" ] >= 0 ) ) ifClause
-  block -- if
+  do -- if
     io[ "write" ]( t[ "short_src" ], ":", t[ "currentline" ], " " )
   end
 ifClause:
   t = debug[ "getinfo" ]( 2 )
   bfalse ( event == "call" ) ifClause
-  block -- if
+  do -- if
     level = ( level + 1 )
   end
   b ifEnd
 ifClause:
-  block -- else
+  do -- else
     level = ( level - 1 )
     bfalse ( level < 0 ) ifClause
-    block -- if
+    do -- if
       level = 0
     end
 ifClause:
   end
 ifEnd:
   bfalse ( t[ "what" ] == "main" ) ifClause
-  block -- if
+  do -- if
     bfalse ( event == "call" ) ifClause
-    block -- if
+    do -- if
       io[ "write" ]( "begin ", t[ "short_src" ] )
     end
     b ifEnd
 ifClause:
-    block -- else
+    do -- else
       io[ "write" ]( "end ", t[ "short_src" ] )
     end
 ifEnd:
@@ -2277,78 +865,12 @@ ifEnd:
   b ifEnd
 ifClause:
   bfalse ( t[ "what" ] == "Lua" ) ifClause
-  block -- elseif
+  do -- elseif
     io[ "write" ]( event, " ", ( t[ "name" ] or "(Lua)" ), " <", t[ "linedefined" ], ":", t[ "short_src" ], ">" )
   end
   b ifEnd
 ifClause:
-  block -- else
-    io[ "write" ]( event, " ", ( t[ "name" ] or "(C)" ), " [", t[ "what" ], "] " )
-  end
-ifEnd:
-  io[ "write" ]( "\n" )
-  return nil
-end
-
-function <chunk>( ... )
-  -- local level, hook
-  -- local level, hook
-  local level = 0
-  local hook = function hook
-  debug[ "sethook" ]( hook, "cr" )
-  level = 0
-end
-
-function hook( event )
-  -- label ifClause, ifClause, ifEnd, ifClause, ifClause, ifClause, ifEnd, ifEnd, ifClause
-  -- upval level
-  -- local t
-  -- local t
-  local t = debug[ "getinfo" ]( 3 )
-  io[ "write" ]( level, " >>> ", values string[ "rep" ]( " ", level ) )
-  bfalse ( ( t != nil ) and ( t[ "currentline" ] >= 0 ) ) ifClause
-  block -- if
-    io[ "write" ]( t[ "short_src" ], ":", t[ "currentline" ], " " )
-  end
-ifClause:
-  t = debug[ "getinfo" ]( 2 )
-  bfalse ( event == "call" ) ifClause
-  block -- if
-    level = ( level + 1 )
-  end
-  b ifEnd
-ifClause:
-  block -- else
-    level = ( level - 1 )
-    bfalse ( level < 0 ) ifClause
-    block -- if
-      level = 0
-    end
-ifClause:
-  end
-ifEnd:
-  bfalse ( t[ "what" ] == "main" ) ifClause
-  block -- if
-    bfalse ( event == "call" ) ifClause
-    block -- if
-      io[ "write" ]( "begin ", t[ "short_src" ] )
-    end
-    b ifEnd
-ifClause:
-    block -- else
-      io[ "write" ]( "end ", t[ "short_src" ] )
-    end
-ifEnd:
-  end
-  b ifEnd
-ifClause:
-  bfalse ( t[ "what" ] == "Lua" ) ifClause
-  block -- elseif
-    io[ "write" ]( event, " ", ( t[ "name" ] or "(Lua)" ), " <", t[ "linedefined" ], ":", t[ "short_src" ], ">" )
-  end
-  b ifEnd
-ifClause:
-  block -- else
+  do -- else
     io[ "write" ]( event, " ", ( t[ "name" ] or "(C)" ), " [", t[ "what" ], "] " )
   end
 ifEnd:
@@ -2358,20 +880,18 @@ end
 
 function <chunk>( ... )
   -- local _tostring, tostring, log, g, set
-  block -- do
+  do -- do
     -- local _tostring, tostring, log, g, set
     local _tostring = tostring
     local tostring = function x33C0D9D
     local log = function x11C7A8C
-    constructor temporary 2004EEE array 0 hash 0
-    end
-    local g = temporary 2004EEE
-    local set = function x202C666
-    constructor temporary 218F99C array 0 hash 2
-      temporary 218F99C[ "__index" ] = g
-      temporary 218F99C[ "__newindex" ] = set
-    end
-    setmetatable( getfenv(), temporary 218F99C )
+    local g = {
+    }
+    local set = function x2004EEE
+    setmetatable( getfenv(), {
+      [ "__index" ] = g;
+      [ "__newindex" ] = set;
+    } )
   end
   a = 1
   b = 2
@@ -2387,13 +907,13 @@ function x33C0D9D( a )
   -- label ifClause, ifEnd
   -- upval _tostring
   bfalse ( type( a ) == "string" ) ifClause
-  block -- if
-    return multiple values string[ "format" ]( "%q", a )
+  do -- if
+    return values string[ "format" ]( "%q", a )
   end
   b ifEnd
 ifClause:
-  block -- else
-    return multiple values _tostring( a )
+  do -- else
+    return values _tostring( a )
   end
 ifEnd:
   return nil
@@ -2408,7 +928,7 @@ function x11C7A8C( name, old, new )
   local line = t[ "currentline" ]
   io[ "write" ]( t[ "short_src" ] )
   bfalse ( line >= 0 ) ifClause
-  block -- if
+  do -- if
     io[ "write" ]( ":", line )
   end
 ifClause:
@@ -2416,74 +936,7 @@ ifClause:
   return nil
 end
 
-function x202C666( t, name, value )
-  -- upval log, g
-  log( name, g[ name ], value )
-  g[ name ] = value
-  return nil
-end
-
-function <chunk>( ... )
-  -- local _tostring, tostring, log, g, set
-  block -- do
-    -- local _tostring, tostring, log, g, set
-    local _tostring = tostring
-    local tostring = function x2E0C681
-    local log = function x1E6FA8E
-    constructor temporary 2004EEE array 0 hash 0
-    end
-    local g = temporary 2004EEE
-    local set = function x11ECF05
-    constructor temporary 218F99C array 0 hash 2
-      temporary 218F99C[ "__index" ] = g
-      temporary 218F99C[ "__newindex" ] = set
-    end
-    setmetatable( getfenv(), temporary 218F99C )
-  end
-  a = 1
-  b = 2
-  a = 10
-  b = 20
-  b = nil
-  b = 200
-  print( a, b, c )
-end
-
-function x2E0C681( a )
-  -- multiple return
-  -- label ifClause, ifEnd
-  -- upval _tostring
-  bfalse ( type( a ) == "string" ) ifClause
-  block -- if
-    return multiple values string[ "format" ]( "%q", a )
-  end
-  b ifEnd
-ifClause:
-  block -- else
-    return multiple values _tostring( a )
-  end
-ifEnd:
-  return nil
-end
-
-function x1E6FA8E( name, old, new )
-  -- label ifClause
-  -- upval tostring
-  -- local t, line
-  -- local t, line
-  local t = debug[ "getinfo" ]( 3, "Sl" )
-  local line = t[ "currentline" ]
-  io[ "write" ]( t[ "short_src" ] )
-  bfalse ( line >= 0 ) ifClause
-  block -- if
-    io[ "write" ]( ":", line )
-  end
-ifClause:
-  io[ "write" ]( ": ", name, " is now ", tostring( new ), " (was ", tostring( old ), ")", "\n" )
-  return nil
-end
-
-function x11ECF05( t, name, value )
+function x2004EEE( t, name, value )
   -- upval log, g
   log( name, g[ name ], value )
   g[ name ] = value
@@ -2497,11 +950,11 @@ function <chunk>( ... )
   local offset = 0
 whileContinue:
   bfalse True whileBreak
-  block -- while
+  do -- while
     -- local s
     local s = io[ "read" ]( 16 )
     bfalse ( s == nil ) ifClause
-    block -- if
+    do -- if
       return nil
     end
 ifClause:
@@ -2516,36 +969,6 @@ whileBreak:
 end
 
 function x33C0D9D( c )
-  io[ "write" ]( values string[ "format" ]( "%02X ", values string[ "byte" ]( c ) ) )
-  return nil
-end
-
-function <chunk>( ... )
-  -- label whileBreak, whileContinue, ifClause
-  -- local offset, s
-  -- local offset
-  local offset = 0
-whileContinue:
-  bfalse True whileBreak
-  block -- while
-    -- local s
-    local s = io[ "read" ]( 16 )
-    bfalse ( s == nil ) ifClause
-    block -- if
-      return nil
-    end
-ifClause:
-    io[ "write" ]( values string[ "format" ]( "%08X  ", offset ) )
-    string[ "gsub" ]( s, "(.)", function x11C7A8C )
-    io[ "write" ]( values string[ "rep" ]( " ", ( 3 * ( 16 - string[ "len" ]( s ) ) ) ) )
-    io[ "write" ]( " ", string[ "gsub" ]( s, "%c", "." ), "\n" )
-    offset = ( offset + 16 )
-  end
-  b whileContinue
-whileBreak:
-end
-
-function x11C7A8C( c )
   io[ "write" ]( values string[ "format" ]( "%02X ", values string[ "byte" ]( c ) ) )
   return nil
 end

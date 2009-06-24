@@ -6,6 +6,7 @@
 
 
 using System;
+using Lua.Parser.AST.Statements;
 
 
 namespace Lua.Parser.AST
@@ -15,17 +16,24 @@ namespace Lua.Parser.AST
 public class Variable
 {
 	public string	Name		{ get; private set; }
+	public Block	Block		{ get; private set; }
 	public bool		IsUpVal		{ get; private set; }
 
 
 	public Variable( string name )
 	{
 		Name	= name;
+		Block	= null;
 		IsUpVal	= false;
 	}
 
+	
+	public void SetBlock( Block block )
+	{
+		Block = block;
+	}
 
-	internal void SetUpVal()
+	public void SetUpVal()
 	{
 		IsUpVal	= true;
 	}

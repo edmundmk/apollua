@@ -304,10 +304,10 @@ public class BytecodeTransform
 		int assignCount = s.Statements.Count;
 		if ( assignCount > 0 )
 		{
-			IndexMultipleValues imv = s.Statements[ assignCount - 1 ] as IndexMultipleValues;
+			ConstructList imv = s.Statements[ assignCount - 1 ] as ConstructList;
 			if ( imv != null )
 			{
-				values = imv.Values;
+				values = imv.ValueList;
 				assignCount -= 1;
 			}
 		}

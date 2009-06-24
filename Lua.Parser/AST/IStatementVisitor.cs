@@ -16,15 +16,17 @@ namespace Lua.Parser.AST
 public interface IStatementVisitor
 {
 	void Visit( Assign s );
+	void Visit( AssignList s );
 	void Visit( Block s );
 	void Visit( Branch s );
-	void Visit( Constructor s );
 	void Visit( Declare s );
+	void Visit( DeclareList s );
 	void Visit( Evaluate s );
-	void Visit( IndexMultipleValues s );
+	void Visit( ForBlock s );
+	void Visit( ForListBlock s );
 	void Visit( MarkLabel s );
 	void Visit( Return s );
-	void Visit( ReturnMultipleValues s );
+	void Visit( ReturnList s );
 	void Visit( Test s );
 }
 
