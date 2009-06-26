@@ -16,29 +16,32 @@ namespace Lua.Parser.AST.Statements
 public class ForListBlock
 	:	Block
 {
+	
+	public Variable				Generator			{ get; private set; }
+	public Variable				State				{ get; private set; }
+	public Variable				Control				{ get; private set; }
 	public IList< Variable >	UserVariables		{ get; private set; }
-	public IList< Expression >	Expressions			{ get; private set; }
-	public Expression			ExpressionList		{ get; private set; }
 	public LabelAST				BreakLabel			{ get; private set; }
 	public LabelAST				ContinueLabel		{ get; private set; }
 	
 
 	public ForListBlock( SourceSpan s, Block parent, string name,
-				IList< Variable > userVariables, IList< Expression > expressions, Expression expressionList, 
+				Variable generator, Variable state, Variable control, IList< Variable > userVariables,
 				LabelAST breakLabel, LabelAST continueLabel )
 		:	base( s, parent, name )
 	{
+		Generator		= generator;
+		State			= state;
+		Control			= control;
 		UserVariables	= userVariables;
-		Expressions		= expressions;
-		ExpressionList	= expressionList;
 		BreakLabel		= breakLabel;
 		ContinueLabel	= continueLabel;
 	}
 	
 
-	public override void Accept( IStatementVisitor s )
+	public override void Accept( IStatementVisitor v )
 	{
-		s.Visit( this );
+		v.Visit( this );
 	}
 }
 

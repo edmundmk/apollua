@@ -16,16 +16,16 @@ namespace Lua.Parser.AST.Statements
 public class ForBlock
 	:	Block
 {
-	public Expression	Index				{ get; private set; }
-	public Expression	Limit				{ get; private set; }
-	public Expression	Step				{ get; private set; }
-	public Variable		UserIndex			{ get; private set; }
-	public LabelAST		BreakLabel			{ get; private set; }
-	public LabelAST		ContinueLabel		{ get; private set; }
+	public Variable	Index				{ get; private set; }
+	public Variable	Limit				{ get; private set; }
+	public Variable	Step				{ get; private set; }
+	public Variable	UserIndex			{ get; private set; }
+	public LabelAST	BreakLabel			{ get; private set; }
+	public LabelAST	ContinueLabel		{ get; private set; }
 	
 
 	public ForBlock( SourceSpan s, Block parent, string name,
-				Expression index, Expression limit, Expression step, Variable userIndex,
+				Variable index, Variable limit, Variable step, Variable userIndex,
 				LabelAST breakLabel, LabelAST continueLabel )
 		:	base( s, parent, name )
 	{
@@ -38,9 +38,9 @@ public class ForBlock
 	}
 	
 
-	public override void Accept( IStatementVisitor s )
+	public override void Accept( IStatementVisitor v )
 	{
-		s.Visit( this );
+		v.Visit( this );
 	}
 }
 

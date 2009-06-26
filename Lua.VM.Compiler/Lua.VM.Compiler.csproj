@@ -46,16 +46,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AST\Expressions\OpcodeConcat.cs" />
-    <Compile Include="AST\Expressions\TemporaryList.cs" />
-    <Compile Include="AST\Statements\DeclareForIndex.cs" />
-    <Compile Include="AST\Statements\OpcodeForLoop.cs" />
-    <Compile Include="AST\Statements\OpcodeForPrep.cs" />
-    <Compile Include="AST\Statements\OpcodeSetList.cs" />
-    <Compile Include="AST\Statements\OpcodeTForLoop.cs" />
+    <Compile Include="AST\IVMExpressionVisitor.cs" />
     <Compile Include="AST\VMASTWriter.cs" />
-    <Compile Include="BytecodeTransform.cs" />
     <Compile Include="LuaVMCompiler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VMTransform.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lua.Parser\Lua.Parser.csproj">

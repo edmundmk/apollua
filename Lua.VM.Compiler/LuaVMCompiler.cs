@@ -14,7 +14,6 @@ using Lua.Parser.AST;
 using Lua.Parser.AST.Expressions;
 using Lua.Parser.AST.Statements;
 using Lua.VM.Compiler.AST.Expressions;
-using Lua.VM.Compiler.AST.Statements;
 
 
 
@@ -25,6 +24,7 @@ namespace Lua.VM.Compiler
 /*	Each function is compiled to a class deriving from Lua.Function.
 */
 
+#if false
 
 public class LuaVMCompiler
 	:	IStatementVisitor
@@ -981,5 +981,6 @@ public class LuaVMCompiler
 
 }
 
+#endif
 
 }

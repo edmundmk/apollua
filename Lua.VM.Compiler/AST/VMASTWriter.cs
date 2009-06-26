@@ -10,7 +10,6 @@ using System.IO;
 using Lua.Parser.AST;
 using Lua.Parser.AST.Expressions;
 using Lua.VM.Compiler.AST.Expressions;
-using Lua.VM.Compiler.AST.Statements;
 
 
 namespace Lua.VM.Compiler.AST
@@ -19,6 +18,7 @@ namespace Lua.VM.Compiler.AST
 
 public class VMASTWriter
 	:	ASTWriter
+	,	IVMExpressionVisitor
 {
 
 	public VMASTWriter( TextWriter oWriter )
@@ -27,89 +27,6 @@ public class VMASTWriter
 	}
 
 	
-	public virtual void Visit( DeclareForIndex s )
-	{
-		Indent();
-		o.Write( "local forindex " );
-		o.WriteLine( s.Variable.Name );
-	}
-
-	public virtual void Visit( OpcodeForLoop s )
-	{
-		Indent();
-		o.Write( "forloop " );
-		o.Write( s.Index.Name );
-		o.Write( ", " );
-		o.Write( s.Limit.Name );
-		o.Write( ", " );
-		o.Write( s.Step.Name );
-		o.Write( ", " );
-		o.Write( s.UserIndex.Name );
-		o.Write( " b " );
-		o.WriteLine( s.Target.Name );
-	}
-
-	public virtual void Visit( OpcodeForPrep s )
-	{
-		Indent();
-		o.Write( "forprep " );
-		o.Write( s.Index.Name );
-		o.Write( ", " );
-		o.Write( s.Limit.Name );
-		o.Write( ", " );
-		o.Write( s.Step.Name );
-		o.Write( " b " );
-		o.WriteLine( s.Target.Name );
-	}
-
-	public virtual void Visit( OpcodeSetList s )
-	{
-		Indent();
-		o.Write( "setlist " );
-		s.Temporary.Accept( this );
-		o.Write( "[ " );
-		o.Write( s.Key );
-		o.WriteLine( " -> ]" );
-		foreach ( Expression operand in s.Operands )
-		{
-			Indent();
-			o.Write( "  " );
-			operand.Accept( this );
-			o.WriteLine();
-		}
-		if ( s.Values != null )
-		{
-			Indent();
-			o.Write( "  values " );
-			s.Values.Accept( this );
-			o.WriteLine();
-		}
-		Indent();
-		o.WriteLine( "end" );
-	}
-
-	public virtual void Visit( OpcodeTForLoop s )
-	{
-		Indent();
-		o.Write( "tforloop " );
-		bool bFirst = true;
-		foreach ( Variable variable in s.Variables )
-		{
-			if ( ! bFirst )
-				o.Write( ", " );
-			bFirst = false;
-			o.Write( variable.Name );
-		}
-		o.Write( " = " );
-		o.Write( s.Generator.Name );
-		o.Write( "( " );
-		o.Write( s.State.Name );
-		o.Write( ", " );
-		o.Write( s.Control.Name );
-		o.Write( " ) b " );
-		o.WriteLine( s.Target.Name );
-	}
-
 	public virtual void Visit( OpcodeConcat e )
 	{
 		o.Write( "concat " );
@@ -120,18 +37,6 @@ public class VMASTWriter
 				o.Write( " .. " );
 			bFirst = false;
 			operand.Accept( this );
-		}
-	}
-
-	public virtual void Visit( TemporaryList e )
-	{
-		bool bFirst = true;
-		foreach ( Temporary temporary in e.Temporaries )
-		{
-			if ( ! bFirst )
-				o.Write( ", " );
-			bFirst = false;
-			temporary.Accept( this );
 		}
 	}
 

@@ -1,33 +1,33 @@
-// ValueList.cs
+ï»¿// ValueList.cs
 //
-// Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
-// LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
-// This version copyright © 2009 Edmund Kapusniak
+// Lua 5.1 is copyright ï¿½ 1994-2008 Lua.org, PUC-Rio, released under the MIT license
+// LuaCLR is copyright ï¿½ 2007-2008 Fabio Mascarenhas, released under the MIT license
+// This version copyright ï¿½ 2009 Edmund Kapusniak
 
 
 using System;
+using Lua.Parser.AST;
 
 
-namespace Lua.Parser.AST.Expressions
+namespace Lua.CLR.Compiler.AST.Expressions
 {
 
 
 public class ValueList
 	:	Expression
 {
-	public int ElementCount		{ get; private set; }
-
-
-	public ValueList( SourceSpan s, int elementCount )
+	public ValueList( SourceSpan s )
 		:	base( s )
 	{
-		ElementCount = elementCount;
 	}
 
 
 	public override void Accept( IExpressionVisitor v )
 	{
-		v.Visit( this );
+		if ( v is ICLRExpressionVisitor )
+		{
+			( (ICLRExpressionVisitor)v ).Visit( this );
+		}
 	}
 
 }

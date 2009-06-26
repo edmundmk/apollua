@@ -25,9 +25,9 @@ public class Evaluate
 	}
 
 
-	public override void Accept( IStatementVisitor s )
+	public override void Accept( IStatementVisitor v )
 	{
-		s.Visit( this );
+		v.Visit( this );
 	}
 
 }

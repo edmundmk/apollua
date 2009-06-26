@@ -9,6 +9,8 @@ using System.IO;
 using Lua;
 using Lua.Parser;
 using Lua.Parser.AST;
+using Lua.CLR.Compiler;
+using Lua.CLR.Compiler.AST;
 //using Lua.VM.Compiler;
 //using Lua.VM.Compiler.AST;
 
@@ -26,6 +28,13 @@ static class EntryPoint
 		FunctionAST function = parser.Parse();
 		ASTWriter writer = new ASTWriter( Console.Out );
 		writer.Write( function );
+
+
+		CLRTransform transform = new CLRTransform();
+		function = transform.Transform( function );
+		CLRASTWriter clrWriter = new CLRASTWriter( Console.Out );
+		clrWriter.Write( function );
+
 //		BytecodeTransform transform = new BytecodeTransform();
 //		function = transform.Transform( function );
 //		writer.Write( function );

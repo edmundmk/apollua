@@ -278,7 +278,7 @@ public class LuaParser
 
 		/*	whileContinue:
 				bfalse <condition> whileBreak
-				block
+				do -- while
 					...
 				end
 				b loopContinue
@@ -323,7 +323,7 @@ public class LuaParser
 		*/
 
 		/*	repeat:
-				block
+				do -- repeat
 					...
 			repeatContinue:
 					bfalse <condition> repeat
@@ -371,18 +371,18 @@ public class LuaParser
 		*/
 
 		/*		bfalse <condition> nextClause
-				block
+				do -- if
 					...
 				end
 				b endIf
 			ifClause:
 				bfalse <condition> nextClause
-				block
+				do -- elseIf
 					...
 				end
 				b endIf
 			ifClause:
-				block
+				do -- else
 					...
 				end
 			ifEnd:
@@ -523,21 +523,11 @@ public class LuaParser
 				;
 		*/
 
-		/*		block
-					local (for index)	= tonumber( <index> )
-					local (for limit)	= tonumber( <limit> )
-					local (for step)	= tonumber( <step> )
-			fornum:
-					bfalse (    ( (for step) > 0 and (for index) <= (for limit) )
-							 or ( (for step) < 0 and (for index) >= (for limit) ) ) fornumBreak
-					block
-						local <index> = (for index)
+		/*		do -- for
+					local (for index), (for limit), (for step) = <start>, <limit>, <step>
+					for <index> : (for index), (for limit), (for step) : forBreak, forContinue
 						...
 					end
-			fornumContinue:
-					(for index) = (for index) + (for step)
-					b loopTop
-			fornumBreak:
 				end
 		*/
 
@@ -563,23 +553,43 @@ public class LuaParser
 
 		SourceSpan s = new SourceSpan( matchFor.SourceSpan.Start, doToken.SourceSpan.End );
 		
-		Variable userIndex	= new Variable( (string)name.Value );
-
+		Variable userIndex = new Variable( (string)name.Value );
 		if ( step == null )
 		{
 			step = new Literal( s, (int)1 );
 		}
+	
+
+		// Outer block.
+
+		block = new Block( s, block, "for" );
+		block.Parent.Statement( block );
+		
+		Variable forIndex = new Variable( "(for index)" );
+		Variable forLimit = new Variable( "(for limit)" );
+		Variable forStep  = new Variable( "(for step)" );
+
+		function.Local( forIndex ); block.Local( forIndex );
+		function.Local( forLimit ); block.Local( forLimit );
+		function.Local( forStep ); block.Local( forStep );
+
+		block.Statement( new Declare( start.SourceSpan, forIndex, start ) );
+		block.Statement( new Declare( limit.SourceSpan, forLimit, limit ) );
+		block.Statement( new Declare( step.SourceSpan, forStep, step ) );
+
+		
+		// For loop.
 
 		LabelAST breakLabel		= new LabelAST( "forBreak" );
 		LabelAST continueLabel	= new LabelAST( "forContinue" );
-		
-		block = new ForBlock( s, block, "for",
-			start, limit, step, userIndex, breakLabel, continueLabel );
+
+		block = new ForBlock( s, block, "forBody",
+			forIndex, forLimit, forStep, userIndex, breakLabel, continueLabel );
 		block.Parent.Statement( block );
 		loopScope = new LoopScope( function, loopScope, breakLabel, continueLabel );
 
 
-		// Declare user index.
+		// Declare index.
 
 		function.Local( userIndex );
 		block.Local( userIndex );
@@ -597,6 +607,8 @@ public class LuaParser
 		loopScope = loopScope.Parent;
 		block.SetSourceSpan( new SourceSpan( doToken.SourceSpan.Start, endFor.SourceSpan.End ) );
 		block = block.Parent;
+		block.SetSourceSpan( new SourceSpan( matchFor.SourceSpan.Start, endFor.SourceSpan.End ) );
+		block = block.Parent;
 	}
 
 
@@ -607,17 +619,11 @@ public class LuaParser
 				;
 		*/
 
-		/*		block
+		/*		do -- forlist
 					local (for generator), (for state), (for control) = <expressionlist>
-			forlistContinue:
-					block
-						local <variablelist> = (for generator) ( (for state), (for control) )
-						(for control) = <variablelist>[ 0 ]
-						btrue ( (for control) == nil ) forlistBreak
+					forlist <variablelist> : (for generator), (for state), (for control) : forBreak, forContinue
 						...
 					end
-					b forlistContinue
-			forlistBreak:
 				end
 		*/	
 		
@@ -639,32 +645,41 @@ public class LuaParser
 
 		SourceSpan s = new SourceSpan( matchFor.SourceSpan.Start, doToken.SourceSpan.End );
 
+
+		// Outer block.
+
+		block = new Block( s, block, "forlist" );
+		block.Parent.Statement( block );
+
+		IList< Token > internalnamelist = new Token[]
+		{
+			new Token( s, TokenKind.Identifier, "(for generator)" ),
+			new Token( s, TokenKind.Identifier, "(for state)" ),
+			new Token( s, TokenKind.Identifier, "(for control)" )
+		};
+
+		DeclareAST( s, internalnamelist, expressioncount );
+
+
+		// For list loop.
+
 		Variable[] userVariables = new Variable[ namelist.Count ];
 		for ( int i = 0; i < namelist.Count; ++i )
 		{
 			userVariables[ i ] = new Variable( (string)namelist[ i ].Value );
 		}
 	
-		Expression expressionList = null;
-		if ( expressioncount < 3 )
-		{
-			expressionList = PopValueList();
-			if ( expressionList != null )
-			{
-				expressioncount -= 1;
-			}
-		}
-
 		LabelAST breakLabel		= new LabelAST( "forBreak" );
 		LabelAST continueLabel	= new LabelAST( "forContinue" );
 
-		block = new ForListBlock( s, block, "forlist",
-			Array.AsReadOnly( userVariables ), PopValues( expressioncount ), expressionList, breakLabel, continueLabel );
+		block = new ForListBlock( s, block, "forlistBody",
+			block.Locals[ 0 ], block.Locals[ 1 ], block.Locals[ 2 ], 
+			Array.AsReadOnly( userVariables ), breakLabel, continueLabel );
 		block.Parent.Statement( block );
 		loopScope = new LoopScope( function, loopScope, breakLabel, continueLabel );
 
 		
-		// Declare user variables.
+		// Declare variables.
 		
 		for ( int i = 0; i < userVariables.Length; ++i )
 		{
@@ -684,6 +699,8 @@ public class LuaParser
 
 		loopScope = loopScope.Parent;
 		block.SetSourceSpan( new SourceSpan( doToken.SourceSpan.Start, endFor.SourceSpan.End ) );
+		block = block.Parent;
+		block.SetSourceSpan( new SourceSpan( matchFor.SourceSpan.Start, endFor.SourceSpan.End ) );
 		block = block.Parent;
 	}
 
@@ -923,8 +940,13 @@ public class LuaParser
 
 		// Construct AST
 
-		SourceSpan s = new SourceSpan( local.SourceSpan.Start, end );
-		
+		SourceSpan s = new SourceSpan( local.SourceSpan.Start, end );	
+		DeclareAST( s, namelist, expressioncount );
+	}
+
+
+	void DeclareAST( SourceSpan s, IList< Token > namelist, int expressioncount )
+	{
 
 		// Get value list.
 
@@ -938,6 +960,7 @@ public class LuaParser
 			}
 		}
 		IList< Expression > values = PopValues( expressioncount );
+
 
 
 		// All expressions are independent since none of the variables have been declared.

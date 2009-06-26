@@ -276,12 +276,16 @@ public class ASTWriter
 		Indent();
 		o.Write( "for " );
 		o.Write( s.UserIndex.Name );
-		o.Write( " = " );
-		s.Index.Accept( this );
+		o.Write( " : " );
+		o.Write( s.Index.Name );
 		o.Write( ", " );
-		s.Limit.Accept( this );
+		o.Write( s.Limit.Name );
 		o.Write( ", " );
-		s.Step.Accept( this );
+		o.Write( s.Step.Name );
+		o.Write( " : " );
+		o.Write( s.BreakLabel.Name );
+		o.Write( ", " );
+		o.Write( s.ContinueLabel.Name );
 		o.WriteLine();
 
 		WriteBlock( s );
@@ -302,22 +306,16 @@ public class ASTWriter
 			bFirst = false;
 			o.Write( variable.Name );
 		}
-		o.Write( " = " );
-		bFirst = true;
-		foreach ( Expression expression in s.Expressions )
-		{
-			if ( ! bFirst )
-				o.Write( ", " );
-			bFirst = false;
-			expression.Accept( this );
-		}
-		if ( s.ExpressionList != null )
-		{
-			if ( ! bFirst )
-				o.Write( ", " );
-			o.Write( "values " );
-			s.ExpressionList.Accept( this );
-		}
+		o.Write( " : " );
+		o.Write( s.Generator.Name );
+		o.Write( ", " );
+		o.Write( s.State.Name );
+		o.Write( ", " );
+		o.Write( s.Control.Name );
+		o.Write( " : " );
+		o.Write( s.BreakLabel.Name );
+		o.Write( ", " );
+		o.Write( s.ContinueLabel.Name );
 		o.WriteLine();
 
 		WriteBlock( s );

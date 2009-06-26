@@ -47,30 +47,194 @@ function f( x )
 end
 
 function <chunk>( ... )
-  -- local c0, c, c
-  for c0 = -20, ( 50 - 1 ), 10
-    -- local c0
-    io[ "write" ]( "C " )
-    for c = c0, ( ( c0 + 10 ) - 1 ), 1
-      -- local c
-      io[ "write" ]( values string[ "format" ]( "%3.0f ", c ) )
+  delta = 1E-06
+  bisect = function bisect
+  solve = function solve
+  f = function f
+  solve( f, 1, 2 )
+end
+
+function bisect( f, a, b, fa, fb )
+  -- multiple return
+  -- label ifClause, ifClause, ifEnd
+  -- local c, fc
+  -- local c, fc
+  local c = ( ( a + b ) / 2 )
+  io[ "write" ]( n, " c=", c, " a=", a, " b=", b, "\n" )
+  bfalse ( ( ( c == a ) or ( c == b ) ) or ( math[ "abs" ]( ( a - b ) ) < delta ) ) ifClause
+  do -- if
+    return c, ( b - a )
+  end
+ifClause:
+  n = ( n + 1 )
+  local fc = f( c )
+  bfalse ( ( fa * fc ) < 0 ) ifClause
+  do -- if
+    return values bisect( f, a, c, fa, fc )
+  end
+  b ifEnd
+ifClause:
+  do -- else
+    return values bisect( f, c, b, fc, fb )
+  end
+ifEnd:
+  return nil
+end
+
+function solve( f, a, b )
+  -- local z, e
+  -- local z, e
+  n = 0
+  __valuelist = bisect( f, a, b, f( a ), values f( b ) )
+  local z = __valuelist[ 0 ]
+  local e = __valuelist[ 1 ]
+  io[ "write" ]( values string[ "format" ]( "after %d steps, root is %.17g with error %.1e, f=%.1e\n", n, z, e, values f( z ) ) )
+  return nil
+end
+
+function f( x )
+  return ( ( ( ( x * x ) * x ) - x ) - 1 )
+end
+
+function <chunk>( ... )
+  -- local (for index), (for limit), (for step), c0, (for index), (for limit), (for step), c, (for index), (for limit), (for step), c
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = -20
+    local (for limit) = ( 50 - 1 )
+    local (for step) = 10
+    for c0 : (for index), (for limit), (for step) : forBreak, forContinue
+      -- local c0
+      io[ "write" ]( "C " )
+      do -- for
+        -- local (for index), (for limit), (for step)
+        local (for index) = c0
+        local (for limit) = ( ( c0 + 10 ) - 1 )
+        local (for step) = 1
+        for c : (for index), (for limit), (for step) : forBreak, forContinue
+          -- local c
+          io[ "write" ]( values string[ "format" ]( "%3.0f ", c ) )
+        end
+      end
+      io[ "write" ]( "\n" )
+      io[ "write" ]( "F " )
+      do -- for
+        -- local (for index), (for limit), (for step)
+        local (for index) = c0
+        local (for limit) = ( ( c0 + 10 ) - 1 )
+        local (for step) = 1
+        for c : (for index), (for limit), (for step) : forBreak, forContinue
+          -- local c
+          f = ( ( ( 9 / 5 ) * c ) + 32 )
+          io[ "write" ]( values string[ "format" ]( "%3.0f ", f ) )
+        end
+      end
+      io[ "write" ]( "\n\n" )
     end
-    io[ "write" ]( "\n" )
-    io[ "write" ]( "F " )
-    for c = c0, ( ( c0 + 10 ) - 1 ), 1
-      -- local c
-      f = ( ( ( 9 / 5 ) * c ) + 32 )
-      io[ "write" ]( values string[ "format" ]( "%3.0f ", f ) )
-    end
-    io[ "write" ]( "\n\n" )
   end
 end
 
 function <chunk>( ... )
-  -- local i
-  for i = 0, table[ "getn" ]( arg ), 1
-    -- local i
-    print( i, arg[ i ] )
+  -- label forloop, forloop, forloop
+  -- local (for index), (for limit), (for step), c0, (for index), (for limit), (for step), c, (for index), (for limit), (for step), c
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = -20
+    local (for limit) = ( 50 - 1 )
+    local (for step) = 10
+    (for index) = __tonumber( (for index) )
+    (for limit) = __tonumber( (for limit) )
+    (for step) = __tonumber( (for step) )
+forloop:
+    bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) forBreak
+    do -- forBody
+      -- local c0
+      local c0 = (for index)
+      io[ "write" ]( "C " )
+      do -- for
+        -- local (for index), (for limit), (for step)
+        local (for index) = c0
+        local (for limit) = ( ( c0 + 10 ) - 1 )
+        local (for step) = 1
+        (for index) = __tonumber( (for index) )
+        (for limit) = __tonumber( (for limit) )
+        (for step) = __tonumber( (for step) )
+forloop:
+        bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) forBreak
+        do -- forBody
+          -- local c
+          local c = (for index)
+          io[ "write" ]( values string[ "format" ]( "%3.0f ", c ) )
+        end
+forContinue:
+        (for index) = ( (for index) + (for step) )
+forBreak:
+      end
+      io[ "write" ]( "\n" )
+      io[ "write" ]( "F " )
+      do -- for
+        -- local (for index), (for limit), (for step)
+        local (for index) = c0
+        local (for limit) = ( ( c0 + 10 ) - 1 )
+        local (for step) = 1
+        (for index) = __tonumber( (for index) )
+        (for limit) = __tonumber( (for limit) )
+        (for step) = __tonumber( (for step) )
+forloop:
+        bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) forBreak
+        do -- forBody
+          -- local c
+          local c = (for index)
+          f = ( ( ( 9 / 5 ) * c ) + 32 )
+          io[ "write" ]( values string[ "format" ]( "%3.0f ", f ) )
+        end
+forContinue:
+        (for index) = ( (for index) + (for step) )
+forBreak:
+      end
+      io[ "write" ]( "\n\n" )
+    end
+forContinue:
+    (for index) = ( (for index) + (for step) )
+forBreak:
+  end
+end
+
+function <chunk>( ... )
+  -- local (for index), (for limit), (for step), i
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 0
+    local (for limit) = table[ "getn" ]( arg )
+    local (for step) = 1
+    for i : (for index), (for limit), (for step) : forBreak, forContinue
+      -- local i
+      print( i, arg[ i ] )
+    end
+  end
+end
+
+function <chunk>( ... )
+  -- label forloop
+  -- local (for index), (for limit), (for step), i
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 0
+    local (for limit) = table[ "getn" ]( arg )
+    local (for step) = 1
+    (for index) = __tonumber( (for index) )
+    (for limit) = __tonumber( (for limit) )
+    (for step) = __tonumber( (for step) )
+forloop:
+    bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) forBreak
+    do -- forBody
+      -- local i
+      local i = (for index)
+      print( i, arg[ i ] )
+    end
+forContinue:
+    (for index) = ( (for index) + (for step) )
+forBreak:
   end
 end
 
@@ -90,14 +254,35 @@ function x378734A( t, i )
 end
 
 function <chunk>( ... )
-  -- local n
+  -- local f
+  -- local f
+  local f = function x33C0D9D
+  setmetatable( getfenv(), {
+    [ "__index" ] = f;
+  } )
+  print( a, USER, PATH )
+end
+
+function x33C0D9D( t, i )
+  -- multiple return
+  return values os[ "getenv" ]( i )
+end
+
+function <chunk>( ... )
+  -- local (for index), (for limit), (for step), n
   Y = function x33C0D9D
   F = function x11C7A8C
   factorial = Y( F )
   test = function test
-  for n = 0, 16, 1
-    -- local n
-    test( n )
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 0
+    local (for limit) = 16
+    local (for step) = 1
+    for n : (for index), (for limit), (for step) : forBreak, forContinue
+      -- local n
+      test( n )
+    end
   end
 end
 
@@ -134,6 +319,87 @@ function x11C7A8C( f )
 end
 
 function x2E0C681( n )
+  -- label ifClause, ifEnd
+  -- upval f
+  bfalse ( n == 0 ) ifClause
+  do -- if
+    return 1
+  end
+  b ifEnd
+ifClause:
+  do -- else
+    return ( n * f( ( n - 1 ) ) )
+  end
+ifEnd:
+  return nil
+end
+
+function test( x )
+  io[ "write" ]( x, "! = ", factorial( x ), "\n" )
+  return nil
+end
+
+function <chunk>( ... )
+  -- label forloop
+  -- local (for index), (for limit), (for step), n
+  Y = function x1E6FA8E
+  F = function x11ECF05
+  factorial = Y( F )
+  test = function test
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 0
+    local (for limit) = 16
+    local (for step) = 1
+    (for index) = __tonumber( (for index) )
+    (for limit) = __tonumber( (for limit) )
+    (for step) = __tonumber( (for step) )
+forloop:
+    bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) forBreak
+    do -- forBody
+      -- local n
+      local n = (for index)
+      test( n )
+    end
+forContinue:
+    (for index) = ( (for index) + (for step) )
+forBreak:
+  end
+end
+
+function x1E6FA8E( g )
+  -- multiple return
+  -- local a
+  -- local a
+  local a = function x215472D
+  return values a( function x2BF8098 )
+end
+
+function x215472D( f )
+  -- multiple return
+  return values f( f )
+end
+
+function x2BF8098( f )
+  -- multiple return
+  -- upval g
+  return values g( function xBB8560 )
+end
+
+function xBB8560( x )
+  -- multiple return
+  -- upval f
+  -- local c
+  -- local c
+  local c = f( f )
+  return values c( x )
+end
+
+function x11ECF05( f )
+  return function x297B065
+end
+
+function x297B065( n )
   -- label ifClause, ifEnd
   -- upval f
   bfalse ( n == 0 ) ifClause
@@ -217,11 +483,77 @@ function test( s, f )
 end
 
 function <chunk>( ... )
-  -- local i
+  fib = function fib
+  cache = function cache
+  test = function test
+  n = ( arg[ 1 ] or 24 )
+  n = tonumber( n )
+  print( "", "n", "value", "time", "evals" )
+  test( "plain", fib )
+  fib = cache( fib )
+  test( "cached", fib )
+end
+
+function fib( n )
+  -- label ifClause, ifEnd
+  N = ( N + 1 )
+  bfalse ( n < 2 ) ifClause
+  do -- if
+    return n
+  end
+  b ifEnd
+ifClause:
+  do -- else
+    return ( fib( ( n - 1 ) ) + fib( ( n - 2 ) ) )
+  end
+ifEnd:
+  return nil
+end
+
+function cache( f )
+  -- local c
+  -- local c
+  local c = {
+  }
+  return function x11C7A8C
+end
+
+function x11C7A8C( x )
+  -- label ifClause
+  -- upval c, f
+  -- local y
+  -- local y
+  local y = c[ x ]
+  bfalse not y ifClause
+  do -- if
+    y = f( x )
+    c[ x ] = y
+  end
+ifClause:
+  return y
+end
+
+function test( s, f )
+  -- local c, v, t
+  -- local c, v, t
+  N = 0
+  local c = os[ "clock" ]()
+  local v = f( n )
+  local t = ( os[ "clock" ]() - c )
+  print( s, n, v, t, N )
+  return nil
+end
+
+function <chunk>( ... )
+  -- local (for generator), (for state), (for control), i
   generatefib = function generatefib
-  forlist i = values generatefib( 1000 )
-    -- local i
-    print( i )
+  do -- forlist
+    -- local (for generator), (for state), (for control)
+    local (for generator), (for state), (for control) = values generatefib( 1000 )
+    forlist i : (for generator), (for state), (for control) : forBreak, forContinue
+      -- local i
+      print( i )
+    end
   end
 end
 
@@ -242,6 +574,55 @@ whileContinue:
   do -- while
     coroutine[ "yield" ]( a )
     a, b = b, ( a + b )
+  end
+  b whileContinue
+whileBreak:
+  return nil
+end
+
+function <chunk>( ... )
+  -- local (for generator), (for state), (for control), i
+  generatefib = function generatefib
+  do -- forlist
+    -- local (for generator), (for state), (for control)
+    __valuelist = generatefib( 1000 )
+    local (for generator) = __valuelist[ 0 ]
+    local (for state) = __valuelist[ 1 ]
+    local (for control) = __valuelist[ 2 ]
+forContinue:
+    do -- forlistBody
+      -- local i
+      __valuelist = (for generator)( (for state), (for control) )
+      local i = __valuelist[ 0 ]
+      (for control) = i
+      bfalse ( (for control) != nil ) forBreak
+      print( i )
+    end
+    b forContinue
+forBreak:
+  end
+end
+
+function generatefib( n )
+  -- multiple return
+  return values coroutine[ "wrap" ]( function x11C7A8C )
+end
+
+function x11C7A8C()
+  -- label whileBreak, whileContinue
+  -- upval n
+  -- local a, b
+  -- local a, b
+  local a = 1
+  local b = 1
+whileContinue:
+  bfalse ( a <= n ) whileBreak
+  do -- while
+    coroutine[ "yield" ]( a )
+    temporary x2004EEE = b
+    temporary x202C666 = ( a + b )
+    a = temporary x2004EEE
+    b = temporary x202C666
   end
   b whileContinue
 whileBreak:
@@ -280,6 +661,49 @@ ifClause:
   end
   b whileContinue
 whileBreak:
+end
+
+function <chunk>( ... )
+  -- label whileBreak, whileContinue, ifClause, ifClause, ifClause, ifEnd
+  -- local s, ok, _, l, op, g
+whileContinue:
+  bfalse 1 whileBreak
+  do -- while
+    -- local s, ok, _, l, op, g
+    local s = io[ "read" ]()
+    bfalse ( s == nil ) ifClause
+    do -- if
+      b whileBreak
+    end
+ifClause:
+    __valuelist = string[ "find" ]( s, "%[%-?(%d*)%]%s*([GS])ETGLOBAL.-;%s+(.*)$" )
+    local ok = __valuelist[ 0 ]
+    local _ = __valuelist[ 1 ]
+    local l = __valuelist[ 2 ]
+    local op = __valuelist[ 3 ]
+    local g = __valuelist[ 4 ]
+    bfalse ok ifClause
+    do -- if
+      bfalse ( op == "S" ) ifClause
+      do -- if
+        op = "*"
+      end
+      b ifEnd
+ifClause:
+      do -- else
+        op = ""
+      end
+ifEnd:
+      io[ "write" ]( g, "	", l, op, "\n" )
+    end
+ifClause:
+  end
+  b whileContinue
+whileBreak:
+end
+
+function <chunk>( ... )
+  io[ "write" ]( "Hello world, from ", _VERSION, "!\n" )
 end
 
 function <chunk>( ... )
@@ -402,39 +826,69 @@ function <chunk>( ... )
 end
 
 function delay()
-  -- local i
-  for i = 1, 10000, 1
-    -- local i
+  -- local (for index), (for limit), (for step), i
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 1
+    local (for limit) = 10000
+    local (for step) = 1
+    for i : (for index), (for limit), (for step) : forBreak, forContinue
+      -- local i
+    end
   end
   return nil
 end
 
 function ARRAY2D( w, h )
-  -- local t, y, x
+  -- local t, (for index), (for limit), (for step), y, (for index), (for limit), (for step), x
   -- local t
   local t = {
     [ "w" ] = w;
     [ "h" ] = h;
   }
-  for y = 1, h, 1
-    -- local y
-    t[ y ] = {
-    }
-    for x = 1, w, 1
-      -- local x
-      t[ y ][ x ] = 0
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 1
+    local (for limit) = h
+    local (for step) = 1
+    for y : (for index), (for limit), (for step) : forBreak, forContinue
+      -- local y
+      t[ y ] = {
+      }
+      do -- for
+        -- local (for index), (for limit), (for step)
+        local (for index) = 1
+        local (for limit) = w
+        local (for step) = 1
+        for x : (for index), (for limit), (for step) : forBreak, forContinue
+          -- local x
+          t[ y ][ x ] = 0
+        end
+      end
     end
   end
   return t
 end
 
 function _CELLS:spawn( self, shape, left, top )
-  -- local y, x
-  for y = 0, ( shape[ "h" ] - 1 ), 1
-    -- local y
-    for x = 0, ( shape[ "w" ] - 1 ), 1
-      -- local x
-      self[ ( top + y ) ][ ( left + x ) ] = shape[ ( ( ( y * shape[ "w" ] ) + x ) + 1 ) ]
+  -- local (for index), (for limit), (for step), y, (for index), (for limit), (for step), x
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 0
+    local (for limit) = ( shape[ "h" ] - 1 )
+    local (for step) = 1
+    for y : (for index), (for limit), (for step) : forBreak, forContinue
+      -- local y
+      do -- for
+        -- local (for index), (for limit), (for step)
+        local (for index) = 0
+        local (for limit) = ( shape[ "w" ] - 1 )
+        local (for step) = 1
+        for x : (for index), (for limit), (for step) : forBreak, forContinue
+          -- local x
+          self[ ( top + y ) ][ ( left + x ) ] = shape[ ( ( ( y * shape[ "w" ] ) + x ) + 1 ) ]
+        end
+      end
     end
   end
   return nil
@@ -475,16 +929,28 @@ end
 
 function _CELLS:draw( self )
   -- upval write
-  -- local out, y, x
+  -- local out, (for index), (for limit), (for step), y, (for index), (for limit), (for step), x
   -- local out
   local out = ""
-  for y = 1, self[ "h" ], 1
-    -- local y
-    for x = 1, self[ "w" ], 1
-      -- local x
-      out = ( out .. ( ( ( self[ y ][ x ] > 0 ) and ALIVE ) or DEAD ) )
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 1
+    local (for limit) = self[ "h" ]
+    local (for step) = 1
+    for y : (for index), (for limit), (for step) : forBreak, forContinue
+      -- local y
+      do -- for
+        -- local (for index), (for limit), (for step)
+        local (for index) = 1
+        local (for limit) = self[ "w" ]
+        local (for step) = 1
+        for x : (for index), (for limit), (for step) : forBreak, forContinue
+          -- local x
+          out = ( out .. ( ( ( self[ y ][ x ] > 0 ) and ALIVE ) or DEAD ) )
+        end
+      end
+      out = ( out .. "\n" )
     end
-    out = ( out .. "\n" )
   end
   write( out )
   return nil
@@ -533,10 +999,399 @@ whileBreak:
 end
 
 function <chunk>( ... )
+  -- local write
+  -- local write
+  local write = io[ "write" ]
+  ALIVE = "?"
+  DEAD = "?"
+  ALIVE = "O"
+  DEAD = "-"
+  delay = function delay
+  ARRAY2D = function ARRAY2D
+  _CELLS = {
+  }
+  _CELLS[ "spawn" ] = function _CELLS:spawn
+  _CELLS[ "evolve" ] = function _CELLS:evolve
+  _CELLS[ "draw" ] = function _CELLS:draw
+  CELLS = function CELLS
+  HEART = {
+    1;
+    0;
+    1;
+    1;
+    0;
+    1;
+    1;
+    1;
+    1;
+    [ "w" ] = 3;
+    [ "h" ] = 3;
+  }
+  GLIDER = {
+    0;
+    0;
+    1;
+    1;
+    0;
+    1;
+    0;
+    1;
+    1;
+    [ "w" ] = 3;
+    [ "h" ] = 3;
+  }
+  EXPLODE = {
+    0;
+    1;
+    0;
+    1;
+    1;
+    1;
+    1;
+    0;
+    1;
+    0;
+    1;
+    0;
+    [ "w" ] = 3;
+    [ "h" ] = 4;
+  }
+  FISH = {
+    0;
+    1;
+    1;
+    1;
+    1;
+    1;
+    0;
+    0;
+    0;
+    1;
+    0;
+    0;
+    0;
+    0;
+    1;
+    1;
+    0;
+    0;
+    1;
+    0;
+    [ "w" ] = 5;
+    [ "h" ] = 4;
+  }
+  BUTTERFLY = {
+    1;
+    0;
+    0;
+    0;
+    1;
+    0;
+    1;
+    1;
+    1;
+    0;
+    1;
+    0;
+    0;
+    0;
+    1;
+    1;
+    0;
+    1;
+    0;
+    1;
+    1;
+    0;
+    0;
+    0;
+    1;
+    [ "w" ] = 5;
+    [ "h" ] = 5;
+  }
+  LIFE = function LIFE
+  LIFE( 40, 20 )
+end
+
+function delay()
+  -- label forloop
+  -- local (for index), (for limit), (for step), i
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 1
+    local (for limit) = 10000
+    local (for step) = 1
+    (for index) = __tonumber( (for index) )
+    (for limit) = __tonumber( (for limit) )
+    (for step) = __tonumber( (for step) )
+forloop:
+    bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) forBreak
+    do -- forBody
+      -- local i
+      local i = (for index)
+    end
+forContinue:
+    (for index) = ( (for index) + (for step) )
+forBreak:
+  end
+  return nil
+end
+
+function ARRAY2D( w, h )
+  -- label forloop, forloop
+  -- local t, (for index), (for limit), (for step), y, (for index), (for limit), (for step), x
+  -- local t
+  local t = {
+    [ "w" ] = w;
+    [ "h" ] = h;
+  }
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 1
+    local (for limit) = h
+    local (for step) = 1
+    (for index) = __tonumber( (for index) )
+    (for limit) = __tonumber( (for limit) )
+    (for step) = __tonumber( (for step) )
+forloop:
+    bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) forBreak
+    do -- forBody
+      -- local y
+      local y = (for index)
+      t[ y ] = {
+      }
+      do -- for
+        -- local (for index), (for limit), (for step)
+        local (for index) = 1
+        local (for limit) = w
+        local (for step) = 1
+        (for index) = __tonumber( (for index) )
+        (for limit) = __tonumber( (for limit) )
+        (for step) = __tonumber( (for step) )
+forloop:
+        bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) forBreak
+        do -- forBody
+          -- local x
+          local x = (for index)
+          t[ y ][ x ] = 0
+        end
+forContinue:
+        (for index) = ( (for index) + (for step) )
+forBreak:
+      end
+    end
+forContinue:
+    (for index) = ( (for index) + (for step) )
+forBreak:
+  end
+  return t
+end
+
+function _CELLS:spawn( self, shape, left, top )
+  -- label forloop, forloop
+  -- local (for index), (for limit), (for step), y, (for index), (for limit), (for step), x
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 0
+    local (for limit) = ( shape[ "h" ] - 1 )
+    local (for step) = 1
+    (for index) = __tonumber( (for index) )
+    (for limit) = __tonumber( (for limit) )
+    (for step) = __tonumber( (for step) )
+forloop:
+    bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) forBreak
+    do -- forBody
+      -- local y
+      local y = (for index)
+      do -- for
+        -- local (for index), (for limit), (for step)
+        local (for index) = 0
+        local (for limit) = ( shape[ "w" ] - 1 )
+        local (for step) = 1
+        (for index) = __tonumber( (for index) )
+        (for limit) = __tonumber( (for limit) )
+        (for step) = __tonumber( (for step) )
+forloop:
+        bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) forBreak
+        do -- forBody
+          -- local x
+          local x = (for index)
+          self[ ( top + y ) ][ ( left + x ) ] = shape[ ( ( ( y * shape[ "w" ] ) + x ) + 1 ) ]
+        end
+forContinue:
+        (for index) = ( (for index) + (for step) )
+forBreak:
+      end
+    end
+forContinue:
+    (for index) = ( (for index) + (for step) )
+forBreak:
+  end
+  return nil
+end
+
+function _CELLS:evolve( self, next )
+  -- label whileBreak, whileContinue, whileBreak, whileContinue
+  -- local ym1, y, yp1, yi, xm1, x, xp1, xi, sum
+  -- local ym1, y, yp1, yi
+  local ym1 = ( self[ "h" ] - 1 )
+  local y = self[ "h" ]
+  local yp1 = 1
+  local yi = self[ "h" ]
+whileContinue:
+  bfalse ( yi > 0 ) whileBreak
+  do -- while
+    -- local xm1, x, xp1, xi
+    local xm1 = ( self[ "w" ] - 1 )
+    local x = self[ "w" ]
+    local xp1 = 1
+    local xi = self[ "w" ]
+whileContinue:
+    bfalse ( xi > 0 ) whileBreak
+    do -- while
+      -- local sum
+      local sum = ( ( ( ( ( ( ( self[ ym1 ][ xm1 ] + self[ ym1 ][ x ] ) + self[ ym1 ][ xp1 ] ) + self[ y ][ xm1 ] ) + self[ y ][ xp1 ] ) + self[ yp1 ][ xm1 ] ) + self[ yp1 ][ x ] ) + self[ yp1 ][ xp1 ] )
+      next[ y ][ x ] = ( ( ( ( sum == 2 ) and self[ y ][ x ] ) or ( ( sum == 3 ) and 1 ) ) or 0 )
+      temporary x33C0D9D = x
+      temporary x11C7A8C = xp1
+      temporary x2004EEE = ( xp1 + 1 )
+      temporary x202C666 = ( xi - 1 )
+      xm1 = temporary x33C0D9D
+      x = temporary x11C7A8C
+      xp1 = temporary x2004EEE
+      xi = temporary x202C666
+    end
+    b whileContinue
+whileBreak:
+    temporary x218F99C = y
+    temporary x2E0C681 = yp1
+    temporary x1E6FA8E = ( yp1 + 1 )
+    temporary x11ECF05 = ( yi - 1 )
+    ym1 = temporary x218F99C
+    y = temporary x2E0C681
+    yp1 = temporary x1E6FA8E
+    yi = temporary x11ECF05
+  end
+  b whileContinue
+whileBreak:
+  return nil
+end
+
+function _CELLS:draw( self )
+  -- label forloop, forloop
+  -- upval write
+  -- local out, (for index), (for limit), (for step), y, (for index), (for limit), (for step), x
+  -- local out
+  local out = ""
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 1
+    local (for limit) = self[ "h" ]
+    local (for step) = 1
+    (for index) = __tonumber( (for index) )
+    (for limit) = __tonumber( (for limit) )
+    (for step) = __tonumber( (for step) )
+forloop:
+    bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) forBreak
+    do -- forBody
+      -- local y
+      local y = (for index)
+      do -- for
+        -- local (for index), (for limit), (for step)
+        local (for index) = 1
+        local (for limit) = self[ "w" ]
+        local (for step) = 1
+        (for index) = __tonumber( (for index) )
+        (for limit) = __tonumber( (for limit) )
+        (for step) = __tonumber( (for step) )
+forloop:
+        bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) forBreak
+        do -- forBody
+          -- local x
+          local x = (for index)
+          out = ( out .. ( ( ( self[ y ][ x ] > 0 ) and ALIVE ) or DEAD ) )
+        end
+forContinue:
+        (for index) = ( (for index) + (for step) )
+forBreak:
+      end
+      out = ( out .. "\n" )
+    end
+forContinue:
+    (for index) = ( (for index) + (for step) )
+forBreak:
+  end
+  write( out )
+  return nil
+end
+
+function CELLS( w, h )
+  -- local c
+  -- local c
+  local c = ARRAY2D( w, h )
+  c[ "spawn" ] = _CELLS[ "spawn" ]
+  c[ "evolve" ] = _CELLS[ "evolve" ]
+  c[ "draw" ] = _CELLS[ "draw" ]
+  return c
+end
+
+function LIFE( w, h )
+  -- label whileBreak, whileContinue, ifClause
+  -- upval write
+  -- local thisgen, nextgen, gen
+  -- local thisgen, nextgen, gen
+  local thisgen = CELLS( w, h )
+  local nextgen = CELLS( w, h )
+  thisgen:spawn( GLIDER, 5, 4 )
+  thisgen:spawn( EXPLODE, 25, 10 )
+  thisgen:spawn( FISH, 4, 12 )
+  local gen = 1
+  write( "[2J" )
+whileContinue:
+  bfalse 1 whileBreak
+  do -- while
+    thisgen:evolve( nextgen )
+    temporary x215472D = nextgen
+    temporary x2BF8098 = thisgen
+    thisgen = temporary x215472D
+    nextgen = temporary x2BF8098
+    write( "[H" )
+    thisgen:draw()
+    write( "Life - generation ", gen, "\n" )
+    gen = ( gen + 1 )
+    bfalse ( gen > 2000 ) ifClause
+    do -- if
+      b whileBreak
+    end
+ifClause:
+  end
+  b whileContinue
+whileBreak:
+  return nil
+end
+
+function <chunk>( ... )
   assert( ( ( arg[ 1 ] != nil ) and ( arg[ 2 ] == nil ) ), "usage: lua luac.lua file.lua" )
   f = assert( values io[ "open" ]( "luac.out", "wb" ) )
   assert( values f:write( values string[ "dump" ]( values assert( values loadfile( arg[ 1 ] ) ) ) ) )
   assert( values f:close() )
+end
+
+function <chunk>( ... )
+  assert( ( ( arg[ 1 ] != nil ) and ( arg[ 2 ] == nil ) ), "usage: lua luac.lua file.lua" )
+  f = assert( values io[ "open" ]( "luac.out", "wb" ) )
+  assert( values f:write( values string[ "dump" ]( values assert( values loadfile( arg[ 1 ] ) ) ) ) )
+  assert( values f:close() )
+end
+
+function <chunk>( ... )
+  printf = function printf
+  printf( "Hello %s from %s on %s\n", ( os[ "getenv" ]( "USER" ) or "there" ), _VERSION, values os[ "date" ]() )
+end
+
+function printf( ... )
+  io[ "write" ]( values string[ "format" ]( values ... ) )
+  return nil
 end
 
 function <chunk>( ... )
@@ -572,6 +1427,28 @@ function x33C0D9D( t, i )
 end
 
 function <chunk>( ... )
+  -- local f, g, G
+  -- local f, g, G
+  local f = function x11C7A8C
+  local g = {
+  }
+  local G = getfenv()
+  setmetatable( g, {
+    [ "__index" ] = G;
+    [ "__newindex" ] = f;
+  } )
+  setfenv( 1, g )
+  rawset( g, "x", 3 )
+  x = 2
+  y = 1
+end
+
+function x11C7A8C( t, i )
+  error( ( "cannot redefine global variable `" .. ( i .. "'" ) ), 2 )
+  return nil
+end
+
+function <chunk>( ... )
   -- label whileBreak, whileContinue, ifClause
   -- local n
   gen = function gen
@@ -602,10 +1479,16 @@ end
 
 function x33C0D9D()
   -- upval n
-  -- local i
-  for i = 2, n, 1
-    -- local i
-    coroutine[ "yield" ]( i )
+  -- local (for index), (for limit), (for step), i
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 2
+    local (for limit) = n
+    local (for step) = 1
+    for i : (for index), (for limit), (for step) : forBreak, forContinue
+      -- local i
+      coroutine[ "yield" ]( i )
+    end
   end
   return nil
 end
@@ -616,6 +1499,91 @@ function filter( p, g )
 end
 
 function x11C7A8C()
+  -- label whileBreak, whileContinue, ifClause, ifClause
+  -- upval g, p
+  -- local n
+whileContinue:
+  bfalse 1 whileBreak
+  do -- while
+    -- local n
+    local n = g()
+    bfalse ( n == nil ) ifClause
+    do -- if
+      return nil
+    end
+ifClause:
+    bfalse ( math[ "mod" ]( n, p ) != 0 ) ifClause
+    do -- if
+      coroutine[ "yield" ]( n )
+    end
+ifClause:
+  end
+  b whileContinue
+whileBreak:
+  return nil
+end
+
+function <chunk>( ... )
+  -- label whileBreak, whileContinue, ifClause
+  -- local n
+  gen = function gen
+  filter = function filter
+  N = ( N or 1000 )
+  x = gen( N )
+whileContinue:
+  bfalse 1 whileBreak
+  do -- while
+    -- local n
+    local n = x()
+    bfalse ( n == nil ) ifClause
+    do -- if
+      b whileBreak
+    end
+ifClause:
+    print( n )
+    x = filter( n, x )
+  end
+  b whileContinue
+whileBreak:
+end
+
+function gen( n )
+  -- multiple return
+  return values coroutine[ "wrap" ]( function x2004EEE )
+end
+
+function x2004EEE()
+  -- label forloop
+  -- upval n
+  -- local (for index), (for limit), (for step), i
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 2
+    local (for limit) = n
+    local (for step) = 1
+    (for index) = __tonumber( (for index) )
+    (for limit) = __tonumber( (for limit) )
+    (for step) = __tonumber( (for step) )
+forloop:
+    bfalse ( ( ( (for step) > 0 ) and ( (for index) <= (for limit) ) ) or ( ( (for step) < 0 ) and ( (for index) >= (for limit) ) ) ) forBreak
+    do -- forBody
+      -- local i
+      local i = (for index)
+      coroutine[ "yield" ]( i )
+    end
+forContinue:
+    (for index) = ( (for index) + (for step) )
+forBreak:
+  end
+  return nil
+end
+
+function filter( p, g )
+  -- multiple return
+  return values coroutine[ "wrap" ]( function x202C666 )
+end
+
+function x202C666()
   -- label whileBreak, whileContinue, ifClause, ifClause
   -- upval g, p
   -- local n
@@ -784,6 +1752,177 @@ function x2004EEE( x, y )
 end
 
 function <chunk>( ... )
+  qsort = function qsort
+  selectionsort = function selectionsort
+  show = function show
+  testsorts = function testsorts
+  x = {
+    "Jan";
+    "Feb";
+    "Mar";
+    "Apr";
+    "May";
+    "Jun";
+    "Jul";
+    "Aug";
+    "Sep";
+    "Oct";
+    "Nov";
+    "Dec";
+  }
+  testsorts( x )
+end
+
+function qsort( x, l, u, f )
+  -- label ifClause, whileBreak, whileContinue, ifClause
+  -- local m, t, i
+  bfalse ( l < u ) ifClause
+  do -- if
+    -- local m, t, i
+    local m = ( ( math[ "random" ]( ( u - ( l - 1 ) ) ) + l ) - 1 )
+    temporary x202C666 = x
+    temporary x218F99C = l
+    temporary x2E0C681 = x
+    temporary x1E6FA8E = m
+    temporary x11ECF05 = x[ m ]
+    temporary x215472D = x[ l ]
+    temporary x202C666[ temporary x218F99C ] = temporary x11ECF05
+    temporary x2E0C681[ temporary x1E6FA8E ] = temporary x215472D
+    local t = x[ l ]
+    m = l
+    local i = ( l + 1 )
+whileContinue:
+    bfalse ( i <= u ) whileBreak
+    do -- while
+      bfalse f( x[ i ], t ) ifClause
+      do -- if
+        m = ( m + 1 )
+        temporary x2BF8098 = x
+        temporary xBB8560 = m
+        temporary x297B065 = x
+        temporary x3553390 = i
+        temporary x1FED012 = x[ i ]
+        temporary x1F550A4 = x[ m ]
+        temporary x2BF8098[ temporary xBB8560 ] = temporary x1FED012
+        temporary x297B065[ temporary x3553390 ] = temporary x1F550A4
+      end
+ifClause:
+      i = ( i + 1 )
+    end
+    b whileContinue
+whileBreak:
+    temporary x19FD5C7 = x
+    temporary x29E8405 = l
+    temporary x392A42D = x
+    temporary x27C59A = m
+    temporary x165F26B = x[ m ]
+    temporary x9585CB = x[ l ]
+    temporary x19FD5C7[ temporary x29E8405 ] = temporary x165F26B
+    temporary x392A42D[ temporary x27C59A ] = temporary x9585CB
+    qsort( x, l, ( m - 1 ), f )
+    qsort( x, ( m + 1 ), u, f )
+  end
+ifClause:
+  return nil
+end
+
+function selectionsort( x, n, f )
+  -- label whileBreak, whileContinue, whileBreak, whileContinue, ifClause
+  -- local i, m, j
+  -- local i
+  local i = 1
+whileContinue:
+  bfalse ( i <= n ) whileBreak
+  do -- while
+    -- local m, j
+    local m = i
+    local j = ( i + 1 )
+whileContinue:
+    bfalse ( j <= n ) whileBreak
+    do -- while
+      bfalse f( x[ j ], x[ m ] ) ifClause
+      do -- if
+        m = j
+      end
+ifClause:
+      j = ( j + 1 )
+    end
+    b whileContinue
+whileBreak:
+    temporary x141B42A = x
+    temporary x34F5582 = i
+    temporary x1CA0192 = x
+    temporary x1A0E24 = m
+    temporary xEA7F4A = x[ m ]
+    temporary x3E799B = x[ i ]
+    temporary x141B42A[ temporary x34F5582 ] = temporary xEA7F4A
+    temporary x1CA0192[ temporary x1A0E24 ] = temporary x3E799B
+    i = ( i + 1 )
+  end
+  b whileContinue
+whileBreak:
+  return nil
+end
+
+function show( m, x )
+  -- label whileBreak, whileContinue, ifClause
+  -- local i
+  -- local i
+  io[ "write" ]( m, "\n	" )
+  local i = 1
+whileContinue:
+  bfalse x[ i ] whileBreak
+  do -- while
+    io[ "write" ]( x[ i ] )
+    i = ( i + 1 )
+    bfalse x[ i ] ifClause
+    do -- if
+      io[ "write" ]( "," )
+    end
+ifClause:
+  end
+  b whileContinue
+whileBreak:
+  io[ "write" ]( "\n" )
+  return nil
+end
+
+function testsorts( x )
+  -- label whileBreak, whileContinue
+  -- local n
+  -- local n
+  local n = 1
+whileContinue:
+  bfalse x[ n ] whileBreak
+  do -- while
+    n = ( n + 1 )
+  end
+  b whileContinue
+whileBreak:
+  n = ( n - 1 )
+  show( "original", x )
+  qsort( x, 1, n, function x232467A )
+  show( "after quicksort", x )
+  selectionsort( x, n, function x3C47A4F )
+  show( "after reverse selection sort", x )
+  qsort( x, 1, n, function x1E84CCB )
+  show( "after quicksort again", x )
+  return nil
+end
+
+function x232467A( x, y )
+  return ( x < y )
+end
+
+function x3C47A4F( x, y )
+  return ( x > y )
+end
+
+function x1E84CCB( x, y )
+  return ( x < y )
+end
+
+function <chunk>( ... )
   -- label whileBreak, whileContinue, ifClause, ifClause
   -- local A, l, _, _, a, b
   -- local A
@@ -810,6 +1949,105 @@ ifClause:
   b whileContinue
 whileBreak:
   io[ "write" ]( "\n" )
+end
+
+function <chunk>( ... )
+  -- label whileBreak, whileContinue, ifClause, ifClause
+  -- local A, l, _, _, a, b
+  -- local A
+  local A = nil
+whileContinue:
+  bfalse 1 whileBreak
+  do -- while
+    -- local l, _, _, a, b
+    local l = io[ "read" ]()
+    bfalse ( l == nil ) ifClause
+    do -- if
+      b whileBreak
+    end
+ifClause:
+    __valuelist = string[ "find" ]( l, "\"?([_%w]+)\"?%s*(.*)$" )
+    local _ = __valuelist[ 0 ]
+    local _ = __valuelist[ 1 ]
+    local a = __valuelist[ 2 ]
+    local b = __valuelist[ 3 ]
+    bfalse ( a != A ) ifClause
+    do -- if
+      A = a
+      io[ "write" ]( "\n", a, ":" )
+    end
+ifClause:
+    io[ "write" ]( " ", b )
+  end
+  b whileContinue
+whileBreak:
+  io[ "write" ]( "\n" )
+end
+
+function <chunk>( ... )
+  -- local level, hook
+  -- local level, hook
+  local level = 0
+  local hook = function hook
+  debug[ "sethook" ]( hook, "cr" )
+  level = 0
+end
+
+function hook( event )
+  -- label ifClause, ifClause, ifEnd, ifClause, ifClause, ifClause, ifEnd, ifEnd, ifClause
+  -- upval level
+  -- local t
+  -- local t
+  local t = debug[ "getinfo" ]( 3 )
+  io[ "write" ]( level, " >>> ", values string[ "rep" ]( " ", level ) )
+  bfalse ( ( t != nil ) and ( t[ "currentline" ] >= 0 ) ) ifClause
+  do -- if
+    io[ "write" ]( t[ "short_src" ], ":", t[ "currentline" ], " " )
+  end
+ifClause:
+  t = debug[ "getinfo" ]( 2 )
+  bfalse ( event == "call" ) ifClause
+  do -- if
+    level = ( level + 1 )
+  end
+  b ifEnd
+ifClause:
+  do -- else
+    level = ( level - 1 )
+    bfalse ( level < 0 ) ifClause
+    do -- if
+      level = 0
+    end
+ifClause:
+  end
+ifEnd:
+  bfalse ( t[ "what" ] == "main" ) ifClause
+  do -- if
+    bfalse ( event == "call" ) ifClause
+    do -- if
+      io[ "write" ]( "begin ", t[ "short_src" ] )
+    end
+    b ifEnd
+ifClause:
+    do -- else
+      io[ "write" ]( "end ", t[ "short_src" ] )
+    end
+ifEnd:
+  end
+  b ifEnd
+ifClause:
+  bfalse ( t[ "what" ] == "Lua" ) ifClause
+  do -- elseif
+    io[ "write" ]( event, " ", ( t[ "name" ] or "(Lua)" ), " <", t[ "linedefined" ], ":", t[ "short_src" ], ">" )
+  end
+  b ifEnd
+ifClause:
+  do -- else
+    io[ "write" ]( event, " ", ( t[ "name" ] or "(C)" ), " [", t[ "what" ], "] " )
+  end
+ifEnd:
+  io[ "write" ]( "\n" )
+  return nil
 end
 
 function <chunk>( ... )
@@ -944,6 +2182,71 @@ function x2004EEE( t, name, value )
 end
 
 function <chunk>( ... )
+  -- local _tostring, tostring, log, g, set
+  do -- do
+    -- local _tostring, tostring, log, g, set
+    local _tostring = tostring
+    local tostring = function x202C666
+    local log = function x218F99C
+    local g = {
+    }
+    local set = function x2E0C681
+    setmetatable( getfenv(), {
+      [ "__index" ] = g;
+      [ "__newindex" ] = set;
+    } )
+  end
+  a = 1
+  b = 2
+  a = 10
+  b = 20
+  b = nil
+  b = 200
+  print( a, b, c )
+end
+
+function x202C666( a )
+  -- multiple return
+  -- label ifClause, ifEnd
+  -- upval _tostring
+  bfalse ( type( a ) == "string" ) ifClause
+  do -- if
+    return values string[ "format" ]( "%q", a )
+  end
+  b ifEnd
+ifClause:
+  do -- else
+    return values _tostring( a )
+  end
+ifEnd:
+  return nil
+end
+
+function x218F99C( name, old, new )
+  -- label ifClause
+  -- upval tostring
+  -- local t, line
+  -- local t, line
+  local t = debug[ "getinfo" ]( 3, "Sl" )
+  local line = t[ "currentline" ]
+  io[ "write" ]( t[ "short_src" ] )
+  bfalse ( line >= 0 ) ifClause
+  do -- if
+    io[ "write" ]( ":", line )
+  end
+ifClause:
+  io[ "write" ]( ": ", name, " is now ", tostring( new ), " (was ", tostring( old ), ")", "\n" )
+  return nil
+end
+
+function x2E0C681( t, name, value )
+  -- upval log, g
+  log( name, g[ name ], value )
+  g[ name ] = value
+  return nil
+end
+
+function <chunk>( ... )
   -- label whileBreak, whileContinue, ifClause
   -- local offset, s
   -- local offset
@@ -969,6 +2272,36 @@ whileBreak:
 end
 
 function x33C0D9D( c )
+  io[ "write" ]( values string[ "format" ]( "%02X ", values string[ "byte" ]( c ) ) )
+  return nil
+end
+
+function <chunk>( ... )
+  -- label whileBreak, whileContinue, ifClause
+  -- local offset, s
+  -- local offset
+  local offset = 0
+whileContinue:
+  bfalse True whileBreak
+  do -- while
+    -- local s
+    local s = io[ "read" ]( 16 )
+    bfalse ( s == nil ) ifClause
+    do -- if
+      return nil
+    end
+ifClause:
+    io[ "write" ]( values string[ "format" ]( "%08X  ", offset ) )
+    string[ "gsub" ]( s, "(.)", function x11C7A8C )
+    io[ "write" ]( values string[ "rep" ]( " ", ( 3 * ( 16 - string[ "len" ]( s ) ) ) ) )
+    io[ "write" ]( " ", string[ "gsub" ]( s, "%c", "." ), "\n" )
+    offset = ( offset + 16 )
+  end
+  b whileContinue
+whileBreak:
+end
+
+function x11C7A8C( c )
   io[ "write" ]( values string[ "format" ]( "%02X ", values string[ "byte" ]( c ) ) )
   return nil
 end

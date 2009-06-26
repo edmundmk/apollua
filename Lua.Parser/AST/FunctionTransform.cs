@@ -126,7 +126,7 @@ public class FunctionTransform
 		block = block.Parent;
 	}
 
-	void TransformBlock( Block s )
+	protected void TransformBlock( Block s )
 	{
 		// Locals
 		foreach ( Variable local in s.Locals )
@@ -169,8 +169,7 @@ public class FunctionTransform
 	public virtual void Visit( ForBlock s )
 	{
 		block = new ForBlock( s.SourceSpan, block, s.Name,
-			Transform( s.Index ), Transform( s.Limit ), Transform( s.Step ),
-			s.UserIndex, s.BreakLabel, s.ContinueLabel );
+			s.Index, s.Limit, s.Step, s.UserIndex, s.BreakLabel, s.ContinueLabel );
 		TransformBlock( s );
 		result = block;
 		block = block.Parent;
@@ -178,15 +177,8 @@ public class FunctionTransform
 
 	public virtual void Visit( ForListBlock s )
 	{
-		Expression[] expressions = new Expression[ s.Expressions.Count ];
-		for ( int i = 0; i < s.Expressions.Count; ++i )
-		{
-			expressions[ i ] = Transform( s.Expressions[ i ] );
-		}
-		Expression expressionList = s.ExpressionList != null ? Transform( s.ExpressionList ) : null;
-
 		block = new ForListBlock( s.SourceSpan, block, s.Name,
-			s.UserVariables, Array.AsReadOnly( expressions ), expressionList,
+			s.Generator, s.State, s.Control, s.UserVariables,
 			s.BreakLabel, s.ContinueLabel );
 		TransformBlock( s );
 		result = block;
@@ -262,7 +254,7 @@ public class FunctionTransform
 		ConstructorElement[] elements = new ConstructorElement[ e.Elements.Count ];
 		for ( int i = 0; i < e.Elements.Count; ++i )
 		{
-			if ( e.Elements[ i ].HashKey != null )
+			if ( e.Elements[ i ].HashKey == null )
 			{
 				elements[ i ] = new ConstructorElement(
 					e.Elements[ i ].SourceSpan, Transform( e.Elements[ i ].Value ) );

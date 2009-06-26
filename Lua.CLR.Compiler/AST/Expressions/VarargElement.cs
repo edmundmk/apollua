@@ -1,4 +1,4 @@
-﻿// OpcodeConcat.cs
+﻿// VarargElement.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -6,36 +6,34 @@
 
 
 using System;
-using System.Collections.Generic;
 using Lua.Parser.AST;
 
 
-namespace Lua.VM.Compiler.AST.Expressions
+namespace Lua.CLR.Compiler.AST.Expressions
 {
 
 
-public class OpcodeConcat
+public class VarargElement
 	:	Expression
 {
-	public IList< Expression > Operands { get; private set; }
-	
+	public int Index { get; private set; }
 
-	public OpcodeConcat( SourceSpan s, IList< Expression > operands )
+
+	public VarargElement( SourceSpan s, int index )
 		:	base( s )
 	{
-		Operands = operands;
+		Index = index;
 	}
 
 
 	public override void Accept( IExpressionVisitor v )
 	{
-		if ( v is IVMExpressionVisitor )
+		if ( v is ICLRExpressionVisitor )
 		{
-			( (IVMExpressionVisitor)v ).Visit( this );
+			( (ICLRExpressionVisitor)v ).Visit( this );
 		}
 	}
 
 }
-
 
 }

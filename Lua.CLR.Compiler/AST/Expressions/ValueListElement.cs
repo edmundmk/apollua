@@ -6,9 +6,10 @@
 
 
 using System;
+using Lua.Parser.AST;
 
 
-namespace Lua.Parser.AST.Expressions
+namespace Lua.CLR.Compiler.AST.Expressions
 {
 
 
@@ -27,7 +28,10 @@ public class ValueListElement
 
 	public override void Accept( IExpressionVisitor v )
 	{
-		v.Visit( this );
+		if ( v is ICLRExpressionVisitor )
+		{
+			( (ICLRExpressionVisitor)v ).Visit( this );
+		}
 	}
 
 }

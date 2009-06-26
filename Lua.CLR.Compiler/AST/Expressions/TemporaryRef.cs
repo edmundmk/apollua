@@ -1,4 +1,4 @@
-// Temporary.cs
+// TemporaryRef.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -6,24 +6,32 @@
 
 
 using System;
+using Lua.Parser.AST;
 
 
-namespace Lua.Parser.AST.Expressions
+namespace Lua.CLR.Compiler.AST.Expressions
 {
 
 
-public class Temporary
+public class TemporaryRef
 	:	Expression
 {
-	public Temporary( SourceSpan s )
+	public Temporary Temporary { get; private set; }
+
+
+	public TemporaryRef( SourceSpan s, Temporary temporary )
 		:	base( s )
 	{
+		Temporary = temporary;
 	}
 
 
 	public override void Accept( IExpressionVisitor v )
 	{
-		v.Visit( this );
+		if ( v is ICLRExpressionVisitor )
+		{
+			( (ICLRExpressionVisitor)v ).Visit( this );
+		}
 	}
 
 }
