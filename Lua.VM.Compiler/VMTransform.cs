@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using Lua.Parser.AST;
 using Lua.Parser.AST.Expressions;
+using Lua.VM.Compiler.AST;
 using Lua.VM.Compiler.AST.Expressions;
 
 
@@ -25,6 +26,7 @@ namespace Lua.VM.Compiler
 
 public class VMTransform
 	:	FunctionTransform
+	,	IVMExpressionVisitor
 {
 
 	// String concatenation operations are merged to concatenate full lists.
@@ -60,6 +62,17 @@ public class VMTransform
 		}
 	}
 
+
+
+	public virtual void Visit( OpcodeConcat e )
+	{
+		Expression[] operands = new Expression[ e.Operands.Count ];
+		for ( int operand = 0; operand < e.Operands.Count; ++operand )
+		{
+			operands[ operand ] = Transform( e.Operands[ operand ] );
+		}
+		result = new OpcodeConcat( e.SourceSpan, Array.AsReadOnly( operands ) );
+	}
 
 }
 

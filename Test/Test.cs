@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using Lua;
 using Lua.Parser;
@@ -24,20 +25,34 @@ static class EntryPoint
 
 	static int Main( string[] args )
 	{
+		Console.Error.Write( args[ 0 ] );
+		Console.Error.Write( " : " );
+
+		Stopwatch timing = new Stopwatch();
+		timing.Start();
+
+		for ( int i = 0; i < 100; ++i )
+		{
+
 		LuaParser parser = new LuaParser( Console.Error, File.OpenText( args[ 0 ] ), args[ 0 ] );
 		FunctionAST function = parser.Parse();
-		ASTWriter writer = new ASTWriter( Console.Out );
-		writer.Write( function );
+//		ASTWriter writer = new ASTWriter( Console.Out );
+//		writer.Write( function );
 
 
 		CLRTransform transform = new CLRTransform();
 		function = transform.Transform( function );
-		CLRASTWriter clrWriter = new CLRASTWriter( Console.Out );
-		clrWriter.Write( function );
+//		CLRASTWriter clrWriter = new CLRASTWriter( Console.Out );
+//		clrWriter.Write( function );
 
 		ANormalTransform anormal = new ANormalTransform();
 		function = anormal.Transform( function );
-		clrWriter.Write( function );
+//		clrWriter.Write( function );
+
+		}
+
+		timing.Stop();
+		Console.Error.WriteLine( timing.ElapsedMilliseconds / 100 );
 
 //		BytecodeTransform transform = new BytecodeTransform();
 //		function = transform.Transform( function );
