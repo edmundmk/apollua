@@ -9,6 +9,8 @@ using System;
 using Lua.Parser.AST;
 using Lua.Parser.AST.Expressions;
 using Lua.Parser.AST.Statements;
+using Lua.CLR.Compiler.AST;
+using Lua.CLR.Compiler.AST.Expressions;
 
 
 namespace Lua.CLR.Compiler
@@ -23,11 +25,9 @@ namespace Lua.CLR.Compiler
 
 
 
-#if FALSE
-
-
 public class ANormalTransform
 	:	FunctionTransform
+	,	ICLRExpressionVisitor
 {
 
 	Expression TransformSingleValue( Expression e )
@@ -37,9 +37,10 @@ public class ANormalTransform
 		{
 			// Hoist out of line.
 			
-			Temporary t = new Temporary( e.SourceSpan );
-			block.Statement( new Assign( e.SourceSpan, t, e ) );
-			return t;
+			Temporary temporary = new Temporary();
+			block.Statement( new Assign( e.SourceSpan,
+				new TemporaryRef( e.SourceSpan, temporary ), e ) );
+			return new TemporaryRef( e.SourceSpan, temporary );
 		}
 		return e;
 	}
@@ -51,9 +52,9 @@ public class ANormalTransform
 		{
 			// Hoist out of line.
 
-			ValueList v = new ValueList( e.SourceSpan, 0 );
-			block.Statement( new Assign( e.SourceSpan, v, e ) );
-			return v;
+			block.Statement( new Assign( e.SourceSpan,
+				new ValueList( e.SourceSpan ), e ) );
+			return new ValueList( e.SourceSpan );
 		}
 		return e;
 	}
@@ -76,10 +77,24 @@ public class ANormalTransform
 		}
 	}
 
-	public override void Visit( ConstructList s )
+	public override void Visit( AssignList s )
 	{
-		// Hoist any multiple values out.
-		result = new ConstructList( s.SourceSpan, s.Temporary, s.Key, TransformMultipleValues( s.ValueList ) );
+		throw new InvalidOperationException();
+	}
+
+	public override void Visit( DeclareList s )
+	{
+		throw new InvalidOperationException();
+	}
+
+	public override void Visit( ForBlock s )
+	{
+		throw new InvalidOperationException();
+	}
+
+	public override void Visit( ForListBlock s )
+	{
+		throw new InvalidOperationException();
 	}
 
 	public override void Visit( ReturnList s )
@@ -140,6 +155,26 @@ public class ANormalTransform
 			TransformSingleValue( e.Left ), TransformSingleValue( e.Right ) );
 	}
 
+	public override void Visit( Constructor e )
+	{
+		ConstructorElement[] elements = new ConstructorElement[ e.Elements.Count ];
+		for ( int i = 0; i < e.Elements.Count; ++i )
+		{
+			if ( e.Elements[ i ].HashKey == null )
+			{
+				elements[ i ] = new ConstructorElement(
+					e.Elements[ i ].SourceSpan, TransformSingleValue( e.Elements[ i ].Value ) );
+			}
+			else
+			{
+				elements[ i ] = new ConstructorElement( e.Elements[ i ].SourceSpan,
+					TransformSingleValue( e.Elements[ i ].HashKey ), TransformSingleValue( e.Elements[ i ].Value ) );
+			}
+		}
+		Expression elementList = e.ElementList != null ? TransformMultipleValues( e.ElementList ) : null;
+		result = new Constructor( e.SourceSpan, e.ArrayCount, e.HashCount, Array.AsReadOnly( elements ), elementList );
+	}
+
 	public override void Visit( Index e )
 	{
 		result = new Index( e.SourceSpan,
@@ -157,20 +192,41 @@ public class ANormalTransform
 		result = new Not( e.SourceSpan, TransformSingleValue( e.Operand ) );
 	}
 
-	public override void Visit( ToNumber e )
-	{
-		result = new ToNumber( e.SourceSpan, TransformSingleValue( e.Operand ) );
-	}
-
 	public override void Visit( Unary e )
 	{
 		result = new Unary( e.SourceSpan, e.Op, TransformSingleValue( e.Operand ) );
 	}
 
+
+	public virtual void Visit( TemporaryRef e )
+	{
+		result = e;
+	}
+
+	public virtual void Visit( ToNumber e )
+	{
+		result = new ToNumber( e.SourceSpan, TransformSingleValue( e.Operand ) );
+	}
+
+	public virtual void Visit( ValueList e )
+	{
+		result = e;
+	}
+
+	public virtual void Visit( ValueListElement e )
+	{
+		result = e;
+	}
+
+	public virtual void Visit( VarargElement e )
+	{
+		result = e;
+	}
+
+
+
 }
 
-
-#endif
 
 
 }

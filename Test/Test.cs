@@ -35,6 +35,10 @@ static class EntryPoint
 		CLRASTWriter clrWriter = new CLRASTWriter( Console.Out );
 		clrWriter.Write( function );
 
+		ANormalTransform anormal = new ANormalTransform();
+		function = anormal.Transform( function );
+		clrWriter.Write( function );
+
 //		BytecodeTransform transform = new BytecodeTransform();
 //		function = transform.Transform( function );
 //		writer.Write( function );
