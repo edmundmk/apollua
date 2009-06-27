@@ -41,7 +41,7 @@ public class Prototype
 	public string				DebugName					{ get; set; }
 	public DebugSourceSpan		DebugSourceSpan				{ get; set; }
 	public DebugSourceSpan[]	DebugInstructionSourceSpans	{ get; set; }
-	public string				DebugUpValNames				{ get; set; }
+	public string[]				DebugUpValNames				{ get; set; }
 	public DebugLocal[]			DebugLocals					{ get; set; }
 
 }

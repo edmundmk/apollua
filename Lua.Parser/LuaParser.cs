@@ -107,6 +107,8 @@ public class LuaParser
 
 		Token eof = Check( TokenKind.EOF );
 
+		block.Statement( new Return( eof.SourceSpan, new Literal( eof.SourceSpan, null ) ) );
+
 		block.SetSourceSpan( new SourceSpan( new SourceLocation( sourceName, 0, 0 ), eof.SourceSpan.End ) );
 		block = block.Parent;
 		FunctionAST result = function;

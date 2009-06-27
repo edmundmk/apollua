@@ -10,9 +10,10 @@ using System.IO;
 using Lua;
 using Lua.Parser;
 using Lua.Parser.AST;
-using Lua.CLR.Compiler;
-using Lua.CLR.Compiler.AST;
-//using Lua.VM.Compiler;
+//using Lua.CLR.Compiler;
+//using Lua.CLR.Compiler.AST;
+using Lua.VM;
+using Lua.VM.Compiler;
 //using Lua.VM.Compiler.AST;
 
 
@@ -25,15 +26,17 @@ static class EntryPoint
 
 	static int Main( string[] args )
 	{
-		Console.Error.Write( args[ 0 ] );
-		Console.Error.Write( " : " );
+		Console.Out.WriteLine( args[ 0 ] );
+		Console.Error.WriteLine( args[ 0 ] );
 
-		Stopwatch timing = new Stopwatch();
-		timing.Start();
+		
+		LuaVMCompiler compiler = new LuaVMCompiler( Console.Error, File.OpenText( args[ 0 ] ), args[ 0 ] );
+		VMFunction function = compiler.Compile();
+		PrototypeWriter.Write( Console.Out, function.Prototype );
 
-		for ( int i = 0; i < 100; ++i )
-		{
 
+
+/*
 		LuaParser parser = new LuaParser( Console.Error, File.OpenText( args[ 0 ] ), args[ 0 ] );
 		FunctionAST function = parser.Parse();
 //		ASTWriter writer = new ASTWriter( Console.Out );

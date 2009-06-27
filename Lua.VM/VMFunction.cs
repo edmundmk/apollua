@@ -20,6 +20,11 @@ public sealed class VMFunction
 	public Prototype	Prototype		{ get; private set; }
 
 
+	public VMFunction( Prototype prototype )
+	{
+		UpVals		= new UpVal[ prototype.UpValCount ];
+		Prototype	= prototype;
+	}
 
 
 

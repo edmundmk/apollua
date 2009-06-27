@@ -1,0 +1,2836 @@
+Test\bisect.lua
+function <chunk>( ... )
+  delta = 1E-06
+  bisect = function bisect
+  solve = function solve
+  f = function f
+  solve( f, 1, 2 )
+  return nil
+end
+
+function bisect( f, a, b, fa, fb )
+  -- multiple return
+  -- label ifClause, ifClause, ifEnd
+  -- local c, fc
+  -- local c, fc
+  local c = ( ( a + b ) / 2 )
+  io[ "write" ]( n, " c=", c, " a=", a, " b=", b, "\n" )
+  bfalse ( ( ( c == a ) or ( c == b ) ) or ( math[ "abs" ]( ( a - b ) ) < delta ) ) ifClause
+  do -- if
+    return c, ( b - a )
+  end
+ifClause:
+  n = ( n + 1 )
+  local fc = f( c )
+  bfalse ( ( fa * fc ) < 0 ) ifClause
+  do -- if
+    return values bisect( f, a, c, fa, fc )
+  end
+  b ifEnd
+ifClause:
+  do -- else
+    return values bisect( f, c, b, fc, fb )
+  end
+ifEnd:
+  return nil
+end
+
+function solve( f, a, b )
+  -- local z, e
+  -- local z, e
+  n = 0
+  local z, e = values bisect( f, a, b, f( a ), values f( b ) )
+  io[ "write" ]( values string[ "format" ]( "after %d steps, root is %.17g with error %.1e, f=%.1e\n", n, z, e, values f( z ) ) )
+  return nil
+end
+
+function f( x )
+  return ( ( ( ( x * x ) * x ) - x ) - 1 )
+end
+
+function <chunk>( ... )
+ -- 4 registers, 7 constants
+  0x0000  loadk       r0 #1E-06                     (3,7) - (3,11)
+  0x0001  setglobal   r0 "delta"                    (3,1) - (3,11)
+  0x0002  closure     r0 function x392A42D          (5,1) - (12,4)
+  0x0003  setglobal   r0 "bisect"                   (5,10) - (5,16)
+  0x0004  closure     r0 function x27C59A           (15,1) - (19,4)
+  0x0005  setglobal   r0 "solve"                    (15,10) - (15,15)
+  0x0006  closure     r0 function x165F26B          (22,1) - (24,4)
+  0x0007  setglobal   r0 "f"                        (22,10) - (22,11)
+  0x0008  getglobal   r0 "solve"                    (27,1) - (27,6)
+  0x0009  getglobal   r1 "f"                        (27,7) - (27,8)
+  0x000A  loadk       r2 #1                         (27,9) - (27,10)
+  0x000B  loadk       r3 #2                         (27,11) - (27,12)
+  0x000C  call        r0 4 2                        (27,1) - (27,6)
+  0x000D  return      r0 1                          (28,1) - (28,1)
+end
+
+function bisect( f, a, b, fa, fb )
+ -- 15 registers, 14 constants
+  -- local c, fc
+  0x0000  add         r6 r1 r2                      (6,10) - (6,15)       --> f, a, b, fa, fb, c
+  0x0001  div         c r6 #2                       (6,10) - (6,17)
+  0x0002  getglobal   r6 "io"                       (7,2) - (7,4)
+  0x0003  gettable    r6 r6 "write"                 (7,2) - (7,10)
+  0x0004  getglobal   r7 "n"                        (7,11) - (7,12)
+  0x0005  loadk       r8 " c="                      (7,13) - (7,18)
+  0x0006  move        r9 c                          (7,19) - (7,20)
+  0x0007  loadk       r10 " a="                     (7,21) - (7,26)
+  0x0008  move        r11 a                         (7,27) - (7,28)
+  0x0009  loadk       r12 " b="                     (7,29) - (7,34)
+  0x000A  move        r13 b                         (7,35) - (7,36)
+  0x000B  loadk       r14 "\n"                      (7,37) - (7,41)
+  0x000C  call        r6 9 2                        (7,2) - (7,10)
+  0x000D  eq          true r5 r1                    (8,5) - (8,9)
+  0x000E  jmp         0x0018                        (8,5) - (8,9)
+  0x000F  eq          true r5 r2                    (8,13) - (8,17)
+  0x0010  jmp         0x0018                        (8,13) - (8,17)
+  0x0011  getglobal   r6 "math"                     (8,21) - (8,25)
+  0x0012  gettable    r6 r6 "abs"                   (8,21) - (8,29)
+  0x0013  sub         r7 r1 r2                      (8,30) - (8,33)
+  0x0014  call        r6 2 2                        (8,21) - (8,29)
+  0x0015  getglobal   r7 "delta"                    (8,35) - (8,40)
+  0x0016  lt          true r6 r7                    (8,21) - (8,40)
+  0x0017  jmp         0x001B                        (8,21) - (8,40)
+  0x0018  move        r6 c                          (8,53) - (8,54)
+  0x0019  sub         r7 r2 r1                      (8,55) - (8,58)
+  0x001A  return      r6 3                          (8,46) - (8,58)
+  0x001B  getglobal   r6 "n"                        (9,4) - (9,5)
+  0x001C  add         r6 r6 #1                      (9,4) - (9,7)
+  0x001D  setglobal   r6 "n"                        (9,2) - (9,7)
+  0x001E  move        r7 f                          (10,11) - (10,12)     --> fc
+  0x001F  move        r8 c                          (10,13) - (10,14)
+  0x0020  call        r7 2 2                        (10,11) - (10,12)
+  0x0021  move        fc r7                         (10,11) - (10,15)
+  0x0022  mul         r7 r3 r6                      (11,5) - (11,10)
+  0x0023  lt          true r7 #0                    (11,5) - (11,12)
+  0x0024  jmp         0x002E                        (11,5) - (11,12)
+  0x0025  getglobal   r7 "bisect"                   (11,25) - (11,31)
+  0x0026  move        r8 f                          (11,32) - (11,33)
+  0x0027  move        r9 a                          (11,34) - (11,35)
+  0x0028  move        r10 c                         (11,36) - (11,37)
+  0x0029  move        r11 fa                        (11,38) - (11,40)
+  0x002A  move        r12 fc                        (11,41) - (11,43)
+  0x002B  call        r7 6 0                        (11,25) - (11,31)
+  0x002C  return      r7 0                          (11,18) - (11,44)
+  0x002D  jmp         0x0036                        (11,45) - (11,49)
+  0x002E  getglobal   r7 "bisect"                   (11,57) - (11,63)
+  0x002F  move        r8 f                          (11,64) - (11,65)
+  0x0030  move        r9 c                          (11,66) - (11,67)
+  0x0031  move        r10 b                         (11,68) - (11,69)
+  0x0032  move        r11 fc                        (11,70) - (11,72)
+  0x0033  move        r12 fb                        (11,73) - (11,75)
+  0x0034  call        r7 6 0                        (11,57) - (11,63)
+  0x0035  return      r7 0                          (11,50) - (11,76)
+  0x0036  return      f 1                           (12,1) - (12,4)       <-- f, a, b, fa, fb, c, fc
+end
+
+function solve( f, a, b )
+ -- 13 registers, 8 constants
+  -- local z, e
+  0x0000  loadk       r3 #0                         (16,4) - (16,5)       --> f, a, b
+  0x0001  setglobal   r3 "n"                        (16,2) - (16,5)
+  0x0002  getglobal   r3 "bisect"                   (17,12) - (17,18)
+  0x0003  move        r4 f                          (17,19) - (17,20)
+  0x0004  move        r5 a                          (17,21) - (17,22)
+  0x0005  move        r6 b                          (17,23) - (17,24)
+  0x0006  move        r7 f                          (17,25) - (17,26)
+  0x0007  move        r8 a                          (17,27) - (17,28)
+  0x0008  call        r7 2 2                        (17,25) - (17,26)
+  0x0009  move        r8 f                          (17,30) - (17,31)
+  0x000A  move        r9 b                          (17,32) - (17,33)
+  0x000B  call        r8 2 0                        (17,30) - (17,31)
+  0x000C  call        r3 0 3                        (17,12) - (17,18)
+  0x000D  getglobal   r5 "io"                       (18,2) - (18,4)       --> z, e
+  0x000E  gettable    r5 r5 "write"                 (18,2) - (18,10)
+  0x000F  getglobal   r6 "string"                   (18,11) - (18,17)
+  0x0010  gettable    r6 r6 "format"                (18,11) - (18,24)
+  0x0011  loadk       r7 "after %d steps, root is %.17g with error %.1e, f=%.1e\n"  (18,25) - (18,82)
+  0x0012  getglobal   r8 "n"                        (18,83) - (18,84)
+  0x0013  move        r9 z                          (18,85) - (18,86)
+  0x0014  move        r10 e                         (18,87) - (18,88)
+  0x0015  move        r11 f                         (18,89) - (18,90)
+  0x0016  move        r12 z                         (18,91) - (18,92)
+  0x0017  call        r11 2 0                       (18,89) - (18,90)
+  0x0018  call        r6 0 0                        (18,11) - (18,24)
+  0x0019  call        r5 0 2                        (18,2) - (18,10)
+  0x001A  return      f 1                           (19,1) - (19,4)       <-- f, a, b, z, e
+end
+
+function f( x )
+ -- 2 registers, 1 constants
+  0x0000  mul         r1 r0 r0                      (23,9) - (23,12)      --> x
+  0x0001  mul         r1 r1 r0                      (23,9) - (23,14)
+  0x0002  sub         r1 r1 r0                      (23,9) - (23,16)
+  0x0003  sub         r1 r1 #1                      (23,9) - (23,18)
+  0x0004  return      r1 2                          (23,2) - (23,18)      <-- x
+end
+
+Test\cf.lua
+function <chunk>( ... )
+  -- local (for index), (for limit), (for step), c0, (for index), (for limit), (for step), c, (for index), (for limit), (for step), c
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = -20
+    local (for limit) = ( 50 - 1 )
+    local (for step) = 10
+    for c0 : (for index), (for limit), (for step) : forBreak, forContinue
+      -- local c0
+      io[ "write" ]( "C " )
+      do -- for
+        -- local (for index), (for limit), (for step)
+        local (for index) = c0
+        local (for limit) = ( ( c0 + 10 ) - 1 )
+        local (for step) = 1
+        for c : (for index), (for limit), (for step) : forBreak, forContinue
+          -- local c
+          io[ "write" ]( values string[ "format" ]( "%3.0f ", c ) )
+        end
+      end
+      io[ "write" ]( "\n" )
+      io[ "write" ]( "F " )
+      do -- for
+        -- local (for index), (for limit), (for step)
+        local (for index) = c0
+        local (for limit) = ( ( c0 + 10 ) - 1 )
+        local (for step) = 1
+        for c : (for index), (for limit), (for step) : forBreak, forContinue
+          -- local c
+          f = ( ( ( 9 / 5 ) * c ) + 32 )
+          io[ "write" ]( values string[ "format" ]( "%3.0f ", f ) )
+        end
+      end
+      io[ "write" ]( "\n\n" )
+    end
+  end
+  return nil
+end
+
+function <chunk>( ... )
+ -- 12 registers, 17 constants
+  -- local (for index), (for limit), (for step), c0, (for index), (for limit), (for step), c, (for index), (for limit), (for step), c
+  0x0000  loadk       r1 #20                        (3,9) - (3,11)        --> (for index)
+  0x0001  unm         (for index) r1                (3,8) - (3,11)
+  0x0002  sub         (for limit) #50 #1            (3,12) - (3,16)       --> (for limit)
+  0x0003  loadk       (for step) #10                (3,17) - (3,19)       --> (for step)
+  0x0004  forprep     (for index) 0x0035            (3,20) - (16,4)
+  0x0005  getglobal   r4 "io"                       (4,2) - (4,4)         --> c0
+  0x0006  gettable    r4 r4 "write"                 (4,2) - (4,10)
+  0x0007  loadk       r5 "C "                       (4,11) - (4,15)
+  0x0008  call        r4 2 2                        (4,2) - (4,10)
+  0x0009  move        (for index) c0                (5,8) - (5,10)        --> (for index)
+  0x000A  add         r6 r3 #10                     (5,11) - (5,16)       --> (for limit)
+  0x000B  sub         (for limit) r6 #1             (5,11) - (5,18)
+  0x000C  loadk       (for step) #1                 (5,2) - (5,21)        --> (for step)
+  0x000D  forprep     (for index) 0x0016            (5,19) - (7,5)
+  0x000E  getglobal   r8 "io"                       (6,3) - (6,5)         --> c
+  0x000F  gettable    r8 r8 "write"                 (6,3) - (6,11)
+  0x0010  getglobal   r9 "string"                   (6,12) - (6,18)
+  0x0011  gettable    r9 r9 "format"                (6,12) - (6,25)
+  0x0012  loadk       r10 "%3.0f "                  (6,26) - (6,34)
+  0x0013  move        r11 c                         (6,35) - (6,36)
+  0x0014  call        r9 3 0                        (6,12) - (6,25)
+  0x0015  call        r8 0 2                        (6,3) - (6,11)        <-- c
+  0x0016  forloop     (for index) 0x000E            (5,19) - (7,5)        <-- (for index), (for limit), (for step)
+  0x0017  getglobal   (for index) "io"              (8,2) - (8,4)
+  0x0018  gettable    r4 r4 "write"                 (8,2) - (8,10)
+  0x0019  loadk       r5 "\n"                       (8,11) - (8,15)
+  0x001A  call        r4 2 2                        (8,2) - (8,10)
+  0x001B  getglobal   r4 "io"                       (10,2) - (10,4)
+  0x001C  gettable    r4 r4 "write"                 (10,2) - (10,10)
+  0x001D  loadk       r5 "F "                       (10,11) - (10,15)
+  0x001E  call        r4 2 2                        (10,2) - (10,10)
+  0x001F  move        (for index) c0                (11,8) - (11,10)      --> (for index)
+  0x0020  add         r6 r3 #10                     (11,11) - (11,16)     --> (for limit)
+  0x0021  sub         (for limit) r6 #1             (11,11) - (11,18)
+  0x0022  loadk       (for step) #1                 (11,2) - (11,21)      --> (for step)
+  0x0023  forprep     (for index) 0x0030            (11,19) - (14,5)
+  0x0024  div         r8 #9 #5                      (12,5) - (12,10)      --> c
+  0x0025  mul         r8 r8 r7                      (12,5) - (12,12)
+  0x0026  add         r8 r8 #32                     (12,5) - (12,15)
+  0x0027  setglobal   r8 "f"                        (12,3) - (12,15)
+  0x0028  getglobal   r8 "io"                       (13,3) - (13,5)
+  0x0029  gettable    r8 r8 "write"                 (13,3) - (13,11)
+  0x002A  getglobal   r9 "string"                   (13,12) - (13,18)
+  0x002B  gettable    r9 r9 "format"                (13,12) - (13,25)
+  0x002C  loadk       r10 "%3.0f "                  (13,26) - (13,34)
+  0x002D  getglobal   r11 "f"                       (13,35) - (13,36)
+  0x002E  call        r9 3 0                        (13,12) - (13,25)
+  0x002F  call        r8 0 2                        (13,3) - (13,11)      <-- c
+  0x0030  forloop     (for index) 0x0024            (11,19) - (14,5)      <-- (for index), (for limit), (for step)
+  0x0031  getglobal   (for index) "io"              (15,2) - (15,4)
+  0x0032  gettable    r4 r4 "write"                 (15,2) - (15,10)
+  0x0033  loadk       r5 "\n\n"                     (15,11) - (15,17)
+  0x0034  call        r4 2 2                        (15,2) - (15,10)      <-- c0
+  0x0035  forloop     (for index) 0x0005            (3,20) - (16,4)       <-- (for index), (for limit), (for step)
+  0x0036  return      (for index) 1                 (17,1) - (17,1)
+end
+
+Test\echo.lua
+function <chunk>( ... )
+  -- local (for index), (for limit), (for step), i
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 0
+    local (for limit) = table[ "getn" ]( arg )
+    local (for step) = 1
+    for i : (for index), (for limit), (for step) : forBreak, forContinue
+      -- local i
+      print( i, arg[ i ] )
+    end
+  end
+  return nil
+end
+
+function <chunk>( ... )
+ -- 7 registers, 6 constants
+  -- local (for index), (for limit), (for step), i
+  0x0000  loadk       (for index) #0                (3,7) - (3,8)         --> (for index)
+  0x0001  getglobal   r2 "table"                    (3,9) - (3,14)        --> (for limit)
+  0x0002  gettable    r2 r2 "getn"                  (3,9) - (3,19)
+  0x0003  getglobal   r3 "arg"                      (3,20) - (3,23)
+  0x0004  call        r2 2 2                        (3,9) - (3,19)
+  0x0005  move        (for limit) r2                (3,9) - (3,24)
+  0x0006  loadk       (for step) #1                 (3,1) - (3,27)        --> (for step)
+  0x0007  forprep     (for index) 0x000D            (3,25) - (5,4)
+  0x0008  getglobal   r4 "print"                    (4,2) - (4,7)         --> i
+  0x0009  move        r5 i                          (4,8) - (4,9)
+  0x000A  getglobal   r6 "arg"                      (4,10) - (4,13)
+  0x000B  gettable    r6 r6 r3                      (4,10) - (4,16)
+  0x000C  call        r4 3 2                        (4,2) - (4,7)         <-- i
+  0x000D  forloop     (for index) 0x0008            (3,25) - (5,4)        <-- (for index), (for limit), (for step)
+  0x000E  return      (for index) 1                 (6,1) - (6,1)
+end
+
+Test\env.lua
+function <chunk>( ... )
+  -- local f
+  -- local f
+  local f = function x378734A
+  setmetatable( getfenv(), {
+    [ "__index" ] = f;
+  } )
+  print( a, USER, PATH )
+  return nil
+end
+
+function x378734A( t, i )
+  -- multiple return
+  return values os[ "getenv" ]( i )
+end
+
+function <chunk>( ... )
+ -- 5 registers, 7 constants
+  -- local f
+  0x0000  closure     f function x202C666           (3,9) - (3,47)        --> f
+  0x0001  getglobal   r1 "setmetatable"             (4,1) - (4,13)
+  0x0002  getglobal   r2 "getfenv"                  (4,14) - (4,21)
+  0x0003  call        r2 1 2                        (4,14) - (4,21)
+  0x0004  newtable    r3 0 1                        (4,24) - (4,35)
+  0x0005  settable    r3 "__index" r0               (4,24) - (4,35)
+  0x0006  call        r1 3 2                        (4,1) - (4,13)
+  0x0007  getglobal   r1 "print"                    (7,1) - (7,6)
+  0x0008  getglobal   r2 "a"                        (7,7) - (7,8)
+  0x0009  getglobal   r3 "USER"                     (7,9) - (7,13)
+  0x000A  getglobal   r4 "PATH"                     (7,14) - (7,18)
+  0x000B  call        r1 4 2                        (7,1) - (7,6)
+  0x000C  return      f 1                           (8,1) - (8,1)         <-- f
+end
+
+function x202C666( t, i )
+ -- 4 registers, 2 constants
+  0x0000  getglobal   r2 "os"                       (3,31) - (3,33)       --> t, i
+  0x0001  gettable    r2 r2 "getenv"                (3,31) - (3,40)
+  0x0002  move        r3 i                          (3,41) - (3,42)
+  0x0003  call        r2 2 0                        (3,31) - (3,40)
+  0x0004  return      r2 0                          (3,24) - (3,43)       <-- t, i
+end
+
+Test\factorial.lua
+function <chunk>( ... )
+  -- local (for index), (for limit), (for step), n
+  Y = function x33C0D9D
+  F = function x11C7A8C
+  factorial = Y( F )
+  test = function test
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 0
+    local (for limit) = 16
+    local (for step) = 1
+    for n : (for index), (for limit), (for step) : forBreak, forContinue
+      -- local n
+      test( n )
+    end
+  end
+  return nil
+end
+
+function x33C0D9D( g )
+  -- multiple return
+  -- local a
+  -- local a
+  local a = function x2004EEE
+  return values a( function x202C666 )
+end
+
+function x2004EEE( f )
+  -- multiple return
+  return values f( f )
+end
+
+function x202C666( f )
+  -- multiple return
+  -- upval g
+  return values g( function x218F99C )
+end
+
+function x218F99C( x )
+  -- multiple return
+  -- upval f
+  -- local c
+  -- local c
+  local c = f( f )
+  return values c( x )
+end
+
+function x11C7A8C( f )
+  return function x2E0C681
+end
+
+function x2E0C681( n )
+  -- label ifClause, ifEnd
+  -- upval f
+  bfalse ( n == 0 ) ifClause
+  do -- if
+    return 1
+  end
+  b ifEnd
+ifClause:
+  do -- else
+    return ( n * f( ( n - 1 ) ) )
+  end
+ifEnd:
+  return nil
+end
+
+function test( x )
+  io[ "write" ]( x, "! = ", factorial( x ), "\n" )
+  return nil
+end
+
+function <chunk>( ... )
+ -- 6 registers, 7 constants
+  -- local (for index), (for limit), (for step), n
+  0x0000  closure     r0 function x1A0E24           (4,5) - (12,4)
+  0x0001  setglobal   r0 "Y"                        (4,1) - (12,4)
+  0x0002  closure     r0 function xEA7F4A           (16,5) - (21,8)
+  0x0003  setglobal   r0 "F"                        (16,1) - (21,8)
+  0x0004  getglobal   r0 "Y"                        (23,13) - (23,14)
+  0x0005  getglobal   r1 "F"                        (23,15) - (23,16)
+  0x0006  call        r0 2 2                        (23,13) - (23,14)
+  0x0007  setglobal   r0 "factorial"                (23,1) - (23,17)
+  0x0008  closure     r0 function x3E799B           (26,1) - (28,4)
+  0x0009  setglobal   r0 "test"                     (26,10) - (26,14)
+  0x000A  loadk       (for index) #0                (30,7) - (30,8)       --> (for index)
+  0x000B  loadk       (for limit) #16               (30,9) - (30,11)      --> (for limit)
+  0x000C  loadk       (for step) #1                 (30,1) - (30,14)      --> (for step)
+  0x000D  forprep     (for index) 0x0011            (30,12) - (32,4)
+  0x000E  getglobal   r4 "test"                     (31,2) - (31,6)       --> n
+  0x000F  move        r5 n                          (31,7) - (31,8)
+  0x0010  call        r4 2 2                        (31,2) - (31,6)       <-- n
+  0x0011  forloop     (for index) 0x000E            (30,12) - (32,4)      <-- (for index), (for limit), (for step)
+  0x0012  return      (for index) 1                 (33,1) - (33,1)
+end
+
+function x1A0E24( g )
+ -- 4 registers, 0 constants
+  -- local a
+  0x0000  closure     a function x232467A           (5,17) - (5,45)       --> g, a
+  0x0001  move        r2 a                          (6,14) - (6,15)
+  0x0002  closure     r3 function x3C47A4F          (6,16) - (11,19)
+              local   0 g 
+  0x0004  call        r2 2 0                        (6,14) - (6,15)
+  0x0005  return      r2 0                          (6,7) - (11,20)       <-- g, a
+end
+
+function x232467A( f )
+ -- 3 registers, 0 constants
+  0x0000  move        r1 f                          (5,37) - (5,38)       --> f
+  0x0001  move        r2 f                          (5,39) - (5,40)
+  0x0002  call        r1 2 0                        (5,37) - (5,38)
+  0x0003  return      r1 0                          (5,30) - (5,41)       <-- f
+end
+
+function x3C47A4F( f )
+ -- 3 registers, 0 constants
+  -- upval g
+  0x0000  getupval    r1 upval g                    (7,25) - (7,26)       --> f
+  0x0001  closure     r2 function x1E84CCB          (7,27) - (10,31)
+              local   0 f 
+  0x0003  call        r1 2 0                        (7,25) - (7,26)
+  0x0004  return      r1 0                          (7,18) - (10,32)      <-- f
+end
+
+function x1E84CCB( x )
+ -- 4 registers, 0 constants
+  -- upval f
+  -- local c
+  0x0000  getupval    r2 upval f                    (8,38) - (8,39)       --> x, c
+  0x0001  getupval    r3 upval f                    (8,40) - (8,41)
+  0x0002  call        r2 2 2                        (8,38) - (8,39)
+  0x0003  move        c r2                          (8,38) - (8,42)
+  0x0004  move        r2 c                          (9,37) - (9,38)
+  0x0005  move        r3 x                          (9,39) - (9,40)
+  0x0006  call        r2 2 0                        (9,37) - (9,38)
+  0x0007  return      r2 0                          (9,30) - (9,41)       <-- x, c
+end
+
+function xEA7F4A( f )
+ -- 2 registers, 0 constants
+  0x0000  closure     r1 function x12AB327          (17,14) - (20,17)     --> f
+              local   0 f 
+  0x0002  return      r1 2                          (17,7) - (20,17)      <-- f
+end
+
+function x12AB327( n )
+ -- 3 registers, 2 constants
+  -- upval f
+  0x0000  eq          true r0 #0                    (18,19) - (18,25)     --> n
+  0x0001  jmp         0x0005                        (18,19) - (18,25)
+  0x0002  loadk       r1 #1                         (18,38) - (18,39)
+  0x0003  return      r1 2                          (18,31) - (18,39)
+  0x0004  jmp         0x000A                        (19,16) - (19,20)
+  0x0005  getupval    r1 upval f                    (19,30) - (19,31)
+  0x0006  sub         r2 r0 #1                      (19,32) - (19,35)
+  0x0007  call        r1 2 2                        (19,30) - (19,31)
+  0x0008  mul         r1 r0 r1                      (19,28) - (19,36)
+  0x0009  return      r1 2                          (19,21) - (19,36)
+  0x000A  return      n 1                           (20,14) - (20,17)     <-- n
+end
+
+function test( x )
+ -- 6 registers, 5 constants
+  0x0000  getglobal   r1 "io"                       (27,2) - (27,4)       --> x
+  0x0001  gettable    r1 r1 "write"                 (27,2) - (27,10)
+  0x0002  move        r2 x                          (27,11) - (27,12)
+  0x0003  loadk       r3 "! = "                     (27,13) - (27,19)
+  0x0004  getglobal   r4 "factorial"                (27,20) - (27,29)
+  0x0005  move        r5 x                          (27,30) - (27,31)
+  0x0006  call        r4 2 2                        (27,20) - (27,29)
+  0x0007  loadk       r5 "\n"                       (27,33) - (27,37)
+  0x0008  call        r1 5 2                        (27,2) - (27,10)
+  0x0009  return      x 1                           (28,1) - (28,4)       <-- x
+end
+
+Test\fib.lua
+function <chunk>( ... )
+  fib = function fib
+  cache = function cache
+  test = function test
+  n = ( arg[ 1 ] or 24 )
+  n = tonumber( n )
+  print( "", "n", "value", "time", "evals" )
+  test( "plain", fib )
+  fib = cache( fib )
+  test( "cached", fib )
+  return nil
+end
+
+function fib( n )
+  -- label ifClause, ifEnd
+  N = ( N + 1 )
+  bfalse ( n < 2 ) ifClause
+  do -- if
+    return n
+  end
+  b ifEnd
+ifClause:
+  do -- else
+    return ( fib( ( n - 1 ) ) + fib( ( n - 2 ) ) )
+  end
+ifEnd:
+  return nil
+end
+
+function cache( f )
+  -- local c
+  -- local c
+  local c = {
+  }
+  return function x33C0D9D
+end
+
+function x33C0D9D( x )
+  -- label ifClause
+  -- upval c, f
+  -- local y
+  -- local y
+  local y = c[ x ]
+  bfalse not y ifClause
+  do -- if
+    y = f( x )
+    c[ x ] = y
+  end
+ifClause:
+  return y
+end
+
+function test( s, f )
+  -- local c, v, t
+  -- local c, v, t
+  N = 0
+  local c = os[ "clock" ]()
+  local v = f( n )
+  local t = ( os[ "clock" ]() - c )
+  print( s, n, v, t, N )
+  return nil
+end
+
+function <chunk>( ... )
+ -- 6 registers, 15 constants
+  0x0000  closure     r0 function x19FD5C7          (4,1) - (11,4)
+  0x0001  setglobal   r0 "fib"                      (4,10) - (4,13)
+  0x0002  closure     r0 function x29E8405          (14,1) - (24,4)
+  0x0003  setglobal   r0 "cache"                    (14,10) - (14,15)
+  0x0004  closure     r0 function x392A42D          (27,1) - (33,4)
+  0x0005  setglobal   r0 "test"                     (27,10) - (27,14)
+  0x0006  getglobal   r0 "arg"                      (35,3) - (35,6)
+  0x0007  gettable    r0 r0 #1                      (35,3) - (35,9)
+  0x0008  testset     r0 r0 true                    (35,3) - (35,15)
+  0x0009  jmp         0x000B                        (35,3) - (35,15)
+  0x000A  loadk       r0 #24                        (35,13) - (35,15)
+  0x000B  setglobal   r0 "n"                        (35,1) - (35,15)
+  0x000C  getglobal   r0 "tonumber"                 (36,3) - (36,11)
+  0x000D  getglobal   r1 "n"                        (36,12) - (36,13)
+  0x000E  call        r0 2 2                        (36,3) - (36,11)
+  0x000F  setglobal   r0 "n"                        (36,1) - (36,14)
+  0x0010  getglobal   r0 "print"                    (37,1) - (37,6)
+  0x0011  loadk       r1 ""                         (37,7) - (37,9)
+  0x0012  loadk       r2 "n"                        (37,10) - (37,13)
+  0x0013  loadk       r3 "value"                    (37,14) - (37,21)
+  0x0014  loadk       r4 "time"                     (37,22) - (37,28)
+  0x0015  loadk       r5 "evals"                    (37,29) - (37,36)
+  0x0016  call        r0 6 2                        (37,1) - (37,6)
+  0x0017  getglobal   r0 "test"                     (38,1) - (38,5)
+  0x0018  loadk       r1 "plain"                    (38,6) - (38,13)
+  0x0019  getglobal   r2 "fib"                      (38,14) - (38,17)
+  0x001A  call        r0 3 2                        (38,1) - (38,5)
+  0x001B  getglobal   r0 "cache"                    (39,5) - (39,10)
+  0x001C  getglobal   r1 "fib"                      (39,11) - (39,14)
+  0x001D  call        r0 2 2                        (39,5) - (39,10)
+  0x001E  setglobal   r0 "fib"                      (39,1) - (39,15)
+  0x001F  getglobal   r0 "test"                     (40,1) - (40,5)
+  0x0020  loadk       r1 "cached"                   (40,6) - (40,14)
+  0x0021  getglobal   r2 "fib"                      (40,15) - (40,18)
+  0x0022  call        r0 3 2                        (40,1) - (40,5)
+  0x0023  return      r0 1                          (41,1) - (41,1)
+end
+
+function fib( n )
+ -- 4 registers, 4 constants
+  0x0000  getglobal   r1 "N"                        (5,4) - (5,5)         --> n
+  0x0001  add         r1 r1 #1                      (5,4) - (5,7)
+  0x0002  setglobal   r1 "N"                        (5,2) - (5,7)
+  0x0003  lt          true r0 #2                    (6,5) - (6,8)
+  0x0004  jmp         0x0007                        (6,5) - (6,8)
+  0x0005  return      n 2                           (7,3) - (7,11)
+  0x0006  jmp         0x000F                        (8,2) - (8,6)
+  0x0007  getglobal   r1 "fib"                      (9,10) - (9,13)
+  0x0008  sub         r2 r0 #1                      (9,14) - (9,17)
+  0x0009  call        r1 2 2                        (9,10) - (9,13)
+  0x000A  getglobal   r2 "fib"                      (9,19) - (9,22)
+  0x000B  sub         r3 r0 #2                      (9,23) - (9,26)
+  0x000C  call        r2 2 2                        (9,19) - (9,22)
+  0x000D  add         r1 r1 r2                      (9,10) - (9,27)
+  0x000E  return      r1 2                          (9,3) - (9,27)
+  0x000F  return      n 1                           (11,1) - (11,4)       <-- n
+end
+
+function cache( f )
+ -- 3 registers, 0 constants
+  -- local c
+  0x0000  newtable    r2 0 0                        (15,10) - (15,12)     --> f, c
+  0x0001  move        c r2                          (15,10) - (15,12)
+  0x0002  closure     r2 function x27C59A           (16,9) - (23,5)
+              local   0 c 
+              local   1 f 
+  0x0005  return      r2 2                          (16,2) - (23,5)       <-- f, c
+end
+
+function x27C59A( x )
+ -- 4 registers, 0 constants
+  -- upval c, f
+  -- local y
+  0x0000  getupval    r2 upval c                    (17,11) - (17,12)     --> x, y
+  0x0001  gettable    y r2 r0                       (17,11) - (17,15)
+  0x0002  test        y true                        (18,10) - (18,11)
+  0x0003  jmp         0x000A                        (18,10) - (18,11)
+  0x0004  getupval    r2 upval f                    (19,6) - (19,7)
+  0x0005  move        r3 x                          (19,8) - (19,9)
+  0x0006  call        r2 2 2                        (19,6) - (19,7)
+  0x0007  move        y r2                          (19,6) - (19,10)
+  0x0008  getupval    r2 upval c                    (20,4) - (20,5)
+  0x0009  settable    r2 r0 r1                      (20,4) - (20,10)
+  0x000A  return      y 2                           (22,3) - (22,11)      <-- x, y
+end
+
+function test( s, f )
+ -- 11 registers, 6 constants
+  -- local c, v, t
+  0x0000  loadk       r2 #0                         (28,4) - (28,5)       --> s, f
+  0x0001  setglobal   r2 "N"                        (28,2) - (28,5)
+  0x0002  getglobal   r3 "os"                       (29,10) - (29,12)     --> c
+  0x0003  gettable    r3 r3 "clock"                 (29,10) - (29,18)
+  0x0004  call        r3 1 2                        (29,10) - (29,18)
+  0x0005  move        c r3                          (29,10) - (29,20)
+  0x0006  move        r4 f                          (30,10) - (30,11)     --> v
+  0x0007  getglobal   r5 "n"                        (30,12) - (30,13)
+  0x0008  call        r4 2 2                        (30,10) - (30,11)
+  0x0009  move        v r4                          (30,10) - (30,14)
+  0x000A  getglobal   r5 "os"                       (31,10) - (31,12)     --> t
+  0x000B  gettable    r5 r5 "clock"                 (31,10) - (31,18)
+  0x000C  call        r5 1 2                        (31,10) - (31,18)
+  0x000D  sub         t r5 r2                       (31,10) - (31,22)
+  0x000E  getglobal   r5 "print"                    (32,2) - (32,7)
+  0x000F  move        r6 s                          (32,8) - (32,9)
+  0x0010  getglobal   r7 "n"                        (32,10) - (32,11)
+  0x0011  move        r8 v                          (32,12) - (32,13)
+  0x0012  move        r9 t                          (32,14) - (32,15)
+  0x0013  getglobal   r10 "N"                       (32,16) - (32,17)
+  0x0014  call        r5 6 2                        (32,2) - (32,7)
+  0x0015  return      s 1                           (33,1) - (33,4)       <-- s, f, c, v, t
+end
+
+Test\fibfor.lua
+function <chunk>( ... )
+  -- local (for generator), (for state), (for control), i
+  generatefib = function generatefib
+  do -- forlist
+    -- local (for generator), (for state), (for control)
+    local (for generator), (for state), (for control) = values generatefib( 1000 )
+    forlist i : (for generator), (for state), (for control) : forBreak, forContinue
+      -- local i
+      print( i )
+    end
+  end
+  return nil
+end
+
+function generatefib( n )
+  -- multiple return
+  return values coroutine[ "wrap" ]( function x33C0D9D )
+end
+
+function x33C0D9D()
+  -- label whileBreak, whileContinue
+  -- upval n
+  -- local a, b
+  -- local a, b
+  local a = 1
+  local b = 1
+whileContinue:
+  bfalse ( a <= n ) whileBreak
+  do -- while
+    coroutine[ "yield" ]( a )
+    a, b = b, ( a + b )
+  end
+  b whileContinue
+whileBreak:
+  return nil
+end
+
+function <chunk>( ... )
+ -- 6 registers, 3 constants
+  -- local (for generator), (for state), (for control), i
+  0x0000  closure     r0 function x1FED012          (3,1) - (11,4)
+  0x0001  setglobal   r0 "generatefib"              (3,10) - (3,21)
+  0x0002  getglobal   r0 "generatefib"              (13,10) - (13,21)
+  0x0003  loadk       r1 #1000                      (13,22) - (13,26)
+  0x0004  call        r0 2 4                        (13,10) - (13,21)
+  0x0005  jmp         0x0009                        (13,28) - (13,43)     --> (for generator), (for state), (for control)
+  0x0006  getglobal   r4 "print"                    (13,31) - (13,36)     --> i
+  0x0007  move        r5 i                          (13,37) - (13,38)
+  0x0008  call        r4 2 2                        (13,31) - (13,36)     <-- i
+  0x0009  tforloop    (for generator) 507           (13,28) - (13,43)     <-- (for generator), (for state), (for control)
+  0x000A  return      (for generator) 1             (14,1) - (14,1)
+end
+
+function generatefib( n )
+ -- 3 registers, 2 constants
+  0x0000  getglobal   r1 "coroutine"                (4,10) - (4,19)       --> n
+  0x0001  gettable    r1 r1 "wrap"                  (4,10) - (4,24)
+  0x0002  closure     r2 function x1F550A4          (4,25) - (10,6)
+              local   0 n 
+  0x0004  call        r1 2 0                        (4,10) - (4,24)
+  0x0005  return      r1 0                          (4,3) - (10,7)        <-- n
+end
+
+function x1F550A4()
+ -- 4 registers, 3 constants
+  -- upval n
+  -- local a, b
+  0x0000  loadk       a #1                          (5,17) - (5,18)       --> a
+  0x0001  loadk       b #1                          (5,20) - (5,21)       --> b
+  0x0002  getupval    r2 upval n                    (6,16) - (6,17)
+  0x0003  le          true r0 r2                    (6,11) - (6,17)
+  0x0004  jmp         0x000E                        (6,11) - (6,17)
+  0x0005  getglobal   r2 "coroutine"                (7,7) - (7,16)
+  0x0006  gettable    r2 r2 "yield"                 (7,7) - (7,22)
+  0x0007  move        r3 a                          (7,23) - (7,24)
+  0x0008  call        r2 2 2                        (7,7) - (7,22)
+  0x0009  move        r2 b                          (8,14) - (8,15)
+  0x000A  add         r3 r0 r1                      (8,17) - (8,20)
+  0x000B  move        a r2                          (8,7) - (8,20)
+  0x000C  move        b r3                          (8,7) - (8,20)
+  0x000D  jmp         0x0002                        (9,5) - (9,8)
+  0x000E  return      a 1                           (10,3) - (10,6)       <-- a, b
+end
+
+Test\globals.lua
+function <chunk>( ... )
+  -- label whileBreak, whileContinue, ifClause, ifClause, ifClause, ifEnd
+  -- local s, ok, _, l, op, g
+whileContinue:
+  bfalse 1 whileBreak
+  do -- while
+    -- local s, ok, _, l, op, g
+    local s = io[ "read" ]()
+    bfalse ( s == nil ) ifClause
+    do -- if
+      b whileBreak
+    end
+ifClause:
+    local ok, _, l, op, g = values string[ "find" ]( s, "%[%-?(%d*)%]%s*([GS])ETGLOBAL.-;%s+(.*)$" )
+    bfalse ok ifClause
+    do -- if
+      bfalse ( op == "S" ) ifClause
+      do -- if
+        op = "*"
+      end
+      b ifEnd
+ifClause:
+      do -- else
+        op = ""
+      end
+ifEnd:
+      io[ "write" ]( g, "	", l, op, "\n" )
+    end
+ifClause:
+  end
+  b whileContinue
+whileBreak:
+  return nil
+end
+
+function <chunk>( ... )
+ -- 12 registers, 13 constants
+  -- local s, ok, _, l, op, g
+  0x0000  loadk       r0 #1                         (5,7) - (5,8)
+  0x0001  test        r0 false                      (5,7) - (5,8)
+  0x0002  jmp         0x001F                        (5,7) - (5,8)
+  0x0003  getglobal   r1 "io"                       (6,10) - (6,12)       --> s
+  0x0004  gettable    r1 r1 "read"                  (6,10) - (6,17)
+  0x0005  call        r1 1 2                        (6,10) - (6,17)
+  0x0006  move        s r1                          (6,10) - (6,19)
+  0x0007  eq          true r0 #                     (7,5) - (7,11)
+  0x0008  jmp         0x000A                        (7,5) - (7,11)
+  0x0009  jmp         0x001F                        (7,17) - (7,22)
+  0x000A  getglobal   r1 "string"                   (8,20) - (8,26)
+  0x000B  gettable    r1 r1 "find"                  (8,20) - (8,31)
+  0x000C  move        r2 s                          (8,32) - (8,33)
+  0x000D  loadk       r3 "%[%-?(%d*)%]%s*([GS])ETGLOBAL.-;%s+(.*)$"  (8,34) - (8,76)
+  0x000E  call        r1 3 6                        (8,20) - (8,31)
+  0x000F  test        ok false                      (9,5) - (9,7)         --> ok, _, l, op, g
+  0x0010  jmp         0x001E                        (9,5) - (9,7)
+  0x0011  eq          true r4 "S"                   (10,6) - (10,13)
+  0x0012  jmp         0x0015                        (10,6) - (10,13)
+  0x0013  loadk       op "*"                        (10,22) - (10,25)
+  0x0014  jmp         0x0016                        (10,26) - (10,30)
+  0x0015  loadk       op ""                         (10,34) - (10,36)
+  0x0016  getglobal   r6 "io"                       (11,3) - (11,5)
+  0x0017  gettable    r6 r6 "write"                 (11,3) - (11,11)
+  0x0018  move        r7 g                          (11,12) - (11,13)
+  0x0019  loadk       r8 "	"                        (11,14) - (11,18)
+  0x001A  move        r9 l                          (11,19) - (11,20)
+  0x001B  move        r10 op                        (11,21) - (11,23)
+  0x001C  loadk       r11 "\n"                      (11,24) - (11,28)
+  0x001D  call        r6 6 2                        (11,3) - (11,11)      <-- s, ok, _, l, op, g
+  0x001E  jmp         0x0000                        (13,1) - (13,4)
+  0x001F  return      r0 1                          (14,1) - (14,1)
+end
+
+Test\hello.lua
+function <chunk>( ... )
+  io[ "write" ]( "Hello world, from ", _VERSION, "!\n" )
+  return nil
+end
+
+function <chunk>( ... )
+ -- 4 registers, 5 constants
+  0x0000  getglobal   r0 "io"                       (3,1) - (3,3)
+  0x0001  gettable    r0 r0 "write"                 (3,1) - (3,9)
+  0x0002  loadk       r1 "Hello world, from "       (3,10) - (3,30)
+  0x0003  getglobal   r2 "_VERSION"                 (3,31) - (3,39)
+  0x0004  loadk       r3 "!\n"                      (3,40) - (3,45)
+  0x0005  call        r0 4 2                        (3,1) - (3,9)
+  0x0006  return      r0 1                          (4,1) - (4,1)
+end
+
+Test\life.lua
+function <chunk>( ... )
+  -- local write
+  -- local write
+  local write = io[ "write" ]
+  ALIVE = "?"
+  DEAD = "?"
+  ALIVE = "O"
+  DEAD = "-"
+  delay = function delay
+  ARRAY2D = function ARRAY2D
+  _CELLS = {
+  }
+  _CELLS[ "spawn" ] = function _CELLS:spawn
+  _CELLS[ "evolve" ] = function _CELLS:evolve
+  _CELLS[ "draw" ] = function _CELLS:draw
+  CELLS = function CELLS
+  HEART = {
+    1;
+    0;
+    1;
+    1;
+    0;
+    1;
+    1;
+    1;
+    1;
+    [ "w" ] = 3;
+    [ "h" ] = 3;
+  }
+  GLIDER = {
+    0;
+    0;
+    1;
+    1;
+    0;
+    1;
+    0;
+    1;
+    1;
+    [ "w" ] = 3;
+    [ "h" ] = 3;
+  }
+  EXPLODE = {
+    0;
+    1;
+    0;
+    1;
+    1;
+    1;
+    1;
+    0;
+    1;
+    0;
+    1;
+    0;
+    [ "w" ] = 3;
+    [ "h" ] = 4;
+  }
+  FISH = {
+    0;
+    1;
+    1;
+    1;
+    1;
+    1;
+    0;
+    0;
+    0;
+    1;
+    0;
+    0;
+    0;
+    0;
+    1;
+    1;
+    0;
+    0;
+    1;
+    0;
+    [ "w" ] = 5;
+    [ "h" ] = 4;
+  }
+  BUTTERFLY = {
+    1;
+    0;
+    0;
+    0;
+    1;
+    0;
+    1;
+    1;
+    1;
+    0;
+    1;
+    0;
+    0;
+    0;
+    1;
+    1;
+    0;
+    1;
+    0;
+    1;
+    1;
+    0;
+    0;
+    0;
+    1;
+    [ "w" ] = 5;
+    [ "h" ] = 5;
+  }
+  LIFE = function LIFE
+  LIFE( 40, 20 )
+  return nil
+end
+
+function delay()
+  -- local (for index), (for limit), (for step), i
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 1
+    local (for limit) = 10000
+    local (for step) = 1
+    for i : (for index), (for limit), (for step) : forBreak, forContinue
+      -- local i
+    end
+  end
+  return nil
+end
+
+function ARRAY2D( w, h )
+  -- local t, (for index), (for limit), (for step), y, (for index), (for limit), (for step), x
+  -- local t
+  local t = {
+    [ "w" ] = w;
+    [ "h" ] = h;
+  }
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 1
+    local (for limit) = h
+    local (for step) = 1
+    for y : (for index), (for limit), (for step) : forBreak, forContinue
+      -- local y
+      t[ y ] = {
+      }
+      do -- for
+        -- local (for index), (for limit), (for step)
+        local (for index) = 1
+        local (for limit) = w
+        local (for step) = 1
+        for x : (for index), (for limit), (for step) : forBreak, forContinue
+          -- local x
+          t[ y ][ x ] = 0
+        end
+      end
+    end
+  end
+  return t
+end
+
+function _CELLS:spawn( self, shape, left, top )
+  -- local (for index), (for limit), (for step), y, (for index), (for limit), (for step), x
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 0
+    local (for limit) = ( shape[ "h" ] - 1 )
+    local (for step) = 1
+    for y : (for index), (for limit), (for step) : forBreak, forContinue
+      -- local y
+      do -- for
+        -- local (for index), (for limit), (for step)
+        local (for index) = 0
+        local (for limit) = ( shape[ "w" ] - 1 )
+        local (for step) = 1
+        for x : (for index), (for limit), (for step) : forBreak, forContinue
+          -- local x
+          self[ ( top + y ) ][ ( left + x ) ] = shape[ ( ( ( y * shape[ "w" ] ) + x ) + 1 ) ]
+        end
+      end
+    end
+  end
+  return nil
+end
+
+function _CELLS:evolve( self, next )
+  -- label whileBreak, whileContinue, whileBreak, whileContinue
+  -- local ym1, y, yp1, yi, xm1, x, xp1, xi, sum
+  -- local ym1, y, yp1, yi
+  local ym1 = ( self[ "h" ] - 1 )
+  local y = self[ "h" ]
+  local yp1 = 1
+  local yi = self[ "h" ]
+whileContinue:
+  bfalse ( yi > 0 ) whileBreak
+  do -- while
+    -- local xm1, x, xp1, xi
+    local xm1 = ( self[ "w" ] - 1 )
+    local x = self[ "w" ]
+    local xp1 = 1
+    local xi = self[ "w" ]
+whileContinue:
+    bfalse ( xi > 0 ) whileBreak
+    do -- while
+      -- local sum
+      local sum = ( ( ( ( ( ( ( self[ ym1 ][ xm1 ] + self[ ym1 ][ x ] ) + self[ ym1 ][ xp1 ] ) + self[ y ][ xm1 ] ) + self[ y ][ xp1 ] ) + self[ yp1 ][ xm1 ] ) + self[ yp1 ][ x ] ) + self[ yp1 ][ xp1 ] )
+      next[ y ][ x ] = ( ( ( ( sum == 2 ) and self[ y ][ x ] ) or ( ( sum == 3 ) and 1 ) ) or 0 )
+      xm1, x, xp1, xi = x, xp1, ( xp1 + 1 ), ( xi - 1 )
+    end
+    b whileContinue
+whileBreak:
+    ym1, y, yp1, yi = y, yp1, ( yp1 + 1 ), ( yi - 1 )
+  end
+  b whileContinue
+whileBreak:
+  return nil
+end
+
+function _CELLS:draw( self )
+  -- upval write
+  -- local out, (for index), (for limit), (for step), y, (for index), (for limit), (for step), x
+  -- local out
+  local out = ""
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 1
+    local (for limit) = self[ "h" ]
+    local (for step) = 1
+    for y : (for index), (for limit), (for step) : forBreak, forContinue
+      -- local y
+      do -- for
+        -- local (for index), (for limit), (for step)
+        local (for index) = 1
+        local (for limit) = self[ "w" ]
+        local (for step) = 1
+        for x : (for index), (for limit), (for step) : forBreak, forContinue
+          -- local x
+          out = concat out .. ( ( ( self[ y ][ x ] > 0 ) and ALIVE ) or DEAD )
+        end
+      end
+      out = concat out .. "\n"
+    end
+  end
+  write( out )
+  return nil
+end
+
+function CELLS( w, h )
+  -- local c
+  -- local c
+  local c = ARRAY2D( w, h )
+  c[ "spawn" ] = _CELLS[ "spawn" ]
+  c[ "evolve" ] = _CELLS[ "evolve" ]
+  c[ "draw" ] = _CELLS[ "draw" ]
+  return c
+end
+
+function LIFE( w, h )
+  -- label whileBreak, whileContinue, ifClause
+  -- upval write
+  -- local thisgen, nextgen, gen
+  -- local thisgen, nextgen, gen
+  local thisgen = CELLS( w, h )
+  local nextgen = CELLS( w, h )
+  thisgen:spawn( GLIDER, 5, 4 )
+  thisgen:spawn( EXPLODE, 25, 10 )
+  thisgen:spawn( FISH, 4, 12 )
+  local gen = 1
+  write( "[2J" )
+whileContinue:
+  bfalse 1 whileBreak
+  do -- while
+    thisgen:evolve( nextgen )
+    thisgen, nextgen = nextgen, thisgen
+    write( "[H" )
+    thisgen:draw()
+    write( "Life - generation ", gen, "\n" )
+    gen = ( gen + 1 )
+    bfalse ( gen > 2000 ) ifClause
+    do -- if
+      b whileBreak
+    end
+ifClause:
+  end
+  b whileContinue
+whileBreak:
+  return nil
+end
+
+function <chunk>( ... )
+ -- 27 registers, 29 constants
+  -- local write
+  0x0000  getglobal   r1 "io"                       (6,13) - (6,15)       --> write
+  0x0001  gettable    write r1 "write"              (6,13) - (6,21)
+  0x0002  loadk       r1 "?"                        (8,7) - (8,10)
+  0x0003  setglobal   r1 "ALIVE"                    (8,1) - (8,10)
+  0x0004  loadk       r1 "?"                        (8,16) - (8,19)
+  0x0005  setglobal   r1 "DEAD"                     (8,11) - (8,19)
+  0x0006  loadk       r1 "O"                        (9,7) - (9,10)
+  0x0007  setglobal   r1 "ALIVE"                    (9,1) - (9,10)
+  0x0008  loadk       r1 "-"                        (9,16) - (9,19)
+  0x0009  setglobal   r1 "DEAD"                     (9,11) - (9,19)
+  0x000A  closure     r1 function x2A2CC74          (11,1) - (14,4)
+  0x000B  setglobal   r1 "delay"                    (11,10) - (11,15)
+  0x000C  closure     r1 function x3B93019          (16,1) - (25,4)
+  0x000D  setglobal   r1 "ARRAY2D"                  (16,10) - (16,17)
+  0x000E  newtable    r1 0 0                        (27,10) - (27,12)
+  0x000F  setglobal   r1 "_CELLS"                   (27,1) - (27,12)
+  0x0010  getglobal   r1 "_CELLS"                   (30,10) - (30,16)
+  0x0011  closure     r2 function x182B0E9          (30,1) - (36,4)
+  0x0012  settable    r1 "spawn" r2                 (30,10) - (30,22)
+  0x0013  getglobal   r1 "_CELLS"                   (39,10) - (39,16)
+  0x0014  closure     r2 function x1983833          (39,1) - (52,4)
+  0x0015  settable    r1 "evolve" r2                (39,10) - (39,23)
+  0x0016  getglobal   r1 "_CELLS"                   (55,10) - (55,16)
+  0x0017  closure     r2 function x259F9D2          (55,1) - (64,4)
+              local   0 write 
+  0x0019  settable    r1 "draw" r2                  (55,10) - (55,21)
+  0x001A  closure     r1 function x129C866          (67,1) - (73,4)
+  0x001B  setglobal   r1 "CELLS"                    (67,10) - (67,15)
+  0x001C  newtable    r1 9 2                        (78,9) - (78,39)
+  0x001D  loadk       r2 #1                         (78,11) - (78,12)
+  0x001E  loadk       r2 #0                         (78,13) - (78,14)
+  0x001F  loadk       r2 #1                         (78,15) - (78,16)
+  0x0020  loadk       r2 #1                         (78,17) - (78,18)
+  0x0021  loadk       r2 #0                         (78,19) - (78,20)
+  0x0022  loadk       r2 #1                         (78,21) - (78,22)
+  0x0023  loadk       r2 #1                         (78,23) - (78,24)
+  0x0024  loadk       r2 #1                         (78,25) - (78,26)
+  0x0025  loadk       r2 #1                         (78,27) - (78,28)
+  0x0026  settable    r1 "w" #3                     (78,9) - (78,39)
+  0x0027  settable    r1 "h" #3                     (78,9) - (78,39)
+  0x0028  setlist     r1 9 1                        (78,9) - (78,39)
+  0x0029  setglobal   r1 "HEART"                    (78,1) - (78,39)
+  0x002A  newtable    r1 9 2                        (79,10) - (79,40)
+  0x002B  loadk       r2 #0                         (79,12) - (79,13)
+  0x002C  loadk       r2 #0                         (79,14) - (79,15)
+  0x002D  loadk       r2 #1                         (79,16) - (79,17)
+  0x002E  loadk       r2 #1                         (79,18) - (79,19)
+  0x002F  loadk       r2 #0                         (79,20) - (79,21)
+  0x0030  loadk       r2 #1                         (79,22) - (79,23)
+  0x0031  loadk       r2 #0                         (79,24) - (79,25)
+  0x0032  loadk       r2 #1                         (79,26) - (79,27)
+  0x0033  loadk       r2 #1                         (79,28) - (79,29)
+  0x0034  settable    r1 "w" #3                     (79,10) - (79,40)
+  0x0035  settable    r1 "h" #3                     (79,10) - (79,40)
+  0x0036  setlist     r1 9 1                        (79,10) - (79,40)
+  0x0037  setglobal   r1 "GLIDER"                   (79,1) - (79,40)
+  0x0038  newtable    r1 12 2                       (80,11) - (80,47)
+  0x0039  loadk       r2 #0                         (80,13) - (80,14)
+  0x003A  loadk       r2 #1                         (80,15) - (80,16)
+  0x003B  loadk       r2 #0                         (80,17) - (80,18)
+  0x003C  loadk       r2 #1                         (80,19) - (80,20)
+  0x003D  loadk       r2 #1                         (80,21) - (80,22)
+  0x003E  loadk       r2 #1                         (80,23) - (80,24)
+  0x003F  loadk       r2 #1                         (80,25) - (80,26)
+  0x0040  loadk       r2 #0                         (80,27) - (80,28)
+  0x0041  loadk       r2 #1                         (80,29) - (80,30)
+  0x0042  loadk       r2 #0                         (80,31) - (80,32)
+  0x0043  loadk       r2 #1                         (80,33) - (80,34)
+  0x0044  loadk       r2 #0                         (80,35) - (80,36)
+  0x0045  settable    r1 "w" #3                     (80,11) - (80,47)
+  0x0046  settable    r1 "h" #4                     (80,11) - (80,47)
+  0x0047  setlist     r1 12 1                       (80,11) - (80,47)
+  0x0048  setglobal   r1 "EXPLODE"                  (80,1) - (80,47)
+  0x0049  newtable    r1 20 2                       (81,8) - (81,60)
+  0x004A  loadk       r2 #0                         (81,10) - (81,11)
+  0x004B  loadk       r2 #1                         (81,12) - (81,13)
+  0x004C  loadk       r2 #1                         (81,14) - (81,15)
+  0x004D  loadk       r2 #1                         (81,16) - (81,17)
+  0x004E  loadk       r2 #1                         (81,18) - (81,19)
+  0x004F  loadk       r2 #1                         (81,20) - (81,21)
+  0x0050  loadk       r2 #0                         (81,22) - (81,23)
+  0x0051  loadk       r2 #0                         (81,24) - (81,25)
+  0x0052  loadk       r2 #0                         (81,26) - (81,27)
+  0x0053  loadk       r2 #1                         (81,28) - (81,29)
+  0x0054  loadk       r2 #0                         (81,30) - (81,31)
+  0x0055  loadk       r2 #0                         (81,32) - (81,33)
+  0x0056  loadk       r2 #0                         (81,34) - (81,35)
+  0x0057  loadk       r2 #0                         (81,36) - (81,37)
+  0x0058  loadk       r2 #1                         (81,38) - (81,39)
+  0x0059  loadk       r2 #1                         (81,40) - (81,41)
+  0x005A  loadk       r2 #0                         (81,42) - (81,43)
+  0x005B  loadk       r2 #0                         (81,44) - (81,45)
+  0x005C  loadk       r2 #1                         (81,46) - (81,47)
+  0x005D  loadk       r2 #0                         (81,48) - (81,49)
+  0x005E  settable    r1 "w" #5                     (81,8) - (81,60)
+  0x005F  settable    r1 "h" #4                     (81,8) - (81,60)
+  0x0060  setlist     r1 20 1                       (81,8) - (81,60)
+  0x0061  setglobal   r1 "FISH"                     (81,1) - (81,60)
+  0x0062  newtable    r1 25 2                       (82,13) - (82,75)
+  0x0063  loadk       r2 #1                         (82,15) - (82,16)
+  0x0064  loadk       r2 #0                         (82,17) - (82,18)
+  0x0065  loadk       r2 #0                         (82,19) - (82,20)
+  0x0066  loadk       r2 #0                         (82,21) - (82,22)
+  0x0067  loadk       r2 #1                         (82,23) - (82,24)
+  0x0068  loadk       r2 #0                         (82,25) - (82,26)
+  0x0069  loadk       r2 #1                         (82,27) - (82,28)
+  0x006A  loadk       r2 #1                         (82,29) - (82,30)
+  0x006B  loadk       r2 #1                         (82,31) - (82,32)
+  0x006C  loadk       r2 #0                         (82,33) - (82,34)
+  0x006D  loadk       r2 #1                         (82,35) - (82,36)
+  0x006E  loadk       r2 #0                         (82,37) - (82,38)
+  0x006F  loadk       r2 #0                         (82,39) - (82,40)
+  0x0070  loadk       r2 #0                         (82,41) - (82,42)
+  0x0071  loadk       r2 #1                         (82,43) - (82,44)
+  0x0072  loadk       r2 #1                         (82,45) - (82,46)
+  0x0073  loadk       r2 #0                         (82,47) - (82,48)
+  0x0074  loadk       r2 #1                         (82,49) - (82,50)
+  0x0075  loadk       r2 #0                         (82,51) - (82,52)
+  0x0076  loadk       r2 #1                         (82,53) - (82,54)
+  0x0077  loadk       r2 #1                         (82,55) - (82,56)
+  0x0078  loadk       r2 #0                         (82,57) - (82,58)
+  0x0079  loadk       r2 #0                         (82,59) - (82,60)
+  0x007A  loadk       r2 #0                         (82,61) - (82,62)
+  0x007B  loadk       r2 #1                         (82,63) - (82,64)
+  0x007C  settable    r1 "w" #5                     (82,13) - (82,75)
+  0x007D  settable    r1 "h" #5                     (82,13) - (82,75)
+  0x007E  setlist     r1 25 1                       (82,13) - (82,75)
+  0x007F  setglobal   r1 "BUTTERFLY"                (82,1) - (82,75)
+  0x0080  closure     r1 function x2780B98          (85,1) - (109,4)
+              local   0 write 
+  0x0082  setglobal   r1 "LIFE"                     (85,10) - (85,14)
+  0x0083  getglobal   r1 "LIFE"                     (111,1) - (111,5)
+  0x0084  loadk       r2 #40                        (111,6) - (111,8)
+  0x0085  loadk       r3 #20                        (111,9) - (111,11)
+  0x0086  call        r1 3 2                        (111,1) - (111,5)
+  0x0087  close       write                         (112,1) - (112,1)
+  0x0088  return      write 1                       (112,1) - (112,1)     <-- write
+end
+
+function delay()
+ -- 4 registers, 2 constants
+  -- local (for index), (for limit), (for step), i
+  0x0000  loadk       (for index) #1                (12,9) - (12,10)      --> (for index)
+  0x0001  loadk       (for limit) #10000            (12,11) - (12,16)     --> (for limit)
+  0x0002  loadk       (for step) #1                 (12,3) - (12,19)      --> (for step)
+  0x0003  forprep     (for index) 0x0004            (12,17) - (12,23)     <-- i
+  0x0004  forloop     (for index) 0x0004            (12,17) - (12,23)     <-- (for index), (for limit), (for step)  --> i
+  0x0005  return      (for index) 1                 (14,1) - (14,4)
+end
+
+function ARRAY2D( w, h )
+ -- 12 registers, 4 constants
+  -- local t, (for index), (for limit), (for step), y, (for index), (for limit), (for step), x
+  0x0000  newtable    r3 0 2                        (17,13) - (17,22)     --> w, h, t
+  0x0001  settable    r3 "w" r0                     (17,13) - (17,22)
+  0x0002  settable    r3 "h" r1                     (17,13) - (17,22)
+  0x0003  move        t r3                          (17,13) - (17,22)
+  0x0004  loadk       (for index) #1                (18,9) - (18,10)      --> (for index)
+  0x0005  move        (for limit) h                 (18,11) - (18,12)     --> (for limit)
+  0x0006  loadk       (for step) #1                 (18,3) - (18,15)      --> (for step)
+  0x0007  forprep     (for index) 0x0011            (18,13) - (23,6)
+  0x0008  newtable    r7 0 0                        (19,12) - (19,14)     --> y
+  0x0009  settable    t r6 r7                       (19,5) - (19,14)
+  0x000A  loadk       (for index) #1                (20,11) - (20,12)     --> (for index)
+  0x000B  move        (for limit) w                 (20,13) - (20,14)     --> (for limit)
+  0x000C  loadk       (for step) #1                 (20,5) - (20,17)      --> (for step)
+  0x000D  forprep     (for index) 0x0010            (20,15) - (22,8)
+  0x000E  gettable    r11 t r6                      (21,7) - (21,11)      --> x
+  0x000F  settable    r11 r10 #0                    (21,7) - (21,16)      <-- x
+  0x0010  forloop     (for index) 0x000E            (20,15) - (22,8)      <-- y, (for index), (for limit), (for step)
+  0x0011  forloop     (for index) 0x0008            (18,13) - (23,6)      <-- (for index), (for limit), (for step)
+  0x0012  return      t 2                           (24,3) - (24,11)      <-- w, h, t
+end
+
+function _CELLS:spawn( self, shape, left, top )
+ -- 15 registers, 4 constants
+  -- local (for index), (for limit), (for step), y, (for index), (for limit), (for step), x
+  0x0000  loadk       (for index) #0                (31,9) - (31,10)      --> self, shape, left, top, (for index)
+  0x0001  gettable    r6 shape "h"                  (31,11) - (31,18)     --> (for limit)
+  0x0002  sub         (for limit) r6 #1             (31,11) - (31,20)
+  0x0003  loadk       (for step) #1                 (31,3) - (31,23)      --> (for step)
+  0x0004  forprep     (for index) 0x0014            (31,21) - (35,6)
+  0x0005  loadk       (for index) #0                (32,11) - (32,12)     --> y, (for index)
+  0x0006  gettable    r10 shape "w"                 (32,13) - (32,20)     --> (for limit)
+  0x0007  sub         (for limit) r10 #1            (32,13) - (32,22)
+  0x0008  loadk       (for step) #1                 (32,5) - (32,25)      --> (for step)
+  0x0009  forprep     (for index) 0x0013            (32,23) - (34,8)
+  0x000A  add         r12 r3 r7                     (33,12) - (33,17)     --> x
+  0x000B  gettable    r12 self r12                  (33,7) - (33,18)
+  0x000C  add         r13 r2 r11                    (33,19) - (33,25)
+  0x000D  gettable    r14 shape "w"                 (33,37) - (33,44)
+  0x000E  mul         r14 r7 r14                    (33,35) - (33,44)
+  0x000F  add         r14 r14 r11                   (33,35) - (33,46)
+  0x0010  add         r14 r14 #1                    (33,35) - (33,48)
+  0x0011  gettable    r14 shape r14                 (33,29) - (33,49)
+  0x0012  settable    r12 r13 r14                   (33,7) - (33,49)      <-- x
+  0x0013  forloop     (for index) 0x000A            (32,23) - (34,8)      <-- y, (for index), (for limit), (for step)
+  0x0014  forloop     (for index) 0x0005            (31,21) - (35,6)      <-- (for index), (for limit), (for step)
+  0x0015  return      self 1                        (36,1) - (36,4)       <-- self, shape, left, top
+end
+
+function _CELLS:evolve( self, next )
+ -- 15 registers, 6 constants
+  -- local ym1, y, yp1, yi, xm1, x, xp1, xi, sum
+  0x0000  gettable    r3 self "h"                   (40,22) - (40,28)     --> self, next, ym1
+  0x0001  sub         ym1 r3 #1                     (40,22) - (40,30)
+  0x0002  gettable    y self "h"                    (40,31) - (40,37)     --> y
+  0x0003  loadk       yp1 #1                        (40,38) - (40,39)     --> yp1
+  0x0004  gettable    yi self "h"                   (40,40) - (40,46)     --> yi
+  0x0005  le          true r5 #0                    (41,9) - (41,15)
+  0x0006  jmp         0x004D                        (41,9) - (41,15)
+  0x0007  gettable    r7 self "w"                   (42,24) - (42,30)     --> xm1
+  0x0008  sub         xm1 r7 #1                     (42,24) - (42,32)
+  0x0009  gettable    x self "w"                    (42,33) - (42,39)     --> x
+  0x000A  loadk       xp1 #1                        (42,40) - (42,41)     --> xp1
+  0x000B  gettable    xi self "w"                   (42,42) - (42,48)     --> xi
+  0x000C  le          true r9 #0                    (43,11) - (43,17)
+  0x000D  jmp         0x0044                        (43,11) - (43,17)
+  0x000E  gettable    r11 self r2                   (44,19) - (44,28)     --> sum
+  0x000F  gettable    r11 r11 r6                    (44,19) - (44,33)
+  0x0010  gettable    r12 self r2                   (44,36) - (44,45)
+  0x0011  gettable    r12 r12 r7                    (44,36) - (44,48)
+  0x0012  add         r11 r11 r12                   (44,19) - (44,48)
+  0x0013  gettable    r12 self r2                   (44,51) - (44,60)
+  0x0014  gettable    r12 r12 r8                    (44,51) - (44,65)
+  0x0015  add         r11 r11 r12                   (44,19) - (44,65)
+  0x0016  gettable    r12 self r3                   (45,19) - (45,26)
+  0x0017  gettable    r12 r12 r6                    (45,19) - (45,31)
+  0x0018  add         r11 r11 r12                   (44,19) - (45,31)
+  0x0019  gettable    r12 self r3                   (45,34) - (45,41)
+  0x001A  gettable    r12 r12 r8                    (45,34) - (45,46)
+  0x001B  add         r11 r11 r12                   (44,19) - (45,46)
+  0x001C  gettable    r12 self r4                   (46,19) - (46,28)
+  0x001D  gettable    r12 r12 r6                    (46,19) - (46,33)
+  0x001E  add         r11 r11 r12                   (44,19) - (46,33)
+  0x001F  gettable    r12 self r4                   (46,36) - (46,45)
+  0x0020  gettable    r12 r12 r7                    (46,36) - (46,48)
+  0x0021  add         r11 r11 r12                   (44,19) - (46,48)
+  0x0022  gettable    r12 self r4                   (46,51) - (46,60)
+  0x0023  gettable    r12 r12 r8                    (46,51) - (46,65)
+  0x0024  add         sum r11 r12                   (44,19) - (46,65)
+  0x0025  gettable    r11 next r3                   (47,7) - (47,14)
+  0x0026  eq          true r10 #2                   (47,21) - (47,29)
+  0x0027  jmp         0x0029                        (47,21) - (47,29)
+  0x0028  loadbool    r12 false                     (47,21) - (47,29)
+  0x0029  loadbool    r12 true                      (47,21) - (47,29)
+  0x002A  testset     r12 r12 false                 (47,20) - (47,45)
+  0x002B  jmp         0x002E                        (47,20) - (47,45)
+  0x002C  gettable    r12 self r3                   (47,34) - (47,41)
+  0x002D  gettable    r12 r12 r7                    (47,34) - (47,44)
+  0x002E  testset     r12 r12 true                  (47,20) - (47,65)
+  0x002F  jmp         0x0037                        (47,20) - (47,65)
+  0x0030  eq          true r10 #3                   (47,50) - (47,58)
+  0x0031  jmp         0x0033                        (47,50) - (47,58)
+  0x0032  loadbool    r12 false                     (47,50) - (47,58)
+  0x0033  loadbool    r12 true                      (47,50) - (47,58)
+  0x0034  testset     r12 r12 false                 (47,49) - (47,65)
+  0x0035  jmp         0x0037                        (47,49) - (47,65)
+  0x0036  loadk       r12 #1                        (47,63) - (47,64)
+  0x0037  testset     r12 r12 true                  (47,20) - (47,70)
+  0x0038  jmp         0x003A                        (47,20) - (47,70)
+  0x0039  loadk       r12 #0                        (47,69) - (47,70)
+  0x003A  settable    r11 r7 r12                    (47,7) - (47,70)
+  0x003B  move        r11 x                         (48,22) - (48,23)
+  0x003C  move        r12 xp1                       (48,24) - (48,27)
+  0x003D  add         r13 r8 #1                     (48,28) - (48,33)
+  0x003E  sub         r14 r9 #1                     (48,34) - (48,38)
+  0x003F  move        xm1 r11                       (48,7) - (48,38)
+  0x0040  move        x r12                         (48,7) - (48,38)
+  0x0041  move        xp1 r13                       (48,7) - (48,38)
+  0x0042  move        xi r14                        (48,7) - (48,38)      <-- sum
+  0x0043  jmp         0x000C                        (49,5) - (49,8)
+  0x0044  move        r10 y                         (50,20) - (50,21)
+  0x0045  move        r11 yp1                       (50,22) - (50,25)
+  0x0046  add         r12 r4 #1                     (50,26) - (50,31)
+  0x0047  sub         r13 r5 #1                     (50,32) - (50,36)
+  0x0048  move        ym1 r10                       (50,5) - (50,36)
+  0x0049  move        y r11                         (50,5) - (50,36)
+  0x004A  move        yp1 r12                       (50,5) - (50,36)
+  0x004B  move        yi r13                        (50,5) - (50,36)      <-- xm1, x, xp1, xi
+  0x004C  jmp         0x0005                        (51,3) - (51,6)
+  0x004D  return      self 1                        (52,1) - (52,4)       <-- self, next, ym1, y, yp1, yi
+end
+
+function _CELLS:draw( self )
+ -- 12 registers, 8 constants
+  -- upval write
+  -- local out, (for index), (for limit), (for step), y, (for index), (for limit), (for step), x
+  0x0000  loadk       out ""                        (56,13) - (56,15)     --> self, out
+  0x0001  loadk       (for index) #1                (57,9) - (57,10)      --> (for index)
+  0x0002  gettable    (for limit) self "h"          (57,11) - (57,17)     --> (for limit)
+  0x0003  loadk       (for step) #1                 (57,3) - (57,20)      --> (for step)
+  0x0004  forprep     (for index) 0x001B            (57,18) - (62,6)
+  0x0005  loadk       (for index) #1                (58,10) - (58,11)     --> y, (for index)
+  0x0006  gettable    (for limit) self "w"          (58,12) - (58,18)     --> (for limit)
+  0x0007  loadk       (for step) #1                 (58,4) - (58,21)      --> (for step)
+  0x0008  forprep     (for index) 0x0017            (58,19) - (60,8)
+  0x0009  move        r10 out                       (59,11) - (59,14)     --> x
+  0x000A  gettable    r11 self r5                   (59,19) - (59,26)
+  0x000B  gettable    r11 r11 r9                    (59,19) - (59,29)
+  0x000C  le          false r11 #0                  (59,18) - (59,32)
+  0x000D  jmp         0x000F                        (59,18) - (59,32)
+  0x000E  loadbool    r11 false                     (59,18) - (59,32)
+  0x000F  loadbool    r11 true                      (59,18) - (59,32)
+  0x0010  testset     r11 r11 false                 (59,17) - (59,43)
+  0x0011  jmp         0x0013                        (59,17) - (59,43)
+  0x0012  getglobal   r11 "ALIVE"                   (59,37) - (59,42)
+  0x0013  testset     r11 r11 true                  (59,16) - (59,52)
+  0x0014  jmp         0x0016                        (59,16) - (59,52)
+  0x0015  getglobal   r11 "DEAD"                    (59,47) - (59,51)
+  0x0016  concat      out r10 r11                   (59,11) - (59,52)     <-- x
+  0x0017  forloop     (for index) 0x0009            (58,19) - (60,8)      <-- (for index), (for limit), (for step)
+  0x0018  move        (for index) out               (61,9) - (61,12)
+  0x0019  loadk       r7 "\n"                       (61,14) - (61,18)
+  0x001A  concat      out r6 r7                     (61,9) - (61,18)      <-- y
+  0x001B  forloop     (for index) 0x0005            (57,18) - (62,6)      <-- (for index), (for limit), (for step)
+  0x001C  getupval    (for index) upval write       (63,3) - (63,8)
+  0x001D  move        r3 out                        (63,9) - (63,12)
+  0x001E  call        r2 2 2                        (63,3) - (63,8)
+  0x001F  return      self 1                        (64,1) - (64,4)       <-- self, out
+end
+
+function CELLS( w, h )
+ -- 6 registers, 5 constants
+  -- local c
+  0x0000  getglobal   r3 "ARRAY2D"                  (68,13) - (68,20)     --> w, h, c
+  0x0001  move        r4 w                          (68,21) - (68,22)
+  0x0002  move        r5 h                          (68,23) - (68,24)
+  0x0003  call        r3 3 2                        (68,13) - (68,20)
+  0x0004  move        c r3                          (68,13) - (68,25)
+  0x0005  getglobal   r3 "_CELLS"                   (69,13) - (69,19)
+  0x0006  gettable    r3 r3 "spawn"                 (69,13) - (69,25)
+  0x0007  settable    c "spawn" r3                  (69,3) - (69,25)
+  0x0008  getglobal   r3 "_CELLS"                   (70,14) - (70,20)
+  0x0009  gettable    r3 r3 "evolve"                (70,14) - (70,27)
+  0x000A  settable    c "evolve" r3                 (70,3) - (70,27)
+  0x000B  getglobal   r3 "_CELLS"                   (71,12) - (71,18)
+  0x000C  gettable    r3 r3 "draw"                  (71,12) - (71,23)
+  0x000D  settable    c "draw" r3                   (71,3) - (71,23)
+  0x000E  return      c 2                           (72,3) - (72,11)      <-- w, h, c
+end
+
+function LIFE( w, h )
+ -- 9 registers, 18 constants
+  -- upval write
+  -- local thisgen, nextgen, gen
+  0x0000  getglobal   r3 "CELLS"                    (87,19) - (87,24)     --> w, h, thisgen
+  0x0001  move        r4 w                          (87,25) - (87,26)
+  0x0002  move        r5 h                          (87,27) - (87,28)
+  0x0003  call        r3 3 2                        (87,19) - (87,24)
+  0x0004  move        thisgen r3                    (87,19) - (87,29)
+  0x0005  getglobal   r4 "CELLS"                    (88,19) - (88,24)     --> nextgen
+  0x0006  move        r5 w                          (88,25) - (88,26)
+  0x0007  move        r6 h                          (88,27) - (88,28)
+  0x0008  call        r4 3 2                        (88,19) - (88,24)
+  0x0009  move        nextgen r4                    (88,19) - (88,29)
+  0x000A  self        r4 thisgen "spawn"            (92,3) - (92,10)
+  0x000B  getglobal   r5 "GLIDER"                   (92,17) - (92,23)
+  0x000C  loadk       r6 #5                         (92,24) - (92,25)
+  0x000D  loadk       r7 #4                         (92,26) - (92,27)
+  0x000E  call        r4 4 2                        (92,3) - (92,10)
+  0x000F  self        r4 thisgen "spawn"            (93,3) - (93,10)
+  0x0010  getglobal   r5 "EXPLODE"                  (93,17) - (93,24)
+  0x0011  loadk       r6 #25                        (93,25) - (93,27)
+  0x0012  loadk       r7 #10                        (93,28) - (93,30)
+  0x0013  call        r4 4 2                        (93,3) - (93,10)
+  0x0014  self        r4 thisgen "spawn"            (94,3) - (94,10)
+  0x0015  getglobal   r5 "FISH"                     (94,17) - (94,21)
+  0x0016  loadk       r6 #4                         (94,22) - (94,23)
+  0x0017  loadk       r7 #12                        (94,24) - (94,26)
+  0x0018  call        r4 4 2                        (94,3) - (94,10)
+  0x0019  loadk       gen #1                        (97,13) - (97,14)     --> gen
+  0x001A  getupval    r5 upval write                (98,3) - (98,8)
+  0x001B  loadk       r6 "[2J"                     (98,9) - (98,18)
+  0x001C  call        r5 2 2                        (98,3) - (98,8)
+  0x001D  loadk       r5 #1                         (99,9) - (99,10)
+  0x001E  test        r5 false                      (99,9) - (99,10)
+  0x001F  jmp         0x0036                        (99,9) - (99,10)
+  0x0020  self        r5 thisgen "evolve"           (100,5) - (100,12)
+  0x0021  move        r6 nextgen                    (100,20) - (100,27)
+  0x0022  call        r5 2 2                        (100,5) - (100,12)
+  0x0023  move        r5 nextgen                    (101,23) - (101,30)
+  0x0024  move        r6 thisgen                    (101,31) - (101,38)
+  0x0025  move        thisgen r5                    (101,5) - (101,38)
+  0x0026  move        nextgen r6                    (101,5) - (101,38)
+  0x0027  getupval    r5 upval write                (102,5) - (102,10)
+  0x0028  loadk       r6 "[H"                      (102,11) - (102,19)
+  0x0029  call        r5 2 2                        (102,5) - (102,10)
+  0x002A  self        r5 thisgen "draw"             (103,5) - (103,12)
+  0x002B  call        r5 1 2                        (103,5) - (103,12)
+  0x002C  getupval    r5 upval write                (104,5) - (104,10)
+  0x002D  loadk       r6 "Life - generation "       (104,11) - (104,31)
+  0x002E  move        r7 gen                        (104,32) - (104,35)
+  0x002F  loadk       r8 "\n"                       (104,36) - (104,40)
+  0x0030  call        r5 4 2                        (104,5) - (104,10)
+  0x0031  add         gen r4 #1                     (105,9) - (105,14)
+  0x0032  le          true r4 #2000                 (106,8) - (106,16)
+  0x0033  jmp         0x0035                        (106,8) - (106,16)
+  0x0034  jmp         0x0036                        (106,22) - (106,27)
+  0x0035  jmp         0x001D                        (108,3) - (108,6)
+  0x0036  return      w 1                           (109,1) - (109,4)     <-- w, h, thisgen, nextgen, gen
+end
+
+Test\luac.lua
+function <chunk>( ... )
+  assert( ( ( arg[ 1 ] != nil ) and ( arg[ 2 ] == nil ) ), "usage: lua luac.lua file.lua" )
+  f = assert( values io[ "open" ]( "luac.out", "wb" ) )
+  assert( values f:write( values string[ "dump" ]( values assert( values loadfile( arg[ 1 ] ) ) ) ) )
+  assert( values f:close() )
+  return nil
+end
+
+function <chunk>( ... )
+ -- 6 registers, 16 constants
+  0x0000  getglobal   r0 "assert"                   (4,1) - (4,7)
+  0x0001  getglobal   r1 "arg"                      (4,8) - (4,11)
+  0x0002  gettable    r1 r1 #1                      (4,8) - (4,14)
+  0x0003  eq          false r1 #                    (4,8) - (4,19)
+  0x0004  jmp         0x0006                        (4,8) - (4,19)
+  0x0005  loadbool    r1 false                      (4,8) - (4,19)
+  0x0006  loadbool    r1 true                       (4,8) - (4,19)
+  0x0007  testset     r1 r1 false                   (4,8) - (4,35)
+  0x0008  jmp         0x000F                        (4,8) - (4,35)
+  0x0009  getglobal   r1 "arg"                      (4,24) - (4,27)
+  0x000A  gettable    r1 r1 #2                      (4,24) - (4,30)
+  0x000B  eq          true r1 #                     (4,24) - (4,35)
+  0x000C  jmp         0x000E                        (4,24) - (4,35)
+  0x000D  loadbool    r1 false                      (4,24) - (4,35)
+  0x000E  loadbool    r1 true                       (4,24) - (4,35)
+  0x000F  loadk       r2 "usage: lua luac.lua file.lua"  (4,36) - (4,66)
+  0x0010  call        r0 3 2                        (4,1) - (4,7)
+  0x0011  getglobal   r0 "assert"                   (5,3) - (5,9)
+  0x0012  getglobal   r1 "io"                       (5,10) - (5,12)
+  0x0013  gettable    r1 r1 "open"                  (5,10) - (5,17)
+  0x0014  loadk       r2 "luac.out"                 (5,18) - (5,28)
+  0x0015  loadk       r3 "wb"                       (5,29) - (5,33)
+  0x0016  call        r1 3 0                        (5,10) - (5,17)
+  0x0017  call        r0 0 2                        (5,3) - (5,9)
+  0x0018  setglobal   r0 "f"                        (5,1) - (5,35)
+  0x0019  getglobal   r0 "assert"                   (6,1) - (6,7)
+  0x001A  getglobal   r1 "f"                        (6,8) - (6,9)
+  0x001B  self        r1 r1 "write"                 (6,8) - (6,9)
+  0x001C  getglobal   r2 "string"                   (6,16) - (6,22)
+  0x001D  gettable    r2 r2 "dump"                  (6,16) - (6,27)
+  0x001E  getglobal   r3 "assert"                   (6,28) - (6,34)
+  0x001F  getglobal   r4 "loadfile"                 (6,35) - (6,43)
+  0x0020  getglobal   r5 "arg"                      (6,44) - (6,47)
+  0x0021  gettable    r5 r5 #1                      (6,44) - (6,50)
+  0x0022  call        r4 2 0                        (6,35) - (6,43)
+  0x0023  call        r3 0 0                        (6,28) - (6,34)
+  0x0024  call        r2 0 0                        (6,16) - (6,27)
+  0x0025  call        r1 0 0                        (6,8) - (6,9)
+  0x0026  call        r0 0 2                        (6,1) - (6,7)
+  0x0027  getglobal   r0 "assert"                   (7,1) - (7,7)
+  0x0028  getglobal   r1 "f"                        (7,8) - (7,9)
+  0x0029  self        r1 r1 "close"                 (7,8) - (7,9)
+  0x002A  call        r1 1 0                        (7,8) - (7,9)
+  0x002B  call        r0 0 2                        (7,1) - (7,7)
+  0x002C  return      r0 1                          (8,1) - (8,1)
+end
+
+Test\printf.lua
+function <chunk>( ... )
+  printf = function printf
+  printf( "Hello %s from %s on %s\n", ( os[ "getenv" ]( "USER" ) or "there" ), _VERSION, values os[ "date" ]() )
+  return nil
+end
+
+function printf( ... )
+  io[ "write" ]( values string[ "format" ]( values ... ) )
+  return nil
+end
+
+function <chunk>( ... )
+ -- 5 registers, 8 constants
+  0x0000  closure     r0 function x33C0D9D          (3,1) - (5,4)
+  0x0001  setglobal   r0 "printf"                   (3,10) - (3,16)
+  0x0002  getglobal   r0 "printf"                   (7,1) - (7,7)
+  0x0003  loadk       r1 "Hello %s from %s on %s\n"  (7,8) - (7,34)
+  0x0004  getglobal   r2 "os"                       (7,35) - (7,37)
+  0x0005  gettable    r2 r2 "getenv"                (7,35) - (7,44)
+  0x0006  loadk       r3 "USER"                     (7,44) - (7,50)
+  0x0007  call        r2 2 2                        (7,35) - (7,44)
+  0x0008  testset     r2 r2 true                    (7,35) - (7,61)
+  0x0009  jmp         0x000B                        (7,35) - (7,61)
+  0x000A  loadk       r2 "there"                    (7,54) - (7,61)
+  0x000B  getglobal   r3 "_VERSION"                 (7,62) - (7,70)
+  0x000C  getglobal   r4 "os"                       (7,71) - (7,73)
+  0x000D  gettable    r4 r4 "date"                  (7,71) - (7,78)
+  0x000E  call        r4 1 0                        (7,71) - (7,78)
+  0x000F  call        r0 0 2                        (7,1) - (7,7)
+  0x0010  return      r0 1                          (8,1) - (8,1)
+end
+
+function printf( ... )
+ -- 2 registers, 4 constants
+  0x0000  getglobal   r0 "io"                       (4,2) - (4,4)
+  0x0001  gettable    r0 r0 "write"                 (4,2) - (4,10)
+  0x0002  getglobal   r1 "string"                   (4,11) - (4,17)
+  0x0003  gettable    r1 r1 "format"                (4,11) - (4,24)
+  0x0004  vararg      r2 0                          (4,25) - (4,28)
+  0x0005  call        r1 0 0                        (4,11) - (4,24)
+  0x0006  call        r0 0 2                        (4,2) - (4,10)
+  0x0007  return      r0 1                          (5,1) - (5,4)
+end
+
+Test\readonly.lua
+function <chunk>( ... )
+  -- local f, g, G
+  -- local f, g, G
+  local f = function x33C0D9D
+  local g = {
+  }
+  local G = getfenv()
+  setmetatable( g, {
+    [ "__index" ] = G;
+    [ "__newindex" ] = f;
+  } )
+  setfenv( 1, g )
+  rawset( g, "x", 3 )
+  x = 2
+  y = 1
+  return nil
+end
+
+function x33C0D9D( t, i )
+  error( concat "cannot redefine global variable `" .. i .. "'", 2 )
+  return nil
+end
+
+function <chunk>( ... )
+ -- 7 registers, 11 constants
+  -- local f, g, G
+  0x0000  closure     f function x1E6FA8E           (3,9) - (3,80)        --> f
+  0x0001  newtable    r2 0 0                        (4,9) - (4,11)        --> g
+  0x0002  move        g r2                          (4,9) - (4,11)
+  0x0003  getglobal   r3 "getfenv"                  (5,9) - (5,16)        --> G
+  0x0004  call        r3 1 2                        (5,9) - (5,16)
+  0x0005  move        G r3                          (5,9) - (5,18)
+  0x0006  getglobal   r3 "setmetatable"             (6,1) - (6,13)
+  0x0007  move        r4 g                          (6,14) - (6,15)
+  0x0008  newtable    r5 0 2                        (6,16) - (6,40)
+  0x0009  settable    r5 "__index" r2               (6,16) - (6,40)
+  0x000A  settable    r5 "__newindex" r0            (6,16) - (6,40)
+  0x000B  call        r3 3 2                        (6,1) - (6,13)
+  0x000C  getglobal   r3 "setfenv"                  (7,1) - (7,8)
+  0x000D  loadk       r4 #1                         (7,9) - (7,10)
+  0x000E  move        r5 g                          (7,11) - (7,12)
+  0x000F  call        r3 3 2                        (7,1) - (7,8)
+  0x0010  getglobal   r3 "rawset"                   (10,1) - (10,7)
+  0x0011  move        r4 g                          (10,8) - (10,9)
+  0x0012  loadk       r5 "x"                        (10,10) - (10,13)
+  0x0013  loadk       r6 #3                         (10,14) - (10,15)
+  0x0014  call        r3 4 2                        (10,1) - (10,7)
+  0x0015  loadk       r3 #2                         (11,3) - (11,4)
+  0x0016  setglobal   r3 "x"                        (11,1) - (11,4)
+  0x0017  loadk       r3 #1                         (12,3) - (12,4)
+  0x0018  setglobal   r3 "y"                        (12,1) - (12,4)
+  0x0019  return      f 1                           (13,1) - (13,1)       <-- f, g, G
+end
+
+function x1E6FA8E( t, i )
+ -- 6 registers, 4 constants
+  0x0000  getglobal   r2 "error"                    (3,24) - (3,29)       --> t, i
+  0x0001  loadk       r3 "cannot redefine global variable `"  (3,30) - (3,65)
+  0x0002  move        r4 i                          (3,67) - (3,68)
+  0x0003  loadk       r5 "'"                        (3,70) - (3,73)
+  0x0004  concat      r3 r3 r5                      (3,30) - (3,73)
+  0x0005  loadk       r4 #2                         (3,74) - (3,75)
+  0x0006  call        r2 3 2                        (3,24) - (3,29)
+  0x0007  return      t 1                           (3,77) - (3,80)       <-- t, i
+end
+
+Test\sieve.lua
+function <chunk>( ... )
+  -- label whileBreak, whileContinue, ifClause
+  -- local n
+  gen = function gen
+  filter = function filter
+  N = ( N or 1000 )
+  x = gen( N )
+whileContinue:
+  bfalse 1 whileBreak
+  do -- while
+    -- local n
+    local n = x()
+    bfalse ( n == nil ) ifClause
+    do -- if
+      b whileBreak
+    end
+ifClause:
+    print( n )
+    x = filter( n, x )
+  end
+  b whileContinue
+whileBreak:
+  return nil
+end
+
+function gen( n )
+  -- multiple return
+  return values coroutine[ "wrap" ]( function x33C0D9D )
+end
+
+function x33C0D9D()
+  -- upval n
+  -- local (for index), (for limit), (for step), i
+  do -- for
+    -- local (for index), (for limit), (for step)
+    local (for index) = 2
+    local (for limit) = n
+    local (for step) = 1
+    for i : (for index), (for limit), (for step) : forBreak, forContinue
+      -- local i
+      coroutine[ "yield" ]( i )
+    end
+  end
+  return nil
+end
+
+function filter( p, g )
+  -- multiple return
+  return values coroutine[ "wrap" ]( function x11C7A8C )
+end
+
+function x11C7A8C()
+  -- label whileBreak, whileContinue, ifClause, ifClause
+  -- upval g, p
+  -- local n
+whileContinue:
+  bfalse 1 whileBreak
+  do -- while
+    -- local n
+    local n = g()
+    bfalse ( n == nil ) ifClause
+    do -- if
+      return nil
+    end
+ifClause:
+    bfalse ( math[ "mod" ]( n, p ) != 0 ) ifClause
+    do -- if
+      coroutine[ "yield" ]( n )
+    end
+ifClause:
+  end
+  b whileContinue
+whileBreak:
+  return nil
+end
+
+function <chunk>( ... )
+ -- 4 registers, 8 constants
+  -- local n
+  0x0000  closure     r0 function x34F5582          (5,1) - (9,4)
+  0x0001  setglobal   r0 "gen"                      (5,10) - (5,13)
+  0x0002  closure     r0 function x1CA0192          (12,1) - (20,4)
+  0x0003  setglobal   r0 "filter"                   (12,10) - (12,16)
+  0x0004  getglobal   r0 "N"                        (22,3) - (22,4)
+  0x0005  testset     r0 r0 true                    (22,3) - (22,12)
+  0x0006  jmp         0x0008                        (22,3) - (22,12)
+  0x0007  loadk       r0 #1000                      (22,8) - (22,12)
+  0x0008  setglobal   r0 "N"                        (22,1) - (22,12)
+  0x0009  getglobal   r0 "gen"                      (23,5) - (23,8)
+  0x000A  getglobal   r1 "N"                        (23,9) - (23,10)
+  0x000B  call        r0 2 2                        (23,5) - (23,8)
+  0x000C  setglobal   r0 "x"                        (23,1) - (23,11)
+  0x000D  loadk       r0 #1                         (24,7) - (24,8)
+  0x000E  test        r0 false                      (24,7) - (24,8)
+  0x000F  jmp         0x001F                        (24,7) - (24,8)
+  0x0010  getglobal   r1 "x"                        (25,13) - (25,14)     --> n
+  0x0011  call        r1 1 2                        (25,13) - (25,14)
+  0x0012  move        n r1                          (25,13) - (25,16)
+  0x0013  eq          true r0 #                     (26,6) - (26,14)
+  0x0014  jmp         0x0016                        (26,6) - (26,14)
+  0x0015  jmp         0x001F                        (26,20) - (26,25)
+  0x0016  getglobal   r1 "print"                    (27,3) - (27,8)
+  0x0017  move        r2 n                          (27,9) - (27,10)
+  0x0018  call        r1 2 2                        (27,3) - (27,8)
+  0x0019  getglobal   r1 "filter"                   (28,7) - (28,13)
+  0x001A  move        r2 n                          (28,14) - (28,15)
+  0x001B  getglobal   r3 "x"                        (28,17) - (28,18)
+  0x001C  call        r1 3 2                        (28,7) - (28,13)
+  0x001D  setglobal   r1 "x"                        (28,3) - (28,19)      <-- n
+  0x001E  jmp         0x000D                        (29,1) - (29,4)
+  0x001F  return      r0 1                          (30,1) - (30,1)
+end
+
+function gen( n )
+ -- 3 registers, 2 constants
+  0x0000  getglobal   r1 "coroutine"                (6,10) - (6,19)       --> n
+  0x0001  gettable    r1 r1 "wrap"                  (6,10) - (6,24)
+  0x0002  closure     r2 function x1A0E24           (6,25) - (8,6)
+              local   0 n 
+  0x0004  call        r1 2 0                        (6,10) - (6,24)
+  0x0005  return      r1 0                          (6,3) - (8,7)         <-- n
+end
+
+function x1A0E24()
+ -- 6 registers, 4 constants
+  -- upval n
+  -- local (for index), (for limit), (for step), i
+  0x0000  loadk       (for index) #2                (7,11) - (7,12)       --> (for index)
+  0x0001  getupval    (for limit) upval n           (7,13) - (7,14)       --> (for limit)
+  0x0002  loadk       (for step) #1                 (7,5) - (7,17)        --> (for step)
+  0x0003  forprep     (for index) 0x0008            (7,15) - (7,40)
+  0x0004  getglobal   r4 "coroutine"                (7,18) - (7,27)       --> i
+  0x0005  gettable    r4 r4 "yield"                 (7,18) - (7,33)
+  0x0006  move        r5 i                          (7,34) - (7,35)
+  0x0007  call        r4 2 2                        (7,18) - (7,33)       <-- i
+  0x0008  forloop     (for index) 0x0004            (7,15) - (7,40)       <-- (for index), (for limit), (for step)
+  0x0009  return      (for index) 1                 (8,3) - (8,6)
+end
+
+function filter( p, g )
+ -- 4 registers, 2 constants
+  0x0000  getglobal   r2 "coroutine"                (13,10) - (13,19)     --> p, g
+  0x0001  gettable    r2 r2 "wrap"                  (13,10) - (13,24)
+  0x0002  closure     r3 function xEA7F4A           (13,25) - (19,6)
+              local   0 g 
+              local   1 p 
+  0x0005  call        r2 2 0                        (13,10) - (13,24)
+  0x0006  return      r2 0                          (13,3) - (19,7)       <-- p, g
+end
+
+function xEA7F4A()
+ -- 4 registers, 7 constants
+  -- upval g, p
+  -- local n
+  0x0000  loadk       r0 #1                         (14,11) - (14,12)
+  0x0001  test        r0 false                      (14,11) - (14,12)
+  0x0002  jmp         0x0015                        (14,11) - (14,12)
+  0x0003  getupval    r1 upval g                    (15,17) - (15,18)     --> n
+  0x0004  call        r1 1 2                        (15,17) - (15,18)
+  0x0005  move        n r1                          (15,17) - (15,20)
+  0x0006  eq          true r0 #                     (16,10) - (16,18)
+  0x0007  jmp         0x0009                        (16,10) - (16,18)
+  0x0008  return      n 1                           (16,24) - (16,30)
+  0x0009  getglobal   r1 "math"                     (17,10) - (17,14)
+  0x000A  gettable    r1 r1 "mod"                   (17,10) - (17,18)
+  0x000B  move        r2 n                          (17,19) - (17,20)
+  0x000C  getupval    r3 upval p                    (17,22) - (17,23)
+  0x000D  call        r1 3 2                        (17,10) - (17,18)
+  0x000E  eq          true r1 #0                    (17,10) - (17,29)
+  0x000F  jmp         0x0014                        (17,10) - (17,29)
+  0x0010  getglobal   r1 "coroutine"                (17,35) - (17,44)
+  0x0011  gettable    r1 r1 "yield"                 (17,35) - (17,50)
+  0x0012  move        r2 n                          (17,51) - (17,52)
+  0x0013  call        r1 2 2                        (17,35) - (17,50)     <-- n
+  0x0014  jmp         0x0000                        (18,5) - (18,8)
+  0x0015  return      r0 1                          (19,3) - (19,6)
+end
+
+Test\sort.lua
+function <chunk>( ... )
+  qsort = function qsort
+  selectionsort = function selectionsort
+  show = function show
+  testsorts = function testsorts
+  x = {
+    "Jan";
+    "Feb";
+    "Mar";
+    "Apr";
+    "May";
+    "Jun";
+    "Jul";
+    "Aug";
+    "Sep";
+    "Oct";
+    "Nov";
+    "Dec";
+  }
+  testsorts( x )
+  return nil
+end
+
+function qsort( x, l, u, f )
+  -- label ifClause, whileBreak, whileContinue, ifClause
+  -- local m, t, i
+  bfalse ( l < u ) ifClause
+  do -- if
+    -- local m, t, i
+    local m = ( ( math[ "random" ]( ( u - ( l - 1 ) ) ) + l ) - 1 )
+    x[ l ], x[ m ] = x[ m ], x[ l ]
+    local t = x[ l ]
+    m = l
+    local i = ( l + 1 )
+whileContinue:
+    bfalse ( i <= u ) whileBreak
+    do -- while
+      bfalse f( x[ i ], t ) ifClause
+      do -- if
+        m = ( m + 1 )
+        x[ m ], x[ i ] = x[ i ], x[ m ]
+      end
+ifClause:
+      i = ( i + 1 )
+    end
+    b whileContinue
+whileBreak:
+    x[ l ], x[ m ] = x[ m ], x[ l ]
+    qsort( x, l, ( m - 1 ), f )
+    qsort( x, ( m + 1 ), u, f )
+  end
+ifClause:
+  return nil
+end
+
+function selectionsort( x, n, f )
+  -- label whileBreak, whileContinue, whileBreak, whileContinue, ifClause
+  -- local i, m, j
+  -- local i
+  local i = 1
+whileContinue:
+  bfalse ( i <= n ) whileBreak
+  do -- while
+    -- local m, j
+    local m = i
+    local j = ( i + 1 )
+whileContinue:
+    bfalse ( j <= n ) whileBreak
+    do -- while
+      bfalse f( x[ j ], x[ m ] ) ifClause
+      do -- if
+        m = j
+      end
+ifClause:
+      j = ( j + 1 )
+    end
+    b whileContinue
+whileBreak:
+    x[ i ], x[ m ] = x[ m ], x[ i ]
+    i = ( i + 1 )
+  end
+  b whileContinue
+whileBreak:
+  return nil
+end
+
+function show( m, x )
+  -- label whileBreak, whileContinue, ifClause
+  -- local i
+  -- local i
+  io[ "write" ]( m, "\n	" )
+  local i = 1
+whileContinue:
+  bfalse x[ i ] whileBreak
+  do -- while
+    io[ "write" ]( x[ i ] )
+    i = ( i + 1 )
+    bfalse x[ i ] ifClause
+    do -- if
+      io[ "write" ]( "," )
+    end
+ifClause:
+  end
+  b whileContinue
+whileBreak:
+  io[ "write" ]( "\n" )
+  return nil
+end
+
+function testsorts( x )
+  -- label whileBreak, whileContinue
+  -- local n
+  -- local n
+  local n = 1
+whileContinue:
+  bfalse x[ n ] whileBreak
+  do -- while
+    n = ( n + 1 )
+  end
+  b whileContinue
+whileBreak:
+  n = ( n - 1 )
+  show( "original", x )
+  qsort( x, 1, n, function x33C0D9D )
+  show( "after quicksort", x )
+  selectionsort( x, n, function x11C7A8C )
+  show( "after reverse selection sort", x )
+  qsort( x, 1, n, function x2004EEE )
+  show( "after quicksort again", x )
+  return nil
+end
+
+function x33C0D9D( x, y )
+  return ( x < y )
+end
+
+function x11C7A8C( x, y )
+  return ( x > y )
+end
+
+function x2004EEE( x, y )
+  return ( x < y )
+end
+
+function <chunk>( ... )
+ -- 13 registers, 17 constants
+  0x0000  closure     r0 function x3E2F22E          (5,1) - (25,4)
+  0x0001  setglobal   r0 "qsort"                    (5,10) - (5,15)
+  0x0002  closure     r0 function x2FA83A4          (27,1) - (38,4)
+  0x0003  setglobal   r0 "selectionsort"            (27,10) - (27,23)
+  0x0004  closure     r0 function x2CEA0CA          (40,1) - (49,4)
+  0x0005  setglobal   r0 "show"                     (40,10) - (40,14)
+  0x0006  closure     r0 function x143A722          (51,1) - (61,4)
+  0x0007  setglobal   r0 "testsorts"                (51,10) - (51,19)
+  0x0008  newtable    r0 12 0                       (64,3) - (64,76)
+  0x0009  loadk       r1 "Jan"                      (64,4) - (64,9)
+  0x000A  loadk       r1 "Feb"                      (64,10) - (64,15)
+  0x000B  loadk       r1 "Mar"                      (64,16) - (64,21)
+  0x000C  loadk       r1 "Apr"                      (64,22) - (64,27)
+  0x000D  loadk       r1 "May"                      (64,28) - (64,33)
+  0x000E  loadk       r1 "Jun"                      (64,34) - (64,39)
+  0x000F  loadk       r1 "Jul"                      (64,40) - (64,45)
+  0x0010  loadk       r1 "Aug"                      (64,46) - (64,51)
+  0x0011  loadk       r1 "Sep"                      (64,52) - (64,57)
+  0x0012  loadk       r1 "Oct"                      (64,58) - (64,63)
+  0x0013  loadk       r1 "Nov"                      (64,64) - (64,69)
+  0x0014  loadk       r1 "Dec"                      (64,70) - (64,75)
+  0x0015  setlist     r0 12 1                       (64,3) - (64,76)
+  0x0016  setglobal   r0 "x"                        (64,1) - (64,76)
+  0x0017  getglobal   r0 "testsorts"                (66,1) - (66,10)
+  0x0018  getglobal   r1 "x"                        (66,11) - (66,12)
+  0x0019  call        r0 2 2                        (66,1) - (66,10)
+  0x001A  return      r0 1                          (67,1) - (67,1)
+end
+
+function qsort( x, l, u, f )
+ -- 13 registers, 4 constants
+  -- local m, t, i
+  0x0000  lt          true r1 r2                    (6,5) - (6,8)         --> x, l, u, f
+  0x0001  jmp         0x002F                        (6,5) - (6,8)
+  0x0002  getglobal   r5 "math"                     (7,11) - (7,15)       --> m
+  0x0003  gettable    r5 r5 "random"                (7,11) - (7,22)
+  0x0004  sub         r6 r1 #1                      (7,25) - (7,30)
+  0x0005  sub         r6 r2 r6                      (7,23) - (7,30)
+  0x0006  call        r5 2 2                        (7,11) - (7,22)
+  0x0007  add         r5 r5 r1                      (7,11) - (7,33)
+  0x0008  sub         m r5 #1                       (7,11) - (7,35)
+  0x0009  gettable    r9 x r4                       (8,13) - (8,17)
+  0x000A  gettable    r10 x r1                      (8,18) - (8,22)
+  0x000B  settable    x r1 r9                       (8,3) - (8,22)
+  0x000C  settable    x r4 r10                      (8,3) - (8,22)
+  0x000D  gettable    t x r1                        (9,11) - (9,15)       --> t
+  0x000E  move        m l                           (10,5) - (10,6)
+  0x000F  add         i r1 #1                       (11,11) - (11,14)     --> i
+  0x0010  le          true r6 r2                    (12,9) - (12,13)
+  0x0011  jmp         0x001F                        (12,9) - (12,13)
+  0x0012  move        r7 f                          (14,8) - (14,9)
+  0x0013  gettable    r8 x r6                       (14,10) - (14,14)
+  0x0014  move        r9 t                          (14,15) - (14,16)
+  0x0015  call        r7 3 2                        (14,8) - (14,9)
+  0x0016  test        r7 false                      (14,8) - (14,17)
+  0x0017  jmp         0x001D                        (14,8) - (14,17)
+  0x0018  add         m r4 #1                       (15,9) - (15,12)
+  0x0019  gettable    r11 x r6                      (16,17) - (16,21)
+  0x001A  gettable    r12 x r4                      (16,22) - (16,26)
+  0x001B  settable    x r4 r11                      (16,7) - (16,26)
+  0x001C  settable    x r6 r12                      (16,7) - (16,26)
+  0x001D  add         i r6 #1                       (18,7) - (18,10)
+  0x001E  jmp         0x0010                        (19,3) - (19,6)
+  0x001F  gettable    r11 x r4                      (20,13) - (20,17)
+  0x0020  gettable    r12 x r1                      (20,18) - (20,22)
+  0x0021  settable    x r1 r11                      (20,3) - (20,22)
+  0x0022  settable    x r4 r12                      (20,3) - (20,22)
+  0x0023  getglobal   r7 "qsort"                    (22,3) - (22,8)
+  0x0024  move        r8 x                          (22,9) - (22,10)
+  0x0025  move        r9 l                          (22,11) - (22,12)
+  0x0026  sub         r10 r4 #1                     (22,13) - (22,16)
+  0x0027  move        r11 f                         (22,17) - (22,18)
+  0x0028  call        r7 5 2                        (22,3) - (22,8)
+  0x0029  getglobal   r7 "qsort"                    (23,3) - (23,8)
+  0x002A  move        r8 x                          (23,9) - (23,10)
+  0x002B  add         r9 r4 #1                      (23,11) - (23,14)
+  0x002C  move        r10 u                         (23,15) - (23,16)
+  0x002D  move        r11 f                         (23,17) - (23,18)
+  0x002E  call        r7 5 2                        (23,3) - (23,8)       <-- m, t, i
+  0x002F  return      x 1                           (25,1) - (25,4)       <-- x, l, u, f
+end
+
+function selectionsort( x, n, f )
+ -- 12 registers, 1 constants
+  -- local i, m, j
+  0x0000  loadk       i #1                          (28,10) - (28,11)     --> x, n, f, i
+  0x0001  le          true r3 r1                    (29,8) - (29,12)
+  0x0002  jmp         0x0016                        (29,8) - (29,12)
+  0x0003  move        m i                           (30,13) - (30,14)     --> m
+  0x0004  add         j r3 #1                       (30,15) - (30,18)     --> j
+  0x0005  le          true r5 r1                    (31,9) - (31,13)
+  0x0006  jmp         0x0010                        (31,9) - (31,13)
+  0x0007  move        r6 f                          (32,7) - (32,8)
+  0x0008  gettable    r7 x r5                       (32,9) - (32,13)
+  0x0009  gettable    r8 x r4                       (32,14) - (32,18)
+  0x000A  call        r6 3 2                        (32,7) - (32,8)
+  0x000B  test        r6 false                      (32,7) - (32,19)
+  0x000C  jmp         0x000E                        (32,7) - (32,19)
+  0x000D  move        m j                           (32,27) - (32,28)
+  0x000E  add         j r5 #1                       (33,6) - (33,9)
+  0x000F  jmp         0x0005                        (34,3) - (34,6)
+  0x0010  gettable    r10 x r4                      (35,12) - (35,16)
+  0x0011  gettable    r11 x r3                      (35,17) - (35,21)
+  0x0012  settable    x r3 r10                      (35,2) - (35,21)
+  0x0013  settable    x r4 r11                      (35,2) - (35,21)
+  0x0014  add         i r3 #1                       (36,4) - (36,7)       <-- m, j
+  0x0015  jmp         0x0001                        (37,2) - (37,5)
+  0x0016  return      x 1                           (38,1) - (38,4)       <-- x, n, f, i
+end
+
+function show( m, x )
+ -- 5 registers, 6 constants
+  -- local i
+  0x0000  getglobal   r2 "io"                       (41,2) - (41,4)       --> m, x
+  0x0001  gettable    r2 r2 "write"                 (41,2) - (41,10)
+  0x0002  move        r3 m                          (41,11) - (41,12)
+  0x0003  loadk       r4 "\n	"                      (41,13) - (41,19)
+  0x0004  call        r2 3 2                        (41,2) - (41,10)
+  0x0005  loadk       i #1                          (42,10) - (42,11)     --> i
+  0x0006  gettable    r3 x r2                       (43,8) - (43,12)
+  0x0007  test        r3 false                      (43,8) - (43,12)
+  0x0008  jmp         0x0016                        (43,8) - (43,12)
+  0x0009  getglobal   r3 "io"                       (44,3) - (44,5)
+  0x000A  gettable    r3 r3 "write"                 (44,3) - (44,11)
+  0x000B  gettable    r4 x r2                       (44,12) - (44,16)
+  0x000C  call        r3 2 2                        (44,3) - (44,11)
+  0x000D  add         i r2 #1                       (45,5) - (45,8)
+  0x000E  gettable    r3 x r2                       (46,6) - (46,10)
+  0x000F  test        r3 false                      (46,6) - (46,10)
+  0x0010  jmp         0x0015                        (46,6) - (46,10)
+  0x0011  getglobal   r3 "io"                       (46,16) - (46,18)
+  0x0012  gettable    r3 r3 "write"                 (46,16) - (46,24)
+  0x0013  loadk       r4 ","                        (46,25) - (46,28)
+  0x0014  call        r3 2 2                        (46,16) - (46,24)
+  0x0015  jmp         0x0006                        (47,2) - (47,5)
+  0x0016  getglobal   r3 "io"                       (48,2) - (48,4)
+  0x0017  gettable    r3 r3 "write"                 (48,2) - (48,10)
+  0x0018  loadk       r4 "\n"                       (48,11) - (48,15)
+  0x0019  call        r3 2 2                        (48,2) - (48,10)
+  0x001A  return      m 1                           (49,1) - (49,4)       <-- m, x, i
+end
+
+function testsorts( x )
+ -- 7 registers, 8 constants
+  -- local n
+  0x0000  loadk       n #1                          (52,10) - (52,11)     --> x, n
+  0x0001  gettable    r2 x r1                       (53,8) - (53,12)
+  0x0002  test        r2 false                      (53,8) - (53,12)
+  0x0003  jmp         0x0006                        (53,8) - (53,12)
+  0x0004  add         n r1 #1                       (53,18) - (53,21)
+  0x0005  jmp         0x0001                        (53,22) - (53,25)
+  0x0006  sub         n r1 #1                       (53,29) - (53,32)
+  0x0007  getglobal   r2 "show"                     (54,2) - (54,6)
+  0x0008  loadk       r3 "original"                 (54,7) - (54,17)
+  0x0009  move        r4 x                          (54,18) - (54,19)
+  0x000A  call        r2 3 2                        (54,2) - (54,6)
+  0x000B  getglobal   r2 "qsort"                    (55,2) - (55,7)
+  0x000C  move        r3 x                          (55,8) - (55,9)
+  0x000D  loadk       r4 #1                         (55,10) - (55,11)
+  0x000E  move        r5 n                          (55,12) - (55,13)
+  0x000F  closure     r6 function x360E033          (55,14) - (55,43)
+  0x0010  call        r2 5 2                        (55,2) - (55,7)
+  0x0011  getglobal   r2 "show"                     (56,2) - (56,6)
+  0x0012  loadk       r3 "after quicksort"          (56,7) - (56,24)
+  0x0013  move        r4 x                          (56,25) - (56,26)
+  0x0014  call        r2 3 2                        (56,2) - (56,6)
+  0x0015  getglobal   r2 "selectionsort"            (57,2) - (57,15)
+  0x0016  move        r3 x                          (57,16) - (57,17)
+  0x0017  move        r4 n                          (57,18) - (57,19)
+  0x0018  closure     r5 function x267E1D0          (57,20) - (57,49)
+  0x0019  call        r2 4 2                        (57,2) - (57,15)
+  0x001A  getglobal   r2 "show"                     (58,2) - (58,6)
+  0x001B  loadk       r3 "after reverse selection sort"  (58,7) - (58,37)
+  0x001C  move        r4 x                          (58,38) - (58,39)
+  0x001D  call        r2 3 2                        (58,2) - (58,6)
+  0x001E  getglobal   r2 "qsort"                    (59,2) - (59,7)
+  0x001F  move        r3 x                          (59,8) - (59,9)
+  0x0020  loadk       r4 #1                         (59,10) - (59,11)
+  0x0021  move        r5 n                          (59,12) - (59,13)
+  0x0022  closure     r6 function x1A6F050          (59,14) - (59,43)
+  0x0023  call        r2 5 2                        (59,2) - (59,7)
+  0x0024  getglobal   r2 "show"                     (60,2) - (60,6)
+  0x0025  loadk       r3 "after quicksort again"    (60,7) - (60,30)
+  0x0026  move        r4 x                          (60,31) - (60,32)
+  0x0027  call        r2 3 2                        (60,2) - (60,6)
+  0x0028  return      x 1                           (61,1) - (61,4)       <-- x, n
+end
+
+function x360E033( x, y )
+ -- 3 registers, 0 constants
+  0x0000  lt          true r0 r1                    (55,36) - (55,39)     --> x, y
+  0x0001  jmp         0x0003                        (55,36) - (55,39)
+  0x0002  loadbool    r2 false                      (55,36) - (55,39)
+  0x0003  loadbool    r2 true                       (55,36) - (55,39)
+  0x0004  return      r2 2                          (55,29) - (55,39)     <-- x, y
+end
+
+function x267E1D0( x, y )
+ -- 3 registers, 0 constants
+  0x0000  le          false r0 r1                   (57,42) - (57,45)     --> x, y
+  0x0001  jmp         0x0003                        (57,42) - (57,45)
+  0x0002  loadbool    r2 false                      (57,42) - (57,45)
+  0x0003  loadbool    r2 true                       (57,42) - (57,45)
+  0x0004  return      r2 2                          (57,35) - (57,45)     <-- x, y
+end
+
+function x1A6F050( x, y )
+ -- 3 registers, 0 constants
+  0x0000  lt          true r0 r1                    (59,36) - (59,39)     --> x, y
+  0x0001  jmp         0x0003                        (59,36) - (59,39)
+  0x0002  loadbool    r2 false                      (59,36) - (59,39)
+  0x0003  loadbool    r2 true                       (59,36) - (59,39)
+  0x0004  return      r2 2                          (59,29) - (59,39)     <-- x, y
+end
+
+Test\table.lua
+function <chunk>( ... )
+  -- label whileBreak, whileContinue, ifClause, ifClause
+  -- local A, l, _, _, a, b
+  -- local A
+  local A = nil
+whileContinue:
+  bfalse 1 whileBreak
+  do -- while
+    -- local l, _, _, a, b
+    local l = io[ "read" ]()
+    bfalse ( l == nil ) ifClause
+    do -- if
+      b whileBreak
+    end
+ifClause:
+    local _, _, a, b = values string[ "find" ]( l, "\"?([_%w]+)\"?%s*(.*)$" )
+    bfalse ( a != A ) ifClause
+    do -- if
+      A = a
+      io[ "write" ]( "\n", a, ":" )
+    end
+ifClause:
+    io[ "write" ]( " ", b )
+  end
+  b whileContinue
+whileBreak:
+  io[ "write" ]( "\n" )
+  return nil
+end
+
+function <chunk>( ... )
+ -- 10 registers, 11 constants
+  -- local A, l, _, _, a, b
+  0x0000  loadk       r1 #1                         (5,7) - (5,8)         --> A
+  0x0001  test        r1 false                      (5,7) - (5,8)
+  0x0002  jmp         0x001E                        (5,7) - (5,8)
+  0x0003  getglobal   r2 "io"                       (6,10) - (6,12)       --> l
+  0x0004  gettable    r2 r2 "read"                  (6,10) - (6,17)
+  0x0005  call        r2 1 2                        (6,10) - (6,17)
+  0x0006  move        l r2                          (6,10) - (6,19)
+  0x0007  eq          true r1 #                     (7,5) - (7,11)
+  0x0008  jmp         0x000A                        (7,5) - (7,11)
+  0x0009  jmp         0x001E                        (7,17) - (7,22)
+  0x000A  getglobal   r2 "string"                   (8,16) - (8,22)
+  0x000B  gettable    r2 r2 "find"                  (8,16) - (8,27)
+  0x000C  move        r3 l                          (8,28) - (8,29)
+  0x000D  loadk       r4 ""?([_%w]+)"?%s*(.*)$"     (8,30) - (8,52)
+  0x000E  call        r2 3 5                        (8,16) - (8,27)
+  0x000F  eq          true r4 r0                    (9,5) - (9,9)         --> _, _, a, b
+  0x0010  jmp         0x0018                        (9,5) - (9,9)
+  0x0011  move        A a                           (9,17) - (9,18)
+  0x0012  getglobal   r6 "io"                       (9,19) - (9,21)
+  0x0013  gettable    r6 r6 "write"                 (9,19) - (9,27)
+  0x0014  loadk       r7 "\n"                       (9,28) - (9,32)
+  0x0015  move        r8 a                          (9,33) - (9,34)
+  0x0016  loadk       r9 ":"                        (9,35) - (9,38)
+  0x0017  call        r6 4 2                        (9,19) - (9,27)
+  0x0018  getglobal   r6 "io"                       (10,2) - (10,4)
+  0x0019  gettable    r6 r6 "write"                 (10,2) - (10,10)
+  0x001A  loadk       r7 " "                        (10,11) - (10,14)
+  0x001B  move        r8 b                          (10,15) - (10,16)
+  0x001C  call        r6 3 2                        (10,2) - (10,10)      <-- l, _, _, a, b
+  0x001D  jmp         0x0000                        (11,1) - (11,4)
+  0x001E  getglobal   r1 "io"                       (12,1) - (12,3)
+  0x001F  gettable    r1 r1 "write"                 (12,1) - (12,9)
+  0x0020  loadk       r2 "\n"                       (12,10) - (12,14)
+  0x0021  call        r1 2 2                        (12,1) - (12,9)
+  0x0022  return      A 1                           (13,1) - (13,1)       <-- A
+end
+
+Test\trace-calls.lua
+function <chunk>( ... )
+  -- local level, hook
+  -- local level, hook
+  local level = 0
+  local hook = function hook
+  debug[ "sethook" ]( hook, "cr" )
+  level = 0
+  return nil
+end
+
+function hook( event )
+  -- label ifClause, ifClause, ifEnd, ifClause, ifClause, ifClause, ifEnd, ifEnd, ifClause
+  -- upval level
+  -- local t
+  -- local t
+  local t = debug[ "getinfo" ]( 3 )
+  io[ "write" ]( level, " >>> ", values string[ "rep" ]( " ", level ) )
+  bfalse ( ( t != nil ) and ( t[ "currentline" ] >= 0 ) ) ifClause
+  do -- if
+    io[ "write" ]( t[ "short_src" ], ":", t[ "currentline" ], " " )
+  end
+ifClause:
+  t = debug[ "getinfo" ]( 2 )
+  bfalse ( event == "call" ) ifClause
+  do -- if
+    level = ( level + 1 )
+  end
+  b ifEnd
+ifClause:
+  do -- else
+    level = ( level - 1 )
+    bfalse ( level < 0 ) ifClause
+    do -- if
+      level = 0
+    end
+ifClause:
+  end
+ifEnd:
+  bfalse ( t[ "what" ] == "main" ) ifClause
+  do -- if
+    bfalse ( event == "call" ) ifClause
+    do -- if
+      io[ "write" ]( "begin ", t[ "short_src" ] )
+    end
+    b ifEnd
+ifClause:
+    do -- else
+      io[ "write" ]( "end ", t[ "short_src" ] )
+    end
+ifEnd:
+  end
+  b ifEnd
+ifClause:
+  bfalse ( t[ "what" ] == "Lua" ) ifClause
+  do -- elseif
+    io[ "write" ]( event, " ", ( t[ "name" ] or "(Lua)" ), " <", t[ "linedefined" ], ":", t[ "short_src" ], ">" )
+  end
+  b ifEnd
+ifClause:
+  do -- else
+    io[ "write" ]( event, " ", ( t[ "name" ] or "(C)" ), " [", t[ "what" ], "] " )
+  end
+ifEnd:
+  io[ "write" ]( "\n" )
+  return nil
+end
+
+function <chunk>( ... )
+ -- 5 registers, 4 constants
+  -- local level, hook
+  0x0000  loadk       level #0                      (4,13) - (4,14)       --> level
+  0x0001  closure     hook function x19FD5C7        (6,7) - (29,4)        --> hook
+              local   0 level 
+  0x0003  getglobal   r2 "debug"                    (31,1) - (31,6)
+  0x0004  gettable    r2 r2 "sethook"               (31,1) - (31,14)
+  0x0005  move        r3 hook                       (31,15) - (31,19)
+  0x0006  loadk       r4 "cr"                       (31,20) - (31,24)
+  0x0007  call        r2 3 2                        (31,1) - (31,14)
+  0x0008  loadk       level #0                      (32,7) - (32,8)
+  0x0009  close       level                         (33,1) - (33,1)
+  0x000A  return      level 1                       (33,1) - (33,1)       <-- level, hook
+end
+
+function hook( event )
+ -- 11 registers, 31 constants
+  -- upval level
+  -- local t
+  0x0000  getglobal   r2 "debug"                    (7,10) - (7,15)       --> event, t
+  0x0001  gettable    r2 r2 "getinfo"               (7,10) - (7,23)
+  0x0002  loadk       r3 #3                         (7,24) - (7,25)
+  0x0003  call        r2 2 2                        (7,10) - (7,23)
+  0x0004  move        t r2                          (7,10) - (7,26)
+  0x0005  getglobal   r2 "io"                       (8,2) - (8,4)
+  0x0006  gettable    r2 r2 "write"                 (8,2) - (8,10)
+  0x0007  getupval    r3 upval level                (8,11) - (8,16)
+  0x0008  loadk       r4 " >>> "                    (8,17) - (8,24)
+  0x0009  getglobal   r5 "string"                   (8,25) - (8,31)
+  0x000A  gettable    r5 r5 "rep"                   (8,25) - (8,35)
+  0x000B  loadk       r6 " "                        (8,36) - (8,39)
+  0x000C  getupval    r7 upval level                (8,40) - (8,45)
+  0x000D  call        r5 3 0                        (8,25) - (8,35)
+  0x000E  call        r2 0 2                        (8,2) - (8,10)
+  0x000F  eq          true r1 #                     (9,5) - (9,11)
+  0x0010  jmp         0x001B                        (9,5) - (9,11)
+  0x0011  gettable    r2 t "currentline"            (9,16) - (9,29)
+  0x0012  lt          true r2 #0                    (9,16) - (9,32)
+  0x0013  jmp         0x001B                        (9,16) - (9,32)
+  0x0014  getglobal   r2 "io"                       (9,38) - (9,40)
+  0x0015  gettable    r2 r2 "write"                 (9,38) - (9,46)
+  0x0016  gettable    r3 t "short_src"              (9,47) - (9,58)
+  0x0017  loadk       r4 ":"                        (9,59) - (9,62)
+  0x0018  gettable    r5 t "currentline"            (9,63) - (9,76)
+  0x0019  loadk       r6 " "                        (9,77) - (9,80)
+  0x001A  call        r2 5 2                        (9,38) - (9,46)
+  0x001B  getglobal   r2 "debug"                    (10,4) - (10,9)
+  0x001C  gettable    r2 r2 "getinfo"               (10,4) - (10,17)
+  0x001D  loadk       r3 #2                         (10,18) - (10,19)
+  0x001E  call        r2 2 2                        (10,4) - (10,17)
+  0x001F  move        t r2                          (10,4) - (10,20)
+  0x0020  eq          true r0 "call"                (11,5) - (11,18)
+  0x0021  jmp         0x0026                        (11,5) - (11,18)
+  0x0022  getupval    r2 upval level                (12,9) - (12,14)
+  0x0023  add         r2 r2 #1                      (12,9) - (12,16)
+  0x0024  setupval    r2 upval level                (12,3) - (12,16)
+  0x0025  jmp         0x002E                        (13,2) - (13,6)
+  0x0026  getupval    r2 upval level                (14,9) - (14,14)
+  0x0027  sub         r2 r2 #1                      (14,9) - (14,16)
+  0x0028  setupval    r2 upval level                (14,3) - (14,16)
+  0x0029  getupval    r2 upval level                (14,20) - (14,25)
+  0x002A  lt          true r2 #0                    (14,20) - (14,27)
+  0x002B  jmp         0x002E                        (14,20) - (14,27)
+  0x002C  loadk       r2 #0                         (14,39) - (14,40)
+  0x002D  setupval    r2 upval level                (14,33) - (14,40)
+  0x002E  gettable    r2 t "what"                   (16,5) - (16,11)
+  0x002F  eq          true r2 "main"                (16,5) - (16,19)
+  0x0030  jmp         0x003F                        (16,5) - (16,19)
+  0x0031  eq          true r0 "call"                (17,6) - (17,19)
+  0x0032  jmp         0x0039                        (17,6) - (17,19)
+  0x0033  getglobal   r2 "io"                       (18,4) - (18,6)
+  0x0034  gettable    r2 r2 "write"                 (18,4) - (18,12)
+  0x0035  loadk       r3 "begin "                   (18,13) - (18,21)
+  0x0036  gettable    r4 t "short_src"              (18,22) - (18,33)
+  0x0037  call        r2 3 2                        (18,4) - (18,12)
+  0x0038  jmp         0x003E                        (19,3) - (19,7)
+  0x0039  getglobal   r2 "io"                       (20,4) - (20,6)
+  0x003A  gettable    r2 r2 "write"                 (20,4) - (20,12)
+  0x003B  loadk       r3 "end "                     (20,13) - (20,19)
+  0x003C  gettable    r4 t "short_src"              (20,20) - (20,31)
+  0x003D  call        r2 3 2                        (20,4) - (20,12)
+  0x003E  jmp         0x005D                        (22,2) - (22,8)
+  0x003F  gettable    r2 t "what"                   (22,9) - (22,15)
+  0x0040  eq          true r2 "Lua"                 (22,9) - (22,22)
+  0x0041  jmp         0x0051                        (22,9) - (22,22)
+  0x0042  getglobal   r2 "io"                       (24,3) - (24,5)
+  0x0043  gettable    r2 r2 "write"                 (24,3) - (24,11)
+  0x0044  move        r3 event                      (24,12) - (24,17)
+  0x0045  loadk       r4 " "                        (24,18) - (24,21)
+  0x0046  gettable    r5 t "name"                   (24,22) - (24,28)
+  0x0047  testset     r5 r5 true                    (24,22) - (24,39)
+  0x0048  jmp         0x004A                        (24,22) - (24,39)
+  0x0049  loadk       r5 "(Lua)"                    (24,32) - (24,39)
+  0x004A  loadk       r6 " <"                       (24,40) - (24,44)
+  0x004B  gettable    r7 t "linedefined"            (24,45) - (24,58)
+  0x004C  loadk       r8 ":"                        (24,59) - (24,62)
+  0x004D  gettable    r9 t "short_src"              (24,63) - (24,74)
+  0x004E  loadk       r10 ">"                       (24,75) - (24,78)
+  0x004F  call        r2 9 2                        (24,3) - (24,11)
+  0x0050  jmp         0x005D                        (25,2) - (25,6)
+  0x0051  getglobal   r2 "io"                       (26,2) - (26,4)
+  0x0052  gettable    r2 r2 "write"                 (26,2) - (26,10)
+  0x0053  move        r3 event                      (26,11) - (26,16)
+  0x0054  loadk       r4 " "                        (26,17) - (26,20)
+  0x0055  gettable    r5 t "name"                   (26,21) - (26,27)
+  0x0056  testset     r5 r5 true                    (26,21) - (26,36)
+  0x0057  jmp         0x0059                        (26,21) - (26,36)
+  0x0058  loadk       r5 "(C)"                      (26,31) - (26,36)
+  0x0059  loadk       r6 " ["                       (26,37) - (26,41)
+  0x005A  gettable    r7 t "what"                   (26,42) - (26,48)
+  0x005B  loadk       r8 "] "                       (26,49) - (26,53)
+  0x005C  call        r2 7 2                        (26,2) - (26,10)
+  0x005D  getglobal   r2 "io"                       (28,2) - (28,4)
+  0x005E  gettable    r2 r2 "write"                 (28,2) - (28,10)
+  0x005F  loadk       r3 "\n"                       (28,11) - (28,15)
+  0x0060  call        r2 2 2                        (28,2) - (28,10)
+  0x0061  return      event 1                       (29,1) - (29,4)       <-- event, t
+end
+
+Test\trace-globals.lua
+function <chunk>( ... )
+  -- local _tostring, tostring, log, g, set
+  do -- do
+    -- local _tostring, tostring, log, g, set
+    local _tostring = tostring
+    local tostring = function x33C0D9D
+    local log = function x11C7A8C
+    local g = {
+    }
+    local set = function x2004EEE
+    setmetatable( getfenv(), {
+      [ "__index" ] = g;
+      [ "__newindex" ] = set;
+    } )
+  end
+  a = 1
+  b = 2
+  a = 10
+  b = 20
+  b = nil
+  b = 200
+  print( a, b, c )
+  return nil
+end
+
+function x33C0D9D( a )
+  -- multiple return
+  -- label ifClause, ifEnd
+  -- upval _tostring
+  bfalse ( type( a ) == "string" ) ifClause
+  do -- if
+    return values string[ "format" ]( "%q", a )
+  end
+  b ifEnd
+ifClause:
+  do -- else
+    return values _tostring( a )
+  end
+ifEnd:
+  return nil
+end
+
+function x11C7A8C( name, old, new )
+  -- label ifClause
+  -- upval tostring
+  -- local t, line
+  -- local t, line
+  local t = debug[ "getinfo" ]( 3, "Sl" )
+  local line = t[ "currentline" ]
+  io[ "write" ]( t[ "short_src" ] )
+  bfalse ( line >= 0 ) ifClause
+  do -- if
+    io[ "write" ]( ":", line )
+  end
+ifClause:
+  io[ "write" ]( ": ", name, " is now ", tostring( new ), " (was ", tostring( old ), ")", "\n" )
+  return nil
+end
+
+function x2004EEE( t, name, value )
+  -- upval log, g
+  log( name, g[ name ], value )
+  g[ name ] = value
+  return nil
+end
+
+function <chunk>( ... )
+ -- 8 registers, 15 constants
+  -- local _tostring, tostring, log, g, set
+  0x0000  getglobal   _tostring "tostring"          (5,18) - (5,26)       --> _tostring
+  0x0001  closure     tostring function x9585CB     (6,17) - (12,5)       --> tostring
+              local   0 _tostring 
+  0x0003  closure     log function x141B42A         (14,12) - (20,5)      --> log
+              local   0 tostring 
+  0x0005  newtable    r4 0 0                        (22,10) - (22,12)     --> g
+  0x0006  move        g r4                          (22,10) - (22,12)
+  0x0007  closure     set function x34F5582         (23,12) - (26,5)      --> set
+              local   0 log 
+              local   1 g 
+  0x000A  getglobal   r5 "setmetatable"             (27,2) - (27,14)
+  0x000B  getglobal   r6 "getfenv"                  (27,15) - (27,22)
+  0x000C  call        r6 1 2                        (27,15) - (27,22)
+  0x000D  newtable    r7 0 2                        (27,25) - (27,51)
+  0x000E  settable    r7 "__index" r3               (27,25) - (27,51)
+  0x000F  settable    r7 "__newindex" r4            (27,25) - (27,51)
+  0x0010  call        r5 3 2                        (27,2) - (27,14)
+  0x0011  close       _tostring                     (3,1) - (28,4)        <-- _tostring, tostring, log, g, set
+  0x0012  loadk       _tostring #1                  (32,3) - (32,4)
+  0x0013  setglobal   r0 "a"                        (32,1) - (32,4)
+  0x0014  loadk       r0 #2                         (33,3) - (33,4)
+  0x0015  setglobal   r0 "b"                        (33,1) - (33,4)
+  0x0016  loadk       r0 #10                        (34,3) - (34,5)
+  0x0017  setglobal   r0 "a"                        (34,1) - (34,5)
+  0x0018  loadk       r0 #20                        (35,3) - (35,5)
+  0x0019  setglobal   r0 "b"                        (35,1) - (35,5)
+  0x001A  loadk       r0 #                          (36,3) - (36,6)
+  0x001B  setglobal   r0 "b"                        (36,1) - (36,6)
+  0x001C  loadk       r0 #200                       (37,3) - (37,6)
+  0x001D  setglobal   r0 "b"                        (37,1) - (37,6)
+  0x001E  getglobal   r0 "print"                    (38,1) - (38,6)
+  0x001F  getglobal   r1 "a"                        (38,7) - (38,8)
+  0x0020  getglobal   r2 "b"                        (38,9) - (38,10)
+  0x0021  getglobal   r3 "c"                        (38,11) - (38,12)
+  0x0022  call        r0 4 2                        (38,1) - (38,6)
+  0x0023  return      r0 1                          (39,1) - (39,1)
+end
+
+function x9585CB( a )
+ -- 4 registers, 4 constants
+  -- upval _tostring
+  0x0000  getglobal   r1 "type"                     (7,6) - (7,10)        --> a
+  0x0001  move        r2 a                          (7,11) - (7,12)
+  0x0002  call        r1 2 2                        (7,6) - (7,10)
+  0x0003  eq          true r1 "string"              (7,6) - (7,23)
+  0x0004  jmp         0x000C                        (7,6) - (7,23)
+  0x0005  getglobal   r1 "string"                   (8,11) - (8,17)
+  0x0006  gettable    r1 r1 "format"                (8,11) - (8,24)
+  0x0007  loadk       r2 "%q"                       (8,25) - (8,29)
+  0x0008  move        r3 a                          (8,30) - (8,31)
+  0x0009  call        r1 3 0                        (8,11) - (8,24)
+  0x000A  return      r1 0                          (8,4) - (8,32)
+  0x000B  jmp         0x0010                        (9,3) - (9,7)
+  0x000C  getupval    r1 upval _tostring            (10,11) - (10,20)
+  0x000D  move        r2 a                          (10,21) - (10,22)
+  0x000E  call        r1 2 0                        (10,11) - (10,20)
+  0x000F  return      r1 0                          (10,4) - (10,23)
+  0x0010  return      a 1                           (12,2) - (12,5)       <-- a
+end
+
+function x141B42A( name, old, new )
+ -- 14 registers, 15 constants
+  -- upval tostring
+  -- local t, line
+  0x0000  getglobal   r4 "debug"                    (15,11) - (15,16)     --> name, old, new, t
+  0x0001  gettable    r4 r4 "getinfo"               (15,11) - (15,24)
+  0x0002  loadk       r5 #3                         (15,25) - (15,26)
+  0x0003  loadk       r6 "Sl"                       (15,27) - (15,31)
+  0x0004  call        r4 3 2                        (15,11) - (15,24)
+  0x0005  move        t r4                          (15,11) - (15,32)
+  0x0006  gettable    line t "currentline"          (16,14) - (16,27)     --> line
+  0x0007  getglobal   r5 "io"                       (17,3) - (17,5)
+  0x0008  gettable    r5 r5 "write"                 (17,3) - (17,11)
+  0x0009  gettable    r6 t "short_src"              (17,12) - (17,23)
+  0x000A  call        r5 2 2                        (17,3) - (17,11)
+  0x000B  lt          true r4 #0                    (18,6) - (18,13)
+  0x000C  jmp         0x0012                        (18,6) - (18,13)
+  0x000D  getglobal   r5 "io"                       (18,19) - (18,21)
+  0x000E  gettable    r5 r5 "write"                 (18,19) - (18,27)
+  0x000F  loadk       r6 ":"                        (18,28) - (18,31)
+  0x0010  move        r7 line                       (18,32) - (18,36)
+  0x0011  call        r5 3 2                        (18,19) - (18,27)
+  0x0012  getglobal   r5 "io"                       (19,3) - (19,5)
+  0x0013  gettable    r5 r5 "write"                 (19,3) - (19,11)
+  0x0014  loadk       r6 ": "                       (19,12) - (19,16)
+  0x0015  move        r7 name                       (19,17) - (19,21)
+  0x0016  loadk       r8 " is now "                 (19,22) - (19,32)
+  0x0017  getupval    r9 upval tostring             (19,33) - (19,41)
+  0x0018  move        r10 new                       (19,42) - (19,45)
+  0x0019  call        r9 2 2                        (19,33) - (19,41)
+  0x001A  loadk       r10 " (was "                  (19,47) - (19,55)
+  0x001B  getupval    r11 upval tostring            (19,56) - (19,64)
+  0x001C  move        r12 old                       (19,65) - (19,68)
+  0x001D  call        r11 2 2                       (19,56) - (19,64)
+  0x001E  loadk       r12 ")"                       (19,70) - (19,73)
+  0x001F  loadk       r13 "\n"                      (19,74) - (19,78)
+  0x0020  call        r5 9 2                        (19,3) - (19,11)
+  0x0021  return      name 1                        (20,2) - (20,5)       <-- name, old, new, t, line
+end
+
+function x34F5582( t, name, value )
+ -- 7 registers, 0 constants
+  -- upval log, g
+  0x0000  getupval    r3 upval log                  (24,3) - (24,6)       --> t, name, value
+  0x0001  move        r4 name                       (24,7) - (24,11)
+  0x0002  getupval    r5 upval g                    (24,12) - (24,13)
+  0x0003  gettable    r5 r5 r1                      (24,12) - (24,19)
+  0x0004  move        r6 value                      (24,20) - (24,25)
+  0x0005  call        r3 4 2                        (24,3) - (24,6)
+  0x0006  getupval    r3 upval g                    (25,3) - (25,4)
+  0x0007  settable    r3 r1 r2                      (25,3) - (25,16)
+  0x0008  return      t 1                           (26,2) - (26,5)       <-- t, name, value
+end
+
+Test\xd.lua
+function <chunk>( ... )
+  -- label whileBreak, whileContinue, ifClause
+  -- local offset, s
+  -- local offset
+  local offset = 0
+whileContinue:
+  bfalse True whileBreak
+  do -- while
+    -- local s
+    local s = io[ "read" ]( 16 )
+    bfalse ( s == nil ) ifClause
+    do -- if
+      return nil
+    end
+ifClause:
+    io[ "write" ]( values string[ "format" ]( "%08X  ", offset ) )
+    string[ "gsub" ]( s, "(.)", function x33C0D9D )
+    io[ "write" ]( values string[ "rep" ]( " ", ( 3 * ( 16 - string[ "len" ]( s ) ) ) ) )
+    io[ "write" ]( " ", string[ "gsub" ]( s, "%c", "." ), "\n" )
+    offset = ( offset + 16 )
+  end
+  b whileContinue
+whileBreak:
+  return nil
+end
+
+function x33C0D9D( c )
+  io[ "write" ]( values string[ "format" ]( "%02X ", values string[ "byte" ]( c ) ) )
+  return nil
+end
+
+function <chunk>( ... )
+ -- 8 registers, 19 constants
+  -- local offset, s
+  0x0000  loadk       offset #0                     (4,14) - (4,15)       --> offset
+  0x0001  loadk       r1 #True                      (5,7) - (5,11)
+  0x0002  test        r1 false                      (5,7) - (5,11)
+  0x0003  jmp         0x0034                        (5,7) - (5,11)
+  0x0004  getglobal   r2 "io"                       (6,10) - (6,12)       --> s
+  0x0005  gettable    r2 r2 "read"                  (6,10) - (6,17)
+  0x0006  loadk       r3 #16                        (6,18) - (6,20)
+  0x0007  call        r2 2 2                        (6,10) - (6,17)
+  0x0008  move        s r2                          (6,10) - (6,21)
+  0x0009  eq          true r1 #                     (7,5) - (7,11)
+  0x000A  jmp         0x000C                        (7,5) - (7,11)
+  0x000B  return      offset 1                      (7,17) - (7,23)
+  0x000C  getglobal   r2 "io"                       (8,2) - (8,4)
+  0x000D  gettable    r2 r2 "write"                 (8,2) - (8,10)
+  0x000E  getglobal   r3 "string"                   (8,11) - (8,17)
+  0x000F  gettable    r3 r3 "format"                (8,11) - (8,24)
+  0x0010  loadk       r4 "%08X  "                   (8,25) - (8,33)
+  0x0011  move        r5 offset                     (8,34) - (8,40)
+  0x0012  call        r3 3 0                        (8,11) - (8,24)
+  0x0013  call        r2 0 2                        (8,2) - (8,10)
+  0x0014  getglobal   r2 "string"                   (9,2) - (9,8)
+  0x0015  gettable    r2 r2 "gsub"                  (9,2) - (9,13)
+  0x0016  move        r3 s                          (9,14) - (9,15)
+  0x0017  loadk       r4 "(.)"                      (9,16) - (9,21)
+  0x0018  closure     r5 function x11ECF05          (10,2) - (10,66)
+  0x0019  call        r2 4 2                        (9,2) - (9,13)
+  0x001A  getglobal   r2 "io"                       (11,2) - (11,4)
+  0x001B  gettable    r2 r2 "write"                 (11,2) - (11,10)
+  0x001C  getglobal   r3 "string"                   (11,11) - (11,17)
+  0x001D  gettable    r3 r3 "rep"                   (11,11) - (11,21)
+  0x001E  loadk       r4 " "                        (11,22) - (11,25)
+  0x001F  getglobal   r5 "string"                   (11,32) - (11,38)
+  0x0020  gettable    r5 r5 "len"                   (11,32) - (11,42)
+  0x0021  move        r6 s                          (11,43) - (11,44)
+  0x0022  call        r5 2 2                        (11,32) - (11,42)
+  0x0023  sub         r5 #16 r5                     (11,28) - (11,46)
+  0x0024  mul         r5 #3 r5                      (11,26) - (11,46)
+  0x0025  call        r3 3 0                        (11,11) - (11,21)
+  0x0026  call        r2 0 2                        (11,2) - (11,10)
+  0x0027  getglobal   r2 "io"                       (12,2) - (12,4)
+  0x0028  gettable    r2 r2 "write"                 (12,2) - (12,10)
+  0x0029  loadk       r3 " "                        (12,11) - (12,14)
+  0x002A  getglobal   r4 "string"                   (12,15) - (12,21)
+  0x002B  gettable    r4 r4 "gsub"                  (12,15) - (12,26)
+  0x002C  move        r5 s                          (12,27) - (12,28)
+  0x002D  loadk       r6 "%c"                       (12,29) - (12,33)
+  0x002E  loadk       r7 "."                        (12,34) - (12,37)
+  0x002F  call        r4 4 2                        (12,15) - (12,26)
+  0x0030  loadk       r5 "\n"                       (12,39) - (12,43)
+  0x0031  call        r2 4 2                        (12,2) - (12,10)
+  0x0032  add         offset r0 #16                 (13,9) - (13,18)      <-- s
+  0x0033  jmp         0x0001                        (14,1) - (14,4)
+  0x0034  return      offset 1                      (15,1) - (15,1)       <-- offset
+end
+
+function x11ECF05( c )
+ -- 6 registers, 6 constants
+  0x0000  getglobal   r1 "io"                       (10,15) - (10,17)     --> c
+  0x0001  gettable    r1 r1 "write"                 (10,15) - (10,23)
+  0x0002  getglobal   r2 "string"                   (10,24) - (10,30)
+  0x0003  gettable    r2 r2 "format"                (10,24) - (10,37)
+  0x0004  loadk       r3 "%02X "                    (10,38) - (10,45)
+  0x0005  getglobal   r4 "string"                   (10,46) - (10,52)
+  0x0006  gettable    r4 r4 "byte"                  (10,46) - (10,57)
+  0x0007  move        r5 c                          (10,58) - (10,59)
+  0x0008  call        r4 2 0                        (10,46) - (10,57)
+  0x0009  call        r2 0 0                        (10,24) - (10,37)
+  0x000A  call        r1 0 2                        (10,15) - (10,23)
+  0x000B  return      c 1                           (10,63) - (10,66)     <-- c
+end
+
