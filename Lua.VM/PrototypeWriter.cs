@@ -338,26 +338,7 @@ public static class PrototypeWriter
 		switch ( mode )
 		{
 		case Mode.R:
-			{
-				int index = operand;
-				for ( int debug = 0; debug < prototype.DebugLocals.Length; ++debug )
-				{
-					DebugLocal debugLocal = prototype.DebugLocals[ debug ];
-					if ( ( ip >= debugLocal.StartInstruction ) && ( ip <= debugLocal.EndInstruction ) )
-					{
-						if ( index == 0 )
-						{
-							return String.Format( "{1} ", operand, debugLocal.Name );
-						}
-						else
-						{
-							index -= 1;
-						}
-					}
-				}
-
-				return String.Format( "r{0} ", operand );
-			}
+			return String.Format( "{0} ", RegisterString( prototype, ip, operand ) );
 
 		case Mode.K:
 			return String.Format( "{0} ", ConstantString( prototype, operand ) );
@@ -370,7 +351,7 @@ public static class PrototypeWriter
 			}
 			else
 			{
-				return String.Format( "r{0} ", operand );
+				return String.Format( "{0} ", RegisterString( prototype, ip, operand ) );
 			}
 
 		case Mode.U:
@@ -398,6 +379,30 @@ public static class PrototypeWriter
 
 		return "";
 	}
+
+
+	static string RegisterString( Prototype prototype, int ip, int operand )
+	{
+		int index = operand;
+		for ( int debug = 0; debug < prototype.DebugLocals.Length; ++debug )
+		{
+			DebugLocal debugLocal = prototype.DebugLocals[ debug ];
+			if ( ( ip >= debugLocal.StartInstruction ) && ( ip <= debugLocal.EndInstruction ) )
+			{
+				if ( index == 0 )
+				{
+					return String.Format( "{1} ", operand, debugLocal.Name );
+				}
+				else
+				{
+					index -= 1;
+				}
+			}
+		}
+
+		return String.Format( "r{0} ", operand );
+	}
+
 
 
 	static string ConstantString( Prototype prototype, int index )
