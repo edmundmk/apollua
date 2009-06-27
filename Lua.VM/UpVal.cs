@@ -44,7 +44,9 @@ public class UpVal
 
 	public void Close()
 	{
-		Debug.Assert( stack != null );
+		if ( stack == null )
+			throw new InvalidOperationException();
+
 		value			= stack[ stackindex ];
 		stack			= null;
 		stackindex		= -1;
