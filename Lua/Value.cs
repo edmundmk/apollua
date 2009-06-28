@@ -44,6 +44,26 @@ public abstract class Value
 	}
 
 
+	// Meta handler names.
+
+	static readonly Value handlerAdd		= "__add";
+	static readonly Value handlerSub		= "__sub";
+	static readonly Value handlerMul		= "__mul";
+	static readonly Value handlerDiv		= "__div";
+	static readonly Value handlerIDiv		= "__idiv";
+	static readonly Value handlerMod		= "__mod";
+	static readonly Value handlerPow		= "__pow";
+	static readonly Value handlerConcat		= "__concat";
+	static readonly Value handlerUnm		= "__unm";
+	static readonly Value handlerLen		= "__len";
+	static readonly Value handlerEq			= "__eq";
+	static readonly Value handlerLt			= "__lt";
+	static readonly Value handlerLe			= "__le";
+	static readonly Value handlerIndex		= "__index";
+	static readonly Value handlerNewIndex	= "__newindex";
+	static readonly Value handlerCall		= "__call";
+
+
 
 	// Conversion.
 
@@ -54,21 +74,21 @@ public abstract class Value
 
 	// Binary arithmetic operators.
 
-	public virtual Value Add( Value o )					{ return MetaOperation( this, o, "__add" ); }
-	public virtual Value Subtract( Value o )			{ return MetaOperation( this, o, "__sub" ); }
-	public virtual Value Multiply( Value o )			{ return MetaOperation( this, o, "__mul" ); }
-	public virtual Value Divide( Value o )				{ return MetaOperation( this, o, "__div" ); }
-	public virtual Value IntegerDivide( Value o )		{ return MetaOperation( this, o, "__idiv" ); }
-	public virtual Value Modulus( Value o )				{ return MetaOperation( this, o, "__mod" ); }
-	public virtual Value RaiseToPower( Value o )		{ return MetaOperation( this, o, "__pow" ); }
-	public virtual Value Concatenate( Value o )			{ return MetaOperation( this, o, "__concat" ); }
+	public virtual Value Add( Value o )					{ return MetaOperation( this, o, handlerAdd ); }
+	public virtual Value Subtract( Value o )			{ return MetaOperation( this, o, handlerSub ); }
+	public virtual Value Multiply( Value o )			{ return MetaOperation( this, o, handlerMul ); }
+	public virtual Value Divide( Value o )				{ return MetaOperation( this, o, handlerDiv ); }
+	public virtual Value IntegerDivide( Value o )		{ return MetaOperation( this, o, handlerIDiv ); }
+	public virtual Value Modulus( Value o )				{ return MetaOperation( this, o, handlerMod ); }
+	public virtual Value RaiseToPower( Value o )		{ return MetaOperation( this, o, handlerPow ); }
+	public virtual Value Concatenate( Value o )			{ return MetaOperation( this, o, handlerConcat ); }
 
 
 
 	// Unary arithmetic operators.
 
-	public virtual Value UnaryMinus()					{ return MetaOperation( this, "__unm" ); }
-	public virtual Value Length()						{ return MetaOperation( this, "__len" ); }
+	public virtual Value UnaryMinus()					{ return MetaOperation( this, handlerUnm ); }
+	public virtual Value Length()						{ return MetaOperation( this, handlerLen ); }
 
 
 
@@ -90,7 +110,7 @@ public abstract class Value
 			return true;
 		}
 
-		Value h = GetComparisonHandler( this, o, "__eq" );
+		Value h = GetComparisonHandler( this, o, handlerEq );
 		if ( h != null )
 		{
 			Value result = h.InvokeS( this, o );
@@ -102,7 +122,7 @@ public abstract class Value
 
 	public virtual bool LessThan( Value o )
 	{
-		Value h = GetComparisonHandler( this, o, "__lt" );
+		Value h = GetComparisonHandler( this, o, handlerLt );
 		if ( h != null )
 		{
 			Value result = h.InvokeS( this, o );
@@ -114,14 +134,14 @@ public abstract class Value
 
 	public virtual bool LessThanOrEqual( Value o )
 	{
-		Value h = GetComparisonHandler( this, o, "__le" );
+		Value h = GetComparisonHandler( this, o, handlerLe );
 		if ( h != null )
 		{
 			Value result = h.InvokeS( this, o );
 			return result != null && result.IsTrue();
 		}
 
-		h = GetComparisonHandler( this, o, "__lt" );
+		h = GetComparisonHandler( this, o, handlerLt );
 		if ( h != null )
 		{
 			Value result = h.InvokeS( o, this );
@@ -137,7 +157,7 @@ public abstract class Value
 
 	public virtual Value Index( Value key )
 	{
-		Value h = GetHandler( this, "__index" );
+		Value h = GetHandler( this, handlerIndex );
 		if ( h != null )
 		{
 			return h.InvokeS( this, key );
@@ -148,7 +168,7 @@ public abstract class Value
 	
 	public virtual void NewIndex( Value key, Value value )
 	{
-		Value h = GetHandler( this, "__newindex" );
+		Value h = GetHandler( this, handlerNewIndex );
 		if ( h != null )
 		{
 			h.InvokeS( this, key, value );
@@ -161,172 +181,78 @@ public abstract class Value
 
 	// Function call.
 
-	public virtual Value InvokeS()
-	{
-		Value h = GetHandler( this, "__call" );
-		if ( h != null )
-		{
-			return h.InvokeS( this );
-		}
+	public virtual Value InvokeS()												{ Value h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeS( this ); throw new InvalidOperationException(); }
+	public virtual Value InvokeS( Value a1 )									{ Value h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeS( this, a1 ); throw new InvalidOperationException(); }
+	public virtual Value InvokeS( Value a1, Value a2 )							{ Value h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeS( this, a1, a2 ); throw new InvalidOperationException(); }
+	public virtual Value InvokeS( Value a1, Value a2, Value a3 )				{ Value h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeS( this, a1, a2, a3 ); throw new InvalidOperationException(); }
+	public virtual Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ Value h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeS( new Value[]{ this, a1, a2, a3, a4 } ); throw new InvalidOperationException(); }
+	public virtual Value InvokeS( Value[] arguments )							{ Value h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeS( ForwardArguments( this, arguments ) ); throw new InvalidOperationException(); }
 
-		throw new InvalidOperationException();
-	}
-
-	public virtual Value InvokeS( Value arg )
-	{
-		Value h = GetHandler( this, "__call" );
-		if ( h != null )
-		{
-			return h.InvokeS( this, arg );
-		}
-
-		throw new InvalidOperationException();
-	}
-
-	public virtual Value InvokeS( Value arg1, Value arg2 )
-	{
-		Value h = GetHandler( this, "__call" );
-		if ( h != null )
-		{
-			return h.InvokeS( this, arg1, arg2 );
-		}
-
-		throw new InvalidOperationException();
-	}
-
-	public virtual Value InvokeS( Value arg1, Value arg2, Value arg3 )
-	{
-		Value h = GetHandler( this, "__call" );
-		if ( h != null )
-		{
-			return h.InvokeS( this, arg1, arg2, arg3 );
-		}
-
-		throw new InvalidOperationException();
-	}
-
-	public virtual Value InvokeS( Value arg1, Value arg2, Value arg3, Value arg4 )
-	{
-		Value h = GetHandler( this, "__call" );
-		if ( h != null )
-		{
-			return h.InvokeS( new Value[]{ this, arg1, arg2, arg3, arg4 } );
-		}
-
-		throw new InvalidOperationException();
-	}
-
-	public virtual Value InvokeS( Value[] arguments )
-	{
-		Value h = GetHandler( this, "__call" );
-		if ( h != null )
-		{
-			Value[] harguments = new Value[ arguments.Length + 1 ];
-			harguments[ 0 ] = this;
-			arguments.CopyTo( harguments, 1 );
-
-			return h.InvokeS( harguments );
-		}
-
-		throw new InvalidOperationException();
-	}
-
-	public virtual Value[] InvokeM()
-	{
-		Value h = GetHandler( this, "__call" );
-		if ( h != null )
-		{
-			return h.InvokeM( this );
-		}
-
-		throw new InvalidOperationException();
-	}
-	
-	public virtual Value[] InvokeM( Value arg )
-	{
-		Value h = GetHandler( this, "__call" );
-		if ( h != null )
-		{
-			return h.InvokeM( this, arg );
-		}
-
-		throw new InvalidOperationException();
-	}
-
-	public virtual Value[] InvokeM( Value arg1, Value arg2 )
-	{
-		Value h = GetHandler( this, "__call" );
-		if ( h != null )
-		{
-			return h.InvokeM( this, arg1, arg2 );
-		}
-
-		throw new InvalidOperationException();
-	}
-
-	public virtual Value[] InvokeM( Value arg1, Value arg2, Value arg3 )
-	{
-		Value h = GetHandler( this, "__call" );
-		if ( h != null )
-		{
-			return h.InvokeM( this, arg1, arg2, arg3 );
-		}
-
-		throw new InvalidOperationException();
-	}
-
-	public virtual Value[] InvokeM( Value arg1, Value arg2, Value arg3, Value arg4 )
-	{
-		Value h = GetHandler( this, "__call" );
-		if ( h != null )
-		{
-			return h.InvokeM( new Value[]{ this, arg1, arg2, arg3, arg4 } );
-		}
-
-		throw new InvalidOperationException();
-	}
-
-	public virtual Value[] InvokeM( params Value[] arguments )
-	{
-		Value h = GetHandler( this, "__call" );
-		if ( h != null )
-		{
-			Value[] harguments = new Value[ arguments.Length + 1 ];
-			harguments[ 0 ] = this;
-			arguments.CopyTo( harguments, 1 );
-
-			return h.InvokeM( harguments );
-		}
-
-		throw new InvalidOperationException();
-	}
-
+	public virtual Value[] InvokeM()											{ Value h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( this ); throw new InvalidOperationException(); }
+	public virtual Value[] InvokeM( Value a1 )									{ Value h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( this, a1 ); throw new InvalidOperationException(); }
+	public virtual Value[] InvokeM( Value a1, Value a2 )						{ Value h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( this, a1, a2 ); throw new InvalidOperationException(); }
+	public virtual Value[] InvokeM( Value a1, Value a2, Value a3 )				{ Value h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( this, a1, a2, a3 ); throw new InvalidOperationException(); }
+	public virtual Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ Value h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( new Value[]{ this, a1, a2, a3, a4 } ); throw new InvalidOperationException(); }
+	public virtual Value[] InvokeM( Value[] arguments )							{ Value h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( ForwardArguments( this, arguments ) ); throw new InvalidOperationException(); }
 
 
 
 
 	// Meta handlers.
 
-	protected static Value GetHandler( Value o, string handler )
+	protected static Value[] ForwardArguments( Value function, Value[] arguments )
 	{
-		return null;
+		Value[] newArguments = new Value[ arguments.Length + 1 ];
+		newArguments[ 0 ] = function;
+		arguments.CopyTo( newArguments, 1 );
+		return newArguments;
 	}
 
 
-	protected static Value MetaOperation( Value left, Value right, string handler )
+	protected static Value GetHandler( Value o, Value handler )
 	{
+		return o != null && o.Metatable != null ? o.Metatable[ handler ] : null;
+	}
+
+
+	protected static Value MetaOperation( Value left, Value right, Value handler )
+	{
+		Value h = GetHandler( left, handler );
+		if ( h != null )
+		{
+			return h.InvokeS( left, right );
+		}
+		h = GetHandler( right, handler );
+		if ( h != null )
+		{
+			return h.InvokeS( left, right );
+		}
 		throw new InvalidOperationException();
 	}
 
 
-	protected static Value MetaOperation( Value operand, string handler )
+	protected static Value MetaOperation( Value operand, Value handler )
 	{
+		Value h = GetHandler( operand, handler );
+		if ( h != null )
+		{
+			return h.InvokeS( operand );
+		}
 		throw new InvalidOperationException();
 	}
 
 
-	protected static Value GetComparisonHandler( Value left, Value right, string handler )
+	protected static Value GetComparisonHandler( Value left, Value right, Value handler )
 	{
+		if ( left != null && right != null && left.GetType() == right.GetType() )
+		{
+			Value hLeft = GetHandler( left, handler );
+			Value hRight = GetHandler( right, handler );
+			if ( hLeft == hRight )
+			{
+				return hLeft;
+			}
+		}
 		return null;
 	}
 

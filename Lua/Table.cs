@@ -89,7 +89,6 @@ public sealed class Table
 
 	// Indexing.
 
-
 	bool TryArrayIndex( Value key, out int index )
 	{
 		if ( key.TryToInteger( out index ) && 1 <= index )

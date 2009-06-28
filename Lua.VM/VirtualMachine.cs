@@ -18,11 +18,11 @@ public class VirtualMachine
 {
 	// Constants
 
-	const int stackLimit	= 204;
-	const int setTop		= -1;
-	const int invokeS		= -2;
-	const int invokeM		= -3;
-	readonly Value zero		= 0;
+	const int stackLimit		= 204;
+	const int setTop			= -1;
+	const int invokeS			= -2;
+	const int invokeM			= -3;
+	static readonly Value zero	= 0;
 
 	
 	// VM State.
@@ -711,6 +711,13 @@ public class VirtualMachine
 			{
 				// R( A ), ..., R( A + B - 1 ) = vararg
 				Vararg( i.A, i.B - 1 );
+				continue;
+			}
+
+			case Opcode.IntDiv:
+			{
+				// R( A ) := RK( B ) \ RK( C )
+				SetR( i.A, RK( i.B ).IntegerDivide( RK( i.C ) ) );
 				continue;
 			}
 

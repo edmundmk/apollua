@@ -28,6 +28,67 @@ public sealed class VMFunction
 
 
 
+	// Invoke.
+
+	public override Value InvokeS()
+	{
+		return null;
+	}
+
+	public override Value InvokeS( Value a1 )
+	{
+		return null;
+	}
+
+	public override Value InvokeS( Value a1, Value a2 )
+	{
+		return null;
+	}
+
+	public override Value InvokeS( Value a1, Value a2, Value a3 )
+	{
+		return null;
+	}
+
+	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )
+	{
+		return null;
+	}
+
+	public override Value InvokeS( Value[] arguments )
+	{
+		return null;
+	}
+
+	public override Value[] InvokeM()
+	{
+		return null;
+	}
+
+	public override Value[] InvokeM( Value a1 )
+	{
+		return null;
+	}
+
+	public override Value[] InvokeM( Value a1, Value a2 )
+	{
+		return null;
+	}
+
+	public override Value[] InvokeM( Value a1, Value a2, Value a3 )
+	{
+		return null;
+	}
+
+	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )
+	{
+		return null;
+	}
+
+	public override Value[] InvokeM( Value[] arguments )
+	{
+		return null;
+	}
 
 
 }
