@@ -83,9 +83,14 @@ public sealed class BoxedInteger
 		return true;
 	}
 	
-	public override bool TryToNumber( out double value )
+	public override bool TryToNumber( out Value value )
 	{
-		value = (double)Value;
+		value = this;
+		return true;
+	}
+
+	public override bool UsePrimitiveConcatenate()
+	{
 		return true;
 	}
 	

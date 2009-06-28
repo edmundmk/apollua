@@ -69,6 +69,15 @@ public sealed class BoxedString
 
 
 
+	// Conversion.
+
+	public override bool UsePrimitiveConcatenate()
+	{
+		return true;
+	}
+
+
+
 	// Binary arithmetic operators.
 
 	public override Value Concatenate( Value o )

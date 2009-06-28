@@ -47,9 +47,9 @@ public abstract class Value
 
 	// Conversion.
 
-	public virtual bool TryToInteger( out int value )	{ value = 0; return false; }
-	public virtual bool TryToNumber( out double value )	{ value = 0.0; return false; }
-
+	public virtual bool  TryToInteger( out int value )	{ value = 0; return false; }
+	public virtual bool  TryToNumber( out Value value )	{ value = null; return false; }
+	public virtual bool  UsePrimitiveConcatenate()		{ return false; }
 
 
 	// Binary arithmetic operators.

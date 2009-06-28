@@ -96,10 +96,15 @@ public sealed class BoxedNumber
 		}
 		return base.TryToInteger( out value );
 	}
-	
-	public override bool TryToNumber( out double value )
+
+	public override bool TryToNumber( out Value value )
 	{
-		value = Value;
+		value = this;
+		return true;
+	}
+
+	public override bool UsePrimitiveConcatenate()
+	{
 		return true;
 	}
 

@@ -19,7 +19,7 @@ public class UpVal
 	// Members.
 
 	IList< Value >	stack;
-	int				stackindex;
+	int				index;
 	Value			value;
 
 
@@ -27,18 +27,23 @@ public class UpVal
 
 	public Value Value
 	{
-		get { return stack != null ? stack[ stackindex ] : value; }
-		set { if ( stack != null ) stack[ stackindex ] = value; else this.value = value; }
+		get { return stack != null ? stack[ index ] : value; }
+		set { if ( stack != null ) stack[ index ] = value; else this.value = value; }
+	}
+
+	public int Index
+	{
+		get { return stack != null ? index : -1; }
 	}
 
 
 	// Lifetime.
 
-	public UpVal( IList< Value > stack, int stackindex )
+	public UpVal( IList< Value > stack, int index )
 	{
-		this.stack		= stack;
-		this.stackindex	= stackindex;
-		value			= null;
+		this.stack	= stack;
+		this.index	= index;
+		value		= null;
 	}
 
 
@@ -47,9 +52,9 @@ public class UpVal
 		if ( stack == null )
 			throw new InvalidOperationException();
 
-		value			= stack[ stackindex ];
-		stack			= null;
-		stackindex		= -1;
+		value	= stack[ index ];
+		stack	= null;
+		index	= -1;
 	}
 
 }
