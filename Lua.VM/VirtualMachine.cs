@@ -112,10 +112,14 @@ public class VirtualMachine
 
 		DispatchLoop();
 
-		invokeBase	= frame.FunctionBase;
+		invokeBase = frame.FunctionBase;
+		Value result = stack[ invokeBase ];
 
-		// Return results.
-		return stack[ invokeBase ];
+		// Finished.
+		invokeBase	= -1;
+		invokeCount	= 0;
+
+		return result;
 	}
 
 	public Value[] InvokeM( VMFunction function )
@@ -145,16 +149,11 @@ public class VirtualMachine
 			results[ result ] = stack[ invokeBase + result ];
 		}
 
-		return results;
-	}
-
-	public void EndInvoke()
-	{
-		if ( invokeBase != -1 )
-			throw new InvalidOperationException();
-
+		// Finished.
 		invokeBase	= -1;
 		invokeCount	= 0;
+
+		return results;
 	}
 	
 
@@ -163,6 +162,9 @@ public class VirtualMachine
 
 	void DispatchLoop()
 	{
+		try
+		{
+
 		while ( true )
 		{
 			Instruction i = NextInstruction();
@@ -723,6 +725,12 @@ public class VirtualMachine
 
 			}
 
+		}
+		
+		}
+		catch ( Exception e )
+		{
+			// Unwind this crap and re-throw exception including Lua callstack.
 		}
 
 	}

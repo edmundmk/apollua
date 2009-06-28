@@ -32,62 +32,114 @@ public sealed class VMFunction
 
 	public override Value InvokeS()
 	{
-		return null;
+		VirtualMachine vm = VMRuntime.VirtualMachine;
+		vm.BeginInvoke( 0 );
+		return vm.InvokeS( this );
 	}
 
 	public override Value InvokeS( Value a1 )
 	{
-		return null;
+		VirtualMachine vm = VMRuntime.VirtualMachine;
+		vm.BeginInvoke( 1 );
+		vm.Argument( a1 );
+		return vm.InvokeS( this );
 	}
 
 	public override Value InvokeS( Value a1, Value a2 )
 	{
-		return null;
+		VirtualMachine vm = VMRuntime.VirtualMachine;
+		vm.BeginInvoke( 2 );
+		vm.Argument( a1 );
+		vm.Argument( a2 );
+		return vm.InvokeS( this );
 	}
 
 	public override Value InvokeS( Value a1, Value a2, Value a3 )
 	{
-		return null;
+		VirtualMachine vm = VMRuntime.VirtualMachine;
+		vm.BeginInvoke( 3 );
+		vm.Argument( a1 );
+		vm.Argument( a2 );
+		vm.Argument( a3 );
+		return vm.InvokeS( this );
 	}
 
 	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )
 	{
-		return null;
+		VirtualMachine vm = VMRuntime.VirtualMachine;
+		vm.BeginInvoke( 4 );
+		vm.Argument( a1 );
+		vm.Argument( a2 );
+		vm.Argument( a3 );
+		vm.Argument( a4 );
+		return vm.InvokeS( this );
 	}
 
 	public override Value InvokeS( Value[] arguments )
 	{
-		return null;
+		VirtualMachine vm = VMRuntime.VirtualMachine;
+		vm.BeginInvoke( arguments.Length );
+		for ( int argument = 0; argument < arguments.Length; ++argument )
+		{
+			vm.Argument( arguments[ argument ] );
+		}
+		return vm.InvokeS( this );
 	}
 
 	public override Value[] InvokeM()
 	{
-		return null;
+		VirtualMachine vm = VMRuntime.VirtualMachine;
+		vm.BeginInvoke( 0 );
+		return vm.InvokeM( this );
 	}
 
 	public override Value[] InvokeM( Value a1 )
 	{
-		return null;
+		VirtualMachine vm = VMRuntime.VirtualMachine;
+		vm.BeginInvoke( 1 );
+		vm.Argument( a1 );
+		return vm.InvokeM( this );
 	}
 
 	public override Value[] InvokeM( Value a1, Value a2 )
 	{
-		return null;
+		VirtualMachine vm = VMRuntime.VirtualMachine;
+		vm.BeginInvoke( 2 );
+		vm.Argument( a1 );
+		vm.Argument( a2 );
+		return vm.InvokeM( this );
 	}
 
 	public override Value[] InvokeM( Value a1, Value a2, Value a3 )
 	{
-		return null;
+		VirtualMachine vm = VMRuntime.VirtualMachine;
+		vm.BeginInvoke( 3 );
+		vm.Argument( a1 );
+		vm.Argument( a2 );
+		vm.Argument( a3 );
+		return vm.InvokeM( this );
 	}
 
 	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )
 	{
-		return null;
+		VirtualMachine vm = VMRuntime.VirtualMachine;
+		vm.BeginInvoke( 4 );
+		vm.Argument( a1 );
+		vm.Argument( a2 );
+		vm.Argument( a3 );
+		vm.Argument( a4 );
+		return vm.InvokeM( this );
 	}
 
 	public override Value[] InvokeM( Value[] arguments )
 	{
-		return null;
+		VirtualMachine vm = VMRuntime.VirtualMachine;
+		vm.BeginInvoke( arguments.Length );
+		for ( int argument = 0; argument < arguments.Length; ++argument )
+		{
+			vm.Argument( arguments[ argument ] );
+		}
+		return vm.InvokeM( this );
 	}
 
 

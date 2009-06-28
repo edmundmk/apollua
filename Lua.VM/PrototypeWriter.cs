@@ -14,11 +14,27 @@ namespace Lua.VM
 {
 
 
-public static class PrototypeWriter
+public class PrototypeWriter
 {
+	protected TextWriter	o;
+	protected Prototype		prototype;
+	protected int			ip;
 
-	public static void Write( TextWriter o, Prototype prototype )
+
+	public PrototypeWriter( TextWriter oWriter )
 	{
+		o			= oWriter;
+		prototype	= null;
+		ip			= 0;
+	}
+
+	
+
+	public void Write( Prototype p )
+	{
+		prototype = p;
+
+
 		// Function signature.
 
 		o.Write( "function " );
@@ -98,9 +114,9 @@ public static class PrototypeWriter
 
 		// Instructions.
 
-		for ( int ip = 0; ip < prototype.Instructions.Length; ++ip )
+		for ( ip = 0; ip < prototype.Instructions.Length; ++ip )
 		{
-			WriteInstruction( o, prototype, ip );
+			WriteInstruction();
 			if ( prototype.Instructions[ ip ].Opcode == Opcode.Closure )
 			{
 				Prototype closure = prototype.Prototypes[ prototype.Instructions[ ip ].Bx ];
@@ -110,12 +126,12 @@ public static class PrototypeWriter
 					if ( i.Opcode == Opcode.Move )
 					{
 						o.WriteLine( "              local   {0} {1}", upval,
-							OperandString( prototype, ip + upval, Mode.R, i.B ) ); 
+							OperandString( Mode.R, i.B ) ); 
 					}
 					else if ( i.Opcode == Opcode.GetUpVal )
 					{
 						o.WriteLine( "              upval   {0} {1}", upval,
-							OperandString( prototype, ip + upval, Mode.U, i.B ) );
+							OperandString( Mode.U, i.B ) );
 					}
 
 				}
@@ -134,7 +150,7 @@ public static class PrototypeWriter
 
 		for ( int i = 0; i < prototype.Prototypes.Length; ++i )
 		{
-			Write( o, prototype.Prototypes[ i ] );
+			Write( prototype.Prototypes[ i ] );
 		}
 	}
 
@@ -224,7 +240,7 @@ public static class PrototypeWriter
 
 
 
-	static void WriteInstruction( TextWriter o, Prototype prototype, int ip )
+	void WriteInstruction()
 	{
 		Instruction		instruction		= prototype.Instructions[ ip ];
 		DebugSourceSpan instructionSpan	= prototype.DebugInstructionSourceSpans[ ip ];
@@ -240,21 +256,21 @@ public static class PrototypeWriter
 		{
 		case Operands.ABC:
 			assembler += String.Format( "{0}{1}{2}",
-				OperandString( prototype, ip, metadata.A, instruction.A ),
-				OperandString( prototype, ip, metadata.B, instruction.B ),
-				OperandString( prototype, ip, metadata.C, instruction.C ) );
+				OperandString( metadata.A, instruction.A ),
+				OperandString( metadata.B, instruction.B ),
+				OperandString( metadata.C, instruction.C ) );
 			break;
 
 		case Operands.ABx:
 			assembler += String.Format( "{0}{1}",
-				OperandString( prototype, ip, metadata.A, instruction.A ),
-				OperandString( prototype, ip, metadata.B, instruction.Bx ) );
+				OperandString( metadata.A, instruction.A ),
+				OperandString( metadata.B, instruction.Bx ) );
 			break;
 
 		case Operands.Jump:
 			assembler += String.Format( "{0}{1}",
-				OperandString( prototype, ip, metadata.A, instruction.A ),
-				OperandString( prototype, ip, metadata.B, ip + 1 + instruction.sBx ) );
+				OperandString( metadata.A, instruction.A ),
+				OperandString( metadata.B, ip + 1 + instruction.sBx ) );
 			break;
 
 		case Operands.SetListABC:
@@ -262,9 +278,9 @@ public static class PrototypeWriter
 			{
 				// C is encoded in instruction.
 				assembler += String.Format( "{0}{1}{2}",
-					OperandString( prototype, ip, metadata.A, instruction.A ),
-					OperandString( prototype, ip, metadata.B, instruction.B ),
-					OperandString( prototype, ip, metadata.C, instruction.C ) );
+					OperandString( metadata.A, instruction.A ),
+					OperandString( metadata.B, instruction.B ),
+					OperandString( metadata.C, instruction.C ) );
 			}
 			else
 			{
@@ -273,9 +289,9 @@ public static class PrototypeWriter
 				int C = prototype.Instructions[ ip ].Index;
 
 				assembler += String.Format( "{0}{1}{2}",
-					OperandString( prototype, ip, metadata.A, instruction.A ),
-					OperandString( prototype, ip, metadata.B, instruction.B ),
-					OperandString( prototype, ip, metadata.C, C ) );
+					OperandString( metadata.A, instruction.A ),
+					OperandString( metadata.B, instruction.B ),
+					OperandString( metadata.C, C ) );
 			}
 			break;
 		}
@@ -333,25 +349,25 @@ public static class PrototypeWriter
 
 
 
-	static string OperandString( Prototype prototype, int ip, Mode mode, int operand )
+	string OperandString( Mode mode, int operand )
 	{
 		switch ( mode )
 		{
 		case Mode.R:
-			return String.Format( "{0} ", RegisterString( prototype, ip, operand ) );
+			return String.Format( "{0} ", RegisterString( operand ) );
 
 		case Mode.K:
-			return String.Format( "{0} ", ConstantString( prototype, operand ) );
+			return String.Format( "{0} ", ConstantString( operand ) );
 
 		case Mode.RK:
 			if ( Instruction.IsConstant( operand ) )
 			{
 				return String.Format( "{0} ",
-					ConstantString( prototype, Instruction.RKToConstant( operand ) ) );
+					ConstantString( Instruction.RKToConstant( operand ) ) );
 			}
 			else
 			{
-				return String.Format( "{0} ", RegisterString( prototype, ip, operand ) );
+				return String.Format( "{0} ", RegisterString( operand ) );
 			}
 
 		case Mode.U:
@@ -381,7 +397,7 @@ public static class PrototypeWriter
 	}
 
 
-	static string RegisterString( Prototype prototype, int ip, int operand )
+	string RegisterString( int operand )
 	{
 		int index = operand;
 		for ( int debug = 0; debug < prototype.DebugLocals.Length; ++debug )
@@ -405,7 +421,7 @@ public static class PrototypeWriter
 
 
 
-	static string ConstantString( Prototype prototype, int index )
+	string ConstantString( int index )
 	{
 		object constant = prototype.Constants[ index ];
 		if ( constant is BoxedString )

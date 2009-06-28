@@ -32,7 +32,9 @@ static class EntryPoint
 		
 		LuaVMCompiler compiler = new LuaVMCompiler( Console.Error, File.OpenText( args[ 0 ] ), args[ 0 ] );
 		VMFunction function = compiler.Compile();
-		PrototypeWriter.Write( Console.Out, function.Prototype );
+		function.Environment = new Table();
+		function.InvokeS();
+
 
 
 

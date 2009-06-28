@@ -83,10 +83,6 @@ public class LuaVMCompiler
 		functionAST = transform.Transform( functionAST );
 
 
-		VMASTWriter writer = new VMASTWriter( Console.Out );
-		writer.Write( functionAST );
-
-
 		// Compile.
 
 		Prototype prototype = BuildPrototype( functionAST );
