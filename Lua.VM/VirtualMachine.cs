@@ -731,7 +731,7 @@ public class VirtualMachine
 		catch ( Exception e )
 		{
 			// Unwind this crap and re-throw exception including Lua callstack.
-			UnwindError( e );
+			throw UnwindError( e );
 		}
 
 	}
@@ -1149,7 +1149,7 @@ public class VirtualMachine
 
 	// Stack trace.
 
-	void UnwindError( Exception e )
+	Exception UnwindError( Exception e )
 	{
 		// Unwind to last invoke.
 		int unwindLevel;
@@ -1169,11 +1169,11 @@ public class VirtualMachine
 		// Throw new error.
 		if ( e is VMException )
 		{
-			throw new VMException( e, e.StackTrace + "\n" + stackTrace );
+			return new VMException( e, e.StackTrace + "\n" + stackTrace );
 		}
 		else
 		{
-			throw new VMException( e, stackTrace );
+			return new VMException( e, stackTrace );
 		}
 	}
 
