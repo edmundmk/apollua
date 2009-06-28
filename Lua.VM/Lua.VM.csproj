@@ -55,6 +55,7 @@
     <Compile Include="PrototypeWriter.cs" />
     <Compile Include="UpVal.cs" />
     <Compile Include="VirtualMachine.cs" />
+    <Compile Include="VMException.cs" />
     <Compile Include="VMFunction.cs" />
     <Compile Include="VMRuntime.cs" />
   </ItemGroup>

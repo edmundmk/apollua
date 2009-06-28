@@ -731,6 +731,7 @@ public class VirtualMachine
 		catch ( Exception e )
 		{
 			// Unwind this crap and re-throw exception including Lua callstack.
+			UnwindError( e );
 		}
 
 	}
@@ -1143,6 +1144,111 @@ public class VirtualMachine
 		// Return true to return from an invocation.
 		return wasInvoke;
 	}
+
+
+
+	// Stack trace.
+
+	void UnwindError( Exception e )
+	{
+		// Unwind to last invoke.
+		int unwindLevel;
+		for ( unwindLevel = 1; unwindLevel < frames.Count; ++unwindLevel )
+		{
+			Frame unwind = StackFrame( unwindLevel );
+			if ( unwind.ResultCount == invokeS || unwind.ResultCount == invokeM )
+			{
+				break;
+			}
+		}
+
+		// Get stack trace and unwind the stack for real.
+		string stackTrace = StackTrace( 0, unwindLevel );
+		Unwind( unwindLevel );
+
+		// Throw new error.
+		if ( e is VMException )
+		{
+			throw new VMException( e, e.StackTrace + "\n" + stackTrace );
+		}
+		else
+		{
+			throw new VMException( e, stackTrace );
+		}
+	}
+
+	string SourceLine( int level )
+	{
+		Frame stackFrame = StackFrame( level );
+		
+		if ( stackFrame.Function != null )
+		{
+			Prototype prototype = stackFrame.Function.Prototype;
+			DebugSourceSpan line = prototype.DebugInstructionSourceSpans[ stackFrame.IP - 1 ];
+			return String.Format( "{0}:{1}", line.Start.SourceName, line.Start.Line );
+		}
+		else
+		{
+			return "[C]";
+		}
+	}
+
+	string StackTrace( int startLevel, int endLevel )
+	{
+		StringBuilder s = new StringBuilder();
+
+		for ( int level = startLevel; level <= endLevel; ++level )
+		{
+			if ( level > startLevel )
+			{
+				s.Append( "\n" );
+			}
+
+			Frame stackFrame = StackFrame( level );
+			
+			if ( stackFrame.Function != null )
+			{
+				Prototype prototype = stackFrame.Function.Prototype;
+				DebugSourceSpan span = prototype.DebugInstructionSourceSpans[ stackFrame.IP - 1 ];
+				s.AppendFormat( "   {0}:{1}:", span.Start.SourceName, span.Start.Line );
+				if ( prototype.DebugName != null )
+				{
+					s.Append( " " );
+					s.Append( prototype.DebugName );
+				}
+			}
+			else
+			{
+				s.AppendFormat( "   [C]" );
+			}
+		}
+
+		return s.ToString();
+	}
+
+	Frame StackFrame( int level )
+	{
+		if ( level > 0 )
+		{
+			return frames[ frames.Count - level ];
+		}
+		else
+		{
+			return frame;
+		}
+	}
+
+	void Unwind( int level )
+	{
+		if ( level > 1 )
+		{
+			frames.RemoveRange( frames.Count - ( level - 1 ), level - 1 );
+		}
+
+		PopFrame();
+	}
+
+
 
 
 
