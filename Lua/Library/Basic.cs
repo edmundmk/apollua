@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using System.Globalization;
+using Lua.Interop;
 
 
 namespace Lua.Library
@@ -29,17 +30,51 @@ class Basic
 	public Table		Table				{ get; private set; }
 	
 
+	Function pairsGenerator;
+	Function ipairsGenerator;
+
 
 	public Basic()
 	{
-		CompileHandler		= delegate( TextReader source, string sourceName ) { throw new InvalidOperationException(); };
-		StackLevelHandler	= delegate( int level ) { throw new InvalidOperationException(); };
-		In					= Console.In;
-		Out					= Console.Out;
+		CompileHandler				= delegate( TextReader source, string sourceName ) { throw new InvalidOperationException(); };
+		StackLevelHandler			= delegate( int level ) { throw new InvalidOperationException(); };
+		In							= Console.In;
+		Out							= Console.Out;
 
-		Table				= new Table();
-		Table[ "_G" ]		= Table;
-		Table[ "_VERSION" ]	= "Lua 5.1";
+		pairsGenerator				= new LuaFuncResultList< Table, Value, Value >( next );
+		ipairsGenerator				= new LuaFuncResultList< Table, int, Value >( inext );
+
+		Table basic = new Table();
+
+		basic[ "_G" ]				= Table;
+		basic[ "_VERSION" ]			= "Lua 5.1";
+
+		basic[ "assert" ]			= new LuaAction< Value, Value >( assert );
+		basic[ "collectgarbage" ]	= new LuaFunc< string, Value, Value >( collectgarbage );
+		basic[ "dofile" ]			= new LuaFuncResultList< string, Value >( dofile );
+		basic[ "error" ]			= new LuaAction< Value, int >( error );	
+		basic[ "getfenv" ]			= new LuaFunc< Value, Value >( getfenv );
+		basic[ "getmetatable" ]		= new LuaFunc< Value, Value >( getmetatable );
+		basic[ "ipairs" ]			= new LuaFuncResultList< Table, Value >( ipairs );
+		basic[ "load" ]				= new LuaFunc< Function, string, Function >( load );
+		basic[ "loadstring" ]		= new LuaFunc< string, string, Function >( loadstring );
+		basic[ "next" ]				= new LuaFuncResultList< Table, Value, Value >( next );
+		basic[ "pairs" ]			= new LuaFuncResultList< Table, Value >( pairs );
+		basic[ "pcall" ]			= null; // returns multiple results.
+		basic[ "print" ]			= null; // takes variable arguments.
+		basic[ "rawequal" ]			= new LuaFunc< Value, Value, bool >( rawequal );
+		basic[ "rawget" ]			= new LuaFunc< Table, Value, Value >( rawget );
+		basic[ "rawset" ]			= new LuaFunc< Table, Value, Value, Table >( rawset );
+		basic[ "select" ]			= null; // takes variable arguments.
+		basic[ "setfenv" ]			= new LuaFunc< Value, Value, Function >( setfenv );
+		basic[ "setmetatable" ]		= new LuaFunc< Table, Table, Table >( setmetatable );
+		basic[ "tonumber" ]			= new LuaFunc< Value, Value, Value >( tonumber );
+		basic[ "tostring" ]			= new LuaFunc< Value, string >( tostring );
+		basic[ "type" ]				= new LuaFunc< Value, string >( type );
+		basic[ "unpack" ]			= new LuaFuncResultList< Table, Value, Value, Value >( unpack );
+		basic[ "xpcall" ]			= new LuaFuncResultList< Function, Function, Value >( xpcall );
+
+		Table = basic;
 	}
 
 
@@ -116,19 +151,19 @@ class Basic
 	}
 
 
+	Value[] dofile( string filename )
+	{
+		Function chunk = loadfile( filename );
+		return chunk.InvokeM();
+	}
+
+	
 	void error( Value message, int level )
 	{
 		// Throw message as an exception (can be caught by pcall)
 		// TODO: level should alter the generated stack trace.
 
 		throw new Error( message );
-	}
-
-
-	Value[] dofile( string filename )
-	{
-		Function chunk = loadfile( filename );
-		return chunk.InvokeM();
 	}
 
 
@@ -178,9 +213,30 @@ class Basic
 	}
 
 
+	Value[] inext( Table table, int key )
+	{
+		// Get next key.
+
+		key += 1;
+		Value value = table[ key ];
+
+
+		// Return appropriately.
+
+		if ( value != null )
+		{
+			return new Value[] { key, value };
+		}
+		else
+		{
+			return new Value[] { null, null };
+		}
+	}
+
+
 	Value[] ipairs( Table table )
 	{
-		return new Value[] { /* iterator */ null, table, 0 };
+		return new Value[] { ipairsGenerator, table, 0 };
 	}
 
 
@@ -354,7 +410,7 @@ class Basic
 	}
 
 
-	Value setfenv( Value f, Value env )
+	Function setfenv( Value f, Value env )
 	{
 		// Find function from stack level.
 		// TODO: level 0 is the 'thread' environment.
@@ -369,7 +425,7 @@ class Basic
 		// Set environment.
 
 		( (Function)f ).Environment = env;
-		return f;
+		return ( (Function)f );
 	}
 
 
@@ -559,18 +615,49 @@ class Basic
 
 	Value[] xpcall( Function f, Function error )
 	{
-		Value[] results = pcall( f );
-		if ( ! results[ 0 ].IsTrue() )
-		{
-			// Invoke error handler.
+		Value[] results;
+		bool success;
 
-			Value[] errorResults = error.InvokeM( results[ 1 ] );
-			results = new Value[ errorResults.Length + 1 ];
-			results[ 0 ] = false;
-			errorResults.CopyTo( results, 1 );
+		try
+		{
+			// Attempt call.
+
+			results = f.InvokeM();
+			success = true;
+
+		}
+		catch ( Exception e )
+		{
+			// Recover message.
+
+			Value message = null;
+			if ( e is Error )
+			{
+				message = ( (Error)e ).MessageObject;
+			}
+			else if ( e.InnerException is Error )
+			{
+				message = ( (Error)e.InnerException ).MessageObject;
+			}
+			else
+			{
+				message = e.Message;
+			}
+
+
+			// Call error handler.
+
+			results = error.InvokeM( message );
+			success = false;
 		}
 
-		return results;
+
+		// Repackage results and indicate success.
+		
+		Value[] newResults = new Value[ results.Length + 1 ];
+		newResults[ 0 ] = success;
+		results.CopyTo( newResults, 1 );
+		return newResults;
 	}
 
 	

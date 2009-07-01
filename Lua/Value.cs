@@ -6,6 +6,7 @@
 
 
 using System;
+using Lua.Interop;
 
 
 namespace Lua
@@ -336,8 +337,6 @@ public abstract class Value
 	{
 		return new BoxedString( s );
 	}
-
-
 
 }
 
