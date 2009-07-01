@@ -15,7 +15,7 @@ namespace Lua.Library
 {
 
 
-class Basic
+public class Basic
 {
 	public delegate Function Compile( TextReader source, string sourceName );
 	public delegate Function StackLevel( int level );

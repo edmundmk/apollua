@@ -36,28 +36,111 @@ public static class InteropHelpers
 		{
 			return (T)(object)v.IsTrue();
 		}
-		else if (    typeof( T ) == typeof( sbyte )
-		          || typeof( T ) == typeof( byte )
-		          || typeof( T ) == typeof( short )
-		          || typeof( T ) == typeof( ushort )
-		          || typeof( T ) == typeof( int )
-		          || typeof( T ) == typeof( uint )
-		          || typeof( T ) == typeof( long )
-		          || typeof( T ) == typeof( ulong ) )
+		else if ( typeof( T ) == typeof( sbyte ) )
 		{
 			int integer;
 			if ( v.TryToInteger( out integer ) )
 			{
-				checked { return (T)(object)integer; }
+				sbyte i;
+				checked { i = (sbyte)integer; }
+				return (T)(object)i;
 			}
 		}
-		else if (    typeof( T ) == typeof( float )
-		          || typeof( T ) == typeof( double )
-		          || typeof( T ) == typeof( decimal ) )
+		else if ( typeof( T ) == typeof( byte ) )
 		{
-			if ( v.GetType() == typeof( BoxedNumber ) )
+			int integer;
+			if ( v.TryToInteger( out integer ) )
 			{
-				checked { return (T)(object)( (BoxedNumber)v ).Value; }
+				byte i;
+				checked { i = (byte)integer; }
+				return (T)(object)i;
+			}
+		}
+		else if ( typeof( T ) == typeof( short ) )
+		{
+			int integer;
+			if ( v.TryToInteger( out integer ) )
+			{
+				short i;
+				checked { i = (short)integer; }
+				return (T)(object)i;
+			}
+		}
+		else if ( typeof( T ) == typeof( ushort ) )
+		{
+			int integer;
+			if ( v.TryToInteger( out integer ) )
+			{
+				ushort i;
+				checked { i = (ushort)integer; }
+				return (T)(object)i;
+			}
+		}
+		else if ( typeof( T ) == typeof( int ) )
+		{
+			int integer;
+			if ( v.TryToInteger( out integer ) )
+			{
+				return (T)(object)integer;
+			}
+		}
+		else if ( typeof( T ) == typeof( long ) )
+		{
+			int integer;
+			if ( v.TryToInteger( out integer ) )
+			{
+				long i = integer;
+				return (T)(object)i;
+			}
+		}
+		else if ( typeof( T ) == typeof( ulong ) )
+		{
+			int integer;
+			if ( v.TryToInteger( out integer ) )
+			{
+				ulong i;
+				checked { i = (ulong)integer; }
+				return (T)(object)i;
+			}
+		}
+		else if ( typeof( T ) == typeof( float ) )
+		{
+			if ( v.GetType() == typeof( BoxedInteger ) )
+			{
+				float real = ( (BoxedInteger)v ).Value;
+				return (T)(object)real;
+			}
+			else if ( v.GetType() == typeof( BoxedNumber ) )
+			{
+				float real;
+				checked { real = (float)( (BoxedNumber)v ).Value; }
+				return (T)(object)real;
+			}
+		}
+		else if ( typeof( T ) == typeof( double ) )
+		{
+			if ( v.GetType() == typeof( BoxedInteger ) )
+			{
+				double real = ( (BoxedInteger)v ).Value;
+				return (T)(object)real;
+			}
+			else if ( v.GetType() == typeof( BoxedNumber ) )
+			{
+				return (T)(object)( (BoxedNumber)v ).Value;
+			}
+		}
+		else if ( typeof( T ) == typeof( decimal ) )
+		{
+			if ( v.GetType() == typeof( BoxedInteger ) )
+			{
+				decimal real = ( (BoxedInteger)v ).Value;
+				return (T)(object)real;
+			}
+			else if ( v.GetType() == typeof( BoxedNumber ) )
+			{
+				decimal real;
+				checked { real = (decimal)( (BoxedNumber)v ).Value; }
+				return (T)(object)real;
 			}
 		}
 		else if ( typeof( T ) == typeof( string ) )

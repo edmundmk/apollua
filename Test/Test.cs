@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Lua;
+using Lua.Library;
 using Lua.Parser;
 using Lua.Parser.AST;
 //using Lua.CLR.Compiler;
@@ -26,15 +27,21 @@ static class EntryPoint
 
 	static int Main( string[] args )
 	{
-		TestTable();
-/*
+
 		Console.Out.WriteLine( args[ 0 ] );
 		Console.Error.WriteLine( args[ 0 ] );
 
 		
 		LuaVMCompiler compiler = new LuaVMCompiler( Console.Error, File.OpenText( args[ 0 ] ), args[ 0 ] );
 		VMFunction function = compiler.Compile();
-		function.Environment = new Table();
+		PrototypeWriter writer = new PrototypeWriter( Console.Out );
+		writer.Write( function.Prototype );
+		Basic basic = new Basic();
+		basic.Out = Console.Out;
+		Table math = new Table();
+		math[ "abs" ] = new Lua.Interop.LuaDelegateS< double, double >( Math.Abs );
+		basic.Table[ "math"  ] = math;
+		function.Environment = basic.Table;
 		function.InvokeS();
 
 

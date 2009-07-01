@@ -643,7 +643,7 @@ public class LuaVMCompiler
 
 			if ( ! ifTrue )
 			{
-				A = ~A;
+				A = A != 0 ? 0 : 1;
 			}
 
 			Allocation left		= RK( comparison.Left );

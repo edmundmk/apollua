@@ -148,9 +148,9 @@ public class PrototypeWriter
 
 		// Other functions.
 
-		for ( int i = 0; i < prototype.Prototypes.Length; ++i )
+		for ( int i = 0; i < p.Prototypes.Length; ++i )
 		{
-			Write( prototype.Prototypes[ i ] );
+			Write( p.Prototypes[ i ] );
 		}
 	}
 

@@ -162,9 +162,34 @@ public class VirtualMachine
 
 	void DispatchLoop()
 	{
-		try
+		if ( ! System.Diagnostics.Debugger.IsAttached )
 		{
+			try
+			{
+				DispatchLoopInner();
+			}
+			catch ( Exception e )
+			{
+				throw UnwindError( e );
+			}
+		}
+		else
+		{
+			try
+			{
+				DispatchLoopInner();
+			}
+			finally
+			{
+				UnwindError( new Exception() );
+			}
+		}
+	}
 
+
+
+	void DispatchLoopInner()
+	{
 		while ( true )
 		{
 			Instruction i = NextInstruction();
@@ -726,14 +751,7 @@ public class VirtualMachine
 			}
 
 		}
-		
-		}
-		catch ( Exception e )
-		{
-			// Unwind this crap and re-throw exception including Lua callstack.
-			throw UnwindError( e );
-		}
-
+	
 	}
 
 	
@@ -1115,6 +1133,11 @@ public class VirtualMachine
 			copyCount	= resultCount;
 			resultTop	= frame.FunctionBase + resultCount;
 			top			= resultTop;
+		}
+		else if ( frame.ResultCount == invokeS )
+		{
+			copyCount	= 1;
+			resultTop	= frame.FunctionBase + 1;
 		}
 		else
 		{

@@ -585,7 +585,7 @@ public sealed class Table
 
 			while ( hash[ collision ].Next != -1 )
 			{
-				collision = hash[ i ].Next;
+				collision = hash[ collision ].Next;
 			}
 			
 			hash[ collision ].Next = overflow;
