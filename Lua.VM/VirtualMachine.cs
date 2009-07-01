@@ -262,7 +262,7 @@ public class VirtualMachine
 			case Opcode.NewTable:
 			{
 				// R( A ) := {} ( B is array size hint, C is hash size hint )
-				SetR( i.A, new Table( i.B, i.C ) ); // hash size hint should be log2
+				SetR( i.A, new Table( i.B, i.C ) );
 				continue;
 			}
 
@@ -591,15 +591,15 @@ public class VirtualMachine
 				// Convert for control variables to numbers.
 				if ( ! index.TryToNumber( out index ) )
 				{
-					throw new InvalidOperationException( "'for' initial value must be a number" );
+					throw new InvalidOperationException( "'for' initial value must be a number." );
 				}
 				if ( ! index.TryToNumber( out limit ) )
 				{
-					throw new InvalidOperationException( "'for' limit must be a number" );
+					throw new InvalidOperationException( "'for' limit must be a number." );
 				}
 				if ( ! index.TryToNumber( out step ) )
 				{
-					throw new InvalidOperationException( "'for' step must be a number" );
+					throw new InvalidOperationException( "'for' step must be a number." );
 				}
 
 				// Index -= Step
@@ -702,7 +702,7 @@ public class VirtualMachine
 					}
 					else
 					{
-						throw new InvalidOperationException( "malformed upval initialization bytecode" );
+						throw new InvalidOperationException( "Malformed upval initialization bytecode." );
 					}
 				}
 

@@ -26,6 +26,8 @@ static class EntryPoint
 
 	static int Main( string[] args )
 	{
+		TestTable();
+/*
 		Console.Out.WriteLine( args[ 0 ] );
 		Console.Error.WriteLine( args[ 0 ] );
 
@@ -62,7 +64,7 @@ static class EntryPoint
 //		BytecodeTransform transform = new BytecodeTransform();
 //		function = transform.Transform( function );
 //		writer.Write( function );
-
+*/
 
 	
 /*		
