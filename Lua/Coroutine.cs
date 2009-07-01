@@ -29,6 +29,18 @@ public sealed class Coroutine
 		set { base.Metatable = value; }
 	}
 
+
+
+	// Conversion.
+
+	public override string LuaType
+	{
+		get { return "thread"; }
+	}
+
+
+
+
 }
 
 

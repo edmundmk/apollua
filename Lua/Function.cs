@@ -41,18 +41,11 @@ public abstract class Function
 
 
 
-	// Comparison operators.
+	// Conversion.
 
-	public override sealed bool Equals( Value o )
+	public override string LuaType
 	{
-		if ( o == this )
-		{
-			return true;
-		}
-		else
-		{
-			return base.Equals( o );
-		}
+		get { return "function"; }
 	}
 
 

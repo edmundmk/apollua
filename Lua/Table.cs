@@ -93,7 +93,14 @@ public sealed class Table
 		set;
 	}
 
-	
+
+	// Conversion.
+
+	public override string LuaType
+	{
+		get { return "table"; }
+	}
+
 
 
 	// Unary arithmetic operators.

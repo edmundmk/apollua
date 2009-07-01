@@ -71,6 +71,11 @@ public sealed class BoxedString
 
 	// Conversion.
 
+	public override string LuaType
+	{
+		get { return "string"; }
+	}
+
 	public override bool UsePrimitiveConcatenate()
 	{
 		return true;

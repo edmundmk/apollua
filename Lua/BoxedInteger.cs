@@ -77,6 +77,12 @@ public sealed class BoxedInteger
 	
 	// Conversion.
 
+	public override string LuaType
+	{
+		get { return "number"; }
+	}
+
+
 	public override bool TryToInteger( out int value )
 	{
 		value = Value;

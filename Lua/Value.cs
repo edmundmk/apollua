@@ -53,13 +53,13 @@ public abstract class Value
 	protected static readonly Value handlerIDiv		= "__idiv";
 	protected static readonly Value handlerMod		= "__mod";
 	protected static readonly Value handlerPow		= "__pow";
-	protected static readonly Value handlerConcat		= "__concat";
+	protected static readonly Value handlerConcat	= "__concat";
 	protected static readonly Value handlerUnm		= "__unm";
 	protected static readonly Value handlerLen		= "__len";
-	protected static readonly Value handlerEq			= "__eq";
-	protected static readonly Value handlerLt			= "__lt";
-	protected static readonly Value handlerLe			= "__le";
-	protected static readonly Value handlerIndex		= "__index";
+	protected static readonly Value handlerEq		= "__eq";
+	protected static readonly Value handlerLt		= "__lt";
+	protected static readonly Value handlerLe		= "__le";
+	protected static readonly Value handlerIndex	= "__index";
 	protected static readonly Value handlerNewIndex	= "__newindex";
 	protected static readonly Value handlerCall		= "__call";
 
@@ -67,9 +67,10 @@ public abstract class Value
 
 	// Conversion.
 
-	public virtual bool  TryToInteger( out int value )	{ value = 0; return false; }
-	public virtual bool  TryToNumber( out Value value )	{ value = null; return false; }
-	public virtual bool  UsePrimitiveConcatenate()		{ return false; }
+	public virtual string	LuaType							{ get { return "userdata"; } }
+	public virtual bool		TryToInteger( out int value )	{ value = 0; return false; }
+	public virtual bool		TryToNumber( out Value value )	{ value = null; return false; }
+	public virtual bool		UsePrimitiveConcatenate()		{ return false; }
 
 
 	// Binary arithmetic operators.

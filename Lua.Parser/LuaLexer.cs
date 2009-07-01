@@ -642,7 +642,7 @@ public class LuaLexer
 		if ( s.StartsWith( "0x" ) )
 		{
 			int hexValue;
-			if ( Int32.TryParse( s, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out hexValue ) )
+			if ( Int32.TryParse( s.Substring( 2 ), NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out hexValue ) )
 			{
 				return AcceptToken( TokenKind.Number, hexValue );
 			}

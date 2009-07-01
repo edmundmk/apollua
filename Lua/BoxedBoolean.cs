@@ -73,6 +73,15 @@ public sealed class BoxedBoolean
 
 
 
+	// Conversion.
+
+	public override string LuaType
+	{
+		get { return "boolean"; }
+	}
+
+
+
 	// Comparison operators.
 
 	public override bool IsTrue()

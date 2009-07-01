@@ -83,6 +83,12 @@ public sealed class BoxedNumber
 
 	// Conversion.
 
+	public override string LuaType
+	{
+		get { return "number"; }
+	}
+
+
 	public override bool TryToInteger( out int value )
 	{
 		if ( Value >= (double)int.MinValue && Value <= (double)int.MaxValue )
