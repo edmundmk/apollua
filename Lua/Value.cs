@@ -46,22 +46,22 @@ public abstract class Value
 
 	// Meta handler names.
 
-	static readonly Value handlerAdd		= "__add";
-	static readonly Value handlerSub		= "__sub";
-	static readonly Value handlerMul		= "__mul";
-	static readonly Value handlerDiv		= "__div";
-	static readonly Value handlerIDiv		= "__idiv";
-	static readonly Value handlerMod		= "__mod";
-	static readonly Value handlerPow		= "__pow";
-	static readonly Value handlerConcat		= "__concat";
-	static readonly Value handlerUnm		= "__unm";
-	static readonly Value handlerLen		= "__len";
-	static readonly Value handlerEq			= "__eq";
-	static readonly Value handlerLt			= "__lt";
-	static readonly Value handlerLe			= "__le";
-	static readonly Value handlerIndex		= "__index";
-	static readonly Value handlerNewIndex	= "__newindex";
-	static readonly Value handlerCall		= "__call";
+	protected static readonly Value handlerAdd		= "__add";
+	protected static readonly Value handlerSub		= "__sub";
+	protected static readonly Value handlerMul		= "__mul";
+	protected static readonly Value handlerDiv		= "__div";
+	protected static readonly Value handlerIDiv		= "__idiv";
+	protected static readonly Value handlerMod		= "__mod";
+	protected static readonly Value handlerPow		= "__pow";
+	protected static readonly Value handlerConcat		= "__concat";
+	protected static readonly Value handlerUnm		= "__unm";
+	protected static readonly Value handlerLen		= "__len";
+	protected static readonly Value handlerEq			= "__eq";
+	protected static readonly Value handlerLt			= "__lt";
+	protected static readonly Value handlerLe			= "__le";
+	protected static readonly Value handlerIndex		= "__index";
+	protected static readonly Value handlerNewIndex	= "__newindex";
+	protected static readonly Value handlerCall		= "__call";
 
 
 
@@ -105,7 +105,7 @@ public abstract class Value
 		{
 			return false;
 		}
-		if ( o == this )
+		if ( ( (object)o ).Equals( (object)this ) )
 		{
 			return true;
 		}
@@ -158,9 +158,13 @@ public abstract class Value
 	public virtual Value Index( Value key )
 	{
 		Value h = GetHandler( this, handlerIndex );
-		if ( h != null )
+		if ( h is Function )
 		{
 			return h.InvokeS( this, key );
+		}
+		else if ( h != null )
+		{
+			return h.Index( key );
 		}
 
 		throw new InvalidOperationException();
@@ -169,9 +173,15 @@ public abstract class Value
 	public virtual void NewIndex( Value key, Value value )
 	{
 		Value h = GetHandler( this, handlerNewIndex );
-		if ( h != null )
+		if ( h is Function )
 		{
 			h.InvokeS( this, key, value );
+			return;
+		}
+		else if ( h != null )
+		{
+			h.NewIndex( key, value );
+			return;
 		}
 
 		throw new InvalidOperationException();

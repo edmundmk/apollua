@@ -51,13 +51,13 @@
     <Compile Include="BoxedString.cs" />
     <Compile Include="Coroutine.cs" />
     <Compile Include="Function.cs" />
+    <Compile Include="Library\Basic.cs" />
     <Compile Include="Value.cs" />
     <Compile Include="Table.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Interop\" />
-    <Folder Include="Library\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

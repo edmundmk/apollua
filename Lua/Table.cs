@@ -108,6 +108,60 @@ public sealed class Table
 
 	// Indexing.
 
+	public override Value Index( Value key )
+	{
+		Value value = Get( key );
+		if ( value != null )
+		{
+			return value;
+		}
+
+		Value h = GetHandler( this, handlerIndex );
+		if ( h is Function )
+		{
+			return h.InvokeS( this, key );
+		}
+		else if ( h != null )
+		{
+			return h.Index( key );
+		}
+
+		return null;
+	}
+
+	public override void NewIndex( Value key, Value value )
+	{
+		Value existingValue = Get( key );
+		if ( existingValue != null )
+		{
+			Set( key, value );
+			return;
+		}
+
+		Value h = GetHandler( this, handlerIndex );
+		if ( h is Function )
+		{
+			h.InvokeS( this, key, value );
+			return;
+		}
+		else if ( h != null )
+		{
+			h.NewIndex( key, value );
+			return;
+		}
+
+		Set( key, value );
+	}
+
+
+
+
+
+
+
+	// Table access.
+
+
 	bool TryArrayIndex( Value key, out int index )
 	{
 		if ( key.TryToInteger( out index ) && 1 <= index )
@@ -120,7 +174,7 @@ public sealed class Table
 	}
 
 
-	public override Value Index( Value key )
+	Value Get( Value key )
 	{
 		// Try integer index.
 
@@ -137,7 +191,7 @@ public sealed class Table
 	}
 
 
-	public override void NewIndex( Value key, Value value )
+	void Set( Value key, Value value )
 	{
 		// Try integer index.
 
@@ -160,7 +214,7 @@ public sealed class Table
 			}
 			else if ( index < arrayLengthNext )
 			{
-				Value existingValue = Index( key );
+				Value existingValue = Get( key );
 				if ( existingValue != null && value == null )
 				{
 					arrayOccupancyNext -= 1;
@@ -598,11 +652,11 @@ public sealed class Table
 	{
 		get
 		{
-			return Index( key );
+			return Get( key );
 		}
 		set
 		{
-			NewIndex( key, value );
+			Set( key, value );
 		}
 	}
 	
@@ -639,7 +693,7 @@ public sealed class Table
 	
 	public void Add( Value key, Value value )
 	{
-		NewIndex( key, value );
+		Set( key, value );
 	}
 		
 	public void Add( KeyValuePair< Value, Value > item )
@@ -649,26 +703,26 @@ public sealed class Table
 
 	public bool ContainsKey( Value key )
 	{
-		return Index( key ) != null;
+		return Get( key ) != null;
 	}
 
 	public bool Contains( KeyValuePair< Value, Value > item )
 	{
-		return Index( item.Key ).Equals( item.Value );
+		return Get( item.Key ).Equals( item.Value );
 	}
 
 	public bool TryGetValue( Value key, out Value value )
 	{
-		value = Index( key );
+		value = Get( key );
 		return value != null;
 	}
 
 	public bool Remove( Value key )
 	{
-		Value value = Index( key );
+		Value value = Get( key );
 		if ( value != null )
 		{
-			NewIndex( key, null );
+			Set( key, null );
 			return true;
 		}
 		return false;
@@ -676,10 +730,10 @@ public sealed class Table
 
 	public bool Remove( KeyValuePair< Value, Value > item )
 	{
-		Value value = Index( item.Key );
+		Value value = Get( item.Key );
 		if ( value.Equals( item.Value ) )
 		{
-			NewIndex( item.Key, null );
+			Set( item.Key, null );
 			return true;
 		}
 		return false;
