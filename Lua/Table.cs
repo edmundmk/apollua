@@ -161,6 +161,95 @@ public sealed class Table
 	}
 
 
+	
+	// Next operation to iterate over all entries.
+
+	public void Next( ref Value key, out Value value )
+	{
+		// Try integer index.
+
+		int index = -1;
+		if ( key == null || TryArrayIndex( key, out index ) )
+		{
+			// Try next index.
+
+			for ( index += 1; index < array.Length; ++index )
+			{
+				if ( array[ index ] != null )
+				{
+					key		= new BoxedInteger( index + 1 );
+					value	= array[ index ];
+					return;
+				}
+			}
+
+
+			// Start from the start of the hash.
+			
+			key = null;
+		}
+
+
+
+		// Otherwise search through hash.
+
+		int i = 0;
+
+		if ( hash.Length > 0 && key != null )
+		{
+			// Find key.
+
+			i = key.GetHashCode() & ( hash.Length - 1 );
+			if ( hash[ i ].Key != null )
+			{
+				while ( i != -1 && ! hash[ i ].Key.Equals( key ) )
+				{
+					i = hash[ i ].Next;
+				}
+			}
+			else
+			{
+				throw new KeyNotFoundException();
+			}
+
+			if ( i == -1 )
+			{
+				throw new KeyNotFoundException();
+			}
+
+
+			// Start search from next key.
+
+			i += 1;
+
+		}
+
+
+		// Find next key.
+		
+		while ( i < hash.Length && hash[ i ].Value == null )
+		{
+			i += 1;
+		}
+
+
+		// Return key.
+
+		if ( i < hash.Length )
+		{
+			key = hash[ i ].Key;
+			value = hash[ i ].Value;
+			return;
+		}
+
+
+		// End of the table.
+
+		key		= null;
+		value	= null;
+	}
+
+
 
 
 
@@ -280,102 +369,6 @@ public sealed class Table
 
 		SetHash( key, value );
 	}
-
-
-
-
-
-
-
-
-
-	// Next operation to iterate over all entries.
-
-	public void Next( ref Value key, out Value value )
-	{
-		// Try integer index.
-
-		int index = -1;
-		if ( key == null || TryArrayIndex( key, out index ) )
-		{
-			// Try next index.
-
-			for ( index += 1; index < array.Length; ++index )
-			{
-				if ( array[ index ] != null )
-				{
-					key		= new BoxedInteger( index + 1 );
-					value	= array[ index ];
-					return;
-				}
-			}
-
-
-			// Start from the start of the hash.
-			
-			key = null;
-		}
-
-
-
-		// Otherwise search through hash.
-
-		int i = 0;
-
-		if ( hash.Length > 0 && key != null )
-		{
-			// Find key.
-
-			i = key.GetHashCode() & ( hash.Length - 1 );
-			if ( hash[ i ].Key != null )
-			{
-				while ( i != -1 && ! hash[ i ].Key.Equals( key ) )
-				{
-					i = hash[ i ].Next;
-				}
-			}
-			else
-			{
-				throw new KeyNotFoundException();
-			}
-
-			if ( i == -1 )
-			{
-				throw new KeyNotFoundException();
-			}
-
-
-			// Start search from next key.
-
-			i += 1;
-
-		}
-
-
-		// Find next key.
-		
-		while ( i < hash.Length && hash[ i ].Value == null )
-		{
-			i += 1;
-		}
-
-
-		// Return key.
-
-		if ( i < hash.Length )
-		{
-			key = hash[ i ].Key;
-			value = hash[ i ].Value;
-			return;
-		}
-
-
-		// End of the table.
-
-		key		= null;
-		value	= null;
-	}
-
 
 
 

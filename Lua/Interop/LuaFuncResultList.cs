@@ -12,19 +12,19 @@ namespace Lua.Interop
 {
 
 
-public delegate TResult[] FuncResults< TResult >();
-public delegate TResult[] FuncResults< T, TResult >( T a1 );
-public delegate TResult[] FuncResults< T1, T2, TResult >( T1 a1, T2 a2 );
-public delegate TResult[] FuncResults< T1, T2, T3, TResult >( T1 a1, T2 a2, T3 a3 );
-public delegate TResult[] FuncResults< T1, T2, T3, T4, TResult >( T1 a1, T2 a2, T3 a3, T4 a4 );
+public delegate TResult[] FuncResultList< TResult >();
+public delegate TResult[] FuncResultList< T, TResult >( T a1 );
+public delegate TResult[] FuncResultList< T1, T2, TResult >( T1 a1, T2 a2 );
+public delegate TResult[] FuncResultList< T1, T2, T3, TResult >( T1 a1, T2 a2, T3 a3 );
+public delegate TResult[] FuncResultList< T1, T2, T3, T4, TResult >( T1 a1, T2 a2, T3 a3, T4 a4 );
 
 
 public class LuaFuncResultList< TResult >
 	:	Function
 {
-	FuncResults< TResult > function;
+	FuncResultList< TResult > function;
 
-	public LuaFuncResultList( FuncResults< TResult > function )
+	public LuaFuncResultList( FuncResultList< TResult > function )
 	{
 		this.function = function;
 	}
@@ -49,9 +49,9 @@ public class LuaFuncResultList< TResult >
 public class LuaFuncResultList< T, TResult >
 	:	Function
 {
-	FuncResults< T, TResult > function;
+	FuncResultList< T, TResult > function;
 
-	public LuaFuncResultList( FuncResults< T, TResult > function )
+	public LuaFuncResultList( FuncResultList< T, TResult > function )
 	{
 		this.function = function;
 	}
@@ -76,9 +76,9 @@ public class LuaFuncResultList< T, TResult >
 public class LuaFuncResultList< T1, T2, TResult >
 	:	Function
 {
-	FuncResults< T1, T2, TResult > function;
+	FuncResultList< T1, T2, TResult > function;
 
-	public LuaFuncResultList( FuncResults< T1, T2, TResult > function )
+	public LuaFuncResultList( FuncResultList< T1, T2, TResult > function )
 	{
 		this.function = function;
 	}
@@ -103,9 +103,9 @@ public class LuaFuncResultList< T1, T2, TResult >
 public class LuaFuncResultList< T1, T2, T3, TResult >
 	:	Function
 {
-	FuncResults< T1, T2, T3, TResult > function;
+	FuncResultList< T1, T2, T3, TResult > function;
 
-	public LuaFuncResultList( FuncResults< T1, T2, T3, TResult > function )
+	public LuaFuncResultList( FuncResultList< T1, T2, T3, TResult > function )
 	{
 		this.function = function;
 	}
@@ -130,9 +130,9 @@ public class LuaFuncResultList< T1, T2, T3, TResult >
 public class LuaFuncResultList< T1, T2, T3, T4, TResult >
 	:	Function
 {
-	FuncResults< T1, T2, T3, T4, TResult > function;
+	FuncResultList< T1, T2, T3, T4, TResult > function;
 
-	public LuaFuncResultList( FuncResults< T1, T2, T3, T4, TResult > function )
+	public LuaFuncResultList( FuncResultList< T1, T2, T3, T4, TResult > function )
 	{
 		this.function = function;
 	}
@@ -152,10 +152,6 @@ public class LuaFuncResultList< T1, T2, T3, T4, TResult >
 	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ) ) ); }
 
 }
-
-
-
-
 
 
 }

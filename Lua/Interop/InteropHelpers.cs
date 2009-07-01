@@ -32,6 +32,11 @@ public static class InteropHelpers
 		return default( T );
 	}
 
+	public static T[] CastParams< T >( Value[] values, int index )
+	{
+		return new T[] {};
+	}
+
 	public static Value CastResultS< T >( T value )
 	{
 		return null;

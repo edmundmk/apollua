@@ -36,8 +36,8 @@ class Basic
 
 	public Basic()
 	{
-		CompileHandler				= delegate( TextReader source, string sourceName ) { throw new InvalidOperationException(); };
-		StackLevelHandler			= delegate( int level ) { throw new InvalidOperationException(); };
+		CompileHandler				= delegate( TextReader source, string sourceName ) { throw new NotSupportedException(); };
+		StackLevelHandler			= delegate( int level ) { throw new NotSupportedException(); };
 		In							= Console.In;
 		Out							= Console.Out;
 
@@ -60,12 +60,12 @@ class Basic
 		basic[ "loadstring" ]		= new LuaFunc< string, string, Function >( loadstring );
 		basic[ "next" ]				= new LuaFuncResultList< Table, Value, Value >( next );
 		basic[ "pairs" ]			= new LuaFuncResultList< Table, Value >( pairs );
-		basic[ "pcall" ]			= null; // returns multiple results.
-		basic[ "print" ]			= null; // takes variable arguments.
+		basic[ "pcall" ]			= new LuaFuncResultListParams< Function, Value, Value >( pcall );
+		basic[ "print" ]			= new LuaActionParams< Value >( print );
 		basic[ "rawequal" ]			= new LuaFunc< Value, Value, bool >( rawequal );
 		basic[ "rawget" ]			= new LuaFunc< Table, Value, Value >( rawget );
 		basic[ "rawset" ]			= new LuaFunc< Table, Value, Value, Table >( rawset );
-		basic[ "select" ]			= null; // takes variable arguments.
+		basic[ "select" ]			= new LuaFuncResultListParams< Value, Value, Value >( select );
 		basic[ "setfenv" ]			= new LuaFunc< Value, Value, Function >( setfenv );
 		basic[ "setmetatable" ]		= new LuaFunc< Table, Table, Table >( setmetatable );
 		basic[ "tonumber" ]			= new LuaFunc< Value, Value, Value >( tonumber );
@@ -144,10 +144,8 @@ class Basic
 		{
 			return 0;
 		}
-		else
-		{
-			throw new ArgumentException();
-		}
+
+		throw new ArgumentException();
 	}
 
 
