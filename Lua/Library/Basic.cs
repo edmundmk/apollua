@@ -41,38 +41,38 @@ class Basic
 		In							= Console.In;
 		Out							= Console.Out;
 
-		pairsGenerator				= new LuaFuncResultList< Table, Value, Value >( next );
-		ipairsGenerator				= new LuaFuncResultList< Table, int, Value >( inext );
+		pairsGenerator				= new LuaDelegateM< Table, Value, Value >( next );
+		ipairsGenerator				= new LuaDelegateM< Table, int, Value >( inext );
 
 		Table basic = new Table();
 
 		basic[ "_G" ]				= Table;
 		basic[ "_VERSION" ]			= "Lua 5.1";
 
-		basic[ "assert" ]			= new LuaAction< Value, Value >( assert );
-		basic[ "collectgarbage" ]	= new LuaFunc< string, Value, Value >( collectgarbage );
-		basic[ "dofile" ]			= new LuaFuncResultList< string, Value >( dofile );
-		basic[ "error" ]			= new LuaAction< Value, int >( error );	
-		basic[ "getfenv" ]			= new LuaFunc< Value, Value >( getfenv );
-		basic[ "getmetatable" ]		= new LuaFunc< Value, Value >( getmetatable );
-		basic[ "ipairs" ]			= new LuaFuncResultList< Table, Value >( ipairs );
-		basic[ "load" ]				= new LuaFunc< Function, string, Function >( load );
-		basic[ "loadstring" ]		= new LuaFunc< string, string, Function >( loadstring );
-		basic[ "next" ]				= new LuaFuncResultList< Table, Value, Value >( next );
-		basic[ "pairs" ]			= new LuaFuncResultList< Table, Value >( pairs );
-		basic[ "pcall" ]			= new LuaFuncResultListParams< Function, Value, Value >( pcall );
-		basic[ "print" ]			= new LuaActionParams< Value >( print );
-		basic[ "rawequal" ]			= new LuaFunc< Value, Value, bool >( rawequal );
-		basic[ "rawget" ]			= new LuaFunc< Table, Value, Value >( rawget );
-		basic[ "rawset" ]			= new LuaFunc< Table, Value, Value, Table >( rawset );
-		basic[ "select" ]			= new LuaFuncResultListParams< Value, Value, Value >( select );
-		basic[ "setfenv" ]			= new LuaFunc< Value, Value, Function >( setfenv );
-		basic[ "setmetatable" ]		= new LuaFunc< Table, Table, Table >( setmetatable );
-		basic[ "tonumber" ]			= new LuaFunc< Value, Value, Value >( tonumber );
-		basic[ "tostring" ]			= new LuaFunc< Value, string >( tostring );
-		basic[ "type" ]				= new LuaFunc< Value, string >( type );
-		basic[ "unpack" ]			= new LuaFuncResultList< Table, Value, Value, Value >( unpack );
-		basic[ "xpcall" ]			= new LuaFuncResultList< Function, Function, Value >( xpcall );
+		basic[ "assert" ]			= new LuaDelegateV< Value, Value >( assert );
+		basic[ "collectgarbage" ]	= new LuaDelegateS< string, Value, Value >( collectgarbage );
+		basic[ "dofile" ]			= new LuaDelegateM< string, Value >( dofile );
+		basic[ "error" ]			= new LuaDelegateV< Value, int >( error );	
+		basic[ "getfenv" ]			= new LuaDelegateS< Value, Value >( getfenv );
+		basic[ "getmetatable" ]		= new LuaDelegateS< Value, Value >( getmetatable );
+		basic[ "ipairs" ]			= new LuaDelegateM< Table, Value >( ipairs );
+		basic[ "load" ]				= new LuaDelegateS< Function, string, Function >( load );
+		basic[ "loadstring" ]		= new LuaDelegateS< string, string, Function >( loadstring );
+		basic[ "next" ]				= new LuaDelegateM< Table, Value, Value >( next );
+		basic[ "pairs" ]			= new LuaDelegateM< Table, Value >( pairs );
+		basic[ "pcall" ]			= new LuaDelegateMP< Function, Value, Value >( pcall );
+		basic[ "print" ]			= new LuaDelegateVP< Value >( print );
+		basic[ "rawequal" ]			= new LuaDelegateS< Value, Value, bool >( rawequal );
+		basic[ "rawget" ]			= new LuaDelegateS< Table, Value, Value >( rawget );
+		basic[ "rawset" ]			= new LuaDelegateS< Table, Value, Value, Table >( rawset );
+		basic[ "select" ]			= new LuaDelegateMP< Value, Value, Value >( select );
+		basic[ "setfenv" ]			= new LuaDelegateS< Value, Value, Function >( setfenv );
+		basic[ "setmetatable" ]		= new LuaDelegateS< Table, Table, Table >( setmetatable );
+		basic[ "tonumber" ]			= new LuaDelegateS< Value, Value, Value >( tonumber );
+		basic[ "tostring" ]			= new LuaDelegateS< Value, string >( tostring );
+		basic[ "type" ]				= new LuaDelegateS< Value, string >( type );
+		basic[ "unpack" ]			= new LuaDelegateM< Table, Value, Value, Value >( unpack );
+		basic[ "xpcall" ]			= new LuaDelegateM< Function, Function, Value >( xpcall );
 
 		Table = basic;
 	}
