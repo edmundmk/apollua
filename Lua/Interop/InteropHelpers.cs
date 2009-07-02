@@ -6,6 +6,8 @@
 
 
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 
 namespace Lua.Interop
@@ -16,7 +18,8 @@ public static class InteropHelpers
 {
 	// Constants.
 
-	public static readonly Value[] EmptyValues = new Value[] {};
+	public static readonly object[]	EmptyObjects	= new object[] {};
+	public static readonly Value[]	EmptyValues		= new Value[] {};
 
 
 
@@ -150,9 +153,20 @@ public static class InteropHelpers
 				return (T)(object)( (BoxedString)v ).Value;
 			}
 		}
+		else if ( v.GetType() == typeof( BoxedObject< T > ) )
+		{
+			// Cast boxed objects.
+			return (T)(object)( (BoxedObject< T >)v ).Value;
+		}
+		else if ( v.GetType().IsSubclassOf( typeof( BoxedObject ) ) )
+		{
+			// Cast boxed objects (not exactly the same type).
+			return (T)(object)( (BoxedObject)v ).GetBoxedValue();
+		}
 
 		throw new InvalidCastException();
 	}
+
 
 	public static T Cast< T >( Value[] values, int index )
 	{
@@ -165,6 +179,7 @@ public static class InteropHelpers
 			return Cast< T >( null );
 		}
 	}
+
 
 	public static T[] CastParams< T >( Value[] values, int index )
 	{
@@ -182,6 +197,7 @@ public static class InteropHelpers
 			return new T[] {};
 		}
 	}
+
 
 	public static Value CastResultS< T >( T v )
 	{
@@ -249,14 +265,21 @@ public static class InteropHelpers
 		{
 			return new BoxedString( (string)(object)v );
 		}
+		else
+		{
+			// Box the object generically (as a userdata).
+			return new BoxedObject< T >( v );
+		}
 
 		throw new NotSupportedException();
 	}
+
 
 	public static Value[] CastResultM< T >( T v )
 	{
 		return new Value[] { CastResultS( v ) };
 	}
+
 
 	public static Value CastResultListS< T >( T[] values )
 	{
@@ -270,6 +293,7 @@ public static class InteropHelpers
 		}
 	}
 
+
 	public static Value[] CastResultListM< T >( T[] values )
 	{
 		Value[] results = new Value[ values.Length ];
@@ -280,6 +304,167 @@ public static class InteropHelpers
 		return results;
 	}
 
+
+
+
+	// Wrapping object members.
+
+	static readonly Type[] LuaMethodV = new Type[]
+	{
+		null,
+		typeof( LuaMethodV<> ),
+		typeof( LuaMethodV<,> ),
+		typeof( LuaMethodV<,,> ),
+		typeof( LuaMethodV<,,,> ),
+		typeof( LuaMethodV<,,,,> ),
+	};
+
+	static readonly Type[] LuaMethodVP = new Type[]
+	{
+		null,
+		null,
+		typeof( LuaMethodVP<,> ),
+		typeof( LuaMethodVP<,,> ),
+		typeof( LuaMethodVP<,,,> ),
+		typeof( LuaMethodVP<,,,,> ),
+		typeof( LuaMethodVP<,,,,,> ),
+	};
+
+	static readonly Type[] LuaMethodS = new Type[]
+	{
+		null,
+		null,
+		typeof( LuaMethodS<,> ),
+		typeof( LuaMethodS<,,> ),
+		typeof( LuaMethodS<,,,> ),
+		typeof( LuaMethodS<,,,,> ),
+		typeof( LuaMethodS<,,,,,> ),
+	};
+
+	static readonly Type[] LuaMethodSP = new Type[]
+	{
+		null,
+		null,
+		null,
+		typeof( LuaMethodSP<,,> ),
+		typeof( LuaMethodSP<,,,> ),
+		typeof( LuaMethodSP<,,,,> ),
+		typeof( LuaMethodSP<,,,,,> ),
+		typeof( LuaMethodSP<,,,,,,> ),
+	};
+
+	static readonly Type[] LuaMethodM = new Type[]
+	{
+		null,
+		null,
+		typeof( LuaMethodM<,> ),
+		typeof( LuaMethodM<,,> ),
+		typeof( LuaMethodM<,,,> ),
+		typeof( LuaMethodM<,,,,> ),
+		typeof( LuaMethodM<,,,,,> ),
+	};
+
+	static readonly Type[] LuaMethodMP = new Type[]
+	{
+		null,
+		null,
+		null,
+		typeof( LuaMethodMP<,,> ),
+		typeof( LuaMethodMP<,,,> ),
+		typeof( LuaMethodMP<,,,,> ),
+		typeof( LuaMethodMP<,,,,,> ),
+		typeof( LuaMethodMP<,,,,,,> ),
+	};
+
+	public static Function WrapMethod( Type type, MethodInfo method )
+	{
+		// Get parameters.
+
+		ParameterInfo[] parameters = method.GetParameters();
+		
+
+		// Construct generic type parameters.
+
+		List< Type > typeArguments = new List< Type >();
+		typeArguments.Add( type );
+		foreach ( ParameterInfo parameter in parameters )
+		{
+			typeArguments.Add( parameter.ParameterType );
+		}
+
+		
+		// Check if the method has variable arguments.
+		
+		bool hasParams = false;
+		if ( parameters.Length > 0 )
+		{
+			ParameterInfo lastParameter = parameters[ parameters.Length - 1 ];
+			if (    lastParameter.ParameterType.IsArray
+			     && lastParameter.GetCustomAttributes( typeof( ParamArrayAttribute ), false ).Length > 0 )
+			{
+				typeArguments[ typeArguments.Count - 1 ] = lastParameter.ParameterType.GetElementType();
+				hasParams = true;
+			}
+		}
+
+		
+		// Find appropriate generic type for the method function.
+
+		Type[] genericMethodTypeList = null;
+		if ( method.ReturnType == typeof( void ) )
+		{
+			genericMethodTypeList = hasParams ? LuaMethodVP : LuaMethodV;
+		}
+		else if ( ! method.ReturnType.IsArray )
+		{
+			typeArguments.Add( method.ReturnType );
+			genericMethodTypeList = hasParams ? LuaMethodSP : LuaMethodS;
+		}
+		else
+		{
+			typeArguments.Add( method.ReturnType.GetElementType() );
+			genericMethodTypeList = hasParams ? LuaMethodMP : LuaMethodM;
+		}
+
+
+		// Construct appropriate method type to marshal the method's parameters.
+
+		Type genericMethodType = null;
+		if ( typeArguments.Count < genericMethodTypeList.Length )
+		{
+			genericMethodType = genericMethodTypeList[ typeArguments.Count ];
+		}
+
+		if ( genericMethodType == null )
+		{
+			throw new TargetParameterCountException();
+		}
+
+		Type methodType = genericMethodType.MakeGenericType( typeArguments.ToArray() );
+
+
+		// Construct function from type.
+
+		ConstructorInfo constructor = methodType.GetConstructor( new Type[] { typeof( MethodInfo ) } );
+		return (Function)constructor.Invoke( new object[] { method } );
+
+	}
+
+
+	public static LuaProperty WrapProperty( Type type, PropertyInfo property )
+	{
+		Type propertyType = typeof( LuaProperty<> ).MakeGenericType( new Type[] { property.PropertyType } );
+		ConstructorInfo constructor = propertyType.GetConstructor( new Type[] { typeof( PropertyInfo ) } );
+		return (LuaProperty)constructor.Invoke( new object[] { property } );
+	}
+
+
+	public static LuaField WrapField( Type type, FieldInfo field )
+	{
+		Type propertyType = typeof( LuaField<> ).MakeGenericType( new Type[] { field.FieldType } );
+		ConstructorInfo constructor = propertyType.GetConstructor( new Type[] { typeof( FieldInfo ) } );
+		return (LuaField)constructor.Invoke( new object[] { field } );
+	}
 
 
 }

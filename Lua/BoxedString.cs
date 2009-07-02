@@ -27,6 +27,7 @@ public sealed class BoxedString
 	}
 
 
+	// Hashing.
 
 	public override bool Equals( object o )
 	{

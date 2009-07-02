@@ -82,7 +82,6 @@ public sealed class BoxedInteger
 		get { return "number"; }
 	}
 
-
 	public override bool TryToInteger( out int value )
 	{
 		value = Value;
