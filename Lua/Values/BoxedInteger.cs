@@ -1,4 +1,4 @@
-// BoxedInt32.cs
+// BoxedInteger.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -9,12 +9,12 @@ using System;
 using System.Diagnostics;
 
 
-namespace Lua
+namespace Lua.Values
 {
 
 
 [DebuggerDisplay( "{Value}" )]
-public sealed class BoxedInt32
+public sealed class BoxedInteger
 	:	LuaValue
 {
 
@@ -30,7 +30,7 @@ public sealed class BoxedInt32
 		private set;
 	}
 
-	public BoxedInt32( int value )
+	public BoxedInteger( int value )
 	{
 		Value = value;
 	}
@@ -44,9 +44,9 @@ public sealed class BoxedInt32
 		{
 			return false;
 		}
-		if ( o.GetType() == typeof( BoxedInt32 ) )
+		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return Value.Equals( ( (BoxedInt32)o ).Value );
+			return Value.Equals( ( (BoxedInteger)o ).Value );
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
@@ -84,7 +84,7 @@ public sealed class BoxedInt32
 		return true;
 	}
 
-	public override bool TryToInt32( out int value )
+	public override bool TryToInteger( out int value )
 	{
 		value = Value;
 		return true;
@@ -107,9 +107,9 @@ public sealed class BoxedInt32
 
 	public override LuaValue Add( LuaValue o )
 	{
-		if ( o.GetType() == typeof( BoxedInt32 ) )
+		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return new BoxedInt32( Value + ( (BoxedInt32)o ).Value );
+			return new BoxedInteger( Value + ( (BoxedInteger)o ).Value );
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
@@ -120,9 +120,9 @@ public sealed class BoxedInt32
 
 	public override LuaValue Subtract( LuaValue o )
 	{
-		if ( o.GetType() == typeof( BoxedInt32 ) )
+		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return new BoxedInt32( Value - ( (BoxedInt32)o ).Value );
+			return new BoxedInteger( Value - ( (BoxedInteger)o ).Value );
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
@@ -133,9 +133,9 @@ public sealed class BoxedInt32
 
 	public override LuaValue Multiply( LuaValue o )
 	{
-		if ( o.GetType() == typeof( BoxedInt32 ) )
+		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return new BoxedInt32( Value * ( (BoxedInt32)o ).Value );
+			return new BoxedInteger( Value * ( (BoxedInteger)o ).Value );
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
@@ -146,12 +146,12 @@ public sealed class BoxedInt32
 
 	public override LuaValue Divide( LuaValue o )
 	{
-		if ( o.GetType() == typeof( BoxedInt32 ) )
+		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			int oValue = ( (BoxedInt32)o ).Value;
+			int oValue = ( (BoxedInteger)o ).Value;
 			if ( Value % oValue == 0 )
 			{
-				return new BoxedInt32( Value / oValue );
+				return new BoxedInteger( Value / oValue );
 			}
 			else
 			{
@@ -167,9 +167,9 @@ public sealed class BoxedInt32
 
 	public override LuaValue IntegerDivide( LuaValue o )
 	{
-		if ( o.GetType() == typeof( BoxedInt32 ) )
+		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return new BoxedInt32( Value / ( (BoxedInt32)o ).Value );
+			return new BoxedInteger( Value / ( (BoxedInteger)o ).Value );
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
@@ -180,9 +180,9 @@ public sealed class BoxedInt32
 
 	public override LuaValue Modulus( LuaValue o )
 	{
-		if ( o.GetType() == typeof( BoxedInt32 ) )
+		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return new BoxedInt32( Value % ( (BoxedInt32)o ).Value );
+			return new BoxedInteger( Value % ( (BoxedInteger)o ).Value );
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
@@ -193,9 +193,9 @@ public sealed class BoxedInt32
 
 	public override LuaValue RaiseToPower( LuaValue o )
 	{
-		if ( o.GetType() == typeof( BoxedInt32 ) )
+		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return new BoxedInt32( (int)Math.Pow( (double)Value, (double)( (BoxedInt32)o ).Value ) );
+			return new BoxedInteger( (int)Math.Pow( (double)Value, (double)( (BoxedInteger)o ).Value ) );
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
@@ -206,9 +206,9 @@ public sealed class BoxedInt32
 
 	public override LuaValue Concatenate( LuaValue o )
 	{
-		if ( o.GetType() == typeof( BoxedInt32 ) )
+		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return new BoxedString( System.String.Concat( Value, ( (BoxedInt32)o ).Value ) );
+			return new BoxedString( System.String.Concat( Value, ( (BoxedInteger)o ).Value ) );
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
@@ -226,7 +226,7 @@ public sealed class BoxedInt32
 
 	public override LuaValue UnaryMinus()
 	{
-		return new BoxedInt32( -Value );
+		return new BoxedInteger( -Value );
 	}
 
 	
@@ -234,9 +234,9 @@ public sealed class BoxedInt32
 
 	public override bool EqualsValue( LuaValue o )
 	{
-		if ( o.GetType() == typeof( BoxedInt32 ) )
+		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return Value == ( (BoxedInt32)o ).Value;
+			return Value == ( (BoxedInteger)o ).Value;
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
@@ -247,9 +247,9 @@ public sealed class BoxedInt32
 
 	public override bool LessThanValue( LuaValue o )
 	{
-		if ( o.GetType() == typeof( BoxedInt32 ) )
+		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return Value < ( (BoxedInt32)o ).Value;
+			return Value < ( (BoxedInteger)o ).Value;
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
@@ -260,9 +260,9 @@ public sealed class BoxedInt32
 
 	public override bool LessThanOrEqualsValue( LuaValue o )
 	{
-		if ( o.GetType() == typeof( BoxedInt32 ) )
+		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return Value <= ( (BoxedInt32)o ).Value;
+			return Value <= ( (BoxedInteger)o ).Value;
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{

@@ -171,7 +171,7 @@ public class Basic
 		// TODO: level 0 is the 'thread' environment.
 
 		int level;
-		if ( f.TryToInt32( out level ) )
+		if ( f.TryToInteger( out level ) )
 		{
 			f = StackLevelHandler( level );
 		}
@@ -247,14 +247,21 @@ public class Basic
 
 		string s = "";
 		LuaValue part = function.InvokeS();
-		while ( part is BoxedString && ( (BoxedString)part ).Value.Length > 0 )
+		while ( part != null )
 		{
-			s += ( (BoxedString)part ).Value;
-			part = function.InvokeS();
-		}
-		if ( part != null && !( part is BoxedString ) )
-		{
-			throw new ArgumentException();
+			string value;
+			if ( part.TryToString( out value ) )
+			{
+				if ( value.Length > 0 )
+					s += value;
+				else
+					break;
+			}
+			else
+			{
+				// TODO: This should return nil, error message.
+				throw new ArgumentException();
+			}
 		}
 
 
@@ -382,7 +389,7 @@ public class Basic
 	LuaValue[] select( LuaValue index, params LuaValue[] arguments )
 	{
 		int i;
-		if ( index.TryToInt32( out i ) )
+		if ( index.TryToInteger( out i ) )
 		{
 			// Pick correct argument.
 
@@ -414,7 +421,7 @@ public class Basic
 		// TODO: level 0 is the 'thread' environment.
 
 		int level;
-		if ( f.TryToInt32( out level ) )
+		if ( f.TryToInteger( out level ) )
 		{
 			f = StackLevelHandler( level );
 		}
@@ -462,11 +469,9 @@ public class Basic
 
 		// Convert strings to numbers.
 
-		if ( v is BoxedString )
+		string s;
+		if ( v.TryToString( out s ) )
 		{
-			string s = ( (BoxedString)v ).Value;
-
-
 			// Find base.
 
 			int b;
@@ -474,7 +479,7 @@ public class Basic
 			{
 				b = 10;
 			}
-			else if ( ! numberBase.TryToInt32( out b ) )
+			else if ( ! numberBase.TryToInteger( out b ) )
 			{
 				throw new ArgumentException();
 			}
@@ -593,7 +598,7 @@ public class Basic
 		if ( end == null ) end = table.Length();
 
 		int istart, iend;
-		if ( ! start.TryToInt32( out istart ) || ! end.TryToInt32( out iend ) )
+		if ( ! start.TryToInteger( out istart ) || ! end.TryToInteger( out iend ) )
 		{
 			throw new ArgumentException();
 		}

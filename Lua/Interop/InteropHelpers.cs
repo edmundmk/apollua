@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Lua.Values;
 
 
 namespace Lua.Interop
@@ -42,7 +43,7 @@ public static class InteropHelpers
 		else if ( typeof( T ) == typeof( sbyte ) )
 		{
 			int integer;
-			if ( v.TryToInt32( out integer ) )
+			if ( v.TryToInteger( out integer ) )
 			{
 				sbyte i;
 				checked { i = (sbyte)integer; }
@@ -52,7 +53,7 @@ public static class InteropHelpers
 		else if ( typeof( T ) == typeof( byte ) )
 		{
 			int integer;
-			if ( v.TryToInt32( out integer ) )
+			if ( v.TryToInteger( out integer ) )
 			{
 				byte i;
 				checked { i = (byte)integer; }
@@ -62,7 +63,7 @@ public static class InteropHelpers
 		else if ( typeof( T ) == typeof( short ) )
 		{
 			int integer;
-			if ( v.TryToInt32( out integer ) )
+			if ( v.TryToInteger( out integer ) )
 			{
 				short i;
 				checked { i = (short)integer; }
@@ -72,7 +73,7 @@ public static class InteropHelpers
 		else if ( typeof( T ) == typeof( ushort ) )
 		{
 			int integer;
-			if ( v.TryToInt32( out integer ) )
+			if ( v.TryToInteger( out integer ) )
 			{
 				ushort i;
 				checked { i = (ushort)integer; }
@@ -82,7 +83,7 @@ public static class InteropHelpers
 		else if ( typeof( T ) == typeof( int ) )
 		{
 			int integer;
-			if ( v.TryToInt32( out integer ) )
+			if ( v.TryToInteger( out integer ) )
 			{
 				return (T)(object)integer;
 			}
@@ -90,7 +91,7 @@ public static class InteropHelpers
 		else if ( typeof( T ) == typeof( long ) )
 		{
 			int integer;
-			if ( v.TryToInt32( out integer ) )
+			if ( v.TryToInteger( out integer ) )
 			{
 				long i = integer;
 				return (T)(object)i;
@@ -99,7 +100,7 @@ public static class InteropHelpers
 		else if ( typeof( T ) == typeof( ulong ) )
 		{
 			int integer;
-			if ( v.TryToInt32( out integer ) )
+			if ( v.TryToInteger( out integer ) )
 			{
 				ulong i;
 				checked { i = (ulong)integer; }
@@ -108,9 +109,9 @@ public static class InteropHelpers
 		}
 		else if ( typeof( T ) == typeof( float ) )
 		{
-			if ( v.GetType() == typeof( BoxedInt32 ) )
+			if ( v.GetType() == typeof( BoxedInteger ) )
 			{
-				float real = ( (BoxedInt32)v ).Value;
+				float real = ( (BoxedInteger)v ).Value;
 				return (T)(object)real;
 			}
 			else if ( v.GetType() == typeof( BoxedDouble ) )
@@ -122,9 +123,9 @@ public static class InteropHelpers
 		}
 		else if ( typeof( T ) == typeof( double ) )
 		{
-			if ( v.GetType() == typeof( BoxedInt32 ) )
+			if ( v.GetType() == typeof( BoxedInteger ) )
 			{
-				double real = ( (BoxedInt32)v ).Value;
+				double real = ( (BoxedInteger)v ).Value;
 				return (T)(object)real;
 			}
 			else if ( v.GetType() == typeof( BoxedDouble ) )
@@ -134,9 +135,9 @@ public static class InteropHelpers
 		}
 		else if ( typeof( T ) == typeof( decimal ) )
 		{
-			if ( v.GetType() == typeof( BoxedInt32 ) )
+			if ( v.GetType() == typeof( BoxedInteger ) )
 			{
-				decimal real = ( (BoxedInt32)v ).Value;
+				decimal real = ( (BoxedInteger)v ).Value;
 				return (T)(object)real;
 			}
 			else if ( v.GetType() == typeof( BoxedDouble ) )
@@ -215,38 +216,38 @@ public static class InteropHelpers
 		}
 		else if ( typeof( T ) == typeof( sbyte ) )
 		{
-			return new BoxedInt32( (sbyte)(object)v );
+			return new BoxedInteger( (sbyte)(object)v );
 		}
 		else if ( typeof( T ) == typeof( byte ) )
 		{
-			return new BoxedInt32( (byte)(object)v );
+			return new BoxedInteger( (byte)(object)v );
 		}
 		else if ( typeof( T ) == typeof( short ) )
 		{
-			return new BoxedInt32( (short)(object)v );
+			return new BoxedInteger( (short)(object)v );
 		}
 		else if ( typeof( T ) == typeof( ushort ) )
 		{
-			return new BoxedInt32( (ushort)(object)v );
+			return new BoxedInteger( (ushort)(object)v );
 		}
 		else if ( typeof( T ) == typeof( int ) )
 		{
-			return new BoxedInt32( (int)(object)v );
+			return new BoxedInteger( (int)(object)v );
 		}
 		else if ( typeof( T ) == typeof( uint ) )
 		{
 			uint integer = (uint)(object)v;
-			checked { return new BoxedInt32( (int)integer ); }
+			checked { return new BoxedInteger( (int)integer ); }
 		}
 		else if ( typeof( T ) == typeof( long ) )
 		{
 			long integer = (long)(object)v;
-			checked { return new BoxedInt32( (int)integer ); }
+			checked { return new BoxedInteger( (int)integer ); }
 		}
 		else if ( typeof( T ) == typeof( ulong ) )
 		{
 			ulong integer = (ulong)(object)v;
-			checked { return new BoxedInt32( (int)integer ); }
+			checked { return new BoxedInteger( (int)integer ); }
 		}
 		else if ( typeof( T ) == typeof( float ) )
 		{

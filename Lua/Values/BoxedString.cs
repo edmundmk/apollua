@@ -9,7 +9,7 @@ using System;
 using System.Diagnostics;
 
 
-namespace Lua
+namespace Lua.Values
 {
 
 
@@ -85,9 +85,9 @@ public sealed class BoxedString
 
 	public override LuaValue Concatenate( LuaValue o )
 	{
-		if ( o.GetType() == typeof( BoxedInt32 ) )
+		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return new BoxedString( String.Concat( Value, ( (BoxedInt32)o ).Value ) );
+			return new BoxedString( String.Concat( Value, ( (BoxedInteger)o ).Value ) );
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
@@ -105,7 +105,7 @@ public sealed class BoxedString
 
 	public override LuaValue Length()
 	{
-		return new BoxedInt32( Value.Length );
+		return new BoxedInteger( Value.Length );
 	}
 	
 

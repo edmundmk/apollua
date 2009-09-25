@@ -97,7 +97,7 @@ public sealed class LuaTable
 
 	public override LuaValue Length()
 	{
-		return new BoxedInt32( boundary );
+		return boundary;
 	}
 
 
@@ -167,7 +167,7 @@ public sealed class LuaTable
 			{
 				if ( array[ index ] != null )
 				{
-					key		= new BoxedInt32( index + 1 );
+					key		= index + 1;
 					value	= array[ index ];
 					return;
 				}
@@ -264,7 +264,7 @@ public sealed class LuaTable
 	
 	bool TryArrayIndex( LuaValue key, out int index )
 	{
-		if ( key.TryToInt32( out index ) && 1 <= index )
+		if ( key.TryToInteger( out index ) && 1 <= index )
 		{
 			index -= 1;
 			return true;
@@ -768,7 +768,7 @@ public sealed class LuaTable
 			LuaValue value = array[ index ];
 			if ( value != null )
 			{
-				yield return new KeyValuePair< LuaValue, LuaValue >( new BoxedInt32( index + 1 ), value );
+				yield return new KeyValuePair< LuaValue, LuaValue >( index + 1, value );
 			}
 		}
 

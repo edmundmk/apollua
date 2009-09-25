@@ -6,7 +6,7 @@
 
 
 using System;
-using Lua.Interop;
+using Lua.Values;
 
 
 namespace Lua
@@ -48,28 +48,28 @@ public abstract class LuaValue
 	// Conversions.
 
 	public static implicit operator LuaValue ( bool b )			{ return b ? BoxedBoolean.True : BoxedBoolean.False; }
-	public static implicit operator LuaValue ( sbyte i )		{ return new BoxedInt32( i ); }
-	public static implicit operator LuaValue ( byte i )			{ return new BoxedInt32( i ); }
-	public static implicit operator LuaValue ( short i )		{ return new BoxedInt32( i ); }
-	public static implicit operator LuaValue ( ushort i )		{ return new BoxedInt32( i ); }
-	public static implicit operator LuaValue ( int i )			{ return new BoxedInt32( i ); }
-	public static explicit operator LuaValue ( uint i )			{ checked { return new BoxedInt32( (int)i ); } }
-	public static explicit operator LuaValue ( long i )			{ checked { return new BoxedInt32( (int)i ); } }
-	public static explicit operator LuaValue ( ulong i )		{ checked { return new BoxedInt32( (int)i ); } }
+	public static implicit operator LuaValue ( sbyte i )		{ return new BoxedInteger( i ); }
+	public static implicit operator LuaValue ( byte i )			{ return new BoxedInteger( i ); }
+	public static implicit operator LuaValue ( short i )		{ return new BoxedInteger( i ); }
+	public static implicit operator LuaValue ( ushort i )		{ return new BoxedInteger( i ); }
+	public static implicit operator LuaValue ( int i )			{ return new BoxedInteger( i ); }
+	public static explicit operator LuaValue ( uint i )			{ checked { return new BoxedInteger( (int)i ); } }
+	public static explicit operator LuaValue ( long i )			{ checked { return new BoxedInteger( (int)i ); } }
+	public static explicit operator LuaValue ( ulong i )		{ checked { return new BoxedInteger( (int)i ); } }
 	public static implicit operator LuaValue ( float n )		{ return new BoxedDouble( n ); }
 	public static implicit operator LuaValue ( double n )		{ return new BoxedDouble( n ); }
 	public static explicit operator LuaValue ( decimal n )		{ checked { return new BoxedDouble( (double)n ); } }
 	public static implicit operator LuaValue ( string s )		{ return new BoxedString( s ); }
 
 	public static explicit operator bool ( LuaValue v )			{ return v != null && v.IsTrue(); }
-	public static explicit operator sbyte ( LuaValue v )		{ int value; if ( v.TryToInt32( out value ) ) checked { return (sbyte)value; } else throw new InvalidCastException(); }
-	public static explicit operator byte ( LuaValue v )			{ int value; if ( v.TryToInt32( out value ) ) checked { return (byte)value; } else throw new InvalidCastException(); }
-	public static explicit operator short ( LuaValue v )		{ int value; if ( v.TryToInt32( out value ) ) checked { return (short)value; } else throw new InvalidCastException(); }
-	public static explicit operator ushort ( LuaValue v )		{ int value; if ( v.TryToInt32( out value ) ) checked { return (ushort)value; } else throw new InvalidCastException(); }
-	public static explicit operator int ( LuaValue v )			{ int value; if ( v.TryToInt32( out value ) ) return value; else throw new InvalidCastException(); }
-	public static explicit operator uint ( LuaValue v )			{ int value; if ( v.TryToInt32( out value ) ) checked { return (uint)value; } else throw new InvalidCastException(); }
-	public static explicit operator long ( LuaValue v )			{ int value; if ( v.TryToInt32( out value ) ) return value; else throw new InvalidCastException(); }
-	public static explicit operator ulong ( LuaValue v )		{ int value; if ( v.TryToInt32( out value ) ) checked { return (ulong)value; } else throw new InvalidCastException(); }
+	public static explicit operator sbyte ( LuaValue v )		{ int value; if ( v.TryToInteger( out value ) ) checked { return (sbyte)value; } else throw new InvalidCastException(); }
+	public static explicit operator byte ( LuaValue v )			{ int value; if ( v.TryToInteger( out value ) ) checked { return (byte)value; } else throw new InvalidCastException(); }
+	public static explicit operator short ( LuaValue v )		{ int value; if ( v.TryToInteger( out value ) ) checked { return (short)value; } else throw new InvalidCastException(); }
+	public static explicit operator ushort ( LuaValue v )		{ int value; if ( v.TryToInteger( out value ) ) checked { return (ushort)value; } else throw new InvalidCastException(); }
+	public static explicit operator int ( LuaValue v )			{ int value; if ( v.TryToInteger( out value ) ) return value; else throw new InvalidCastException(); }
+	public static explicit operator uint ( LuaValue v )			{ int value; if ( v.TryToInteger( out value ) ) checked { return (uint)value; } else throw new InvalidCastException(); }
+	public static explicit operator long ( LuaValue v )			{ int value; if ( v.TryToInteger( out value ) ) return value; else throw new InvalidCastException(); }
+	public static explicit operator ulong ( LuaValue v )		{ int value; if ( v.TryToInteger( out value ) ) checked { return (ulong)value; } else throw new InvalidCastException(); }
 	public static explicit operator float ( LuaValue v )		{ double value; if ( v.TryToDouble( out value ) ) checked { return (float)value; } else throw new InvalidCastException(); }
 	public static explicit operator double ( LuaValue v )		{ double value; if ( v.TryToDouble( out value ) ) return value; else throw new InvalidCastException(); }
 	public static explicit operator decimal ( LuaValue v )		{ double value; if ( v.TryToDouble( out value ) ) checked { return (decimal)value; } else throw new InvalidCastException(); }
@@ -80,7 +80,7 @@ public abstract class LuaValue
 
 	public virtual string	GetLuaType()						{ return "userdata"; }
 	public virtual bool		IsPrimitiveValue()					{ return false; }
-	public virtual bool		TryToInt32( out int v )				{ v = 0; return false; }
+	public virtual bool		TryToInteger( out int v )				{ v = 0; return false; }
 	public virtual bool		TryToDouble( out double v )			{ v = 0.0; return false; }
 	public virtual bool		TryToString( out string v )			{ v = String.Empty; return false; }
 	public virtual bool		TryToNumberValue( out LuaValue v )	{ v = null; return false; }
