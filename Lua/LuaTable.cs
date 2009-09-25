@@ -1,4 +1,4 @@
-﻿// Table.cs
+﻿// LuaTable.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -34,15 +34,17 @@ namespace Lua
 
 
 [DebuggerDisplay( "Count = {Count}" ), DebuggerTypeProxy( typeof( TableDebugView ) )]
-public sealed class Table
-	:	Value
-	,	IDictionary< Value, Value >
+public sealed class LuaTable
+	:	LuaValue
+	,	IDictionary< LuaValue, LuaValue >
 {
-
+	
+	// Elements.
+	
 	struct Element
 	{
-		public Value	Key;
-		public Value	Value;
+		public LuaValue	Key;
+		public LuaValue	Value;
 
 		int next;
 		public int Next
@@ -52,8 +54,11 @@ public sealed class Table
 		}
 	}
 
+
+	// Data.
+
 	Element[]	hash;
-	Value[]		array;
+	LuaValue[]	array;
 	int			hashOccupancy;
 	int			arrayLengthNext;
 	int			arrayOccupancy;
@@ -61,53 +66,38 @@ public sealed class Table
 	int			boundary;
 	
 
-	public Table()
+
+	// Constructors.
+
+	public LuaTable()
 		:	this( 0, 0 )
 	{
 	}
 
-	public Table( int arrayCount, int hashCount )
+	public LuaTable( int arrayCount, int hashCount )
 	{
 		Reset( arrayCount, hashCount );
 	}
 
-	void Reset( int arrayCount, int hashCount )
-	{
-		hash				= new Element[ NextPow2( hashCount ) ];
-		array				= new Value[ arrayCount ];
-		hashOccupancy		= 0;
-		arrayLengthNext		= 2;
-		arrayOccupancy		= 0;
-		arrayOccupancyNext	= 0;
-		boundary			= 0;
-	}
 
 
 
+	// LuaValue
 
-	// Metatable.
-
-	public override Table Metatable
+	public override LuaTable Metatable
 	{
 		get;
 		set;
 	}
 
-
-	// Conversion.
-
-	public override string LuaType
+	public override string GetLuaType()
 	{
-		get { return "table"; }
+		return "table";
 	}
 
-
-
-	// Unary arithmetic operators.
-
-	public override Value Length()
+	public override LuaValue Length()
 	{
-		return new BoxedInteger( boundary );
+		return new BoxedInt32( boundary );
 	}
 
 
@@ -115,16 +105,16 @@ public sealed class Table
 
 	// Indexing.
 
-	public override Value Index( Value key )
+	public override LuaValue Index( LuaValue key )
 	{
-		Value value = Get( key );
+		LuaValue value = Get( key );
 		if ( value != null )
 		{
 			return value;
 		}
 
-		Value h = GetHandler( this, handlerIndex );
-		if ( h is Function )
+		LuaValue h = GetHandler( this, handlerIndex );
+		if ( h is LuaFunction )
 		{
 			return h.InvokeS( this, key );
 		}
@@ -136,17 +126,17 @@ public sealed class Table
 		return null;
 	}
 
-	public override void NewIndex( Value key, Value value )
+	public override void NewIndex( LuaValue key, LuaValue value )
 	{
-		Value existingValue = Get( key );
+		LuaValue existingValue = Get( key );
 		if ( existingValue != null )
 		{
 			Set( key, value );
 			return;
 		}
 
-		Value h = GetHandler( this, handlerIndex );
-		if ( h is Function )
+		LuaValue h = GetHandler( this, handlerIndex );
+		if ( h is LuaFunction )
 		{
 			h.InvokeS( this, key, value );
 			return;
@@ -163,8 +153,8 @@ public sealed class Table
 
 	
 	// Next operation to iterate over all entries.
-
-	public void Next( ref Value key, out Value value )
+	
+	public void Next( ref LuaValue key, out LuaValue value )
 	{
 		// Try integer index.
 
@@ -177,7 +167,7 @@ public sealed class Table
 			{
 				if ( array[ index ] != null )
 				{
-					key		= new BoxedInteger( index + 1 );
+					key		= new BoxedInt32( index + 1 );
 					value	= array[ index ];
 					return;
 				}
@@ -202,7 +192,7 @@ public sealed class Table
 			i = key.GetHashCode() & ( hash.Length - 1 );
 			if ( hash[ i ].Key != null )
 			{
-				while ( i != -1 && ! hash[ i ].Key.Equals( key ) )
+				while ( i != -1 && ! hash[ i ].Key.EqualsValue( key ) )
 				{
 					i = hash[ i ].Next;
 				}
@@ -249,18 +239,32 @@ public sealed class Table
 		value	= null;
 	}
 
+	
+
+	
+	// Initialization.
 
 
-
-
-
-
-	// Table access.
-
-
-	bool TryArrayIndex( Value key, out int index )
+	void Reset( int arrayCount, int hashCount )
 	{
-		if ( key.TryToInteger( out index ) && 1 <= index )
+		hash				= new Element[ NextPow2( hashCount ) ];
+		array				= new LuaValue[ arrayCount ];
+		hashOccupancy		= 0;
+		arrayLengthNext		= 2;
+		arrayOccupancy		= 0;
+		arrayOccupancyNext	= 0;
+		boundary			= 0;
+	}
+
+
+
+	
+	// Table access.
+	
+	
+	bool TryArrayIndex( LuaValue key, out int index )
+	{
+		if ( key.TryToInt32( out index ) && 1 <= index )
 		{
 			index -= 1;
 			return true;
@@ -270,7 +274,7 @@ public sealed class Table
 	}
 
 
-	Value Get( Value key )
+	LuaValue Get( LuaValue key )
 	{
 		// Try integer index.
 
@@ -287,7 +291,7 @@ public sealed class Table
 	}
 
 
-	void Set( Value key, Value value )
+	void Set( LuaValue key, LuaValue value )
 	{
 		// Try integer index.
 
@@ -298,7 +302,7 @@ public sealed class Table
 
 			if ( index < array.Length )
 			{
-				Value existingValue = array[ index ];
+				LuaValue existingValue = array[ index ];
 				if ( existingValue != null && value == null )
 				{
 					arrayOccupancy -= 1;
@@ -310,7 +314,7 @@ public sealed class Table
 			}
 			else if ( index < arrayLengthNext )
 			{
-				Value existingValue = Get( key );
+				LuaValue existingValue = Get( key );
 				if ( existingValue != null && value == null )
 				{
 					arrayOccupancyNext -= 1;
@@ -376,7 +380,7 @@ public sealed class Table
 
 	// Table updating.
 
-	
+
 	void UpdateBoundary()
 	{
 		// The boundary is the first array index containing a nil value, where
@@ -486,7 +490,7 @@ public sealed class Table
 	}
 
 
-	Value GetHash( Value key )
+	LuaValue GetHash( LuaValue key )
 	{
 		if ( hash.Length == 0 )
 			return null;
@@ -497,7 +501,7 @@ public sealed class Table
 		int i = key.GetHashCode() & ( hash.Length - 1 );
 		if ( hash[ i ].Key != null )
 		{
-			while ( i != -1 && ! hash[ i ].Key.Equals( key ) )
+			while ( i != -1 && ! hash[ i ].Key.EqualsValue( key ) )
 			{
 				i = hash[ i ].Next;
 			}
@@ -512,7 +516,7 @@ public sealed class Table
 	}
 
 
-	void SetHash( Value key, Value value )
+	void SetHash( LuaValue key, LuaValue value )
 	{
 		int hashCode = key.GetHashCode();
 		int i;
@@ -525,7 +529,7 @@ public sealed class Table
 			i = hashCode & ( hash.Length - 1 );
 			if ( hash[ i ].Key != null )
 			{
-				while ( i != -1 && ! hash[ i ].Key.Equals( key ) )
+				while ( i != -1 && ! hash[ i ].Key.EqualsValue( key ) )
 				{
 					i = hash[ i ].Next;
 				}
@@ -648,7 +652,7 @@ public sealed class Table
 		}
 	}
 
-	public Value this[ Value key ]
+	public LuaValue this[ LuaValue key ]
 	{
 		get
 		{
@@ -660,12 +664,12 @@ public sealed class Table
 		}
 	}
 	
-	public ICollection< Value > Keys
+	public ICollection< LuaValue > Keys
 	{
 		get
 		{
-			List< Value > keys = new List< Value >( Count );
-			foreach ( KeyValuePair< Value, Value > item in this )
+			List< LuaValue > keys = new List< LuaValue >( Count );
+			foreach ( KeyValuePair< LuaValue, LuaValue > item in this )
 			{
 				keys.Add( item.Key );
 			}
@@ -673,12 +677,12 @@ public sealed class Table
 		}
 	}
 
-	public ICollection< Value > Values
+	public ICollection< LuaValue > Values
 	{
 		get
 		{
-			List< Value > values = new List< Value >( Count );
-			foreach ( KeyValuePair< Value, Value > item in this )
+			List< LuaValue > values = new List< LuaValue >( Count );
+			foreach ( KeyValuePair< LuaValue, LuaValue > item in this )
 			{
 				values.Add( item.Value );
 			}
@@ -691,35 +695,35 @@ public sealed class Table
 		get { return false; }
 	}
 	
-	public void Add( Value key, Value value )
+	public void Add( LuaValue key, LuaValue value )
 	{
 		Set( key, value );
 	}
 		
-	public void Add( KeyValuePair< Value, Value > item )
+	public void Add( KeyValuePair< LuaValue, LuaValue > item )
 	{
 		Add( item.Key, item.Value );
 	}
 
-	public bool ContainsKey( Value key )
+	public bool ContainsKey( LuaValue key )
 	{
 		return Get( key ) != null;
 	}
 
-	public bool Contains( KeyValuePair< Value, Value > item )
+	public bool Contains( KeyValuePair< LuaValue, LuaValue > item )
 	{
-		return Get( item.Key ).Equals( item.Value );
+		return Get( item.Key ).EqualsValue( item.Value );
 	}
 
-	public bool TryGetValue( Value key, out Value value )
+	public bool TryGetValue( LuaValue key, out LuaValue value )
 	{
 		value = Get( key );
 		return value != null;
 	}
 
-	public bool Remove( Value key )
+	public bool Remove( LuaValue key )
 	{
-		Value value = Get( key );
+		LuaValue value = Get( key );
 		if ( value != null )
 		{
 			Set( key, null );
@@ -728,10 +732,10 @@ public sealed class Table
 		return false;
 	}
 
-	public bool Remove( KeyValuePair< Value, Value > item )
+	public bool Remove( KeyValuePair< LuaValue, LuaValue > item )
 	{
-		Value value = Get( item.Key );
-		if ( value.Equals( item.Value ) )
+		LuaValue value = Get( item.Key );
+		if ( value.EqualsValue( item.Value ) )
 		{
 			Set( item.Key, null );
 			return true;
@@ -744,9 +748,9 @@ public sealed class Table
 		Reset( 0, 0 );
 	}
 
-	public void CopyTo( KeyValuePair< Value, Value >[] array, int arrayIndex )
+	public void CopyTo( KeyValuePair< LuaValue, LuaValue >[] array, int arrayIndex )
 	{
-		foreach ( KeyValuePair< Value, Value > item in this )
+		foreach ( KeyValuePair< LuaValue, LuaValue > item in this )
 		{
 			if ( arrayIndex >= array.Length )
 			{
@@ -757,14 +761,14 @@ public sealed class Table
 		}
 	}
 
-	public IEnumerator< KeyValuePair< Value, Value > > GetEnumerator()
+	public IEnumerator< KeyValuePair< LuaValue, LuaValue > > GetEnumerator()
 	{
 		for ( int index = 0; index < array.Length; ++index )
 		{
-			Value value = array[ index ];
+			LuaValue value = array[ index ];
 			if ( value != null )
 			{
-				yield return new KeyValuePair< Value, Value >( new BoxedInteger( index + 1 ), value );
+				yield return new KeyValuePair< LuaValue, LuaValue >( new BoxedInt32( index + 1 ), value );
 			}
 		}
 
@@ -773,14 +777,14 @@ public sealed class Table
 			Element element = hash[ index ];
 			if ( element.Value != null )
 			{
-				yield return new KeyValuePair< Value, Value >( element.Key, element.Value );
+				yield return new KeyValuePair< LuaValue, LuaValue >( element.Key, element.Value );
 			}
 		}
 	}
 
 	System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 	{
-		return ( (IDictionary< Value, Value >)this ).GetEnumerator();
+		return ( (IDictionary< LuaValue, LuaValue >)this ).GetEnumerator();
 	}
 
 
@@ -789,23 +793,23 @@ public sealed class Table
 
 	class TableDebugView
 	{
-		Table table;
+		LuaTable table;
 
 
-		public TableDebugView( Table table )
+		public TableDebugView( LuaTable table )
 		{
 			this.table = table;
 		}
 
 
 		[DebuggerBrowsable( DebuggerBrowsableState.RootHidden )]
-		public KeyValuePair< Value, Value >[] Elements
+		public KeyValuePair< LuaValue, LuaValue >[] Elements
 		{
 			get
 			{
-				KeyValuePair< Value, Value >[] elements = new KeyValuePair< Value, Value >[ table.Count ];
+				KeyValuePair< LuaValue, LuaValue >[] elements = new KeyValuePair< LuaValue, LuaValue >[ table.Count ];
 				int i = 0;
-				foreach ( KeyValuePair< Value, Value > item in table )
+				foreach ( KeyValuePair< LuaValue, LuaValue > item in table )
 				{
 					elements[ i ] = item;
 					i += 1;

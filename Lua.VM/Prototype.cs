@@ -26,7 +26,7 @@ public class Prototype
 
 	// Constants.
 
-	public Value[]				Constants					{ get; set; }
+	public LuaValue[]				Constants					{ get; set; }
 	public Prototype[]			Prototypes					{ get; set; }
 
 

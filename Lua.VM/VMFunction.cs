@@ -14,7 +14,7 @@ namespace Lua.VM
 
 
 public sealed class VMFunction
-	:	Function
+	:	LuaFunction
 {
 	public UpVal[]		UpVals			{ get; private set; }
 	public Prototype	Prototype		{ get; private set; }
@@ -30,14 +30,14 @@ public sealed class VMFunction
 
 	// Invoke.
 
-	public override Value InvokeS()
+	public override LuaValue InvokeS()
 	{
 		VirtualMachine vm = VMRuntime.VirtualMachine;
 		vm.BeginInvoke( 0 );
 		return vm.InvokeS( this );
 	}
 
-	public override Value InvokeS( Value a1 )
+	public override LuaValue InvokeS( LuaValue a1 )
 	{
 		VirtualMachine vm = VMRuntime.VirtualMachine;
 		vm.BeginInvoke( 1 );
@@ -45,7 +45,7 @@ public sealed class VMFunction
 		return vm.InvokeS( this );
 	}
 
-	public override Value InvokeS( Value a1, Value a2 )
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )
 	{
 		VirtualMachine vm = VMRuntime.VirtualMachine;
 		vm.BeginInvoke( 2 );
@@ -54,7 +54,7 @@ public sealed class VMFunction
 		return vm.InvokeS( this );
 	}
 
-	public override Value InvokeS( Value a1, Value a2, Value a3 )
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )
 	{
 		VirtualMachine vm = VMRuntime.VirtualMachine;
 		vm.BeginInvoke( 3 );
@@ -64,7 +64,7 @@ public sealed class VMFunction
 		return vm.InvokeS( this );
 	}
 
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )
 	{
 		VirtualMachine vm = VMRuntime.VirtualMachine;
 		vm.BeginInvoke( 4 );
@@ -75,7 +75,7 @@ public sealed class VMFunction
 		return vm.InvokeS( this );
 	}
 
-	public override Value InvokeS( Value[] arguments )
+	public override LuaValue InvokeS( LuaValue[] arguments )
 	{
 		VirtualMachine vm = VMRuntime.VirtualMachine;
 		vm.BeginInvoke( arguments.Length );
@@ -86,14 +86,14 @@ public sealed class VMFunction
 		return vm.InvokeS( this );
 	}
 
-	public override Value[] InvokeM()
+	public override LuaValue[] InvokeM()
 	{
 		VirtualMachine vm = VMRuntime.VirtualMachine;
 		vm.BeginInvoke( 0 );
 		return vm.InvokeM( this );
 	}
 
-	public override Value[] InvokeM( Value a1 )
+	public override LuaValue[] InvokeM( LuaValue a1 )
 	{
 		VirtualMachine vm = VMRuntime.VirtualMachine;
 		vm.BeginInvoke( 1 );
@@ -101,7 +101,7 @@ public sealed class VMFunction
 		return vm.InvokeM( this );
 	}
 
-	public override Value[] InvokeM( Value a1, Value a2 )
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )
 	{
 		VirtualMachine vm = VMRuntime.VirtualMachine;
 		vm.BeginInvoke( 2 );
@@ -110,7 +110,7 @@ public sealed class VMFunction
 		return vm.InvokeM( this );
 	}
 
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )
 	{
 		VirtualMachine vm = VMRuntime.VirtualMachine;
 		vm.BeginInvoke( 3 );
@@ -120,7 +120,7 @@ public sealed class VMFunction
 		return vm.InvokeM( this );
 	}
 
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )
 	{
 		VirtualMachine vm = VMRuntime.VirtualMachine;
 		vm.BeginInvoke( 4 );
@@ -131,7 +131,7 @@ public sealed class VMFunction
 		return vm.InvokeM( this );
 	}
 
-	public override Value[] InvokeM( Value[] arguments )
+	public override LuaValue[] InvokeM( LuaValue[] arguments )
 	{
 		VirtualMachine vm = VMRuntime.VirtualMachine;
 		vm.BeginInvoke( arguments.Length );

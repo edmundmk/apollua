@@ -19,7 +19,7 @@ namespace Lua.Interop
 */
 
 public abstract class BoxedObject
-	:	Value
+	:	LuaValue
 {
 
 	public abstract object GetBoxedValue();
@@ -37,7 +37,7 @@ public class BoxedObject< TObject >
 {
 	// Static type reflection.
 
-	static Dictionary< string, Function >		methods;
+	static Dictionary< string, LuaFunction >		methods;
 	static Dictionary< string, LuaProperty >	properties;
 	static Dictionary< string, LuaField >		fields;
 
@@ -49,7 +49,7 @@ public class BoxedObject< TObject >
 
 		// Construct function objects for all methods.
 
-		methods = new Dictionary< string, Function >();
+		methods = new Dictionary< string, LuaFunction >();
 		MethodInfo[] methodInfos = type.GetMethods();
 		foreach ( MethodInfo method in methodInfos )
 		{
@@ -81,7 +81,7 @@ public class BoxedObject< TObject >
 
 	// Value.
 
-	public new TObject Value { get; set; }
+	public TObject Value { get; set; }
 
 
 	public BoxedObject( TObject value )
@@ -126,20 +126,20 @@ public class BoxedObject< TObject >
 
 	// Conversion.
 
-	public override string LuaType
+	public override string GetLuaType()
 	{
-		get { return "userdata"; }
+		return "userdata";
 	}
 
 
 
 	// Indexing.
 
-	public override Value Index( Value key )
+	public override LuaValue Index( LuaValue key )
 	{
 		string s = key.ToString();
 		
-		Function method;
+		LuaFunction method;
 		if ( methods.TryGetValue( s, out method ) )
 		{
 			return method;
@@ -160,7 +160,7 @@ public class BoxedObject< TObject >
 		throw new KeyNotFoundException();
 	}
 	
-	public override void NewIndex( Value key, Value value )
+	public override void NewIndex( LuaValue key, LuaValue value )
 	{
 		string s = key.ToString();
 

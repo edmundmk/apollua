@@ -22,7 +22,7 @@ public class VirtualMachine
 	const int setTop			= -1;
 	const int invokeS			= -2;
 	const int invokeM			= -3;
-	static readonly Value zero	= 0;
+	static readonly LuaValue zero	= 0;
 
 	
 	// VM State.
@@ -51,7 +51,7 @@ public class VirtualMachine
 
 	List< Frame >	frames;
 	Frame			frame;
-	List< Value >	stack;
+	List< LuaValue >	stack;
 	List< UpVal >	openUpVals;
 	int				top;
 	
@@ -64,7 +64,7 @@ public class VirtualMachine
 	public VirtualMachine()
 	{
 		frames		= new List< Frame >();
-		stack		= new List< Value >();
+		stack		= new List< LuaValue >();
 		openUpVals	= new List< UpVal >();
 		top			= -1;
 
@@ -85,7 +85,7 @@ public class VirtualMachine
 		invokeCount = 0;
 	}
 
-	public void Argument( Value argument )
+	public void Argument( LuaValue argument )
 	{
 		if ( invokeBase == -1 )
 			throw new InvalidOperationException();
@@ -95,7 +95,7 @@ public class VirtualMachine
 		invokeCount += 1;
 	}
 	
-	public Value InvokeS( VMFunction function )
+	public LuaValue InvokeS( VMFunction function )
 	{
 		// Add function in correct position in the call frame.
 		stack[ invokeBase ] = function;
@@ -113,7 +113,7 @@ public class VirtualMachine
 		DispatchLoop();
 
 		invokeBase = frame.FunctionBase;
-		Value result = stack[ invokeBase ];
+		LuaValue result = stack[ invokeBase ];
 
 		// Finished.
 		invokeBase	= -1;
@@ -122,7 +122,7 @@ public class VirtualMachine
 		return result;
 	}
 
-	public Value[] InvokeM( VMFunction function )
+	public LuaValue[] InvokeM( VMFunction function )
 	{
 		// Add function in correct position in the call frame.
 		stack[ invokeBase ] = function;
@@ -143,7 +143,7 @@ public class VirtualMachine
 		invokeCount	= GetTop() - invokeBase;
 
 		// Move results into an array.
-		Value[] results = new Value[ invokeCount ];
+		LuaValue[] results = new LuaValue[ invokeCount ];
 		for ( int result = 0; result < invokeCount; ++result )
 		{
 			results[ result ] = stack[ invokeBase + result ];
@@ -287,13 +287,13 @@ public class VirtualMachine
 			case Opcode.NewTable:
 			{
 				// R( A ) := {} ( B is array size hint, C is hash size hint )
-				SetR( i.A, new Table( i.B, i.C ) );
+				SetR( i.A, new LuaTable( i.B, i.C ) );
 				continue;
 			}
 
 			case Opcode.Self:
 			{
-				Value self = R( i.B );
+				LuaValue self = R( i.B );
 
 				// R( A + 1 ) := R( B ) 
 				SetR( i.A + 1, self );
@@ -375,17 +375,17 @@ public class VirtualMachine
 
 				while ( count > 1 )
 				{
-					Value left	= R( top - 1 );
-					Value right	= R( top - 0 );
+					LuaValue left	= R( top - 1 );
+					LuaValue right	= R( top - 0 );
 
-					if ( left.UsePrimitiveConcatenate() && right.UsePrimitiveConcatenate() )
+					if ( left.IsPrimitiveValue() && right.IsPrimitiveValue() )
 					{
 						// Count how many we can concatenate in this pass.
 						int concatcount = 2;
 						for ( concatcount = 2; concatcount < count; ++concatcount )
 						{
-							Value operand = R( top - concatcount );
-							if ( ! operand.UsePrimitiveConcatenate() )
+							LuaValue operand = R( top - concatcount );
+							if ( ! operand.IsPrimitiveValue() )
 							{
 								break;
 							}
@@ -396,7 +396,7 @@ public class VirtualMachine
 
 						for ( int r = top - ( concatcount - 1 ); r <= top; ++r )
 						{
-							Value operand = R( r );
+							LuaValue operand = R( r );
 							s.Append( operand.ToString() );
 						}
 
@@ -429,7 +429,7 @@ public class VirtualMachine
 			case Opcode.Eq:
 			{
 				// if ( RK( B ) == RK( C ) ) ~= A then skip associated jump
-				if ( RK( i.B ).Equals( RK( i.C ) ) == ( i.A != 0 ) )
+				if ( RK( i.B ).EqualsValue( RK( i.C ) ) == ( i.A != 0 ) )
 				{
 					i = NextInstruction(); Jump( i.sBx );
 				}
@@ -443,7 +443,7 @@ public class VirtualMachine
 			case Opcode.Lt:
 			{
 				// if ( RK( B ) <  RK( C ) ) ~= A then skip associated jump
-				if ( RK( i.B ).LessThan( RK( i.C ) ) == ( i.A != 0 ) )
+				if ( RK( i.B ).LessThanValue( RK( i.C ) ) == ( i.A != 0 ) )
 				{
 					i = NextInstruction(); Jump( i.sBx );
 				}
@@ -457,7 +457,7 @@ public class VirtualMachine
 			case Opcode.Le:
 			{
 				// if ( RK( B ) <= RK( C ) ) ~= A then skip associated jump
-				if ( RK( i.B ).LessThanOrEqual( RK( i.C ) ) == ( i.A != 0 ) )
+				if ( RK( i.B ).LessThanOrEqualsValue( RK( i.C ) ) == ( i.A != 0 ) )
 				{
 					i = NextInstruction(); Jump( i.sBx );
 				}
@@ -514,7 +514,7 @@ public class VirtualMachine
 					argumentCount = i.B - 1;
 				}
 
-				Value function = R( i.A );
+				LuaValue function = R( i.A );
 				if ( function is VMFunction )
 				{
 					CallFunction( (VMFunction)function, i.A, argumentCount, i.C - 1 );
@@ -541,7 +541,7 @@ public class VirtualMachine
 					argumentCount = i.B - 1;
 				}
 
-				Value function = R( i.A );
+				LuaValue function = R( i.A );
 				if ( function is VMFunction )
 				{
 					TailCallFunction( (VMFunction)function, i.A, argumentCount );
@@ -589,17 +589,17 @@ public class VirtualMachine
 
 			case Opcode.ForLoop:
 			{
-				Value index = R( i.A + 0 );
-				Value limit = R( i.A + 1 );
-				Value step	= R( i.A + 2 );
+				LuaValue index = R( i.A + 0 );
+				LuaValue limit = R( i.A + 1 );
+				LuaValue step	= R( i.A + 2 );
 
 				// Index += Step
 				index = index.Add( step );
 				SetR( i.A + 0, index );
 				
 				// if ( Step > 0 and Index <= Limit ) or ( Step < 0 and Index >= Limit ) then Var = Index, relative jump sBx
-				if (    ( ! step.LessThanOrEqual( zero ) && index.LessThanOrEqual( limit ) )
-					 || ( step.LessThan( zero ) && ! index.LessThan( limit ) ) )
+				if (    ( ! step.LessThanOrEqualsValue( zero ) && index.LessThanOrEqualsValue( limit ) )
+					 || ( step.LessThanValue( zero ) && ! index.LessThanValue( limit ) ) )
 				{
 					SetR( i.A + 3, index );
 					Jump( i.sBx );
@@ -609,20 +609,20 @@ public class VirtualMachine
 
 			case Opcode.ForPrep:
 			{
-				Value index = R( i.A + 0 );
-				Value limit = R( i.A + 1 );
-				Value step	= R( i.A + 2 );
+				LuaValue index = R( i.A + 0 );
+				LuaValue limit = R( i.A + 1 );
+				LuaValue step	= R( i.A + 2 );
 				
 				// Convert for control variables to numbers.
-				if ( ! index.TryToNumber( out index ) )
+				if ( ! index.TryToNumberValue( out index ) )
 				{
 					throw new InvalidOperationException( "'for' initial value must be a number." );
 				}
-				if ( ! index.TryToNumber( out limit ) )
+				if ( ! index.TryToNumberValue( out limit ) )
 				{
 					throw new InvalidOperationException( "'for' limit must be a number." );
 				}
-				if ( ! index.TryToNumber( out step ) )
+				if ( ! index.TryToNumberValue( out step ) )
 				{
 					throw new InvalidOperationException( "'for' step must be a number." );
 				}
@@ -651,19 +651,19 @@ public class VirtualMachine
 
 			case Opcode.TForLoop:
 			{
-				Value generator	= R( i.A + 0 );
-				Value state		= R( i.A + 1 );
-				Value control	= R( i.A + 2 );
+				LuaValue generator	= R( i.A + 0 );
+				LuaValue state		= R( i.A + 1 );
+				LuaValue control	= R( i.A + 2 );
 
 				// Var_1, ..., Var_C := Generator( State, Control )
-				Value[] results = generator.InvokeM( state, control );
+				LuaValue[] results = generator.InvokeM( state, control );
 				for ( int result = 0; result < i.C; ++result )
 				{
 					SetR( i.A + 3 + result, result < results.Length ? results[ result ] : null );
 				}
 				
 				// if Var_1 ~= nil then Control = Var_1 else skip associated jump
-				Value var_1 = results[ 0 ];
+				LuaValue var_1 = results[ 0 ];
 				if ( var_1.IsTrue() )
 				{
 					// Set.
@@ -771,7 +771,7 @@ public class VirtualMachine
 		frame.IP += offset;
 	}
 
-	Value GetEnvironment()
+	LuaValue GetEnvironment()
 	{
 		return frame.Function.Environment;
 	}
@@ -781,22 +781,22 @@ public class VirtualMachine
 		return top - frame.FrameBase;
 	}
 
-	Value R( int operand )
+	LuaValue R( int operand )
 	{
 		return stack[ frame.FrameBase + operand ];
 	}
 
-	void SetR( int operand, Value value )
+	void SetR( int operand, LuaValue value )
 	{
 		stack[ frame.FrameBase + operand ] = value;
 	}
 
-	Value U( int operand )
+	LuaValue U( int operand )
 	{
 		return frame.Function.UpVals[ operand ].Value;
 	}
 
-	void SetU( int operand, Value value )
+	void SetU( int operand, LuaValue value )
 	{
 		frame.Function.UpVals[ operand ].Value = value;
 	}
@@ -806,12 +806,12 @@ public class VirtualMachine
 		return frame.Function.Prototype.Prototypes[ operand ];
 	}
 
-	Value K( int operand )
+	LuaValue K( int operand )
 	{
 		return frame.Function.Prototype.Constants[ operand ];
 	}
 
-	Value RK( int operand )
+	LuaValue RK( int operand )
 	{
 		if ( Instruction.IsConstant( operand ) )
 		{
@@ -929,13 +929,13 @@ public class VirtualMachine
 
 	// Calls.
 
-	void CallFunction( Value function, int functionBase, int argumentCount, int resultCount )
+	void CallFunction( LuaValue function, int functionBase, int argumentCount, int resultCount )
 	{
 		// Get stack value for the function base.
 		functionBase += frame.FrameBase;
 	
 		// Package arguments.
-		Value[] arguments = new Value[ argumentCount ];
+		LuaValue[] arguments = new LuaValue[ argumentCount ];
 		for ( int argument = 0; argument < argumentCount; ++argument )
 		{
 			arguments[ argument ] = stack[ functionBase + 1 + argument ];
@@ -948,7 +948,7 @@ public class VirtualMachine
 		}
 		else
 		{
-			Value[] results = function.InvokeM( arguments );
+			LuaValue[] results = function.InvokeM( arguments );
 
 			// Unpack results.
 			for ( int result = 0; result < resultCount; ++result )

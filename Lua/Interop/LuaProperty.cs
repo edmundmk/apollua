@@ -18,8 +18,8 @@ namespace Lua.Interop
 
 public abstract class LuaProperty
 {
-	public abstract Value GetValue( object o );
-	public abstract void SetValue( object o, Value v );
+	public abstract LuaValue GetValue( object o );
+	public abstract void SetValue( object o, LuaValue v );
 }
 
 
@@ -33,12 +33,12 @@ public class LuaProperty< T >
 		this.property = property;
 	}
 
-	public override Value GetValue( object o )
+	public override LuaValue GetValue( object o )
 	{
 		return InteropHelpers.CastResultS( (T)property.GetValue( o, null ) );
 	}
 
-	public override void SetValue( object o, Value v )
+	public override void SetValue( object o, LuaValue v )
 	{
 		property.SetValue( o, InteropHelpers.Cast< T >( v ), null );
 	}

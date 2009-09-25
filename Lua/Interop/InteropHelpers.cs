@@ -19,19 +19,19 @@ public static class InteropHelpers
 	// Constants.
 
 	public static readonly object[]	EmptyObjects	= new object[] {};
-	public static readonly Value[]	EmptyValues		= new Value[] {};
+	public static readonly LuaValue[]	EmptyValues		= new LuaValue[] {};
 
 
 
 	// Casting.
 
-	public static T Cast< T >( Value v )
+	public static T Cast< T >( LuaValue v )
 	{
 		if ( v == null )
 		{
 			return default( T );
 		}
-		else if ( typeof( T ) == typeof( Value ) )
+		else if ( typeof( T ) == typeof( LuaValue ) )
 		{
 			return (T)(object)v;
 		}
@@ -42,7 +42,7 @@ public static class InteropHelpers
 		else if ( typeof( T ) == typeof( sbyte ) )
 		{
 			int integer;
-			if ( v.TryToInteger( out integer ) )
+			if ( v.TryToInt32( out integer ) )
 			{
 				sbyte i;
 				checked { i = (sbyte)integer; }
@@ -52,7 +52,7 @@ public static class InteropHelpers
 		else if ( typeof( T ) == typeof( byte ) )
 		{
 			int integer;
-			if ( v.TryToInteger( out integer ) )
+			if ( v.TryToInt32( out integer ) )
 			{
 				byte i;
 				checked { i = (byte)integer; }
@@ -62,7 +62,7 @@ public static class InteropHelpers
 		else if ( typeof( T ) == typeof( short ) )
 		{
 			int integer;
-			if ( v.TryToInteger( out integer ) )
+			if ( v.TryToInt32( out integer ) )
 			{
 				short i;
 				checked { i = (short)integer; }
@@ -72,7 +72,7 @@ public static class InteropHelpers
 		else if ( typeof( T ) == typeof( ushort ) )
 		{
 			int integer;
-			if ( v.TryToInteger( out integer ) )
+			if ( v.TryToInt32( out integer ) )
 			{
 				ushort i;
 				checked { i = (ushort)integer; }
@@ -82,7 +82,7 @@ public static class InteropHelpers
 		else if ( typeof( T ) == typeof( int ) )
 		{
 			int integer;
-			if ( v.TryToInteger( out integer ) )
+			if ( v.TryToInt32( out integer ) )
 			{
 				return (T)(object)integer;
 			}
@@ -90,7 +90,7 @@ public static class InteropHelpers
 		else if ( typeof( T ) == typeof( long ) )
 		{
 			int integer;
-			if ( v.TryToInteger( out integer ) )
+			if ( v.TryToInt32( out integer ) )
 			{
 				long i = integer;
 				return (T)(object)i;
@@ -99,7 +99,7 @@ public static class InteropHelpers
 		else if ( typeof( T ) == typeof( ulong ) )
 		{
 			int integer;
-			if ( v.TryToInteger( out integer ) )
+			if ( v.TryToInt32( out integer ) )
 			{
 				ulong i;
 				checked { i = (ulong)integer; }
@@ -108,41 +108,41 @@ public static class InteropHelpers
 		}
 		else if ( typeof( T ) == typeof( float ) )
 		{
-			if ( v.GetType() == typeof( BoxedInteger ) )
+			if ( v.GetType() == typeof( BoxedInt32 ) )
 			{
-				float real = ( (BoxedInteger)v ).Value;
+				float real = ( (BoxedInt32)v ).Value;
 				return (T)(object)real;
 			}
-			else if ( v.GetType() == typeof( BoxedNumber ) )
+			else if ( v.GetType() == typeof( BoxedDouble ) )
 			{
 				float real;
-				checked { real = (float)( (BoxedNumber)v ).Value; }
+				checked { real = (float)( (BoxedDouble)v ).Value; }
 				return (T)(object)real;
 			}
 		}
 		else if ( typeof( T ) == typeof( double ) )
 		{
-			if ( v.GetType() == typeof( BoxedInteger ) )
+			if ( v.GetType() == typeof( BoxedInt32 ) )
 			{
-				double real = ( (BoxedInteger)v ).Value;
+				double real = ( (BoxedInt32)v ).Value;
 				return (T)(object)real;
 			}
-			else if ( v.GetType() == typeof( BoxedNumber ) )
+			else if ( v.GetType() == typeof( BoxedDouble ) )
 			{
-				return (T)(object)( (BoxedNumber)v ).Value;
+				return (T)(object)( (BoxedDouble)v ).Value;
 			}
 		}
 		else if ( typeof( T ) == typeof( decimal ) )
 		{
-			if ( v.GetType() == typeof( BoxedInteger ) )
+			if ( v.GetType() == typeof( BoxedInt32 ) )
 			{
-				decimal real = ( (BoxedInteger)v ).Value;
+				decimal real = ( (BoxedInt32)v ).Value;
 				return (T)(object)real;
 			}
-			else if ( v.GetType() == typeof( BoxedNumber ) )
+			else if ( v.GetType() == typeof( BoxedDouble ) )
 			{
 				decimal real;
-				checked { real = (decimal)( (BoxedNumber)v ).Value; }
+				checked { real = (decimal)( (BoxedDouble)v ).Value; }
 				return (T)(object)real;
 			}
 		}
@@ -168,7 +168,7 @@ public static class InteropHelpers
 	}
 
 
-	public static T Cast< T >( Value[] values, int index )
+	public static T Cast< T >( LuaValue[] values, int index )
 	{
 		if ( index < values.Length )
 		{
@@ -181,7 +181,7 @@ public static class InteropHelpers
 	}
 
 
-	public static T[] CastParams< T >( Value[] values, int index )
+	public static T[] CastParams< T >( LuaValue[] values, int index )
 	{
 		if ( index < values.Length )
 		{
@@ -199,15 +199,15 @@ public static class InteropHelpers
 	}
 
 
-	public static Value CastResultS< T >( T v )
+	public static LuaValue CastResultS< T >( T v )
 	{
 		if ( v == null )
 		{
 			return null;
 		}
-		else if ( typeof( T ) == typeof( Value ) )
+		else if ( typeof( T ) == typeof( LuaValue ) )
 		{
-			return (Value)(object)v;
+			return (LuaValue)(object)v;
 		}
 		else if ( typeof( T ) == typeof( bool ) )
 		{
@@ -215,51 +215,51 @@ public static class InteropHelpers
 		}
 		else if ( typeof( T ) == typeof( sbyte ) )
 		{
-			return new BoxedInteger( (sbyte)(object)v );
+			return new BoxedInt32( (sbyte)(object)v );
 		}
 		else if ( typeof( T ) == typeof( byte ) )
 		{
-			return new BoxedInteger( (byte)(object)v );
+			return new BoxedInt32( (byte)(object)v );
 		}
 		else if ( typeof( T ) == typeof( short ) )
 		{
-			return new BoxedInteger( (short)(object)v );
+			return new BoxedInt32( (short)(object)v );
 		}
 		else if ( typeof( T ) == typeof( ushort ) )
 		{
-			return new BoxedInteger( (ushort)(object)v );
+			return new BoxedInt32( (ushort)(object)v );
 		}
 		else if ( typeof( T ) == typeof( int ) )
 		{
-			return new BoxedInteger( (int)(object)v );
+			return new BoxedInt32( (int)(object)v );
 		}
 		else if ( typeof( T ) == typeof( uint ) )
 		{
 			uint integer = (uint)(object)v;
-			checked { return new BoxedInteger( (int)integer ); }
+			checked { return new BoxedInt32( (int)integer ); }
 		}
 		else if ( typeof( T ) == typeof( long ) )
 		{
 			long integer = (long)(object)v;
-			checked { return new BoxedInteger( (int)integer ); }
+			checked { return new BoxedInt32( (int)integer ); }
 		}
 		else if ( typeof( T ) == typeof( ulong ) )
 		{
 			ulong integer = (ulong)(object)v;
-			checked { return new BoxedInteger( (int)integer ); }
+			checked { return new BoxedInt32( (int)integer ); }
 		}
 		else if ( typeof( T ) == typeof( float ) )
 		{
-			return new BoxedNumber( (float)(object)v );
+			return new BoxedDouble( (float)(object)v );
 		}
 		else if ( typeof( T ) == typeof( double ) )
 		{
-			return new BoxedNumber( (double)(object)v );
+			return new BoxedDouble( (double)(object)v );
 		}
 		else if ( typeof( T ) == typeof( decimal ) )
 		{
 			decimal real = (decimal)(object)v;
-			checked { return new BoxedNumber( (double)real ); }
+			checked { return new BoxedDouble( (double)real ); }
 		}
 		else if ( typeof( T ) == typeof( string ) )
 		{
@@ -275,13 +275,13 @@ public static class InteropHelpers
 	}
 
 
-	public static Value[] CastResultM< T >( T v )
+	public static LuaValue[] CastResultM< T >( T v )
 	{
-		return new Value[] { CastResultS( v ) };
+		return new LuaValue[] { CastResultS( v ) };
 	}
 
 
-	public static Value CastResultListS< T >( T[] values )
+	public static LuaValue CastResultListS< T >( T[] values )
 	{
 		if ( values.Length > 0 )
 		{
@@ -294,9 +294,9 @@ public static class InteropHelpers
 	}
 
 
-	public static Value[] CastResultListM< T >( T[] values )
+	public static LuaValue[] CastResultListM< T >( T[] values )
 	{
-		Value[] results = new Value[ values.Length ];
+		LuaValue[] results = new LuaValue[ values.Length ];
 		for ( int result = 0; result < values.Length; ++result )
 		{
 			results[ result ] = CastResultS( values[ result ] );
@@ -376,7 +376,7 @@ public static class InteropHelpers
 		typeof( LuaMethodMP<,,,,,,> ),
 	};
 
-	public static Function WrapMethod( Type type, MethodInfo method )
+	public static LuaFunction WrapMethod( Type type, MethodInfo method )
 	{
 		// Get parameters.
 
@@ -446,7 +446,7 @@ public static class InteropHelpers
 		// Construct function from type.
 
 		ConstructorInfo constructor = methodType.GetConstructor( new Type[] { typeof( MethodInfo ) } );
-		return (Function)constructor.Invoke( new object[] { method } );
+		return (LuaFunction)constructor.Invoke( new object[] { method } );
 
 	}
 

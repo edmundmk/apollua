@@ -39,7 +39,7 @@ public delegate TResult[] FuncMP< T1, T2, T3, T4, TParams, TResult >( T1 a1, T2 
 
 
 public class LuaDelegateV
-	:	Function
+	:	LuaFunction
 {
 	Action function;
 
@@ -48,25 +48,25 @@ public class LuaDelegateV
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ function(); return null; }
-	public override Value InvokeS( Value a1 )									{ function(); return null; }
-	public override Value InvokeS( Value a1, Value a2 )							{ function(); return null; }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ function(); return null; }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ function(); return null; }
-	public override Value InvokeS( Value[] arguments )							{ function(); return null; }
+	public override LuaValue InvokeS()												{ function(); return null; }
+	public override LuaValue InvokeS( LuaValue a1 )									{ function(); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ function(); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ function(); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ function(); return null; }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ function(); return null; }
 
-	public override Value[] InvokeM()											{ function(); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1 )									{ function(); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ function(); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ function(); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ function(); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value[] arguments )						{ function(); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM()											{ function(); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ function(); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ function(); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ function(); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ function(); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ function(); return InteropHelpers.EmptyValues; }
 
 }
 
 
 public class LuaDelegateV< T >
-	:	Function
+	:	LuaFunction
 {
 	Action< T > function;
 
@@ -75,25 +75,25 @@ public class LuaDelegateV< T >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ function( default( T ) ); return null; }
-	public override Value InvokeS( Value a1 )									{ function( InteropHelpers.Cast< T >( a1 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2 )							{ function( InteropHelpers.Cast< T >( a1 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ function( InteropHelpers.Cast< T >( a1 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ function( InteropHelpers.Cast< T >( a1 ) ); return null; }
-	public override Value InvokeS( Value[] arguments )							{ function( InteropHelpers.Cast< T >( arguments, 0 ) ); return null; }
+	public override LuaValue InvokeS()												{ function( default( T ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1 )									{ function( InteropHelpers.Cast< T >( a1 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ function( InteropHelpers.Cast< T >( a1 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ function( InteropHelpers.Cast< T >( a1 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ function( InteropHelpers.Cast< T >( a1 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ function( InteropHelpers.Cast< T >( arguments, 0 ) ); return null; }
 
-	public override Value[] InvokeM()											{ function( default( T ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1 )									{ function( InteropHelpers.Cast< T >( a1 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ function( InteropHelpers.Cast< T >( a1 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ function( InteropHelpers.Cast< T >( a1 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ function( InteropHelpers.Cast< T >( a1 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value[] arguments )						{ function( InteropHelpers.Cast< T >( arguments, 0 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM()											{ function( default( T ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ function( InteropHelpers.Cast< T >( a1 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ function( InteropHelpers.Cast< T >( a1 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ function( InteropHelpers.Cast< T >( a1 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ function( InteropHelpers.Cast< T >( a1 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ function( InteropHelpers.Cast< T >( arguments, 0 ) ); return InteropHelpers.EmptyValues; }
 
 }
 
 	
 public class LuaDelegateV< T1, T2 >
-	:	Function
+	:	LuaFunction
 {
 	Action< T1, T2 > function;
 
@@ -102,25 +102,25 @@ public class LuaDelegateV< T1, T2 >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ function( default( T1 ), default( T2 ) ); return null; }
-	public override Value InvokeS( Value a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2 )							{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ); return null; }
-	public override Value InvokeS( Value[] arguments )							{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ) ); return null; }
+	public override LuaValue InvokeS()												{ function( default( T1 ), default( T2 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ) ); return null; }
 
-	public override Value[] InvokeM()											{ function( default( T1 ), default( T2 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value[] arguments )						{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM()											{ function( default( T1 ), default( T2 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ) ); return InteropHelpers.EmptyValues; }
 
 }
 
 	
 public class LuaDelegateV< T1, T2, T3 >
-	:	Function
+	:	LuaFunction
 {
 	Action< T1, T2, T3 > function;
 
@@ -129,25 +129,25 @@ public class LuaDelegateV< T1, T2, T3 >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ function( default( T1 ), default( T2 ), default( T3 ) ); return null; }
-	public override Value InvokeS( Value a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2 )							{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ); return null; }
-	public override Value InvokeS( Value[] arguments )							{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ) ); return null; }
+	public override LuaValue InvokeS()												{ function( default( T1 ), default( T2 ), default( T3 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ) ); return null; }
 
-	public override Value[] InvokeM()											{ function( default( T1 ), default( T2 ), default( T3 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value[] arguments )						{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM()											{ function( default( T1 ), default( T2 ), default( T3 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ) ); return InteropHelpers.EmptyValues; }
 
 }
 
 
 public class LuaDelegateV< T1, T2, T3, T4 >
-	:	Function
+	:	LuaFunction
 {
 	Action< T1, T2, T3, T4 > function;
 
@@ -156,25 +156,25 @@ public class LuaDelegateV< T1, T2, T3, T4 >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ); return null; }
-	public override Value InvokeS( Value a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2 )							{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ); return null; }
-	public override Value InvokeS( Value[] arguments )							{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ) ); return null; }
+	public override LuaValue InvokeS()												{ function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ) ); return null; }
 
-	public override Value[] InvokeM()											{ function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value[] arguments )						{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM()											{ function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ) ); return InteropHelpers.EmptyValues; }
 
 }
 
 
 public class LuaDelegateVP< TParams >
-	:	Function
+	:	LuaFunction
 {
 	ActionP< TParams > function;
 
@@ -183,25 +183,25 @@ public class LuaDelegateVP< TParams >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ function(); return null; }
-	public override Value InvokeS( Value a1 )									{ function( InteropHelpers.Cast< TParams >( a1 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2 )							{ function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ); return null; }
-	public override Value InvokeS( Value[] arguments )							{ function( InteropHelpers.CastParams< TParams >( arguments, 0 ) ); return null; }
+	public override LuaValue InvokeS()												{ function(); return null; }
+	public override LuaValue InvokeS( LuaValue a1 )									{ function( InteropHelpers.Cast< TParams >( a1 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ function( InteropHelpers.CastParams< TParams >( arguments, 0 ) ); return null; }
 
-	public override Value[] InvokeM()											{ function(); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1 )									{ function( InteropHelpers.Cast< TParams >( a1 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value[] arguments )						{ function( InteropHelpers.CastParams< TParams >( arguments, 0 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM()											{ function(); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ function( InteropHelpers.Cast< TParams >( a1 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ function( InteropHelpers.CastParams< TParams >( arguments, 0 ) ); return InteropHelpers.EmptyValues; }
 
 }
 
 
 public class LuaDelegateVP< T, TParams >
-	:	Function
+	:	LuaFunction
 {
 	ActionP< T, TParams > function;
 
@@ -210,25 +210,25 @@ public class LuaDelegateVP< T, TParams >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ function( default( T ) ); return null; }
-	public override Value InvokeS( Value a1 )									{ function( InteropHelpers.Cast< T >( a1 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2 )							{ function( InteropHelpers.Cast< T >( a1 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ function( InteropHelpers.Cast< T >( a1 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ function( InteropHelpers.Cast< T >( a1 ) ); return null; }
-	public override Value InvokeS( Value[] arguments )							{ function( InteropHelpers.Cast< T >( arguments, 0 ) ); return null; }
+	public override LuaValue InvokeS()												{ function( default( T ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1 )									{ function( InteropHelpers.Cast< T >( a1 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ function( InteropHelpers.Cast< T >( a1 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ function( InteropHelpers.Cast< T >( a1 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ function( InteropHelpers.Cast< T >( a1 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ function( InteropHelpers.Cast< T >( arguments, 0 ) ); return null; }
 
-	public override Value[] InvokeM()											{ function( default( T ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1 )									{ function( InteropHelpers.Cast< T >( a1 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value[] arguments )						{ function( InteropHelpers.Cast< T >( arguments, 0 ), InteropHelpers.CastParams< TParams >( arguments, 1 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM()											{ function( default( T ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ function( InteropHelpers.Cast< T >( a1 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ function( InteropHelpers.Cast< T >( arguments, 0 ), InteropHelpers.CastParams< TParams >( arguments, 1 ) ); return InteropHelpers.EmptyValues; }
 
 }
 
 	
 public class LuaDelegateVP< T1, T2, TParams >
-	:	Function
+	:	LuaFunction
 {
 	ActionP< T1, T2, TParams > function;
 
@@ -237,25 +237,25 @@ public class LuaDelegateVP< T1, T2, TParams >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ function( default( T1 ), default( T2 ) ); return null; }
-	public override Value InvokeS( Value a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2 )							{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ); return null; }
-	public override Value InvokeS( Value[] arguments )							{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.CastParams< TParams >( arguments, 2 ) ); return null; }
+	public override LuaValue InvokeS()												{ function( default( T1 ), default( T2 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.CastParams< TParams >( arguments, 2 ) ); return null; }
 
-	public override Value[] InvokeM()											{ function( default( T1 ), default( T2 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value[] arguments )						{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.CastParams< TParams >( arguments, 2 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM()											{ function( default( T1 ), default( T2 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.CastParams< TParams >( arguments, 2 ) ); return InteropHelpers.EmptyValues; }
 
 }
 
 	
 public class LuaDelegateVP< T1, T2, T3, TParams >
-	:	Function
+	:	LuaFunction
 {
 	ActionP< T1, T2, T3, TParams > function;
 
@@ -264,25 +264,25 @@ public class LuaDelegateVP< T1, T2, T3, TParams >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ function( default( T1 ), default( T2 ), default( T3 ) ); return null; }
-	public override Value InvokeS( Value a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2 )							{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ); return null; }
-	public override Value InvokeS( Value[] arguments )							{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.CastParams< TParams >( arguments, 3 ) ); return null; }
+	public override LuaValue InvokeS()												{ function( default( T1 ), default( T2 ), default( T3 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.CastParams< TParams >( arguments, 3 ) ); return null; }
 
-	public override Value[] InvokeM()											{ function( default( T1 ), default( T2 ), default( T3 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value[] arguments )						{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.CastParams< TParams >( arguments, 3 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM()											{ function( default( T1 ), default( T2 ), default( T3 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.CastParams< TParams >( arguments, 3 ) ); return InteropHelpers.EmptyValues; }
 
 }
 
 
 public class LuaDelegateVP< T1, T2, T3, T4, TParams >
-	:	Function
+	:	LuaFunction
 {
 	ActionP< T1, T2, T3, T4, TParams > function;
 
@@ -291,25 +291,25 @@ public class LuaDelegateVP< T1, T2, T3, T4, TParams >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ); return null; }
-	public override Value InvokeS( Value a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2 )							{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ); return null; }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ); return null; }
-	public override Value InvokeS( Value[] arguments )							{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ), InteropHelpers.CastParams< TParams >( arguments, 4 ) ); return null; }
+	public override LuaValue InvokeS()												{ function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ); return null; }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ), InteropHelpers.CastParams< TParams >( arguments, 4 ) ); return null; }
 
-	public override Value[] InvokeM()											{ function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ); return InteropHelpers.EmptyValues; }
-	public override Value[] InvokeM( Value[] arguments )						{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ), InteropHelpers.CastParams< TParams >( arguments, 5 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM()											{ function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ); return InteropHelpers.EmptyValues; }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ), InteropHelpers.CastParams< TParams >( arguments, 5 ) ); return InteropHelpers.EmptyValues; }
 
 }
 
 
 public class LuaDelegateS< TResult >
-	:	Function
+	:	LuaFunction
 {
 	Func< TResult > function;
 
@@ -319,24 +319,24 @@ public class LuaDelegateS< TResult >
 	}
 
 
-	public override Value InvokeS()												{ return InteropHelpers.CastResultS( function() ); }
-	public override Value InvokeS( Value a1 )									{ return InteropHelpers.CastResultS( function() ); }
-	public override Value InvokeS( Value a1, Value a2 )							{ return InteropHelpers.CastResultS( function() ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultS( function() ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ return InteropHelpers.CastResultS( function() ); }
-	public override Value InvokeS( Value[] arguments )							{ return InteropHelpers.CastResultS( function() ); }
+	public override LuaValue InvokeS()												{ return InteropHelpers.CastResultS( function() ); }
+	public override LuaValue InvokeS( LuaValue a1 )									{ return InteropHelpers.CastResultS( function() ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ return InteropHelpers.CastResultS( function() ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultS( function() ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ return InteropHelpers.CastResultS( function() ); }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ return InteropHelpers.CastResultS( function() ); }
 
-	public override Value[] InvokeM()											{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function() ) ); }
-	public override Value[] InvokeM( Value a1 )									{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function() ) ); }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function() ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function() ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function() ) ); }
-	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function() ) ); }
+	public override LuaValue[] InvokeM()											{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function() ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function() ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function() ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function() ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function() ) ); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function() ) ); }
 
 }
 
 public class LuaDelegateS< T, TResult >
-	:	Function
+	:	LuaFunction
 {
 	Func< T, TResult > function;
 
@@ -345,25 +345,25 @@ public class LuaDelegateS< T, TResult >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ return InteropHelpers.CastResultS( function( default( T ) ) ); }
-	public override Value InvokeS( Value a1 )									{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T >( a1 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2 )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T >( a1 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T >( a1 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T >( a1 ) ) ); }
-	public override Value InvokeS( Value[] arguments )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T >( arguments, 0 ) ) ); }
+	public override LuaValue InvokeS()												{ return InteropHelpers.CastResultS( function( default( T ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1 )									{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T >( a1 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T >( a1 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T >( a1 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T >( a1 ) ) ); }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T >( arguments, 0 ) ) ); }
 
-	public override Value[] InvokeM()											{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS(( default( T ) ) ) ); }
-	public override Value[] InvokeM( Value a1 )									{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS(( InteropHelpers.Cast< T >( a1 ) ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS(( InteropHelpers.Cast< T >( a1 ) ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS(( InteropHelpers.Cast< T >( a1 ) ) ) );  }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS(( InteropHelpers.Cast< T >( a1 ) ) ) ); }
-	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS(( InteropHelpers.Cast< T >( arguments, 0 ) ) ) ); }
+	public override LuaValue[] InvokeM()											{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS(( default( T ) ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS(( InteropHelpers.Cast< T >( a1 ) ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS(( InteropHelpers.Cast< T >( a1 ) ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS(( InteropHelpers.Cast< T >( a1 ) ) ) );  }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS(( InteropHelpers.Cast< T >( a1 ) ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS(( InteropHelpers.Cast< T >( arguments, 0 ) ) ) ); }
 
 }
 
 	
 public class LuaDelegateS< T1, T2, TResult >
-	:	Function
+	:	LuaFunction
 {
 	Func< T1, T2, TResult > function;
 
@@ -372,25 +372,25 @@ public class LuaDelegateS< T1, T2, TResult >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ return InteropHelpers.CastResultS( function( default( T1 ), default( T2 ) ) ); }
-	public override Value InvokeS( Value a1 )									{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2 )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
-	public override Value InvokeS( Value[] arguments )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ) ) ); }
+	public override LuaValue InvokeS()												{ return InteropHelpers.CastResultS( function( default( T1 ), default( T2 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1 )									{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ) ) ); }
 
-	public override Value[] InvokeM()											{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( default( T1 ), default( T2 ) ) ) ); }
-	public override Value[] InvokeM( Value a1 )									{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ) ); }
-	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ) ) ) ); }
+	public override LuaValue[] InvokeM()											{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( default( T1 ), default( T2 ) ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ) ) ) ); }
 
 }
 
 	
 public class LuaDelegateS< T1, T2, T3, TResult >
-	:	Function
+	:	LuaFunction
 {
 	Func< T1, T2, T3, TResult > function;
 
@@ -399,25 +399,25 @@ public class LuaDelegateS< T1, T2, T3, TResult >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ return InteropHelpers.CastResultS( function( default( T1 ), default( T2 ), default( T3 ) ) ); }
-	public override Value InvokeS( Value a1 )									{ return InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2 )							{ return InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ return InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ); }
-	public override Value InvokeS( Value[] arguments )							{ return InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ) ) ); }
+	public override LuaValue InvokeS()												{ return InteropHelpers.CastResultS( function( default( T1 ), default( T2 ), default( T3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1 )									{ return InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ return InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ return InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ return InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ) ) ); }
 
-	public override Value[] InvokeM()											{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function ( default( T1 ), default( T2 ), default( T3 ) ) ) ); }
-	public override Value[] InvokeM( Value a1 )									{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ) ); }
-	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ) ) ) ); }
+	public override LuaValue[] InvokeM()											{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function ( default( T1 ), default( T2 ), default( T3 ) ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ) ) ) ); }
 
 }
 
 
 public class LuaDelegateS< T1, T2, T3, T4, TResult >
-	:	Function
+	:	LuaFunction
 {
 	Func< T1, T2, T3, T4, TResult > function;
 
@@ -426,25 +426,25 @@ public class LuaDelegateS< T1, T2, T3, T4, TResult >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ return InteropHelpers.CastResultS( function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value InvokeS( Value a1 )									{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2 )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ) ); }
-	public override Value InvokeS( Value[] arguments )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ) ) ); }
+	public override LuaValue InvokeS()												{ return InteropHelpers.CastResultS( function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1 )									{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ) ) ); }
 
-	public override Value[] InvokeM()											{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ) ) ); }
-	public override Value[] InvokeM( Value a1 )									{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ) ) ); }
-	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ) ) ) ); }
+	public override LuaValue[] InvokeM()											{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ return InteropHelpers.CastResultM( InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ) ) ) ); }
 
 }
 
 
 public class LuaDelegateSP< TParams, TResult >
-	:	Function
+	:	LuaFunction
 {
 	FuncP< TParams, TResult > function;
 
@@ -454,24 +454,24 @@ public class LuaDelegateSP< TParams, TResult >
 	}
 
 
-	public override Value InvokeS()												{ return InteropHelpers.CastResultS( function() ); }
-	public override Value InvokeS( Value a1 )									{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< TParams >( a1 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2 )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
-	public override Value InvokeS( Value[] arguments )							{ return InteropHelpers.CastResultS( function( InteropHelpers.CastParams< TParams >( arguments, 0 ) ) ); }
+	public override LuaValue InvokeS()												{ return InteropHelpers.CastResultS( function() ); }
+	public override LuaValue InvokeS( LuaValue a1 )									{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< TParams >( a1 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ return InteropHelpers.CastResultS( function( InteropHelpers.CastParams< TParams >( arguments, 0 ) ) ); }
 
-	public override Value[] InvokeM()											{ return InteropHelpers.CastResultM( function() ); }
-	public override Value[] InvokeM( Value a1 )									{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< TParams >( a1 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
-	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultM( function( InteropHelpers.CastParams< TParams >( arguments, 0 ) ) ); }
+	public override LuaValue[] InvokeM()											{ return InteropHelpers.CastResultM( function() ); }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< TParams >( a1 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ return InteropHelpers.CastResultM( function( InteropHelpers.CastParams< TParams >( arguments, 0 ) ) ); }
 
 }
 
 public class LuaDelegateSP< T, TParams, TResult >
-	:	Function
+	:	LuaFunction
 {
 	FuncP< T, TParams, TResult > function;
 
@@ -480,25 +480,25 @@ public class LuaDelegateSP< T, TParams, TResult >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ return InteropHelpers.CastResultS( function( default( T ) ) ); }
-	public override Value InvokeS( Value a1 )									{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T >( a1 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2 )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
-	public override Value InvokeS( Value[] arguments )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T >( arguments, 0 ), InteropHelpers.CastParams< TParams >( arguments, 1 ) ) ); }
+	public override LuaValue InvokeS()												{ return InteropHelpers.CastResultS( function( default( T ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1 )									{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T >( a1 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T >( arguments, 0 ), InteropHelpers.CastParams< TParams >( arguments, 1 ) ) ); }
 
-	public override Value[] InvokeM()											{ return InteropHelpers.CastResultM( function( default( T ) ) ); }
-	public override Value[] InvokeM( Value a1 )									{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T >( a1 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) );  }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
-	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T >( arguments, 0 ), InteropHelpers.CastParams< TParams >( arguments, 1 ) ) ); }
+	public override LuaValue[] InvokeM()											{ return InteropHelpers.CastResultM( function( default( T ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T >( a1 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) );  }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T >( arguments, 0 ), InteropHelpers.CastParams< TParams >( arguments, 1 ) ) ); }
 
 }
 
 	
 public class LuaDelegateSP< T1, T2, TParams, TResult >
-	:	Function
+	:	LuaFunction
 {
 	FuncP< T1, T2, TParams, TResult > function;
 
@@ -507,25 +507,25 @@ public class LuaDelegateSP< T1, T2, TParams, TResult >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ return InteropHelpers.CastResultS( function( default( T1 ), default( T2 ) ) ); }
-	public override Value InvokeS( Value a1 )									{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2 )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
-	public override Value InvokeS( Value[] arguments )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.CastParams< TParams >( arguments, 2 ) ) ); }
+	public override LuaValue InvokeS()												{ return InteropHelpers.CastResultS( function( default( T1 ), default( T2 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1 )									{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.CastParams< TParams >( arguments, 2 ) ) ); }
 
-	public override Value[] InvokeM()											{ return InteropHelpers.CastResultM( function( default( T1 ), default( T2 ) ) ); }
-	public override Value[] InvokeM( Value a1 )									{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
-	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.CastParams< TParams >( arguments, 2 ) ) ); }
+	public override LuaValue[] InvokeM()											{ return InteropHelpers.CastResultM( function( default( T1 ), default( T2 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.CastParams< TParams >( arguments, 2 ) ) ); }
 
 }
 
 	
 public class LuaDelegateSP< T1, T2, T3, TParams, TResult >
-	:	Function
+	:	LuaFunction
 {
 	FuncP< T1, T2, T3, TParams, TResult > function;
 
@@ -534,25 +534,25 @@ public class LuaDelegateSP< T1, T2, T3, TParams, TResult >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ return InteropHelpers.CastResultS( function( default( T1 ), default( T2 ), default( T3 ) ) ); }
-	public override Value InvokeS( Value a1 )									{ return InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2 )							{ return InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ return InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
-	public override Value InvokeS( Value[] arguments )							{ return InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.CastParams< TParams >( arguments, 3 ) ) ); }
+	public override LuaValue InvokeS()												{ return InteropHelpers.CastResultS( function( default( T1 ), default( T2 ), default( T3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1 )									{ return InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ return InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ return InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ return InteropHelpers.CastResultS( function ( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.CastParams< TParams >( arguments, 3 ) ) ); }
 
-	public override Value[] InvokeM()											{ return InteropHelpers.CastResultM( function ( default( T1 ), default( T2 ), default( T3 ) ) ); }
-	public override Value[] InvokeM( Value a1 )									{ return InteropHelpers.CastResultM( function ( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ return InteropHelpers.CastResultM( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultM( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ return InteropHelpers.CastResultM( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
-	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultM( function ( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.CastParams< TParams >( arguments, 3 ) ) ); }
+	public override LuaValue[] InvokeM()											{ return InteropHelpers.CastResultM( function ( default( T1 ), default( T2 ), default( T3 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ return InteropHelpers.CastResultM( function ( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ return InteropHelpers.CastResultM( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultM( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ return InteropHelpers.CastResultM( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ return InteropHelpers.CastResultM( function ( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.CastParams< TParams >( arguments, 3 ) ) ); }
 
 }
 
 
 public class LuaDelegateSP< T1, T2, T3, T4, TParams, TResult >
-	:	Function
+	:	LuaFunction
 {
 	FuncP< T1, T2, T3, T4, TParams, TResult > function;
 
@@ -561,25 +561,25 @@ public class LuaDelegateSP< T1, T2, T3, T4, TParams, TResult >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ return InteropHelpers.CastResultS( function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value InvokeS( Value a1 )									{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2 )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ) ); }
-	public override Value InvokeS( Value[] arguments )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ), InteropHelpers.CastParams< TParams >( arguments, 4 ) ) ); }
+	public override LuaValue InvokeS()												{ return InteropHelpers.CastResultS( function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1 )									{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ return InteropHelpers.CastResultS( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ), InteropHelpers.CastParams< TParams >( arguments, 4 ) ) ); }
 
-	public override Value[] InvokeM()											{ return InteropHelpers.CastResultM( function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value[] InvokeM( Value a1 )									{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ) ); }
-	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ), InteropHelpers.CastParams< TParams >( arguments, 4 ) ) ); }
+	public override LuaValue[] InvokeM()											{ return InteropHelpers.CastResultM( function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ return InteropHelpers.CastResultM( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ), InteropHelpers.CastParams< TParams >( arguments, 4 ) ) ); }
 
 }
 
 
 public class LuaDelegateM< TResult >
-	:	Function
+	:	LuaFunction
 {
 	FuncM< TResult > function;
 
@@ -589,24 +589,24 @@ public class LuaDelegateM< TResult >
 	}
 
 
-	public override Value InvokeS()												{ return InteropHelpers.CastResultListS( function() ); }
-	public override Value InvokeS( Value a1 )									{ return InteropHelpers.CastResultListS( function() ); }
-	public override Value InvokeS( Value a1, Value a2 )							{ return InteropHelpers.CastResultListS( function() ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultListS( function() ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ return InteropHelpers.CastResultListS( function() ); }
-	public override Value InvokeS( Value[] arguments )							{ return InteropHelpers.CastResultListS( function() ); }
+	public override LuaValue InvokeS()												{ return InteropHelpers.CastResultListS( function() ); }
+	public override LuaValue InvokeS( LuaValue a1 )									{ return InteropHelpers.CastResultListS( function() ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ return InteropHelpers.CastResultListS( function() ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultListS( function() ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ return InteropHelpers.CastResultListS( function() ); }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ return InteropHelpers.CastResultListS( function() ); }
 
-	public override Value[] InvokeM()											{ return InteropHelpers.CastResultListM( function() ); }
-	public override Value[] InvokeM( Value a1 )									{ return InteropHelpers.CastResultListM( function() ); }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ return InteropHelpers.CastResultListM( function() ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultListM( function() ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ return InteropHelpers.CastResultListM( function() ); }
-	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultListM( function() ); }
+	public override LuaValue[] InvokeM()											{ return InteropHelpers.CastResultListM( function() ); }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ return InteropHelpers.CastResultListM( function() ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ return InteropHelpers.CastResultListM( function() ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultListM( function() ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ return InteropHelpers.CastResultListM( function() ); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ return InteropHelpers.CastResultListM( function() ); }
 
 }
 
 public class LuaDelegateM< T, TResult >
-	:	Function
+	:	LuaFunction
 {
 	FuncM< T, TResult > function;
 
@@ -615,25 +615,25 @@ public class LuaDelegateM< T, TResult >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ return InteropHelpers.CastResultListS( function( default( T ) ) ); }
-	public override Value InvokeS( Value a1 )									{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T >( a1 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2 )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T >( a1 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T >( a1 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T >( a1 ) ) ); }
-	public override Value InvokeS( Value[] arguments )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T >( arguments, 0 ) ) ); }
+	public override LuaValue InvokeS()												{ return InteropHelpers.CastResultListS( function( default( T ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1 )									{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T >( a1 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T >( a1 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T >( a1 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T >( a1 ) ) ); }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T >( arguments, 0 ) ) ); }
 
-	public override Value[] InvokeM()											{ return InteropHelpers.CastResultListM( function( default( T ) ) ); }
-	public override Value[] InvokeM( Value a1 )									{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T >( a1 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T >( a1 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T >( a1 ) ) );  }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T >( a1 ) ) ); }
-	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T >( arguments, 0 ) ) ); }
+	public override LuaValue[] InvokeM()											{ return InteropHelpers.CastResultListM( function( default( T ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T >( a1 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T >( a1 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T >( a1 ) ) );  }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T >( a1 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T >( arguments, 0 ) ) ); }
 
 }
 
 	
 public class LuaDelegateM< T1, T2, TResult >
-	:	Function
+	:	LuaFunction
 {
 	FuncM< T1, T2, TResult > function;
 
@@ -642,25 +642,25 @@ public class LuaDelegateM< T1, T2, TResult >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ return InteropHelpers.CastResultListS( function( default( T1 ), default( T2 ) ) ); }
-	public override Value InvokeS( Value a1 )									{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2 )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
-	public override Value InvokeS( Value[] arguments )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ) ) ); }
+	public override LuaValue InvokeS()												{ return InteropHelpers.CastResultListS( function( default( T1 ), default( T2 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1 )									{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ) ) ); }
 
-	public override Value[] InvokeM()											{ return InteropHelpers.CastResultListM( function( default( T1 ), default( T2 ) ) ); }
-	public override Value[] InvokeM( Value a1 )									{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
-	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ) ) ); }
+	public override LuaValue[] InvokeM()											{ return InteropHelpers.CastResultListM( function( default( T1 ), default( T2 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ) ) ); }
 
 }
 
 	
 public class LuaDelegateM< T1, T2, T3, TResult >
-	:	Function
+	:	LuaFunction
 {
 	FuncM< T1, T2, T3, TResult > function;
 
@@ -669,25 +669,25 @@ public class LuaDelegateM< T1, T2, T3, TResult >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ return InteropHelpers.CastResultListS( function( default( T1 ), default( T2 ), default( T3 ) ) ); }
-	public override Value InvokeS( Value a1 )									{ return InteropHelpers.CastResultListS( function ( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2 )							{ return InteropHelpers.CastResultListS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultListS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ return InteropHelpers.CastResultListS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ); }
-	public override Value InvokeS( Value[] arguments )							{ return InteropHelpers.CastResultListS( function ( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ) ) ); }
+	public override LuaValue InvokeS()												{ return InteropHelpers.CastResultListS( function( default( T1 ), default( T2 ), default( T3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1 )									{ return InteropHelpers.CastResultListS( function ( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ return InteropHelpers.CastResultListS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultListS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ return InteropHelpers.CastResultListS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ return InteropHelpers.CastResultListS( function ( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ) ) ); }
 
-	public override Value[] InvokeM()											{ return InteropHelpers.CastResultListM( function ( default( T1 ), default( T2 ), default( T3 ) ) ); }
-	public override Value[] InvokeM( Value a1 )									{ return InteropHelpers.CastResultListM( function ( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ return InteropHelpers.CastResultListM( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultListM( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ return InteropHelpers.CastResultListM( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ); }
-	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultListM( function ( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ) ) ); }
+	public override LuaValue[] InvokeM()											{ return InteropHelpers.CastResultListM( function ( default( T1 ), default( T2 ), default( T3 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ return InteropHelpers.CastResultListM( function ( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ return InteropHelpers.CastResultListM( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultListM( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ return InteropHelpers.CastResultListM( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ return InteropHelpers.CastResultListM( function ( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ) ) ); }
 
 }
 
 
 public class LuaDelegateM< T1, T2, T3, T4, TResult >
-	:	Function
+	:	LuaFunction
 {
 	FuncM< T1, T2, T3, T4, TResult > function;
 
@@ -696,25 +696,25 @@ public class LuaDelegateM< T1, T2, T3, T4, TResult >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ return InteropHelpers.CastResultListS( function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value InvokeS( Value a1 )									{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2 )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ) ); }
-	public override Value InvokeS( Value[] arguments )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ) ) ); }
+	public override LuaValue InvokeS()												{ return InteropHelpers.CastResultListS( function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1 )									{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ) ) ); }
 
-	public override Value[] InvokeM()											{ return InteropHelpers.CastResultListM( function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value[] InvokeM( Value a1 )									{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ) ); }
-	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ) ) ); }
+	public override LuaValue[] InvokeM()											{ return InteropHelpers.CastResultListM( function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ) ) ); }
 
 }
 
 
 public class LuaDelegateMP< TParams, TResult >
-	:	Function
+	:	LuaFunction
 {
 	FuncMP< TParams, TResult > function;
 
@@ -724,24 +724,24 @@ public class LuaDelegateMP< TParams, TResult >
 	}
 
 
-	public override Value InvokeS()												{ return InteropHelpers.CastResultListS( function() ); }
-	public override Value InvokeS( Value a1 )									{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< TParams >( a1 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2 )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
-	public override Value InvokeS( Value[] arguments )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.CastParams< TParams >( arguments, 0 ) ) ); }
+	public override LuaValue InvokeS()												{ return InteropHelpers.CastResultListS( function() ); }
+	public override LuaValue InvokeS( LuaValue a1 )									{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< TParams >( a1 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.CastParams< TParams >( arguments, 0 ) ) ); }
 
-	public override Value[] InvokeM()											{ return InteropHelpers.CastResultListM( function() ); }
-	public override Value[] InvokeM( Value a1 )									{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< TParams >( a1 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
-	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.CastParams< TParams >( arguments, 0 ) ) ); }
+	public override LuaValue[] InvokeM()											{ return InteropHelpers.CastResultListM( function() ); }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< TParams >( a1 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< TParams >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.CastParams< TParams >( arguments, 0 ) ) ); }
 
 }
 
 public class LuaDelegateMP< T, TParams, TResult >
-	:	Function
+	:	LuaFunction
 {
 	FuncMP< T, TParams, TResult > function;
 
@@ -750,25 +750,25 @@ public class LuaDelegateMP< T, TParams, TResult >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ return InteropHelpers.CastResultListS( function( default( T ) ) ); }
-	public override Value InvokeS( Value a1 )									{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T >( a1 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2 )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
-	public override Value InvokeS( Value[] arguments )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T >( arguments, 0 ), InteropHelpers.CastParams< TParams >( arguments, 1 ) ) ); }
+	public override LuaValue InvokeS()												{ return InteropHelpers.CastResultListS( function( default( T ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1 )									{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T >( a1 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T >( arguments, 0 ), InteropHelpers.CastParams< TParams >( arguments, 1 ) ) ); }
 
-	public override Value[] InvokeM()											{ return InteropHelpers.CastResultListM( function( default( T ) ) ); }
-	public override Value[] InvokeM( Value a1 )									{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T >( a1 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) );  }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
-	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T >( arguments, 0 ), InteropHelpers.CastParams< TParams >( arguments, 1 ) ) ); }
+	public override LuaValue[] InvokeM()											{ return InteropHelpers.CastResultListM( function( default( T ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T >( a1 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) );  }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T >( a1 ), InteropHelpers.Cast< TParams >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T >( arguments, 0 ), InteropHelpers.CastParams< TParams >( arguments, 1 ) ) ); }
 
 }
 
 	
 public class LuaDelegateMP< T1, T2, TParams, TResult >
-	:	Function
+	:	LuaFunction
 {
 	FuncMP< T1, T2, TParams, TResult > function;
 
@@ -777,25 +777,25 @@ public class LuaDelegateMP< T1, T2, TParams, TResult >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ return InteropHelpers.CastResultListS( function( default( T1 ), default( T2 ) ) ); }
-	public override Value InvokeS( Value a1 )									{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2 )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
-	public override Value InvokeS( Value[] arguments )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.CastParams< TParams >( arguments, 2 ) ) ); }
+	public override LuaValue InvokeS()												{ return InteropHelpers.CastResultListS( function( default( T1 ), default( T2 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1 )									{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.CastParams< TParams >( arguments, 2 ) ) ); }
 
-	public override Value[] InvokeM()											{ return InteropHelpers.CastResultListM( function( default( T1 ), default( T2 ) ) ); }
-	public override Value[] InvokeM( Value a1 )									{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
-	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.CastParams< TParams >( arguments, 2 ) ) ); }
+	public override LuaValue[] InvokeM()											{ return InteropHelpers.CastResultListM( function( default( T1 ), default( T2 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< TParams >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.CastParams< TParams >( arguments, 2 ) ) ); }
 
 }
 
 	
 public class LuaDelegateMP< T1, T2, T3, TParams, TResult >
-	:	Function
+	:	LuaFunction
 {
 	FuncMP< T1, T2, T3, TParams, TResult > function;
 
@@ -804,25 +804,25 @@ public class LuaDelegateMP< T1, T2, T3, TParams, TResult >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ return InteropHelpers.CastResultListS( function( default( T1 ), default( T2 ), default( T3 ) ) ); }
-	public override Value InvokeS( Value a1 )									{ return InteropHelpers.CastResultListS( function ( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2 )							{ return InteropHelpers.CastResultListS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultListS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ return InteropHelpers.CastResultListS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
-	public override Value InvokeS( Value[] arguments )							{ return InteropHelpers.CastResultListS( function ( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.CastParams< TParams >( arguments, 3 ) ) ); }
+	public override LuaValue InvokeS()												{ return InteropHelpers.CastResultListS( function( default( T1 ), default( T2 ), default( T3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1 )									{ return InteropHelpers.CastResultListS( function ( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ return InteropHelpers.CastResultListS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultListS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ return InteropHelpers.CastResultListS( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ return InteropHelpers.CastResultListS( function ( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.CastParams< TParams >( arguments, 3 ) ) ); }
 
-	public override Value[] InvokeM()											{ return InteropHelpers.CastResultListM( function ( default( T1 ), default( T2 ), default( T3 ) ) ); }
-	public override Value[] InvokeM( Value a1 )									{ return InteropHelpers.CastResultListM( function ( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ return InteropHelpers.CastResultListM( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultListM( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ return InteropHelpers.CastResultListM( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
-	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultListM( function ( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.CastParams< TParams >( arguments, 3 ) ) ); }
+	public override LuaValue[] InvokeM()											{ return InteropHelpers.CastResultListM( function ( default( T1 ), default( T2 ), default( T3 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ return InteropHelpers.CastResultListM( function ( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ return InteropHelpers.CastResultListM( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultListM( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ return InteropHelpers.CastResultListM( function ( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< TParams >( a4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ return InteropHelpers.CastResultListM( function ( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.CastParams< TParams >( arguments, 3 ) ) ); }
 
 }
 
 
 public class LuaDelegateMP< T1, T2, T3, T4, TParams, TResult >
-	:	Function
+	:	LuaFunction
 {
 	FuncMP< T1, T2, T3, T4, TParams, TResult > function;
 
@@ -831,19 +831,19 @@ public class LuaDelegateMP< T1, T2, T3, T4, TParams, TResult >
 		this.function = function;
 	}
 
-	public override Value InvokeS()												{ return InteropHelpers.CastResultListS( function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value InvokeS( Value a1 )									{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2 )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ) ); }
-	public override Value InvokeS( Value a1, Value a2, Value a3, Value a4 )		{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ) ); }
-	public override Value InvokeS( Value[] arguments )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ), InteropHelpers.CastParams< TParams >( arguments, 4 ) ) ); }
+	public override LuaValue InvokeS()												{ return InteropHelpers.CastResultListS( function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1 )									{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ) ); }
+	public override LuaValue InvokeS( LuaValue[] arguments )							{ return InteropHelpers.CastResultListS( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ), InteropHelpers.CastParams< TParams >( arguments, 4 ) ) ); }
 
-	public override Value[] InvokeM()											{ return InteropHelpers.CastResultListM( function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value[] InvokeM( Value a1 )									{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2 )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3 )				{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ) ); }
-	public override Value[] InvokeM( Value a1, Value a2, Value a3, Value a4 )	{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ) ); }
-	public override Value[] InvokeM( Value[] arguments )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ), InteropHelpers.CastParams< TParams >( arguments, 4 ) ) ); }
+	public override LuaValue[] InvokeM()											{ return InteropHelpers.CastResultListM( function( default( T1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1 )									{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), default( T2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), default( T3 ), default( T4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), default( T4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( a1 ), InteropHelpers.Cast< T2 >( a2 ), InteropHelpers.Cast< T3 >( a3 ), InteropHelpers.Cast< T4 >( a4 ) ) ); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )						{ return InteropHelpers.CastResultListM( function( InteropHelpers.Cast< T1 >( arguments, 0 ), InteropHelpers.Cast< T2 >( arguments, 1 ), InteropHelpers.Cast< T3 >( arguments, 2 ), InteropHelpers.Cast< T4 >( arguments, 3 ), InteropHelpers.CastParams< TParams >( arguments, 4 ) ) ); }
 
 }
 

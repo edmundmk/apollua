@@ -15,10 +15,14 @@ namespace Lua
 
 [DebuggerDisplay( "{IsTrue()}" )]
 public sealed class BoxedBoolean
-	:	Value
+	:	LuaValue
 {
-
-	// Singleton instances.
+	
+	public static LuaTable TypeMetatable
+	{
+		get;
+		set;
+	}
 
 	[DebuggerHidden] public static BoxedBoolean True	{ get; private set; }
 	[DebuggerHidden] public static BoxedBoolean False	{ get; private set; }
@@ -34,8 +38,7 @@ public sealed class BoxedBoolean
 	}
 
 
-
-	// Hashing.
+	// Object
 
 	public override int GetHashCode()
 	{
@@ -56,33 +59,18 @@ public sealed class BoxedBoolean
 	}
 
 
+	// LuaValue
 
-	// Metatable.
-
-	public static Table TypeMetatable
-	{
-		get;
-		set;
-	}
-	
-	public override	Table Metatable
+	public override	LuaTable Metatable
 	{
 		get { return TypeMetatable; }
 		set { base.Metatable = value; }
 	}
 
-
-
-	// Conversion.
-
-	public override string LuaType
+	public override string GetLuaType()
 	{
-		get { return "boolean"; }
+		return "boolean";
 	}
-
-
-
-	// Comparison operators.
 
 	public override bool IsTrue()
 	{

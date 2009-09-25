@@ -21,7 +21,7 @@ public sealed class UpVal
 {
 	// Value.
 
-	public Value Value { get; set; }
+	public LuaValue Value { get; set; }
 
 
 	// Constructors.
@@ -31,7 +31,7 @@ public sealed class UpVal
 	{
 	}
 
-	public UpVal( Value value )
+	public UpVal( LuaValue value )
 	{
 		Value = value;
 	}

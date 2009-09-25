@@ -38,7 +38,7 @@ static class EntryPoint
 		writer.Write( function.Prototype );
 		Basic basic = new Basic();
 		basic.Out = Console.Out;
-		Table math = new Table();
+		LuaTable math = new LuaTable();
 		math[ "abs" ] = new Lua.Interop.LuaDelegateS< double, double >( Math.Abs );
 		basic.Table[ "math"  ] = math;
 		function.Environment = basic.Table;
@@ -92,7 +92,7 @@ static class EntryPoint
 	{
 		// Excercise the table.
 		
-		Table table = new Table();
+		LuaTable table = new LuaTable();
 
 		for ( int i = 5; i >= 1; --i )
 		{
@@ -106,14 +106,14 @@ static class EntryPoint
 
 		Console.WriteLine( "#table = {0}", table.Length() );
 
-		foreach ( KeyValuePair< Value, Value > item in table )
+		foreach ( KeyValuePair< LuaValue, LuaValue > item in table )
 		{
 			Console.WriteLine( "{0} {1}", item.Key, item.Value );
 		}
 
 
-		Value key	= null;
-		Value value	= null;
+		LuaValue key	= null;
+		LuaValue value	= null;
 
 		table.Next( ref key, out value );
 		while ( key != null )
@@ -156,7 +156,7 @@ static class EntryPoint
 
 		Console.WriteLine( "#table = {0}", table.Length() );
 
-		foreach ( KeyValuePair< Value, Value > item in table )
+		foreach ( KeyValuePair< LuaValue, LuaValue > item in table )
 		{
 			Console.WriteLine( "{0} {1}", item.Key, item.Value );
 		}
@@ -175,7 +175,7 @@ static class EntryPoint
 		}
 
 
-		foreach ( KeyValuePair< Value, Value > item in table )
+		foreach ( KeyValuePair< LuaValue, LuaValue > item in table )
 		{
 			Console.WriteLine( "ELEMENT: {0} {1}", item.Key, item.Value );
 		}

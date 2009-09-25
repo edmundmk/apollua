@@ -1,4 +1,4 @@
-// Coroutine.cs
+// LuaThread.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -12,35 +12,31 @@ namespace Lua
 {
 
 
-public sealed class Coroutine
-	:	Value
+public sealed class LuaThread
+	:	LuaValue
 {
-	// Metatable.
 
-	public static Table TypeMetatable
+	public static LuaTable TypeMetatable
 	{
 		get;
 		set;
 	}
 	
-	public override	Table Metatable
+
+	// LuaValue
+
+	public override	LuaTable Metatable
 	{
 		get { return TypeMetatable; }
 		set { base.Metatable = value; }
 	}
 
-
-
-	// Conversion.
-
-	public override string LuaType
+	public override string GetLuaType()
 	{
-		get { return "thread"; }
+		return "thread";
 	}
 
-
-
-
+	
 }
 
 

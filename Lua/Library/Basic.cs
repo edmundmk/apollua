@@ -17,8 +17,8 @@ namespace Lua.Library
 
 public class Basic
 {
-	public delegate Function Compile( TextReader source, string sourceName );
-	public delegate Function StackLevel( int level );
+	public delegate LuaFunction Compile( TextReader source, string sourceName );
+	public delegate LuaFunction StackLevel( int level );
 
 	
 	
@@ -27,11 +27,11 @@ public class Basic
 	public TextReader	In					{ get; set; }
 	public TextWriter	Out					{ get; set; }
 
-	public Table		Table				{ get; private set; }
+	public LuaTable		Table				{ get; private set; }
 	
 
-	Function pairsGenerator;
-	Function ipairsGenerator;
+	LuaFunction pairsGenerator;
+	LuaFunction ipairsGenerator;
 
 
 	public Basic()
@@ -41,38 +41,38 @@ public class Basic
 		In							= Console.In;
 		Out							= Console.Out;
 
-		pairsGenerator				= new LuaDelegateM< Table, Value, Value >( next );
-		ipairsGenerator				= new LuaDelegateM< Table, int, Value >( inext );
+		pairsGenerator				= new LuaDelegateM< LuaTable, LuaValue, LuaValue >( next );
+		ipairsGenerator				= new LuaDelegateM< LuaTable, int, LuaValue >( inext );
 
-		Table basic = new Table();
+		LuaTable basic = new LuaTable();
 
 		basic[ "_G" ]				= Table;
 		basic[ "_VERSION" ]			= "Lua 5.1";
 
-		basic[ "assert" ]			= new LuaDelegateV< Value, Value >( assert );
-		basic[ "collectgarbage" ]	= new LuaDelegateS< string, Value, Value >( collectgarbage );
-		basic[ "dofile" ]			= new LuaDelegateM< string, Value >( dofile );
-		basic[ "error" ]			= new LuaDelegateV< Value, int >( error );	
-		basic[ "getfenv" ]			= new LuaDelegateS< Value, Value >( getfenv );
-		basic[ "getmetatable" ]		= new LuaDelegateS< Value, Value >( getmetatable );
-		basic[ "ipairs" ]			= new LuaDelegateM< Table, Value >( ipairs );
-		basic[ "load" ]				= new LuaDelegateS< Function, string, Function >( load );
-		basic[ "loadstring" ]		= new LuaDelegateS< string, string, Function >( loadstring );
-		basic[ "next" ]				= new LuaDelegateM< Table, Value, Value >( next );
-		basic[ "pairs" ]			= new LuaDelegateM< Table, Value >( pairs );
-		basic[ "pcall" ]			= new LuaDelegateMP< Function, Value, Value >( pcall );
-		basic[ "print" ]			= new LuaDelegateVP< Value >( print );
-		basic[ "rawequal" ]			= new LuaDelegateS< Value, Value, bool >( rawequal );
-		basic[ "rawget" ]			= new LuaDelegateS< Table, Value, Value >( rawget );
-		basic[ "rawset" ]			= new LuaDelegateS< Table, Value, Value, Table >( rawset );
-		basic[ "select" ]			= new LuaDelegateMP< Value, Value, Value >( select );
-		basic[ "setfenv" ]			= new LuaDelegateS< Value, Value, Function >( setfenv );
-		basic[ "setmetatable" ]		= new LuaDelegateS< Table, Table, Table >( setmetatable );
-		basic[ "tonumber" ]			= new LuaDelegateS< Value, Value, Value >( tonumber );
-		basic[ "tostring" ]			= new LuaDelegateS< Value, string >( tostring );
-		basic[ "type" ]				= new LuaDelegateS< Value, string >( type );
-		basic[ "unpack" ]			= new LuaDelegateM< Table, Value, Value, Value >( unpack );
-		basic[ "xpcall" ]			= new LuaDelegateM< Function, Function, Value >( xpcall );
+		basic[ "assert" ]			= new LuaDelegateV< LuaValue, LuaValue >( assert );
+		basic[ "collectgarbage" ]	= new LuaDelegateS< string, LuaValue, LuaValue >( collectgarbage );
+		basic[ "dofile" ]			= new LuaDelegateM< string, LuaValue >( dofile );
+		basic[ "error" ]			= new LuaDelegateV< LuaValue, int >( error );	
+		basic[ "getfenv" ]			= new LuaDelegateS< LuaValue, LuaValue >( getfenv );
+		basic[ "getmetatable" ]		= new LuaDelegateS< LuaValue, LuaValue >( getmetatable );
+		basic[ "ipairs" ]			= new LuaDelegateM< LuaTable, LuaValue >( ipairs );
+		basic[ "load" ]				= new LuaDelegateS< LuaFunction, string, LuaFunction >( load );
+		basic[ "loadstring" ]		= new LuaDelegateS< string, string, LuaFunction >( loadstring );
+		basic[ "next" ]				= new LuaDelegateM< LuaTable, LuaValue, LuaValue >( next );
+		basic[ "pairs" ]			= new LuaDelegateM< LuaTable, LuaValue >( pairs );
+		basic[ "pcall" ]			= new LuaDelegateMP< LuaFunction, LuaValue, LuaValue >( pcall );
+		basic[ "print" ]			= new LuaDelegateVP< LuaValue >( print );
+		basic[ "rawequal" ]			= new LuaDelegateS< LuaValue, LuaValue, bool >( rawequal );
+		basic[ "rawget" ]			= new LuaDelegateS< LuaTable, LuaValue, LuaValue >( rawget );
+		basic[ "rawset" ]			= new LuaDelegateS< LuaTable, LuaValue, LuaValue, LuaTable >( rawset );
+		basic[ "select" ]			= new LuaDelegateMP< LuaValue, LuaValue, LuaValue >( select );
+		basic[ "setfenv" ]			= new LuaDelegateS< LuaValue, LuaValue, LuaFunction >( setfenv );
+		basic[ "setmetatable" ]		= new LuaDelegateS< LuaTable, LuaTable, LuaTable >( setmetatable );
+		basic[ "tonumber" ]			= new LuaDelegateS< LuaValue, LuaValue, LuaValue >( tonumber );
+		basic[ "tostring" ]			= new LuaDelegateS< LuaValue, string >( tostring );
+		basic[ "type" ]				= new LuaDelegateS< LuaValue, string >( type );
+		basic[ "unpack" ]			= new LuaDelegateM< LuaTable, LuaValue, LuaValue, LuaValue >( unpack );
+		basic[ "xpcall" ]			= new LuaDelegateM< LuaFunction, LuaFunction, LuaValue >( xpcall );
 
 		Table = basic;
 	}
@@ -81,8 +81,8 @@ public class Basic
 
 	// Constants.
 
-	static readonly Value handlerMetatable	= "__metatable";
-	static readonly Value handlerToString	= "__tostring";
+	static readonly LuaValue handlerMetatable	= "__metatable";
+	static readonly LuaValue handlerToString	= "__tostring";
 
 
 
@@ -91,9 +91,9 @@ public class Basic
 	class Error
 		:	Exception
 	{
-		public Value MessageObject	{ get; private set; }
+		public LuaValue MessageObject	{ get; private set; }
 
-		public Error( Value messageObject )
+		public Error( LuaValue messageObject )
 			:	base( messageObject.ToString() )
 		{
 		}
@@ -104,7 +104,7 @@ public class Basic
 	// Functions.
 
 
-	void assert( Value v, Value message )
+	void assert( LuaValue v, LuaValue message )
 	{
 		if ( ! v.IsTrue() )
 		{
@@ -113,7 +113,7 @@ public class Basic
 	}
 
 
-	Value collectgarbage( string opt, Value arg )
+	LuaValue collectgarbage( string opt, LuaValue arg )
 	{
 		if ( opt == "stop" )
 		{
@@ -132,7 +132,7 @@ public class Basic
 		{
 			return 0;
 		}
-		else if ( opt == "step ")
+		else if ( opt == "step" )
 		{
 			return null;
 		}
@@ -149,14 +149,14 @@ public class Basic
 	}
 
 
-	Value[] dofile( string filename )
+	LuaValue[] dofile( string filename )
 	{
-		Function chunk = loadfile( filename );
+		LuaFunction chunk = loadfile( filename );
 		return chunk.InvokeM();
 	}
 
 	
-	void error( Value message, int level )
+	void error( LuaValue message, int level )
 	{
 		// Throw message as an exception (can be caught by pcall)
 		// TODO: level should alter the generated stack trace.
@@ -165,13 +165,13 @@ public class Basic
 	}
 
 
-	Value getfenv( Value f )
+	LuaValue getfenv( LuaValue f )
 	{
 		// Get function from stack level.
 		// TODO: level 0 is the 'thread' environment.
 
 		int level;
-		if ( f.TryToInteger( out level ) )
+		if ( f.TryToInt32( out level ) )
 		{
 			f = StackLevelHandler( level );
 		}
@@ -179,11 +179,11 @@ public class Basic
 
 		// Get environment.
 
-		return ( (Function)f ).Environment;
+		return ( (LuaFunction)f ).Environment;
 	}
 
 
-	Value getmetatable( Value v )
+	LuaValue getmetatable( LuaValue v )
 	{
 		// nil doesn't have a metatable.
 
@@ -197,7 +197,7 @@ public class Basic
 
 		if ( v.Metatable != null )
 		{
-			Value metatable = v.Metatable[ handlerMetatable ];
+			LuaValue metatable = v.Metatable[ handlerMetatable ];
 			if ( metatable != null )
 			{
 				return metatable;
@@ -211,34 +211,34 @@ public class Basic
 	}
 
 
-	Value[] inext( Table table, int key )
+	LuaValue[] inext( LuaTable table, int key )
 	{
 		// Get next key.
 
 		key += 1;
-		Value value = table[ key ];
+		LuaValue value = table[ key ];
 
 
 		// Return appropriately.
 
 		if ( value != null )
 		{
-			return new Value[] { key, value };
+			return new LuaValue[] { key, value };
 		}
 		else
 		{
-			return new Value[] { null, null };
+			return new LuaValue[] { null, null };
 		}
 	}
 
 
-	Value[] ipairs( Table table )
+	LuaValue[] ipairs( LuaTable table )
 	{
-		return new Value[] { ipairsGenerator, table, 0 };
+		return new LuaValue[] { ipairsGenerator, table, 0 };
 	}
 
 
-	Function load( Function function, string chunkname )
+	LuaFunction load( LuaFunction function, string chunkname )
 	{
 		if ( chunkname == null ) chunkname = "=(load)";
 
@@ -246,7 +246,7 @@ public class Basic
 		// Accumulate source by calling function.
 
 		string s = "";
-		Value part = function.InvokeS();
+		LuaValue part = function.InvokeS();
 		while ( part is BoxedString && ( (BoxedString)part ).Value.Length > 0 )
 		{
 			s += ( (BoxedString)part ).Value;
@@ -264,7 +264,7 @@ public class Basic
 	}
 
 
-	Function loadfile( string filename )
+	LuaFunction loadfile( string filename )
 	{
 		if ( filename == null )
 		{
@@ -280,30 +280,30 @@ public class Basic
 	}
 
 
-	Function loadstring( string s, string chunkname )
+	LuaFunction loadstring( string s, string chunkname )
 	{
 		if ( chunkname == null ) chunkname = "=(load)";
 		return CompileHandler( new StringReader( s ), chunkname );
 	}
 
 
-	Value[] next( Table table, Value key )
+	LuaValue[] next( LuaTable table, LuaValue key )
 	{
-		Value value;
+		LuaValue value;
 		table.Next( ref key, out value );
-		return new Value[] { key, value };
+		return new LuaValue[] { key, value };
 	}
 
 
-	Value[] pairs( Table table )
+	LuaValue[] pairs( LuaTable table )
 	{
-		return new Value[] { /* next */ null, table, null };
+		return new LuaValue[] { /* next */ null, table, null };
 	}
 
 
-	Value[] pcall( Function f, params Value[] arguments )
+	LuaValue[] pcall( LuaFunction f, params LuaValue[] arguments )
 	{
-		Value[] results;
+		LuaValue[] results;
 
 		try
 		{
@@ -316,7 +316,7 @@ public class Basic
 		{
 			// Return any message from the exception.
 
-			Value message = null;
+			LuaValue message = null;
 			if ( e is Error )
 			{
 				message = ( (Error)e ).MessageObject;
@@ -329,20 +329,20 @@ public class Basic
 			{
 				message = e.Message;
 			}
-			return new Value[]{ false, message };
+			return new LuaValue[]{ false, message };
 		}
 
 
 		// Success, repackage results with the success value.
 		
-		Value[] newResults = new Value[ results.Length + 1 ];
+		LuaValue[] newResults = new LuaValue[ results.Length + 1 ];
 		newResults[ 0 ] = true;
 		results.CopyTo( newResults, 1 );
 		return newResults;
 	}
 
 
-	void print( params Value[] arguments )
+	void print( params LuaValue[] arguments )
 	{
 		// Print for debugging.
 
@@ -366,55 +366,55 @@ public class Basic
 	}
 
 
-	Value rawget( Table table, Value key )
+	LuaValue rawget( LuaTable table, LuaValue key )
 	{
 		return table[ key ];
 	}
 
 
-	Table rawset( Table table, Value key, Value value )
+	LuaTable rawset( LuaTable table, LuaValue key, LuaValue value )
 	{
 		table[ key ] = value;
 		return table;
 	}
 
 
-	Value[] select( Value index, params Value[] arguments )
+	LuaValue[] select( LuaValue index, params LuaValue[] arguments )
 	{
 		int i;
-		if ( index.TryToInteger( out i ) )
+		if ( index.TryToInt32( out i ) )
 		{
 			// Pick correct argument.
 
 			if ( i < arguments.Length )
 			{
-				Value[] results = new Value[ arguments.Length - i ];
+				LuaValue[] results = new LuaValue[ arguments.Length - i ];
 				Array.Copy( arguments, i, results, 0, results.Length );
 				return results;
 			}
 			else
 			{
-				return new Value[] {};
+				return new LuaValue[] {};
 			}
 		}
-		else if ( index.Equals( "#" ) )
+		else if ( index.EqualsValue( "#" ) )
 		{
 			// Return number of arguments.
 
-			return new Value[] { arguments.Length };
+			return new LuaValue[] { arguments.Length };
 		}
 
 		throw new ArgumentException();
 	}
 
 
-	Function setfenv( Value f, Value env )
+	LuaFunction setfenv( LuaValue f, LuaValue env )
 	{
 		// Find function from stack level.
 		// TODO: level 0 is the 'thread' environment.
 
 		int level;
-		if ( f.TryToInteger( out level ) )
+		if ( f.TryToInt32( out level ) )
 		{
 			f = StackLevelHandler( level );
 		}
@@ -422,12 +422,12 @@ public class Basic
 
 		// Set environment.
 
-		( (Function)f ).Environment = env;
-		return ( (Function)f );
+		( (LuaFunction)f ).Environment = env;
+		return ( (LuaFunction)f );
 	}
 
 
-	Table setmetatable( Table table, Table metatable )
+	LuaTable setmetatable( LuaTable table, LuaTable metatable )
 	{
 		if ( table == null )
 		{
@@ -450,11 +450,11 @@ public class Basic
 	}
 
 
-	Value tonumber( Value v, Value numberBase )
+	LuaValue tonumber( LuaValue v, LuaValue numberBase )
 	{
 		// If it's already a number return it.
 
-		if ( v.TryToNumber( out v ) )
+		if ( v.TryToNumberValue( out v ) )
 		{
 			return v;
 		}
@@ -474,7 +474,7 @@ public class Basic
 			{
 				b = 10;
 			}
-			else if ( ! numberBase.TryToInteger( out b ) )
+			else if ( ! numberBase.TryToInt32( out b ) )
 			{
 				throw new ArgumentException();
 			}
@@ -553,7 +553,7 @@ public class Basic
 	}
 
 
-	string tostring( Value v )
+	string tostring( LuaValue v )
 	{
 		if ( v == null )
 		{
@@ -565,7 +565,7 @@ public class Basic
 
 		if ( v.Metatable != null )
 		{
-			Value toString = v.Metatable[ handlerToString ];
+			LuaValue toString = v.Metatable[ handlerToString ];
 			if ( toString != null )
 			{
 				toString.InvokeS( v );
@@ -579,13 +579,13 @@ public class Basic
 	}
 
 
-	string type( Value v )
+	string type( LuaValue v )
 	{
-		return v != null ? v.LuaType : null;
+		return v != null ? v.GetLuaType() : null;
 	}
 
 
-	Value[] unpack( Table table, Value start, Value end )
+	LuaValue[] unpack( LuaTable table, LuaValue start, LuaValue end )
 	{
 		// Find start and end.
 
@@ -593,7 +593,7 @@ public class Basic
 		if ( end == null ) end = table.Length();
 
 		int istart, iend;
-		if ( ! start.TryToInteger( out istart ) || ! end.TryToInteger( out iend ) )
+		if ( ! start.TryToInt32( out istart ) || ! end.TryToInt32( out iend ) )
 		{
 			throw new ArgumentException();
 		}
@@ -601,7 +601,7 @@ public class Basic
 
 		// Pack table values into result array.
 
-		Value[] results = new Value[ iend - istart + 1 ];
+		LuaValue[] results = new LuaValue[ iend - istart + 1 ];
 		for ( int i = istart; i <= iend; ++i )
 		{
 			results[ i - istart ] = table[ i ];
@@ -611,9 +611,9 @@ public class Basic
 	}
 
 
-	Value[] xpcall( Function f, Function error )
+	LuaValue[] xpcall( LuaFunction f, LuaFunction error )
 	{
-		Value[] results;
+		LuaValue[] results;
 		bool success;
 
 		try
@@ -628,7 +628,7 @@ public class Basic
 		{
 			// Recover message.
 
-			Value message = null;
+			LuaValue message = null;
 			if ( e is Error )
 			{
 				message = ( (Error)e ).MessageObject;
@@ -652,7 +652,7 @@ public class Basic
 
 		// Repackage results and indicate success.
 		
-		Value[] newResults = new Value[ results.Length + 1 ];
+		LuaValue[] newResults = new LuaValue[ results.Length + 1 ];
 		newResults[ 0 ] = success;
 		results.CopyTo( newResults, 1 );
 		return newResults;

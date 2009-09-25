@@ -18,14 +18,14 @@ public class UpVal
 {
 	// Members.
 
-	IList< Value >	stack;
+	IList< LuaValue >	stack;
 	int				index;
-	Value			value;
+	LuaValue			value;
 
 
 	// Value.
 
-	public Value Value
+	public LuaValue Value
 	{
 		get { return stack != null ? stack[ index ] : value; }
 		set { if ( stack != null ) stack[ index ] = value; else this.value = value; }
@@ -39,7 +39,7 @@ public class UpVal
 
 	// Lifetime.
 
-	public UpVal( IList< Value > stack, int index )
+	public UpVal( IList< LuaValue > stack, int index )
 	{
 		this.stack	= stack;
 		this.index	= index;

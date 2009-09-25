@@ -421,7 +421,7 @@ public class LuaVMCompiler
 				new DebugSourceLocation( s.End.SourceName, s.End.Line, s.End.Column ) );
 		}
 
-		Value ObjectToValue( object o )
+		LuaValue ObjectToValue( object o )
 		{
 			if ( o == null )
 			{
@@ -433,11 +433,11 @@ public class LuaVMCompiler
 			}
 			else if ( o is int )
 			{
-				return new BoxedInteger( (int)o );
+				return new BoxedInt32( (int)o );
 			}
 			else if ( o is double )
 			{
-				return new BoxedNumber( (double)o );
+				return new BoxedDouble( (double)o );
 			}
 			else if ( o is string )
 			{
@@ -455,7 +455,7 @@ public class LuaVMCompiler
 			prototype.ParameterCount				= Function.Parameters.Count;
 			prototype.IsVararg						= Function.IsVararg;
 
-			prototype.Constants						= new Value[ constants.Count ];
+			prototype.Constants						= new LuaValue[ constants.Count ];
 			prototype.Prototypes					= prototypes.ToArray();
 
 			prototype.StackSize						= watermark;

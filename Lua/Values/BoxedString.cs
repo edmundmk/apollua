@@ -15,11 +15,20 @@ namespace Lua
 
 [DebuggerDisplay( "{Value}" )]
 public sealed class BoxedString
-	:	Value
+	:	LuaValue
 {
-	// Value.
 
-	public string Value { get; private set; }
+	public static LuaTable TypeMetatable
+	{
+		get;
+		set;
+	}
+	
+	public string Value
+	{
+		get;
+		private set;
+	}
 
 	public BoxedString( string value )
 	{
@@ -27,7 +36,7 @@ public sealed class BoxedString
 	}
 
 
-	// Hashing.
+	// Object
 
 	public override bool Equals( object o )
 	{
@@ -53,48 +62,36 @@ public sealed class BoxedString
 	}
 
 
+	// LuaValue.
 
-	// Metatable.
-
-	public static Table TypeMetatable
-	{
-		get;
-		set;
-	}
-	
-	public override	Table Metatable
+	public override	LuaTable Metatable
 	{
 		get { return TypeMetatable; }
 		set { base.Metatable = value; }
 	}
 
-
-
-	// Conversion.
-
-	public override string LuaType
+	public override string GetLuaType()
 	{
-		get { return "string"; }
+		return "string";
 	}
 
-	public override bool UsePrimitiveConcatenate()
+	public override bool IsPrimitiveValue()
 	{
 		return true;
 	}
 
 
+	// Binary operators.
 
-	// Binary arithmetic operators.
-
-	public override Value Concatenate( Value o )
+	public override LuaValue Concatenate( LuaValue o )
 	{
-		if ( o.GetType() == typeof( BoxedInteger ) )
+		if ( o.GetType() == typeof( BoxedInt32 ) )
 		{
-			return new BoxedString( String.Concat( Value, ( (BoxedInteger)o ).Value ) );
+			return new BoxedString( String.Concat( Value, ( (BoxedInt32)o ).Value ) );
 		}
-		if ( o.GetType() == typeof( BoxedNumber ) )
+		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
-			return new BoxedString( String.Concat( Value, ( (BoxedNumber)o ).Value ) );
+			return new BoxedString( String.Concat( Value, ( (BoxedDouble)o ).Value ) );
 		}
 		if ( o.GetType() == typeof( string ) )
 		{
@@ -103,44 +100,42 @@ public sealed class BoxedString
 		return base.Concatenate( o );
 	}
 
+	
+	// Unary operators.
 
-
-	// Unary arithmetic operators.
-
-	public override Value Length()
+	public override LuaValue Length()
 	{
-		return new BoxedInteger( Value.Length );
+		return new BoxedInt32( Value.Length );
 	}
-
-
+	
 
 	// Comparison operators.
 
-	public override bool Equals( Value o )
+	public override bool EqualsValue( LuaValue o )
 	{
 		if ( o.GetType() == typeof( BoxedString ) )
 		{
 			return Value == ( (BoxedString)o ).Value;
 		}
-		return base.Equals( o );
+		return base.EqualsValue( o );
 	}
 	
-	public override bool LessThan( Value o )
+	public override bool LessThanValue( LuaValue o )
 	{
-		if ( o.GetType() == typeof( string ) )
+		if ( o.GetType() == typeof( BoxedString ) )
 		{
 			return String.Compare( Value, ( (BoxedString)o ).Value ) < 0;
 		}
-		return base.LessThan( o );
+		return base.LessThanValue( o );
 	}
 	
-	public override bool LessThanOrEqual( Value o )
+	public override bool LessThanOrEqualsValue( LuaValue o )
 	{
-		if ( o.GetType() == typeof( string ) )
+		if ( o.GetType() == typeof( BoxedString ) )
 		{
 			return String.Compare( Value, ( (BoxedString)o ).Value ) <= 0;
 		}
-		return base.LessThanOrEqual( o );
+		return base.LessThanOrEqualsValue( o );
 	}
 
 

@@ -18,8 +18,8 @@ namespace Lua.Interop
 
 public abstract class LuaField
 {
-	public abstract Value GetValue( object o );
-	public abstract void SetValue( object o, Value v );
+	public abstract LuaValue GetValue( object o );
+	public abstract void SetValue( object o, LuaValue v );
 }
 
 
@@ -33,12 +33,12 @@ public class LuaField< T >
 		this.field = field;
 	}
 
-	public override Value GetValue( object o )
+	public override LuaValue GetValue( object o )
 	{
 		return InteropHelpers.CastResultS( (T)field.GetValue( o ) );
 	}
 
-	public override void SetValue( object o, Value v )
+	public override void SetValue( object o, LuaValue v )
 	{
 		field.SetValue( o, InteropHelpers.Cast< T >( v ) );
 	}
