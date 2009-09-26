@@ -423,10 +423,10 @@ public class PrototypeWriter
 
 	string ConstantString( int index )
 	{
-		object constant = prototype.Constants[ index ];
-		if ( constant is BoxedString )
+		LuaValue constant = prototype.Constants[ index ];
+		string s;
+		if ( constant.TryToString( out s ) )
 		{
-			string s = ( (BoxedString)constant ).Value;
 			s = s.Replace( "\n", "\\n" );
 			return String.Format( "\"{0}\"", s );
 		}

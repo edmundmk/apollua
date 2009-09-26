@@ -429,19 +429,19 @@ public class LuaVMCompiler
 			}
 			else if ( o is bool )
 			{
-				return (bool)o ? BoxedBoolean.True : BoxedBoolean.False;
+				return (bool)o;
 			}
 			else if ( o is int )
 			{
-				return new BoxedInt32( (int)o );
+				return (int)o;
 			}
 			else if ( o is double )
 			{
-				return new BoxedDouble( (double)o );
+				return (double)o;
 			}
 			else if ( o is string )
 			{
-				return new BoxedString( (string)o );
+				return (string)o;
 			}
 
 			throw new ArgumentException();

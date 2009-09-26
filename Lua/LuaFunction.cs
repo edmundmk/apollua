@@ -44,6 +44,9 @@ public abstract class LuaFunction
 		return "function";
 	}
 
+
+	// Binary operations.
+
 	public override sealed LuaValue Add( LuaValue o )				{ return base.Add( o ); }
 	public override sealed LuaValue Subtract( LuaValue o )			{ return base.Subtract( o ); }
 	public override sealed LuaValue Multiply( LuaValue o )			{ return base.Multiply( o ); }
@@ -53,12 +56,21 @@ public abstract class LuaFunction
 	public override sealed LuaValue RaiseToPower( LuaValue o )		{ return base.RaiseToPower( o ); }
 	public override sealed LuaValue Concatenate( LuaValue o )		{ return base.Concatenate( o ); }
 
+
+	// Unary operations.
+
 	public override sealed LuaValue UnaryMinus()					{ return base.UnaryMinus(); }
 	public override sealed LuaValue Length()						{ return base.Length(); }
+
+
+	// Comparisons.
 
 	public override sealed bool EqualsValue( LuaValue o )			{ return base.EqualsValue( o ); }
 	public override sealed bool LessThanValue( LuaValue o )			{ return base.LessThanValue( o ); }
 	public override sealed bool LessThanOrEqualsValue( LuaValue o )	{ return base.LessThanOrEqualsValue( o ); }
+
+
+	// Indexing.
 
 	public override sealed LuaValue Index( LuaValue k )				{ return base.Index( k ); }
 	public override sealed void NewIndex( LuaValue k, LuaValue v )	{ base.NewIndex( k, v ); }
