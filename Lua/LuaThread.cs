@@ -6,10 +6,18 @@
 
 
 using System;
+using System.Collections.Generic;
 
 
 namespace Lua
 {
+
+
+/*	A LuaThread holds all the information needed to implement Lua's stack-based modification
+	of functions, error handling, and coroutines.  This means the stack of current function
+	calls, the VM parameter and local stack (including upvals), and data that allows resumption
+	of coroutines after suspension.
+*/
 
 
 public sealed class LuaThread
@@ -22,6 +30,12 @@ public sealed class LuaThread
 		set;
 	}
 	
+	public List< LuaFunction >		Frames					{ get; private set; }
+	public List< LuaValue >			Values					{ get; private set; }
+//	public List< UpVal >			OpenUpVals				{ get; private set; }
+//	public SuspendedFrame			SuspendedFrameRoot		{ get; private set; }
+	
+
 
 	// LuaValue
 

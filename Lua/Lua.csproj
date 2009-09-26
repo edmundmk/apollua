@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Bytecode\Instruction.cs" />
     <Compile Include="Bytecode\LuaBytecode.cs" />
+    <Compile Include="Bytecode\LuaBytecodeFunction.cs" />
     <Compile Include="Bytecode\Opcode.cs" />
     <Compile Include="Bytecode\SourceLocation.cs" />
     <Compile Include="Bytecode\SourceSpan.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="LuaThread.cs" />
     <Compile Include="LuaValue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Runtime\UpVal.cs" />
     <Compile Include="Values\BoxedBoolean.cs" />
     <Compile Include="Values\BoxedDouble.cs" />
     <Compile Include="Values\BoxedInteger.cs" />

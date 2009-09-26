@@ -32,7 +32,6 @@ namespace Lua
 */
 
 
-
 public abstract class LuaValue
 {
 	

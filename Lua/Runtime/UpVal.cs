@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using Lua.Bytecode;
 
 
-namespace Lua
+namespace Lua.Runtime
 {
 
 
@@ -20,7 +20,7 @@ public class UpVal
 	// Members.
 
 	IList< LuaValue >	stack;
-	int				index;
+	int					index;
 	LuaValue			value;
 
 
