@@ -45,6 +45,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bytecode\Instruction.cs" />
+    <Compile Include="Bytecode\Local.cs" />
+    <Compile Include="Bytecode\LuaBytecode.cs" />
+    <Compile Include="Bytecode\Opcode.cs" />
+    <Compile Include="Bytecode\SourceLocation.cs" />
+    <Compile Include="Bytecode\SourceSpan.cs" />
     <Compile Include="Compiler\Parser\AST\ASTWriter.cs" />
     <Compile Include="Compiler\Parser\AST\Expression.cs" />
     <Compile Include="Compiler\Parser\AST\Expressions\Binary.cs" />
