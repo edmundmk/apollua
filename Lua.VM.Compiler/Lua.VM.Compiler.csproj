@@ -53,10 +53,6 @@
     <Compile Include="VMTransform.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Lua.Parser\Lua.Parser.csproj">
-      <Project>{513270D7-F857-4F5A-A6B5-24F0F16F4CEB}</Project>
-      <Name>Lua.Parser</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Lua.VM\Lua.VM.csproj">
       <Project>{96BB3882-A7A4-4CCC-8A48-AEA9C5184433}</Project>
       <Name>Lua.VM</Name>
