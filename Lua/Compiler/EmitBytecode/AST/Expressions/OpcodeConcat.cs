@@ -11,7 +11,7 @@ using Lua.Bytecode;
 using Lua.Compiler.Parser.AST;
 
 
-namespace Lua.VM.Compiler.AST.Expressions
+namespace Lua.Compiler.EmitBytecode.AST.Expressions
 {
 
 
@@ -30,9 +30,9 @@ public class OpcodeConcat
 
 	public override void Accept( IExpressionVisitor v )
 	{
-		if ( v is IVMExpressionVisitor )
+		if ( v is IBytecodeExpressionVisitor )
 		{
-			( (IVMExpressionVisitor)v ).Visit( this );
+			( (IBytecodeExpressionVisitor)v ).Visit( this );
 		}
 	}
 

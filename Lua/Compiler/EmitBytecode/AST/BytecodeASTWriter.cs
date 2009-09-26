@@ -1,4 +1,4 @@
-﻿// VMASTWriter.cs
+﻿// BytecodeASTWriter.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -9,19 +9,19 @@ using System;
 using System.IO;
 using Lua.Compiler.Parser.AST;
 using Lua.Compiler.Parser.AST.Expressions;
-using Lua.VM.Compiler.AST.Expressions;
+using Lua.Compiler.EmitBytecode.AST.Expressions;
 
 
-namespace Lua.VM.Compiler.AST
+namespace Lua.Compiler.EmitBytecode.AST
 {
 
 
-public class VMASTWriter
+public class BytecodeASTWriter
 	:	ASTWriter
-	,	IVMExpressionVisitor
+	,	IBytecodeExpressionVisitor
 {
 
-	public VMASTWriter( TextWriter oWriter )
+	public BytecodeASTWriter( TextWriter oWriter )
 		:	base( oWriter )
 	{
 	}

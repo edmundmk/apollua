@@ -1,4 +1,4 @@
-﻿// LuaCLRCompiler.cs
+﻿// BytecodeCompiler.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -14,13 +14,13 @@ using Lua.Compiler.Parser;
 using Lua.Compiler.Parser.AST;
 using Lua.Compiler.Parser.AST.Expressions;
 using Lua.Compiler.Parser.AST.Statements;
-using Lua.VM.Compiler.AST;
-using Lua.VM.Compiler.AST.Expressions;
+using Lua.Compiler.EmitBytecode.AST;
+using Lua.Compiler.EmitBytecode.AST.Expressions;
 using Lua.Bytecode;
 
 
 
-namespace Lua.VM.Compiler
+namespace Lua.Compiler.EmitBytecode
 {
 
 
@@ -28,9 +28,9 @@ namespace Lua.VM.Compiler
 */
 
 
-public class LuaVMCompiler
+public class BytecodeCompiler
 	:	IStatementVisitor
-	,	IVMExpressionVisitor
+	,	IBytecodeExpressionVisitor
 {
 	// Errors.
 
@@ -52,7 +52,7 @@ public class LuaVMCompiler
 
 
 
-	public LuaVMCompiler( TextWriter errorWriter, TextReader source, string sourceName )
+	public BytecodeCompiler( TextWriter errorWriter, TextReader source, string sourceName )
 	{
 		this.errorWriter	= errorWriter;
 		hasError			= false;
@@ -67,7 +67,7 @@ public class LuaVMCompiler
 	}
 
 
-	public VMFunction Compile()
+	public LuaBytecode Compile()
 	{
 		// Parse the function.
 
@@ -80,14 +80,14 @@ public class LuaVMCompiler
 
 		// Transform.
 
-		VMTransform transform = new VMTransform();
+		BytecodeTransform transform = new BytecodeTransform();
 		functionAST = transform.Transform( functionAST );
 
 
 		// Compile.
 
 		LuaBytecode prototype = BuildPrototype( functionAST );
-		return new VMFunction( prototype );
+		return prototype;
 	}
 
 

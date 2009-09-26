@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lua.CLR", "Lua.CLR\Lua.CLR.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lua.CLR.Compiler", "Lua.CLR.Compiler\Lua.CLR.Compiler.csproj", "{C79018B8-CD8D-4573-A7F2-3F7C4A2B8C29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lua.VM.Compiler", "Lua.VM.Compiler\Lua.VM.Compiler.csproj", "{A52CE447-5082-4A22-A044-B019C2F87EFA}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,10 +37,6 @@ Global
 		{C79018B8-CD8D-4573-A7F2-3F7C4A2B8C29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C79018B8-CD8D-4573-A7F2-3F7C4A2B8C29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C79018B8-CD8D-4573-A7F2-3F7C4A2B8C29}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A52CE447-5082-4A22-A044-B019C2F87EFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A52CE447-5082-4A22-A044-B019C2F87EFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A52CE447-5082-4A22-A044-B019C2F87EFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A52CE447-5082-4A22-A044-B019C2F87EFA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

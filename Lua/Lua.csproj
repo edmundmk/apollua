@@ -51,6 +51,11 @@
     <Compile Include="Bytecode\SourceLocation.cs" />
     <Compile Include="Bytecode\SourceSpan.cs" />
     <Compile Include="Bytecode\Symbol.cs" />
+    <Compile Include="Compiler\EmitBytecode\AST\BytecodeASTWriter.cs" />
+    <Compile Include="Compiler\EmitBytecode\AST\Expressions\OpcodeConcat.cs" />
+    <Compile Include="Compiler\EmitBytecode\AST\IBytecodeExpressionVisitor.cs" />
+    <Compile Include="Compiler\EmitBytecode\BytecodeCompiler.cs" />
+    <Compile Include="Compiler\EmitBytecode\BytecodeTransform.cs" />
     <Compile Include="Compiler\Parser\AST\ASTWriter.cs" />
     <Compile Include="Compiler\Parser\AST\Expression.cs" />
     <Compile Include="Compiler\Parser\AST\Expressions\Binary.cs" />

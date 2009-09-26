@@ -49,10 +49,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Lua.VM.Compiler\Lua.VM.Compiler.csproj">
-      <Project>{A52CE447-5082-4A22-A044-B019C2F87EFA}</Project>
-      <Name>Lua.VM.Compiler</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Lua.VM\Lua.VM.csproj">
       <Project>{96BB3882-A7A4-4CCC-8A48-AEA9C5184433}</Project>
       <Name>Lua.VM</Name>

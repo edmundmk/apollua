@@ -14,8 +14,8 @@ using Lua.Compiler.Parser.AST;
 //using Lua.CLR.Compiler;
 //using Lua.CLR.Compiler.AST;
 using Lua.VM;
-using Lua.VM.Compiler;
-//using Lua.VM.Compiler.AST;
+using Lua.Compiler.EmitBytecode;
+//using Lua.Compiler.EmitBytecode.AST;
 
 
 namespace Test
@@ -31,7 +31,7 @@ static class EntryPoint
 		Console.Out.WriteLine( args[ 0 ] );
 		Console.Error.WriteLine( args[ 0 ] );
 
-		
+/*
 		LuaVMCompiler compiler = new LuaVMCompiler( Console.Error, File.OpenText( args[ 0 ] ), args[ 0 ] );
 		VMFunction function = compiler.Compile();
 		PrototypeWriter writer = new PrototypeWriter( Console.Out );
@@ -43,7 +43,7 @@ static class EntryPoint
 		basic.Table[ "math"  ] = math;
 		function.Environment = basic.Table;
 		function.InvokeS();
-
+*/
 
 
 

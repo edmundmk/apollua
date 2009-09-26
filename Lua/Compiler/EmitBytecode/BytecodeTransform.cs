@@ -10,11 +10,11 @@ using System.Collections.Generic;
 using Lua.Bytecode;
 using Lua.Compiler.Parser.AST;
 using Lua.Compiler.Parser.AST.Expressions;
-using Lua.VM.Compiler.AST;
-using Lua.VM.Compiler.AST.Expressions;
+using Lua.Compiler.EmitBytecode.AST;
+using Lua.Compiler.EmitBytecode.AST.Expressions;
 
 
-namespace Lua.VM.Compiler
+namespace Lua.Compiler.EmitBytecode
 {
 
 
@@ -25,9 +25,9 @@ namespace Lua.VM.Compiler
 */
 
 
-public class VMTransform
+public class BytecodeTransform
 	:	FunctionTransform
-	,	IVMExpressionVisitor
+	,	IBytecodeExpressionVisitor
 {
 
 	// String concatenation operations are merged to concatenate full lists.
