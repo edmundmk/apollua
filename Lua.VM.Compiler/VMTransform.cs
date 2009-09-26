@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using Lua.Bytecode;
 using Lua.Compiler.Parser.AST;
 using Lua.Compiler.Parser.AST.Expressions;
 using Lua.VM.Compiler.AST;

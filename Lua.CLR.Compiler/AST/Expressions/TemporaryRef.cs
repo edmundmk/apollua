@@ -6,6 +6,7 @@
 
 
 using System;
+using Lua.Bytecode;
 using Lua.Compiler.Parser.AST;
 
 

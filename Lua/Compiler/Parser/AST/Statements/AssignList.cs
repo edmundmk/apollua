@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using Lua.Bytecode;
 
 
 namespace Lua.Compiler.Parser.AST.Statements

@@ -1,4 +1,4 @@
-// Prototype.cs
+// LuaBytecode.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -10,39 +10,39 @@ using System.Collections.Generic;
 using Lua;
 
 
-namespace Lua.VM
+namespace Lua.Bytecode
 {
 	
 
-public class Prototype
+public class LuaBytecode
 {
 
 	// Parameters.
 
-	public int					UpValCount					{ get; set; }
-	public int					ParameterCount				{ get; set; }
-	public bool					IsVararg					{ get; set; }
+	public int				UpValCount					{ get; set; }
+	public int				ParameterCount				{ get; set; }
+	public bool				IsVararg					{ get; set; }
 
 
 	// Constants.
 
-	public LuaValue[]				Constants					{ get; set; }
-	public Prototype[]			Prototypes					{ get; set; }
+	public LuaValue[]		Constants					{ get; set; }
+	public LuaBytecode[]	Prototypes					{ get; set; }
 
 
 	// VM opcodes.
 
-	public int					StackSize					{ get; set; }
-	public Instruction[]		Instructions				{ get; set; }
+	public int				StackSize					{ get; set; }
+	public Instruction[]	Instructions				{ get; set; }
 
 
 	// Debug information.
 
-	public string				DebugName					{ get; set; }
-	public DebugSourceSpan		DebugSourceSpan				{ get; set; }
-	public DebugSourceSpan[]	DebugInstructionSourceSpans	{ get; set; }
-	public string[]				DebugUpValNames				{ get; set; }
-	public DebugLocal[]			DebugLocals					{ get; set; }
+	public string			DebugName					{ get; set; }
+	public SourceSpan		DebugSourceSpan				{ get; set; }
+	public SourceSpan[]		DebugInstructionSourceSpans	{ get; set; }
+	public string[]			DebugUpValNames				{ get; set; }
+	public Symbol[]			DebugLocals					{ get; set; }
 
 }
 

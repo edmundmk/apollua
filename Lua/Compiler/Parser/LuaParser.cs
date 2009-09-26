@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using Lua.Bytecode;
 using Lua.Compiler.Parser.AST;
 using Lua.Compiler.Parser.AST.Expressions;
 using Lua.Compiler.Parser.AST.Statements;

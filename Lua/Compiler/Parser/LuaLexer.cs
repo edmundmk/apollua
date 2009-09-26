@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using Lua.Bytecode;
 using Lua.Compiler.Parser.AST;
 
 

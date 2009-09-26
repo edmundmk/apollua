@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Lua.Bytecode;
 
 
 namespace Lua.VM
@@ -17,7 +18,7 @@ namespace Lua.VM
 public class PrototypeWriter
 {
 	protected TextWriter	o;
-	protected Prototype		prototype;
+	protected LuaBytecode		prototype;
 	protected int			ip;
 
 
@@ -30,7 +31,7 @@ public class PrototypeWriter
 
 	
 
-	public void Write( Prototype p )
+	public void Write( LuaBytecode p )
 	{
 		prototype = p;
 
@@ -119,7 +120,7 @@ public class PrototypeWriter
 			WriteInstruction();
 			if ( prototype.Instructions[ ip ].Opcode == Opcode.Closure )
 			{
-				Prototype closure = prototype.Prototypes[ prototype.Instructions[ ip ].Bx ];
+				LuaBytecode closure = prototype.Prototypes[ prototype.Instructions[ ip ].Bx ];
 				for ( int upval = 0; upval < closure.UpValCount; ++upval )
 				{
 					Instruction i = prototype.Instructions[ ip + 1 + upval ];
@@ -243,7 +244,7 @@ public class PrototypeWriter
 	void WriteInstruction()
 	{
 		Instruction		instruction		= prototype.Instructions[ ip ];
-		DebugSourceSpan instructionSpan	= prototype.DebugInstructionSourceSpans[ ip ];
+		SourceSpan instructionSpan	= prototype.DebugInstructionSourceSpans[ ip ];
 		OpMetadata		metadata		= opcodeMetadata[ instruction.Opcode ];
 		
 
@@ -312,7 +313,7 @@ public class PrototypeWriter
 		
 		for ( int local = 0; local < prototype.DebugLocals.Length; ++local )
 		{
-			DebugLocal debugLocal = prototype.DebugLocals[ local ];
+			Symbol debugLocal = prototype.DebugLocals[ local ];
 			
 			if ( debugLocal.StartInstruction == ip )
 			{
@@ -402,7 +403,7 @@ public class PrototypeWriter
 		int index = operand;
 		for ( int debug = 0; debug < prototype.DebugLocals.Length; ++debug )
 		{
-			DebugLocal debugLocal = prototype.DebugLocals[ debug ];
+			Symbol debugLocal = prototype.DebugLocals[ debug ];
 			if ( ( ip >= debugLocal.StartInstruction ) && ( ip <= debugLocal.EndInstruction ) )
 			{
 				if ( index == 0 )

@@ -1,4 +1,4 @@
-﻿// DebugSourceSpan.cs
+﻿// SourceSpan.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -8,17 +8,17 @@
 using System;
 
 
-namespace Lua.VM
+namespace Lua.Bytecode
 {
 
 
-public struct DebugSourceSpan
+public struct SourceSpan
 {
-	public DebugSourceLocation	Start		{ get; private set; }
-	public DebugSourceLocation	End			{ get; private set; }
+	public SourceLocation	Start		{ get; private set; }
+	public SourceLocation	End			{ get; private set; }
 
 
-	public DebugSourceSpan( DebugSourceLocation start, DebugSourceLocation end )
+	public SourceSpan( SourceLocation start, SourceLocation end )
 		:	this()
 	{
 		Start	= start;

@@ -7,6 +7,7 @@
 
 using System;
 using Lua;
+using Lua.Bytecode;
 
 
 namespace Lua.VM
@@ -17,10 +18,10 @@ public sealed class VMFunction
 	:	LuaFunction
 {
 	public UpVal[]		UpVals			{ get; private set; }
-	public Prototype	Prototype		{ get; private set; }
+	public LuaBytecode	Prototype		{ get; private set; }
 
 
-	public VMFunction( Prototype prototype )
+	public VMFunction( LuaBytecode prototype )
 	{
 		UpVals		= new UpVal[ prototype.UpValCount ];
 		Prototype	= prototype;

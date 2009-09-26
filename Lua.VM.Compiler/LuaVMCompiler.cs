@@ -16,6 +16,7 @@ using Lua.Compiler.Parser.AST.Expressions;
 using Lua.Compiler.Parser.AST.Statements;
 using Lua.VM.Compiler.AST;
 using Lua.VM.Compiler.AST.Expressions;
+using Lua.Bytecode;
 
 
 
@@ -85,12 +86,12 @@ public class LuaVMCompiler
 
 		// Compile.
 
-		Prototype prototype = BuildPrototype( functionAST );
+		LuaBytecode prototype = BuildPrototype( functionAST );
 		return new VMFunction( prototype );
 	}
 
 
-	Prototype BuildPrototype( FunctionAST functionAST )
+	LuaBytecode BuildPrototype( FunctionAST functionAST )
 	{
 		// Enter block.
 		block = new BlockBuilder( block, functionAST.Block, 0 );
@@ -111,7 +112,7 @@ public class LuaVMCompiler
 		}
 
 		// End function.
-		Prototype prototype = function.Build();
+		LuaBytecode prototype = function.Build();
 		function = function.Parent;
 
 		// End of block.
@@ -195,15 +196,15 @@ public class LuaVMCompiler
 		}
 
 		List< object >					constants;
-		List< Prototype >				prototypes;
+		List< LuaBytecode >				prototypes;
 		List< Instruction >				instructions;
-		List< DebugSourceSpan >			instructionSourceSpans;
+		List< SourceSpan >			instructionSourceSpans;
 
 		Dictionary< LabelAST, int >		labels;
 		Dictionary< LabelAST, Patch >	patchLabels;
 
 		Dictionary< Variable, int >		locals;
-		List< DebugLocal >				debugLocals;
+		List< Symbol >				debugLocals;
 
 		int								localTop;
 		int								top;
@@ -216,15 +217,15 @@ public class LuaVMCompiler
 			Function				= function;
 
 			constants				= new List< object >();
-			prototypes				= new List< Prototype >();
+			prototypes				= new List< LuaBytecode >();
 			instructions			= new List< Instruction >();
-			instructionSourceSpans	= new List< DebugSourceSpan >();
+			instructionSourceSpans	= new List< SourceSpan >();
 
 			labels					= new Dictionary< LabelAST, int >();
 			patchLabels				= new Dictionary< LabelAST, Patch >();
 
 			locals					= new Dictionary< Variable, int >();
-			debugLocals				= new List< DebugLocal >();
+			debugLocals				= new List< Symbol >();
 
 			localTop				= 0;
 			top						= 0;
@@ -244,7 +245,7 @@ public class LuaVMCompiler
 			Allocate( 1 );
 			localTop += 1;
 
-			debugLocals.Add( new DebugLocal( local.Name, instructions.Count, -1 ) );
+			debugLocals.Add( new Symbol( local.Name, instructions.Count, -1 ) );
 		
 			return bInitialize;
 		}
@@ -260,10 +261,10 @@ public class LuaVMCompiler
 
 			for ( int debugLocal = debugLocals.Count - 1; debugLocal >= 0; --debugLocal )
 			{
-				DebugLocal debug = debugLocals[ debugLocal ];
+				Symbol debug = debugLocals[ debugLocal ];
 				if ( debug.EndInstruction == -1 )
 				{
-					debugLocals[ debugLocal ] = new DebugLocal(
+					debugLocals[ debugLocal ] = new Symbol(
 						debug.Name, debug.StartInstruction, instructions.Count );
 					break;
 				}
@@ -333,7 +334,7 @@ public class LuaVMCompiler
 			return k;
 		}
 
-		public int Prototype( Prototype prototype )
+		public int Prototype( LuaBytecode prototype )
 		{
 			int p = prototypes.IndexOf( prototype );
 			if ( p == -1 )
@@ -414,11 +415,11 @@ public class LuaVMCompiler
 
 		// Construct prototype.
 
-		DebugSourceSpan ConvertSourceSpan( SourceSpan s )
+		SourceSpan ConvertSourceSpan( SourceSpan s )
 		{
-			return new DebugSourceSpan(
-				new DebugSourceLocation( s.Start.SourceName, s.Start.Line, s.Start.Column ),
-				new DebugSourceLocation( s.End.SourceName, s.End.Line, s.End.Column ) );
+			return new SourceSpan(
+				new SourceLocation( s.Start.SourceName, s.Start.Line, s.Start.Column ),
+				new SourceLocation( s.End.SourceName, s.End.Line, s.End.Column ) );
 		}
 
 		LuaValue ObjectToValue( object o )
@@ -447,9 +448,9 @@ public class LuaVMCompiler
 			throw new ArgumentException();
 		}
 
-		public Prototype Build()
+		public LuaBytecode Build()
 		{
-			Prototype prototype = new Prototype();
+			LuaBytecode prototype = new LuaBytecode();
 			
 			prototype.UpValCount					= Function.UpVals.Count;
 			prototype.ParameterCount				= Function.Parameters.Count;
@@ -1274,7 +1275,7 @@ public class LuaVMCompiler
 	public void Visit( FunctionClosure e )
 	{
 		// Compile function and reference it.
-		Prototype prototype = BuildPrototype( e.Function );
+		LuaBytecode prototype = BuildPrototype( e.Function );
 		function.InstructionABx( e.SourceSpan, Opcode.Closure, target, function.Prototype( prototype ) );
 
 		// Initialize upvals.

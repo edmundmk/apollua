@@ -6,6 +6,7 @@
 
 
 using System;
+using Lua.Bytecode;
 
 
 namespace Lua.Compiler.Parser.AST.Statements

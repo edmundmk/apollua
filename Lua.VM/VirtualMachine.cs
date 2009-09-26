@@ -8,6 +8,7 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
+using Lua.Bytecode;
 
 
 namespace Lua.VM
@@ -801,7 +802,7 @@ public class VirtualMachine
 		frame.Function.UpVals[ operand ].Value = value;
 	}
 
-	Prototype P( int operand )
+	LuaBytecode P( int operand )
 	{
 		return frame.Function.Prototype.Prototypes[ operand ];
 	}
@@ -1206,8 +1207,8 @@ public class VirtualMachine
 		
 		if ( stackFrame.Function != null )
 		{
-			Prototype prototype = stackFrame.Function.Prototype;
-			DebugSourceSpan line = prototype.DebugInstructionSourceSpans[ stackFrame.IP - 1 ];
+			LuaBytecode prototype = stackFrame.Function.Prototype;
+			SourceSpan line = prototype.DebugInstructionSourceSpans[ stackFrame.IP - 1 ];
 			return String.Format( "{0}:{1}", line.Start.SourceName, line.Start.Line );
 		}
 		else
@@ -1231,8 +1232,8 @@ public class VirtualMachine
 			
 			if ( stackFrame.Function != null )
 			{
-				Prototype prototype = stackFrame.Function.Prototype;
-				DebugSourceSpan span = prototype.DebugInstructionSourceSpans[ stackFrame.IP - 1 ];
+				LuaBytecode prototype = stackFrame.Function.Prototype;
+				SourceSpan span = prototype.DebugInstructionSourceSpans[ stackFrame.IP - 1 ];
 				s.AppendFormat( "   {0}:{1}:", span.Start.SourceName, span.Start.Line );
 				if ( prototype.DebugName != null )
 				{

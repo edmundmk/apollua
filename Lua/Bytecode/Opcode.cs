@@ -8,7 +8,7 @@
 using System;
 
 
-namespace Lua.VM
+namespace Lua.Bytecode
 {
 
 

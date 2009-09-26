@@ -46,11 +46,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bytecode\Instruction.cs" />
-    <Compile Include="Bytecode\Local.cs" />
     <Compile Include="Bytecode\LuaBytecode.cs" />
     <Compile Include="Bytecode\Opcode.cs" />
     <Compile Include="Bytecode\SourceLocation.cs" />
     <Compile Include="Bytecode\SourceSpan.cs" />
+    <Compile Include="Bytecode\Symbol.cs" />
     <Compile Include="Compiler\Parser\AST\ASTWriter.cs" />
     <Compile Include="Compiler\Parser\AST\Expression.cs" />
     <Compile Include="Compiler\Parser\AST\Expressions\Binary.cs" />
@@ -78,8 +78,6 @@
     <Compile Include="Compiler\Parser\AST\IExpressionVisitor.cs" />
     <Compile Include="Compiler\Parser\AST\IStatementVisitor.cs" />
     <Compile Include="Compiler\Parser\AST\LabelAST.cs" />
-    <Compile Include="Compiler\Parser\AST\SourceLocation.cs" />
-    <Compile Include="Compiler\Parser\AST\SourceSpan.cs" />
     <Compile Include="Compiler\Parser\AST\Statement.cs" />
     <Compile Include="Compiler\Parser\AST\Statements\Assign.cs" />
     <Compile Include="Compiler\Parser\AST\Statements\AssignList.cs" />
