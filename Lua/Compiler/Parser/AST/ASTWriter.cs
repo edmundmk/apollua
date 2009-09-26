@@ -7,11 +7,11 @@
 
 using System;
 using System.IO;
-using Lua.Parser.AST.Expressions;
-using Lua.Parser.AST.Statements;
+using Lua.Compiler.Parser.AST.Expressions;
+using Lua.Compiler.Parser.AST.Statements;
 
 
-namespace Lua.Parser.AST
+namespace Lua.Compiler.Parser.AST
 {
 
 

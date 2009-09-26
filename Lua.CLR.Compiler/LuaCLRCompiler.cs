@@ -12,10 +12,10 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Lua;
 using Lua.CLR;
-using Lua.Parser;
-using Lua.Parser.AST;
-using Lua.Parser.AST.Expressions;
-using Lua.Parser.AST.Statements;
+using Lua.Compiler.Parser;
+using Lua.Compiler.Parser.AST;
+using Lua.Compiler.Parser.AST.Expressions;
+using Lua.Compiler.Parser.AST.Statements;
 
 
 namespace Lua.CLR.Compiler

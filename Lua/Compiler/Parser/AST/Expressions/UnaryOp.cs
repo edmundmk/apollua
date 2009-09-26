@@ -8,7 +8,7 @@
 using System;
 
 
-namespace Lua.Parser.AST.Expressions
+namespace Lua.Compiler.Parser.AST.Expressions
 {
 
 

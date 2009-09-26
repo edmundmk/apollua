@@ -6,10 +6,10 @@
 
 
 using System;
-using Lua.Parser.AST;
+using Lua.Compiler.Parser.AST;
 
 
-namespace Lua.Parser
+namespace Lua.Compiler.Parser
 {
 
 

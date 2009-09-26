@@ -10,12 +10,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using Lua.Parser.AST;
-using Lua.Parser.AST.Expressions;
-using Lua.Parser.AST.Statements;
+using Lua.Compiler.Parser.AST;
+using Lua.Compiler.Parser.AST.Expressions;
+using Lua.Compiler.Parser.AST.Statements;
 
 
-namespace Lua.Parser
+namespace Lua.Compiler.Parser
 {
 
 

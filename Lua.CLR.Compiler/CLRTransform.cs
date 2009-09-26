@@ -7,9 +7,9 @@
 
 using System;
 using System.Collections.Generic;
-using Lua.Parser.AST;
-using Lua.Parser.AST.Statements;
-using Lua.Parser.AST.Expressions;
+using Lua.Compiler.Parser.AST;
+using Lua.Compiler.Parser.AST.Statements;
+using Lua.Compiler.Parser.AST.Expressions;
 using Lua.CLR.Compiler.AST;
 using Lua.CLR.Compiler.AST.Expressions;
 

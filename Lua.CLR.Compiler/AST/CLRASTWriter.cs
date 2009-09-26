@@ -7,7 +7,7 @@
 
 using System;
 using System.IO;
-using Lua.Parser.AST;
+using Lua.Compiler.Parser.AST;
 using Lua.CLR.Compiler.AST.Expressions;
 
 

@@ -7,7 +7,7 @@
 
 using System;
 using System.Collections.Generic;
-using Lua.Parser.AST;
+using Lua.Compiler.Parser.AST;
 
 
 namespace Lua.VM.Compiler.AST.Expressions

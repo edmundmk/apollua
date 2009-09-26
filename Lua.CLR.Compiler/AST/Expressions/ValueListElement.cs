@@ -6,7 +6,7 @@
 
 
 using System;
-using Lua.Parser.AST;
+using Lua.Compiler.Parser.AST;
 
 
 namespace Lua.CLR.Compiler.AST.Expressions

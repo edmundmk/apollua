@@ -8,7 +8,7 @@
 using System;
 
 
-namespace Lua.Parser
+namespace Lua.Compiler.Parser
 {
 
 
