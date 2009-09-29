@@ -6,7 +6,7 @@
 
 
 using System;
-using Lua.Values;
+using Lua.Runtime;
 
 
 namespace Lua
@@ -123,6 +123,10 @@ public abstract class LuaValue
 	public virtual LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( this, a1, a2, a3 ); else throw new InvalidOperationException(); }
 	public virtual LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( new LuaValue[]{ this, a1, a2, a3, a4 } ); else throw new InvalidOperationException(); }
 	public virtual LuaValue[] InvokeM( LuaValue[] arguments )								{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( ForwardArguments( this, arguments ) ); else throw new InvalidOperationException(); }
+
+	public virtual FrozenFrame Call( LuaThread t, int f, int a, int r )						{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.Call( t, f, a, r ); else throw new InvalidOperationException(); }
+	public virtual FrozenFrame Resume( LuaThread t, FrozenFrame f )							{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.Resume( t, f ); else throw new InvalidOperationException(); }
+
 
 
 	// Meta handlers.

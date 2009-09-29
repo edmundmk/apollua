@@ -9,7 +9,7 @@ using System;
 using System.Diagnostics;
 
 
-namespace Lua.Values
+namespace Lua.Runtime
 {
 
 

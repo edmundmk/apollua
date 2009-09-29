@@ -1,4 +1,4 @@
-// BoxedInteger.cs
+// BoxedDouble.cs
 //
 // Lua 5.1 is copyright © 1994-2008 Lua.org, PUC-Rio, released under the MIT license
 // LuaCLR is copyright © 2007-2008 Fabio Mascarenhas, released under the MIT license
@@ -9,12 +9,12 @@ using System;
 using System.Diagnostics;
 
 
-namespace Lua.Values
+namespace Lua.Runtime
 {
 
 
 [DebuggerDisplay( "{Value}" )]
-public sealed class BoxedInteger
+public sealed class BoxedDouble
 	:	LuaValue
 {
 
@@ -24,18 +24,18 @@ public sealed class BoxedInteger
 		set;
 	}
 
-	public int Value
+	public double Value
 	{
 		get;
 		private set;
 	}
 
-	public BoxedInteger( int value )
+	public BoxedDouble( double value )
 	{
 		Value = value;
 	}
 
-	
+
 	// Object.
 
 	public override bool Equals( object o )
@@ -46,17 +46,22 @@ public sealed class BoxedInteger
 		}
 		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return Value.Equals( ( (BoxedInteger)o ).Value );
+			return Value.Equals( (double)( (BoxedInteger)o ).Value );
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
-			return ( (double)Value ).Equals( ( (BoxedDouble)o ).Value );
+			return Value.Equals( ( (BoxedDouble)o ).Value );
 		}
 		return base.Equals( o );
 	}
 
 	public override int GetHashCode()
 	{
+		int integer;
+		if ( TryToInteger( out integer ) )
+		{
+			return integer.GetHashCode();
+		}
 		return Value.GetHashCode();
 	}
 
@@ -66,7 +71,7 @@ public sealed class BoxedInteger
 	}
 
 
-	// LuaValue.
+	// LuaValue
 
 	public override	LuaTable Metatable
 	{
@@ -86,16 +91,26 @@ public sealed class BoxedInteger
 
 	public override bool TryToInteger( out int value )
 	{
-		value = Value;
-		return true;
+		if ( Value >= (double)int.MinValue && Value <= (double)int.MaxValue )
+		{
+			int integer = (int)Value;
+			if ( (double)integer == Value )
+			{
+				value = integer;
+				return true;
+			}
+		}
+
+		value = 0;
+		return false;
 	}
 
 	public override bool TryToDouble( out double value )
 	{
-		value = (double)Value;
+		value = Value;
 		return true;
 	}
-	
+
 	public override bool TryToNumberValue( out LuaValue value )
 	{
 		value = this;
@@ -103,17 +118,17 @@ public sealed class BoxedInteger
 	}
 
 
-	// Binary operators.
+	// Binary operators
 
 	public override LuaValue Add( LuaValue o )
 	{
 		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return new BoxedInteger( Value + ( (BoxedInteger)o ).Value );
+			return new BoxedDouble( Value + (double)( (BoxedInteger)o ).Value );
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
-			return new BoxedDouble( (double)Value + ( (BoxedDouble)o ).Value );
+			return new BoxedDouble( Value + ( (BoxedDouble)o ).Value );
 		}
 		return base.Add( o );
 	}
@@ -122,11 +137,11 @@ public sealed class BoxedInteger
 	{
 		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return new BoxedInteger( Value - ( (BoxedInteger)o ).Value );
+			return new BoxedDouble( Value - (double)( (BoxedInteger)o ).Value );
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
-			return new BoxedDouble( (double)Value - ( (BoxedDouble)o ).Value );
+			return new BoxedDouble( Value - ( (BoxedDouble)o ).Value );
 		}
 		return base.Subtract( o );
 	}
@@ -135,11 +150,11 @@ public sealed class BoxedInteger
 	{
 		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return new BoxedInteger( Value * ( (BoxedInteger)o ).Value );
+			return new BoxedDouble( Value * (double)( (BoxedInteger)o ).Value );
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
-			return new BoxedDouble( (double)Value * ( (BoxedDouble)o ).Value );
+			return new BoxedDouble( Value * ( (BoxedDouble)o ).Value );
 		}
 		return base.Multiply( o );
 	}
@@ -148,19 +163,11 @@ public sealed class BoxedInteger
 	{
 		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			int oValue = ( (BoxedInteger)o ).Value;
-			if ( Value % oValue == 0 )
-			{
-				return new BoxedInteger( Value / oValue );
-			}
-			else
-			{
-				return new BoxedDouble( (double)Value / (double)oValue );
-			}
+			return new BoxedDouble( Value / (double)( (BoxedInteger)o ).Value );
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
-			return new BoxedDouble( (double)Value / ( (BoxedDouble)o ).Value );
+			return new BoxedDouble( Value / ( (BoxedDouble)o ).Value );
 		}
 		return base.Divide( o );
 	}
@@ -169,11 +176,11 @@ public sealed class BoxedInteger
 	{
 		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return new BoxedInteger( Value / ( (BoxedInteger)o ).Value );
+			return new BoxedDouble( Math.Floor( Value / (double)( (BoxedInteger)o ).Value ) );
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
-			return new BoxedDouble( Math.Floor( (double)Value / ( (BoxedDouble)o ).Value ) );
+			return new BoxedDouble( Math.Floor( Value / ( (BoxedDouble)o ).Value ) );
 		}
 		return base.IntegerDivide( o );
 	}
@@ -182,11 +189,11 @@ public sealed class BoxedInteger
 	{
 		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return new BoxedInteger( Value % ( (BoxedInteger)o ).Value );
+			return new BoxedDouble( Value % (double)( (BoxedInteger)o ).Value );
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
-			return new BoxedDouble( (double)Value % ( (BoxedDouble)o ).Value );
+			return new BoxedDouble( Value % ( (BoxedDouble)o ).Value );
 		}
 		return base.Modulus( o );
 	}
@@ -195,11 +202,11 @@ public sealed class BoxedInteger
 	{
 		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return new BoxedInteger( (int)Math.Pow( (double)Value, (double)( (BoxedInteger)o ).Value ) );
+			return new BoxedDouble( Math.Pow( Value, (double)( (BoxedInteger)o ).Value ) );
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
-			return new BoxedDouble( Math.Pow( (double)Value, ( (BoxedDouble)o ).Value ) );
+			return new BoxedDouble( Math.Pow( Value, ( (BoxedDouble)o ).Value ) );
 		}
 		return base.RaiseToPower( o );
 	}
@@ -226,7 +233,7 @@ public sealed class BoxedInteger
 
 	public override LuaValue UnaryMinus()
 	{
-		return new BoxedInteger( -Value );
+		return new BoxedDouble( -Value );
 	}
 
 	
@@ -236,11 +243,11 @@ public sealed class BoxedInteger
 	{
 		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return Value == ( (BoxedInteger)o ).Value;
+			return Value == (double)( (BoxedInteger)o ).Value;
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
-			return (double)Value == ( (BoxedDouble)o ).Value;
+			return Value == ( (BoxedDouble)o ).Value;
 		}
 		return base.EqualsValue( o );
 	}
@@ -249,11 +256,11 @@ public sealed class BoxedInteger
 	{
 		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return Value < ( (BoxedInteger)o ).Value;
+			return Value < (double)( (BoxedInteger)o ).Value;
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
-			return (double)Value < ( (BoxedDouble)o ).Value;
+			return Value < ( (BoxedDouble)o ).Value;
 		}
 		return base.LessThanValue( o );
 	}
@@ -262,15 +269,14 @@ public sealed class BoxedInteger
 	{
 		if ( o.GetType() == typeof( BoxedInteger ) )
 		{
-			return Value <= ( (BoxedInteger)o ).Value;
+			return Value <= (double)( (BoxedInteger)o ).Value;
 		}
 		if ( o.GetType() == typeof( BoxedDouble ) )
 		{
-			return (double)Value <= ( (BoxedDouble)o ).Value;
+			return Value <= ( (BoxedDouble)o ).Value;
 		}
 		return base.LessThanOrEqualsValue( o );
 	}
-
 
 }
 

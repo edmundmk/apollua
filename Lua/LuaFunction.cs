@@ -6,6 +6,7 @@
 
 
 using System;
+using Lua.Runtime;
 
 
 namespace Lua
@@ -92,6 +93,8 @@ public abstract class LuaFunction
 	public override abstract LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 );
 	public override abstract LuaValue[] InvokeM( LuaValue[] arguments );
 
+//	public abstract override FrozenFrame Call( LuaThread t, int f, int a, int r );
+//	public abstract override FrozenFrame Resume( LuaThread t, FrozenFrame f );
 
 }
 

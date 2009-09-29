@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Lua.Values;
+using Lua.Runtime;
 
 
 namespace Lua.Interop

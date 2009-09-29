@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using Lua.Runtime;
 
 
 namespace Lua
@@ -30,11 +31,30 @@ public sealed class LuaThread
 		set;
 	}
 	
-	public List< LuaFunction >		Frames					{ get; private set; }
-	public List< LuaValue >			Values					{ get; private set; }
-//	public List< UpVal >			OpenUpVals				{ get; private set; }
-//	public SuspendedFrame			SuspendedFrameRoot		{ get; private set; }
+	public LuaValue Environment
+	{
+		get;
+		set;
+	}
+
+	public List< LuaFunction >	Frames				{ get; private set; }
+	public List< LuaValue >		Values				{ get; private set; }
+	public List< UpVal >		OpenUpVals			{ get; private set; }
+	public int					Top					{ get; set; }
+
+	public FrozenFrame			FrozenFrames		{ get; private set; }
 	
+
+
+	public LuaThread()
+	{
+		Frames			= new List< LuaFunction >();
+		Values			= new List< LuaValue >();
+		OpenUpVals		= new List< UpVal >();
+		Top				= -1;
+		FrozenFrames	= null;
+	}
+
 
 
 	// LuaValue
@@ -50,7 +70,106 @@ public sealed class LuaThread
 		return "thread";
 	}
 
+
 	
+	// Methods.
+
+	public void BeginFrame( LuaFunction function )
+	{
+		Frames.Add( function );
+	}
+
+
+	public void EndFrame( LuaFunction function )
+	{
+		Frames.RemoveAt( Frames.Count - 1 );
+	}
+
+
+	public void StackWatermark( int valueTop, int frameTop )
+	{
+		// Make sure we have enough stack space for the function.
+		frameTop = Math.Max( valueTop, frameTop );
+		
+		while ( frameTop > Values.Count )
+		{
+			Values.Add( null );
+		}
+
+		if ( frameTop < Values.Count )
+		{
+			Values.RemoveRange( frameTop, Values.Count - frameTop );
+		}
+
+
+		// Clear all values that have been retired.
+		for ( int index = valueTop; index < Values.Count; ++index )
+		{
+			Values[ index ] = null;
+		}
+	}
+
+
+	public UpVal MakeUpVal( int index )
+	{
+		UpVal upval;
+
+		// Find existing UpVal.
+		int upvalIndex = 0;
+		while ( upvalIndex < OpenUpVals.Count )
+		{
+			upval = OpenUpVals[ upvalIndex ];
+
+			if ( upval.Index == index )
+			{
+				return upval;
+			}
+
+			if ( upval.Index > index )
+			{
+				break;
+			}
+
+			upvalIndex += 1;
+		}
+
+		// Create new one.
+		upval = new UpVal( Values, index );
+		OpenUpVals.Insert( upvalIndex, upval );
+		return upval;
+	}
+
+
+	public void CloseUpVals( int index )
+	{
+		UpVal upval;
+
+		// Keep upvals below index.
+		int upvalIndex = 0;
+		while ( upvalIndex < OpenUpVals.Count )
+		{
+			upval = OpenUpVals[ upvalIndex ];
+			
+			if ( upval.Index >= index )
+			{
+				break;
+			}
+
+			upvalIndex += 1;
+		}
+
+		// Close all upvals after this.
+		int removeIndex = upvalIndex;
+		while ( upvalIndex < OpenUpVals.Count )
+		{
+			upval = OpenUpVals[ upvalIndex ];
+			upval.Close();
+			upvalIndex += 1;
+		}
+
+		OpenUpVals.RemoveRange( upvalIndex, OpenUpVals.Count - upvalIndex );
+	}
+
 }
 
 
