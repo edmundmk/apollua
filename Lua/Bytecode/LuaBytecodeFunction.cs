@@ -550,6 +550,8 @@ public sealed class LuaBytecodeFunction
 			{
 				// R( A ), ... , R( A + C - 2 ) := R( A )( R( A + 1 ), ... , R( A + B - 1 ) )
 				
+				// Count arguments.
+
 				int callArgumentCount;
 				if ( i.B == 0 )
 				{
@@ -559,6 +561,9 @@ public sealed class LuaBytecodeFunction
 				{
 					callArgumentCount = i.B - 1;
 				}
+
+
+				// Call function 
 
 				LuaValue function = values[ fp + i.A ];
 				
@@ -570,6 +575,16 @@ public sealed class LuaBytecodeFunction
 					frozenFrame = new FrozenFrame( frozenFrame, frameBase, resultCount, fp, ip );
 					return frozenFrame;
 				}
+				
+
+				// Trim stack frame used by function.
+
+				int stackWatermark = fp + Prototype.StackSize;
+				if ( i.C == 0 )
+				{
+					stackWatermark = Math.Max( stackWatermark, thread.Top );
+				}
+				thread.StackWatermark( stackWatermark, stackWatermark );
 
 				continue;
 			}
@@ -756,6 +771,12 @@ public sealed class LuaBytecodeFunction
 				{
 					values[ fp + i.A ].NewIndex( ( C - 1 ) * Instruction.FieldsPerFlush + key, values[ fp + i.A + key ] );
 				}
+
+				if ( i.C == 0 )
+				{
+					thread.StackWatermark( fp + Prototype.StackSize, fp + Prototype.StackSize );
+				}
+
 				continue;
 			}
 
@@ -763,6 +784,7 @@ public sealed class LuaBytecodeFunction
 			{
 				// close all stack variables from R( A ) to the top
 				thread.CloseUpVals( fp + i.A );
+				thread.StackWatermark( fp + i.A, fp + Prototype.StackSize );
 				continue;
 			}
 
@@ -816,11 +838,11 @@ public sealed class LuaBytecodeFunction
 				if ( i.B == 0 )
 				{
 					copyCount = varargCount;
-					thread.Top = copyCount;
+					thread.Top = fp + i.A + i.B;
 				}
 				else
 				{
-					copyCount = Math.Min( i.B - 1, varargCount );
+					copyCount = Math.Min( i.B, varargCount );
 				}
 
 				// Copy into correct position.
@@ -829,7 +851,7 @@ public sealed class LuaBytecodeFunction
 					values[ fp + i.A + vararg ] = values[ varargBase + vararg ];
 				}
 
-				for ( int vararg = copyCount; vararg < resultCount; ++vararg )
+				for ( int vararg = copyCount; vararg < i.B; ++vararg )
 				{
 					values[ fp + i.A + vararg ] = null;
 				}
