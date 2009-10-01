@@ -24,7 +24,6 @@ namespace Lua
 public sealed class LuaThread
 	:	LuaValue
 {
-
 	public static LuaTable TypeMetatable
 	{
 		get;
@@ -45,7 +44,6 @@ public sealed class LuaThread
 	public FrozenFrame			FrozenFrames		{ get; private set; }
 	
 
-
 	public LuaThread()
 	{
 		Frames			= new List< LuaFunction >();
@@ -54,6 +52,27 @@ public sealed class LuaThread
 		Top				= -1;
 		FrozenFrames	= null;
 	}
+
+
+
+	// Current thread.
+
+	[ThreadStatic] static LuaThread currentThread;
+
+	public void MakeCurrent()
+	{
+		currentThread = this;
+	}
+
+	public static LuaThread GetCurrent()
+	{
+		if ( currentThread == null )
+		{
+			currentThread = new LuaThread();
+		}
+		return currentThread;
+	}
+
 
 
 

@@ -13,7 +13,7 @@ using Lua.Compiler.Parser;
 using Lua.Compiler.Parser.AST;
 //using Lua.CLR.Compiler;
 //using Lua.CLR.Compiler.AST;
-using Lua.VM;
+//using Lua.VM;
 using Lua.Compiler.EmitBytecode;
 //using Lua.Compiler.EmitBytecode.AST;
 
