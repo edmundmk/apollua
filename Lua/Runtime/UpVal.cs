@@ -15,6 +15,7 @@ namespace Lua.Runtime
 {
 
 
+[DebuggerDisplay( "{Value}" )]
 public class UpVal
 {
 	// Members.
