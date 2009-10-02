@@ -11,8 +11,8 @@ using Lua;
 using Lua.Library;
 using Lua.Compiler.Parser;
 using Lua.Compiler.Parser.AST;
-//using Lua.CLR.Compiler;
-//using Lua.CLR.Compiler.AST;
+//using Lua.Compiler.EmitIL;
+//using Lua.Compiler.EmitIL.AST;
 //using Lua.VM;
 using Lua.Compiler.EmitBytecode;
 //using Lua.Compiler.EmitBytecode.AST;
@@ -27,9 +27,12 @@ static class EntryPoint
 
 	static int Main( string[] args )
 	{
-
+/*
 		Console.Out.WriteLine( args[ 0 ] );
 		Console.Error.WriteLine( args[ 0 ] );
+*/
+		
+
 
 /*
 		LuaVMCompiler compiler = new LuaVMCompiler( Console.Error, File.OpenText( args[ 0 ] ), args[ 0 ] );

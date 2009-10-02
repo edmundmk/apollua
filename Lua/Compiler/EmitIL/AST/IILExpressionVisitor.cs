@@ -7,14 +7,14 @@
 
 using System;
 using Lua.Compiler.Parser.AST;
-using Lua.CLR.Compiler.AST.Expressions;
+using Lua.Compiler.EmitIL.AST.Expressions;
 
 
-namespace Lua.CLR.Compiler.AST
+namespace Lua.Compiler.EmitIL.AST
 {
 
 
-public interface ICLRExpressionVisitor
+public interface IILExpressionVisitor
 	:	IExpressionVisitor
 {
 	void Visit( TemporaryRef e );

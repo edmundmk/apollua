@@ -10,11 +10,11 @@ using System.Collections.Generic;
 using Lua.Compiler.Parser.AST;
 using Lua.Compiler.Parser.AST.Statements;
 using Lua.Compiler.Parser.AST.Expressions;
-using Lua.CLR.Compiler.AST;
-using Lua.CLR.Compiler.AST.Expressions;
+using Lua.Compiler.EmitIL.AST;
+using Lua.Compiler.EmitIL.AST.Expressions;
 
 
-namespace Lua.CLR.Compiler
+namespace Lua.Compiler.EmitIL
 {
 
 
@@ -25,9 +25,9 @@ namespace Lua.CLR.Compiler
 			and dependencies represented by temporaries.
 */
 
-public class CLRTransform
+public class ILTransform
 	:	FunctionTransform
-	,	ICLRExpressionVisitor
+	,	IILExpressionVisitor
 {
 
 	// Make order of evaluation and dependencies explicit using temporaries.

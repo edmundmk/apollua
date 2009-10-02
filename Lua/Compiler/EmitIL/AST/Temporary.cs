@@ -8,7 +8,7 @@
 using System;
 
 
-namespace Lua.CLR.Compiler.AST
+namespace Lua.Compiler.EmitIL.AST
 {
 
 

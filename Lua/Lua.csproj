@@ -57,6 +57,17 @@
     <Compile Include="Compiler\EmitBytecode\AST\IBytecodeExpressionVisitor.cs" />
     <Compile Include="Compiler\EmitBytecode\BytecodeCompiler.cs" />
     <Compile Include="Compiler\EmitBytecode\BytecodeTransform.cs" />
+    <Compile Include="Compiler\EmitIL\ANormalTransform.cs" />
+    <Compile Include="Compiler\EmitIL\AST\Expressions\TemporaryRef.cs" />
+    <Compile Include="Compiler\EmitIL\AST\Expressions\ToNumber.cs" />
+    <Compile Include="Compiler\EmitIL\AST\Expressions\ValueList.cs" />
+    <Compile Include="Compiler\EmitIL\AST\Expressions\ValueListElement.cs" />
+    <Compile Include="Compiler\EmitIL\AST\Expressions\VarargElement.cs" />
+    <Compile Include="Compiler\EmitIL\AST\IILExpressionVisitor.cs" />
+    <Compile Include="Compiler\EmitIL\AST\ILASTWriter.cs" />
+    <Compile Include="Compiler\EmitIL\AST\Temporary.cs" />
+    <Compile Include="Compiler\EmitIL\ILCompiler.cs" />
+    <Compile Include="Compiler\EmitIL\ILTransform.cs" />
     <Compile Include="Compiler\Parser\AST\ASTWriter.cs" />
     <Compile Include="Compiler\Parser\AST\Expression.cs" />
     <Compile Include="Compiler\Parser\AST\Expressions\Binary.cs" />

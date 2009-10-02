@@ -9,11 +9,11 @@ using System;
 using Lua.Compiler.Parser.AST;
 using Lua.Compiler.Parser.AST.Expressions;
 using Lua.Compiler.Parser.AST.Statements;
-using Lua.CLR.Compiler.AST;
-using Lua.CLR.Compiler.AST.Expressions;
+using Lua.Compiler.EmitIL.AST;
+using Lua.Compiler.EmitIL.AST.Expressions;
 
 
-namespace Lua.CLR.Compiler
+namespace Lua.Compiler.EmitIL
 {
 
 
@@ -27,7 +27,7 @@ namespace Lua.CLR.Compiler
 
 public class ANormalTransform
 	:	FunctionTransform
-	,	ICLRExpressionVisitor
+	,	IILExpressionVisitor
 {
 
 	Expression TransformSingleValue( Expression e )

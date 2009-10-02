@@ -11,14 +11,13 @@ using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
 using Lua;
-using Lua.CLR;
 using Lua.Compiler.Parser;
 using Lua.Compiler.Parser.AST;
 using Lua.Compiler.Parser.AST.Expressions;
 using Lua.Compiler.Parser.AST.Statements;
 
 
-namespace Lua.CLR.Compiler
+namespace Lua.Compiler.EmitIL
 {
 
 #if false
@@ -38,7 +37,7 @@ namespace Lua.CLR.Compiler
 */
 
 
-public class LuaCLRCompiler
+public class ILCompiler
 {
 	// Errors.
 

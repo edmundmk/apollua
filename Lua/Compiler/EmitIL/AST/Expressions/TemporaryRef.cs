@@ -10,7 +10,7 @@ using Lua.Bytecode;
 using Lua.Compiler.Parser.AST;
 
 
-namespace Lua.CLR.Compiler.AST.Expressions
+namespace Lua.Compiler.EmitIL.AST.Expressions
 {
 
 
@@ -29,9 +29,9 @@ public class TemporaryRef
 
 	public override void Accept( IExpressionVisitor v )
 	{
-		if ( v is ICLRExpressionVisitor )
+		if ( v is IILExpressionVisitor )
 		{
-			( (ICLRExpressionVisitor)v ).Visit( this );
+			( (IILExpressionVisitor)v ).Visit( this );
 		}
 	}
 

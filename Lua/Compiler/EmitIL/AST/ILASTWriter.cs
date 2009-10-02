@@ -8,19 +8,19 @@
 using System;
 using System.IO;
 using Lua.Compiler.Parser.AST;
-using Lua.CLR.Compiler.AST.Expressions;
+using Lua.Compiler.EmitIL.AST.Expressions;
 
 
-namespace Lua.CLR.Compiler.AST
+namespace Lua.Compiler.EmitIL.AST
 {
 
 
-public class CLRASTWriter
+public class ILASTWriter
 	:	ASTWriter
-	,	ICLRExpressionVisitor
+	,	IILExpressionVisitor
 {
 
-	public CLRASTWriter( TextWriter oWriter )
+	public ILASTWriter( TextWriter oWriter )
 		:	base( oWriter )
 	{
 	}
