@@ -37,7 +37,7 @@ public class BoxedObject< TObject >
 {
 	// Static type reflection.
 
-	static Dictionary< string, LuaFunction >		methods;
+	static Dictionary< string, LuaFunction >	methods;
 	static Dictionary< string, LuaProperty >	properties;
 	static Dictionary< string, LuaField >		fields;
 

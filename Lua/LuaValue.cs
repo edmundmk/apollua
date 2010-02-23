@@ -40,93 +40,103 @@ public abstract class LuaValue
 	public virtual LuaTable Metatable
 	{
 		get { return null; }
-		set { throw new InvalidOperationException(); }
+		set { throw new NotSupportedException(); }
 	}
 
 
 	// Conversions.
 
-	public static implicit operator LuaValue ( bool b )			{ return b ? BoxedBoolean.True : BoxedBoolean.False; }
-	public static implicit operator LuaValue ( sbyte i )		{ return new BoxedInteger( i ); }
-	public static implicit operator LuaValue ( byte i )			{ return new BoxedInteger( i ); }
-	public static implicit operator LuaValue ( short i )		{ return new BoxedInteger( i ); }
-	public static implicit operator LuaValue ( ushort i )		{ return new BoxedInteger( i ); }
-	public static implicit operator LuaValue ( int i )			{ return new BoxedInteger( i ); }
-	public static explicit operator LuaValue ( uint i )			{ checked { return new BoxedInteger( (int)i ); } }
-	public static explicit operator LuaValue ( long i )			{ checked { return new BoxedInteger( (int)i ); } }
-	public static explicit operator LuaValue ( ulong i )		{ checked { return new BoxedInteger( (int)i ); } }
-	public static implicit operator LuaValue ( float n )		{ return new BoxedDouble( n ); }
-	public static implicit operator LuaValue ( double n )		{ return new BoxedDouble( n ); }
-	public static explicit operator LuaValue ( decimal n )		{ checked { return new BoxedDouble( (double)n ); } }
-	public static implicit operator LuaValue ( string s )		{ return new BoxedString( s ); }
+	public static implicit operator LuaValue ( bool b )				{ return b ? BoxedBoolean.True : BoxedBoolean.False; }
+	public static implicit operator LuaValue ( sbyte i )			{ return new BoxedInteger( i ); }
+	public static implicit operator LuaValue ( byte i )				{ return new BoxedInteger( i ); }
+	public static implicit operator LuaValue ( short i )			{ return new BoxedInteger( i ); }
+	public static implicit operator LuaValue ( ushort i )			{ return new BoxedInteger( i ); }
+	public static implicit operator LuaValue ( int i )				{ return new BoxedInteger( i ); }
+	public static explicit operator LuaValue ( uint i )				{ checked { return new BoxedInteger( (int)i ); } }
+	public static explicit operator LuaValue ( long i )				{ checked { return new BoxedInteger( (int)i ); } }
+	public static explicit operator LuaValue ( ulong i )			{ checked { return new BoxedInteger( (int)i ); } }
+	public static implicit operator LuaValue ( float n )			{ return new BoxedDouble( n ); }
+	public static implicit operator LuaValue ( double n )			{ return new BoxedDouble( n ); }
+	public static explicit operator LuaValue ( decimal n )			{ checked { return new BoxedDouble( (double)n ); } }
+	public static implicit operator LuaValue ( string s )			{ return new BoxedString( s ); }
 
-	public static explicit operator bool ( LuaValue v )			{ return v != null && v.IsTrue(); }
-	public static explicit operator sbyte ( LuaValue v )		{ int value; if ( v.TryToInteger( out value ) ) checked { return (sbyte)value; } else throw new InvalidCastException(); }
-	public static explicit operator byte ( LuaValue v )			{ int value; if ( v.TryToInteger( out value ) ) checked { return (byte)value; } else throw new InvalidCastException(); }
-	public static explicit operator short ( LuaValue v )		{ int value; if ( v.TryToInteger( out value ) ) checked { return (short)value; } else throw new InvalidCastException(); }
-	public static explicit operator ushort ( LuaValue v )		{ int value; if ( v.TryToInteger( out value ) ) checked { return (ushort)value; } else throw new InvalidCastException(); }
-	public static explicit operator int ( LuaValue v )			{ int value; if ( v.TryToInteger( out value ) ) return value; else throw new InvalidCastException(); }
-	public static explicit operator uint ( LuaValue v )			{ int value; if ( v.TryToInteger( out value ) ) checked { return (uint)value; } else throw new InvalidCastException(); }
-	public static explicit operator long ( LuaValue v )			{ int value; if ( v.TryToInteger( out value ) ) return value; else throw new InvalidCastException(); }
-	public static explicit operator ulong ( LuaValue v )		{ int value; if ( v.TryToInteger( out value ) ) checked { return (ulong)value; } else throw new InvalidCastException(); }
-	public static explicit operator float ( LuaValue v )		{ double value; if ( v.TryToDouble( out value ) ) checked { return (float)value; } else throw new InvalidCastException(); }
-	public static explicit operator double ( LuaValue v )		{ double value; if ( v.TryToDouble( out value ) ) return value; else throw new InvalidCastException(); }
-	public static explicit operator decimal ( LuaValue v )		{ double value; if ( v.TryToDouble( out value ) ) checked { return (decimal)value; } else throw new InvalidCastException(); }
-	public static explicit operator string ( LuaValue v )		{ string value; if ( v.TryToString( out value ) ) return value; else throw new InvalidCastException(); }
+	public static explicit operator bool ( LuaValue v )				{ return v != null && v.IsTrue(); }
+	public static explicit operator sbyte ( LuaValue v )			{ int value; if ( v.TryToInteger( out value ) ) checked { return (sbyte)value; } else throw new InvalidCastException(); }
+	public static explicit operator byte ( LuaValue v )				{ int value; if ( v.TryToInteger( out value ) ) checked { return (byte)value; } else throw new InvalidCastException(); }
+	public static explicit operator short ( LuaValue v )			{ int value; if ( v.TryToInteger( out value ) ) checked { return (short)value; } else throw new InvalidCastException(); }
+	public static explicit operator ushort ( LuaValue v )			{ int value; if ( v.TryToInteger( out value ) ) checked { return (ushort)value; } else throw new InvalidCastException(); }
+	public static explicit operator int ( LuaValue v )				{ int value; if ( v.TryToInteger( out value ) ) return value; else throw new InvalidCastException(); }
+	public static explicit operator uint ( LuaValue v )				{ int value; if ( v.TryToInteger( out value ) ) checked { return (uint)value; } else throw new InvalidCastException(); }
+	public static explicit operator long ( LuaValue v )				{ int value; if ( v.TryToInteger( out value ) ) return value; else throw new InvalidCastException(); }
+	public static explicit operator ulong ( LuaValue v )			{ int value; if ( v.TryToInteger( out value ) ) checked { return (ulong)value; } else throw new InvalidCastException(); }
+	public static explicit operator float ( LuaValue v )			{ double value; if ( v.TryToDouble( out value ) ) checked { return (float)value; } else throw new InvalidCastException(); }
+	public static explicit operator double ( LuaValue v )			{ double value; if ( v.TryToDouble( out value ) ) return value; else throw new InvalidCastException(); }
+	public static explicit operator decimal ( LuaValue v )			{ double value; if ( v.TryToDouble( out value ) ) checked { return (decimal)value; } else throw new InvalidCastException(); }
+	public static explicit operator string ( LuaValue v )			{ string value; if ( v.TryToString( out value ) ) return value; else throw new InvalidCastException(); }
 
 
 	// Type.
 
-	public virtual string	GetLuaType()						{ return "userdata"; }
-	public virtual bool		IsPrimitiveValue()					{ return false; }
+	public virtual string	GetLuaType()							{ return "userdata"; }
+	public virtual bool		IsPrimitiveValue()						{ return false; }
 	public virtual bool		TryToInteger( out int v )				{ v = 0; return false; }
-	public virtual bool		TryToDouble( out double v )			{ v = 0.0; return false; }
-	public virtual bool		TryToString( out string v )			{ v = String.Empty; return false; }
-	public virtual bool		TryToNumberValue( out LuaValue v )	{ v = null; return false; }
+	public virtual bool		TryToDouble( out double v )				{ v = 0.0; return false; }
+	public virtual bool		TryToString( out string v )				{ v = String.Empty; return false; }
+	public virtual bool		TryToNumberValue( out LuaValue v )		{ v = null; return false; }
 
 
 	// Operations.
 
-	public virtual LuaValue	Add( LuaValue o )					{ return MetaBinaryOp( this, o, handlerAdd ); }
-	public virtual LuaValue	Subtract( LuaValue o )				{ return MetaBinaryOp( this, o, handlerSub ); }
-	public virtual LuaValue	Multiply( LuaValue o )				{ return MetaBinaryOp( this, o, handlerMul ); }
-	public virtual LuaValue	Divide( LuaValue o )				{ return MetaBinaryOp( this, o, handlerDiv ); }
-	public virtual LuaValue	IntegerDivide( LuaValue o )			{ return MetaBinaryOp( this, o, handlerIDiv ); }
-	public virtual LuaValue	Modulus( LuaValue o )				{ return MetaBinaryOp( this, o, handlerMod ); }
-	public virtual LuaValue	RaiseToPower( LuaValue o )			{ return MetaBinaryOp( this, o, handlerPow ); }
-	public virtual LuaValue	Concatenate( LuaValue o )			{ return MetaBinaryOp( this, o, handlerConcat ); }
+	public virtual LuaValue	Add( LuaValue o )						{ return MetaBinaryOp( this, o, handlerAdd ); }
+	public virtual LuaValue	Subtract( LuaValue o )					{ return MetaBinaryOp( this, o, handlerSub ); }
+	public virtual LuaValue	Multiply( LuaValue o )					{ return MetaBinaryOp( this, o, handlerMul ); }
+	public virtual LuaValue	Divide( LuaValue o )					{ return MetaBinaryOp( this, o, handlerDiv ); }
+	public virtual LuaValue	IntegerDivide( LuaValue o )				{ return MetaBinaryOp( this, o, handlerIDiv ); }
+	public virtual LuaValue	Modulus( LuaValue o )					{ return MetaBinaryOp( this, o, handlerMod ); }
+	public virtual LuaValue	RaiseToPower( LuaValue o )				{ return MetaBinaryOp( this, o, handlerPow ); }
+	public virtual LuaValue	Concatenate( LuaValue o )				{ return MetaBinaryOp( this, o, handlerConcat ); }
 
-	public virtual LuaValue	UnaryMinus()						{ return MetaUnaryOp( this, handlerUnm ); }
-	public virtual LuaValue	Length()							{ return MetaUnaryOp( this, handlerLen ); }
+	public virtual LuaValue	UnaryMinus()							{ return MetaUnaryOp( this, handlerUnm ); }
+	public virtual LuaValue	Length()								{ return MetaUnaryOp( this, handlerLen ); }
 
-	public virtual bool		IsTrue()							{ return true; }
-	public virtual bool		EqualsValue( LuaValue o )			{ return MetaEquals( this, o ); }
-	public virtual bool		LessThanValue( LuaValue o )			{ return MetaLessThan( this, o ); }
-	public virtual bool		LessThanOrEqualsValue( LuaValue o )	{ return MetaLessThanOrEqual( this, o ); }
+	public virtual bool		IsTrue()								{ return true; }
+	public virtual bool		EqualsValue( LuaValue o )				{ return MetaEquals( this, o ); }
+	public virtual bool		LessThanValue( LuaValue o )				{ return MetaLessThan( this, o ); }
+	public virtual bool		LessThanOrEqualsValue( LuaValue o )		{ return MetaLessThanOrEqual( this, o ); }
 		
-	public virtual LuaValue	Index( LuaValue k )					{ return MetaIndex( this, k ); }
-	public virtual void		NewIndex( LuaValue k, LuaValue v )	{ MetaNewIndex( this, k, v ); }
+	public virtual LuaValue	Index( LuaValue k )						{ return MetaIndex( this, k ); }
+	public virtual void		NewIndex( LuaValue k, LuaValue v )		{ MetaNewIndex( this, k, v ); }
 
 
-	// Function invocation.
+	// Bytecode function interface.
+	// TODO: forward this parameter.
 
-	public virtual LuaValue InvokeS()														{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeS( this ); else throw new InvalidOperationException(); }
-	public virtual LuaValue InvokeS( LuaValue a1 )											{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeS( this, a1 ); else throw new InvalidOperationException(); }
-	public virtual LuaValue InvokeS( LuaValue a1, LuaValue a2 )								{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeS( this, a1, a2 ); else throw new InvalidOperationException(); }
-	public virtual LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeS( this, a1, a2, a3 ); else throw new InvalidOperationException(); }
-	public virtual LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeS( new LuaValue[]{ this, a1, a2, a3, a4 } ); else throw new InvalidOperationException(); }
-	public virtual LuaValue InvokeS( LuaValue[] arguments )									{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeS( ForwardArguments( this, arguments ) ); else throw new InvalidOperationException(); }
+	public virtual FrozenFrame Call( LuaThread t, int f, int a, int r )						{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.Call( t, f, a, r ); else throw new NotSupportedException(); }
+	public virtual FrozenFrame Resume( LuaThread t, FrozenFrame f )							{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.Resume( t, f ); else throw new NotSupportedException(); }
 
-	public virtual LuaValue[] InvokeM()														{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( this ); else throw new InvalidOperationException(); }
-	public virtual LuaValue[] InvokeM( LuaValue a1 )										{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( this, a1 ); else throw new InvalidOperationException(); }
-	public virtual LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )							{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( this, a1, a2 ); else throw new InvalidOperationException(); }
-	public virtual LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( this, a1, a2, a3 ); else throw new InvalidOperationException(); }
-	public virtual LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( new LuaValue[]{ this, a1, a2, a3, a4 } ); else throw new InvalidOperationException(); }
-	public virtual LuaValue[] InvokeM( LuaValue[] arguments )								{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( ForwardArguments( this, arguments ) ); else throw new InvalidOperationException(); }
+	
+	// IL function interface.
 
-	public virtual FrozenFrame Call( LuaThread t, int f, int a, int r )						{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.Call( t, f, a, r ); else throw new InvalidOperationException(); }
-	public virtual FrozenFrame Resume( LuaThread t, FrozenFrame f )							{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.Resume( t, f ); else throw new InvalidOperationException(); }
+	public virtual LuaValue InvokeS()														{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeS( this ); else throw new NotSupportedException(); }
+	public virtual LuaValue InvokeS( LuaValue a1 )											{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeS( this, a1 ); else throw new NotSupportedException(); }
+	public virtual LuaValue InvokeS( LuaValue a1, LuaValue a2 )								{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeS( this, a1, a2 ); else throw new NotSupportedException(); }
+	public virtual LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )				{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeS( this, a1, a2, a3 ); else throw new NotSupportedException(); }
+	public virtual LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeS( new LuaValue[]{ this, a1, a2, a3, a4 } ); else throw new NotSupportedException(); }
+	public virtual LuaValue InvokeS( LuaValue[] arguments )									{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeS( ForwardArguments( this, arguments ) ); else throw new NotSupportedException(); }
 
+	public virtual LuaValue[] InvokeM()														{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( this ); else throw new NotSupportedException(); }
+	public virtual LuaValue[] InvokeM( LuaValue a1 )										{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( this, a1 ); else throw new NotSupportedException(); }
+	public virtual LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )							{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( this, a1, a2 ); else throw new NotSupportedException(); }
+	public virtual LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )				{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( this, a1, a2, a3 ); else throw new NotSupportedException(); }
+	public virtual LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( new LuaValue[]{ this, a1, a2, a3, a4 } ); else throw new NotSupportedException(); }
+	public virtual LuaValue[] InvokeM( LuaValue[] arguments )								{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.InvokeM( ForwardArguments( this, arguments ) ); else throw new NotSupportedException(); }
+
+
+	// Interop function interface.
+	// TODO: forward this parameter.
+
+	public T MakeDelegate< T >()															{ return (T)(object)MakeDelegate( typeof( T ) ); }
+	protected virtual Delegate MakeDelegate( Type delegateType )							{ LuaValue h = GetHandler( this, handlerCall ); if ( h != null ) return h.MakeDelegate( delegateType ); else throw new NotSupportedException(); }
 
 
 	// Meta handlers.
@@ -167,7 +177,7 @@ public abstract class LuaValue
 		{
 			return h.InvokeS( left, right );
 		}
-		throw new InvalidOperationException();
+		throw new NotSupportedException();
 	}
 
 
@@ -178,7 +188,7 @@ public abstract class LuaValue
 		{
 			return h.InvokeS( operand );
 		}
-		throw new InvalidOperationException();
+		throw new NotSupportedException();
 	}
 
 
@@ -228,7 +238,7 @@ public abstract class LuaValue
 			return (bool)result;
 		}
 
-		throw new InvalidOperationException();
+		throw new NotSupportedException();
 	}
 
 
@@ -248,7 +258,7 @@ public abstract class LuaValue
 			return (bool)result;
 		}
 		
-		throw new InvalidOperationException();
+		throw new NotSupportedException();
 	}
 
 
@@ -264,7 +274,7 @@ public abstract class LuaValue
 			return h.Index( key );
 		}
 
-		throw new InvalidOperationException();
+		throw new NotSupportedException();
 	}
 	
 
@@ -282,7 +292,7 @@ public abstract class LuaValue
 			return;
 		}
 
-		throw new InvalidOperationException();
+		throw new NotSupportedException();
 	}
 
 

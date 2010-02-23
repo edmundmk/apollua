@@ -20,8 +20,27 @@ namespace Lua.Compiler.Parser
 {
 
 
-public class LuaParser
+public sealed class LuaParser
 {
+
+	// Parsing.
+
+	public static FunctionAST Parse( TextWriter errorWriter, TextReader sourceReader, string sourceName )
+	{
+		LuaParser parser = new LuaParser( errorWriter, sourceReader, sourceName );
+		FunctionAST functionAST = parser.chunk();
+		if ( ! parser.hasError && ! parser.lexer.HasError )
+		{
+			return functionAST;
+		}
+		else
+		{
+			return null;
+		}
+	}
+	
+
+
 	// Errors.
 
 	TextWriter	errorWriter;
@@ -44,10 +63,9 @@ public class LuaParser
 	ParseStack< Expression >	expression;
 
 
+	// Setup.
 
-	// Public.
-
-	public LuaParser( TextWriter errorWriter, TextReader sourceReader, string sourceName )
+	LuaParser( TextWriter errorWriter, TextReader sourceReader, string sourceName )
 	{
 		this.errorWriter	= errorWriter;
 		hasError			= false;
@@ -61,27 +79,6 @@ public class LuaParser
 		loopScope			= null;
 		expression			= new ParseStack< Expression >();
 	}
-
-
-	public bool HasError
-	{
-		get { return hasError || lexer.HasError; }
-	}
-
-
-	public FunctionAST Parse()
-	{
-		FunctionAST functionAST = chunk();
-		if ( ! hasError )
-		{
-			return functionAST;
-		}
-		else
-		{
-			return null;
-		}
-	}
-
 
 
 

@@ -35,12 +35,12 @@ public class LuaProperty< T >
 
 	public override LuaValue GetValue( object o )
 	{
-		return InteropHelpers.CastResultS( (T)property.GetValue( o, null ) );
+		return InteropHelpers.BoxS( (T)property.GetValue( o, null ) );
 	}
 
 	public override void SetValue( object o, LuaValue v )
 	{
-		property.SetValue( o, InteropHelpers.Cast< T >( v ), null );
+		property.SetValue( o, InteropHelpers.Unbox< T >( v ), null );
 	}
 }
 

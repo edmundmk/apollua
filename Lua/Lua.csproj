@@ -120,6 +120,7 @@
     <Compile Include="Interop\LuaField.cs" />
     <Compile Include="Interop\LuaMethod.cs" />
     <Compile Include="Interop\LuaProperty.cs" />
+    <Compile Include="Interop\InteropSignature.cs" />
     <Compile Include="Library\Basic.cs" />
     <Compile Include="LuaFunction.cs" />
     <Compile Include="LuaTable.cs" />

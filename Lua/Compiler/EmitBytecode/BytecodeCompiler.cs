@@ -24,54 +24,22 @@ namespace Lua.Compiler.EmitBytecode
 {
 
 
-/*	Each function is compiled to a class deriving from Lua.Function.
+/*	Each function is compiled to a class deriving from LuaFunction.
 */
 
 
-public class BytecodeCompiler
+public sealed class BytecodeCompiler
 	:	IStatementVisitor
 	,	IBytecodeExpressionVisitor
 {
-	// Errors.
 
-	TextWriter				errorWriter;
-	bool					hasError;
+	// Compiling.
 
-
-	// Parser.
-
-	string					sourceName;
-	LuaParser				parser;
-
-
-	// Prototype building.
-
-	FunctionBuilder			function;
-	BlockBuilder			block;
-	Allocation				target;
-
-
-
-	public BytecodeCompiler( TextWriter errorWriter, TextReader source, string sourceName )
-	{
-		this.errorWriter	= errorWriter;
-		hasError			= false;
-
-		this.sourceName		= sourceName;
-		parser				= new LuaParser( errorWriter, source, sourceName );
-	}
-
-	public bool HasError
-	{
-		get { return hasError || parser.HasError; }
-	}
-
-
-	public LuaBytecode Compile()
+	public static LuaBytecode Compile( TextWriter errorWriter, TextReader sourceReader, string sourceName )
 	{
 		// Parse the function.
 
-		FunctionAST functionAST = parser.Parse();
+		FunctionAST functionAST = LuaParser.Parse( errorWriter, sourceReader, sourceName );
 		if ( functionAST == null )
 		{
 			return null;
@@ -86,10 +54,29 @@ public class BytecodeCompiler
 
 		// Compile.
 
-		LuaBytecode prototype = BuildPrototype( functionAST );
+		BytecodeCompiler compiler = new BytecodeCompiler( sourceName );
+		LuaBytecode prototype = compiler.BuildPrototype( functionAST );
 		return prototype;
 	}
 
+
+	// Prototype building.
+
+	string					sourceName;
+	FunctionBuilder			function;
+	BlockBuilder			block;
+	Allocation				target;
+
+
+	// Setup.
+
+	BytecodeCompiler( string sourceName )
+	{
+		this.sourceName		= sourceName;
+	}
+
+
+	// Build prototype.
 
 	LuaBytecode BuildPrototype( FunctionAST functionAST )
 	{

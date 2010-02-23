@@ -36,6 +36,9 @@ public sealed class LuaThread
 		set;
 	}
 
+
+	// Thread state.
+
 	public List< LuaFunction >	Frames				{ get; private set; }
 	public List< LuaValue >		Values				{ get; private set; }
 	public List< UpVal >		OpenUpVals			{ get; private set; }
@@ -43,6 +46,8 @@ public sealed class LuaThread
 
 	public FrozenFrame			FrozenFrames		{ get; private set; }
 	
+
+	// Constructor.
 
 	public LuaThread()
 	{

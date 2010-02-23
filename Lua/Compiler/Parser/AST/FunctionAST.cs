@@ -85,13 +85,6 @@ public class FunctionAST
 		functions.Add( function );
 	}
 
-	bool ContainsUpVal( Variable upval )
-	{
-		return upvals.Contains( upval )
-			|| parameters.Contains( upval )
-			|| locals.Contains( upval );
-	}
-
 	public void UpVal( Variable upval )
 	{
 		for ( FunctionAST f = this; ! f.ContainsUpVal( upval ); f = f.Parent )
@@ -132,7 +125,18 @@ public class FunctionAST
 		Debug.Assert( ReturnsMultipleValues == false );
 		ReturnsMultipleValues = true;
 	}
+
 	
+
+	// Helpers.
+
+	bool ContainsUpVal( Variable upval )
+	{
+		return upvals.Contains( upval )
+			|| parameters.Contains( upval )
+			|| locals.Contains( upval );
+	}
+
 }
 
 

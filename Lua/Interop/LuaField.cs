@@ -35,12 +35,12 @@ public class LuaField< T >
 
 	public override LuaValue GetValue( object o )
 	{
-		return InteropHelpers.CastResultS( (T)field.GetValue( o ) );
+		return InteropHelpers.BoxS( (T)field.GetValue( o ) );
 	}
 
 	public override void SetValue( object o, LuaValue v )
 	{
-		field.SetValue( o, InteropHelpers.Cast< T >( v ) );
+		field.SetValue( o, InteropHelpers.Unbox< T >( v ) );
 	}
 }
 

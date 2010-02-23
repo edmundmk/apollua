@@ -7,9 +7,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using Lua;
 using Lua.Runtime;
+using Lua.Interop;
 
 
 namespace Lua.Bytecode
@@ -19,8 +21,8 @@ namespace Lua.Bytecode
 public sealed class LuaBytecodeFunction
 	:	LuaFunction
 {
-	public UpVal[]		UpVals			{ get; private set; }
-	public LuaBytecode	Prototype		{ get; private set; }
+	UpVal[]		UpVals;
+	LuaBytecode	Prototype;
 
 
 	public LuaBytecodeFunction( LuaBytecode prototype )
@@ -29,136 +31,62 @@ public sealed class LuaBytecodeFunction
 		Prototype	= prototype;
 	}
 
+	
 
+	// Bytecode function interface.
 
-	// Invoke.
-
-	public override LuaValue InvokeS()
+	public override FrozenFrame Call( LuaThread t, int f, int a, int r )
 	{
-//		VirtualMachine vm = VMRuntime.VirtualMachine;
-//		vm.BeginInvoke( 0 );
-//		return vm.InvokeS( this );
-		return null;
+		int fp = CreateStackFrame( t, f, a );
+		return Dispatch( t, f, r, fp, 0 );
 	}
 
-	public override LuaValue InvokeS( LuaValue a1 )
+	public override FrozenFrame Resume( LuaThread t, FrozenFrame f )
 	{
-//		VirtualMachine vm = VMRuntime.VirtualMachine;
-//		vm.BeginInvoke( 1 );
-//		vm.Argument( a1 );
-//		return vm.InvokeS( this );
-		return null;
+		FrozenFrame refrozenFrame = UnfreezeStackFrame( t, f );
+		if ( refrozenFrame != null )
+			return refrozenFrame;
+		else
+			return Dispatch( t, f.FrameBase, f.ResultCount, f.FramePointer, f.InstructionPointer );
 	}
 
-	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )
-	{
-//		VirtualMachine vm = VMRuntime.VirtualMachine;
-//		vm.BeginInvoke( 2 );
-//		vm.Argument( a1 );
-//		vm.Argument( a2 );
-//		return vm.InvokeS( this );
-		return null;
-	}
 
-	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )
-	{
-//		VirtualMachine vm = VMRuntime.VirtualMachine;
-//		vm.BeginInvoke( 3 );
-//		vm.Argument( a1 );
-//		vm.Argument( a2 );
-//		vm.Argument( a3 );
-//		return vm.InvokeS( this );
-		return null;
-	}
+	// IL function interface.
 
-	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )
-	{
-//		VirtualMachine vm = VMRuntime.VirtualMachine;
-//		vm.BeginInvoke( 4 );
-//		vm.Argument( a1 );
-//		vm.Argument( a2 );
-//		vm.Argument( a3 );
-//		vm.Argument( a4 );
-//		return vm.InvokeS( this );
-		return null;
-	}
+	public override LuaValue InvokeS()															{ throw new NotImplementedException(); }
+	public override LuaValue InvokeS( LuaValue a1 )												{ throw new NotImplementedException(); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2 )								{ throw new NotImplementedException(); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3 )					{ throw new NotImplementedException(); }
+	public override LuaValue InvokeS( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )		{ throw new NotImplementedException(); }
+	public override LuaValue InvokeS( LuaValue[] arguments )									{ throw new NotImplementedException(); }
 
-	public override LuaValue InvokeS( LuaValue[] arguments )
-	{
-//		VirtualMachine vm = VMRuntime.VirtualMachine;
-//		vm.BeginInvoke( arguments.Length );
-//		for ( int argument = 0; argument < arguments.Length; ++argument )
-//		{
-//			vm.Argument( arguments[ argument ] );
-//		}
-//		return vm.InvokeS( this );
-		return null;
-	}
-
-	public override LuaValue[] InvokeM()
-	{
-//		VirtualMachine vm = VMRuntime.VirtualMachine;
-//		vm.BeginInvoke( 0 );
-//		return vm.InvokeM( this );
-		return null;
-	}
-
-	public override LuaValue[] InvokeM( LuaValue a1 )
-	{
-//		VirtualMachine vm = VMRuntime.VirtualMachine;
-//		vm.BeginInvoke( 1 );
-//		vm.Argument( a1 );
-//		return vm.InvokeM( this );
-		return null;
-	}
-
-	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )
-	{
-//		VirtualMachine vm = VMRuntime.VirtualMachine;
-//		vm.BeginInvoke( 2 );
-//		vm.Argument( a1 );
-//		vm.Argument( a2 );
-//		return vm.InvokeM( this );
-		return null;
-	}
-
-	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )
-	{
-//		VirtualMachine vm = VMRuntime.VirtualMachine;
-//		vm.BeginInvoke( 3 );
-//		vm.Argument( a1 );
-//		vm.Argument( a2 );
-//		vm.Argument( a3 );
-//		return vm.InvokeM( this );
-		return null;
-	}
-
-	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )
-	{
-//		VirtualMachine vm = VMRuntime.VirtualMachine;
-//		vm.BeginInvoke( 4 );
-//		vm.Argument( a1 );
-//		vm.Argument( a2 );
-//		vm.Argument( a3 );
-//		vm.Argument( a4 );
-//		return vm.InvokeM( this );
-		return null;
-	}
-
-	public override LuaValue[] InvokeM( LuaValue[] arguments )
-	{
-//		VirtualMachine vm = VMRuntime.VirtualMachine;
-//		vm.BeginInvoke( arguments.Length );
-//		for ( int argument = 0; argument < arguments.Length; ++argument )
-//		{
-//			vm.Argument( arguments[ argument ] );
-//		}
-//		return vm.InvokeM( this );
-		return null;
-	}
+	public override LuaValue[] InvokeM()														{ throw new NotImplementedException(); }
+	public override LuaValue[] InvokeM( LuaValue a1 )											{ throw new NotImplementedException(); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2 )								{ throw new NotImplementedException(); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3 )					{ throw new NotImplementedException(); }
+	public override LuaValue[] InvokeM( LuaValue a1, LuaValue a2, LuaValue a3, LuaValue a4 )	{ throw new NotImplementedException(); }
+	public override LuaValue[] InvokeM( LuaValue[] arguments )									{ throw new NotImplementedException(); }
 
 	
-	public override FrozenFrame Call( LuaThread thread, int frameBase, int argumentCount, int resultCount )
+	// Interop function interface.
+
+	protected override Delegate MakeDelegate( Type delegateType )
+	{
+		MethodInfo delegateMethod = delegateType.GetMethod( "Invoke" );
+		MethodInfo invokeMethod = InteropHelpers.BindInteropSignature( null, delegateMethod, interopBindTable );
+		return Delegate.CreateDelegate( delegateType, this, invokeMethod );
+	}
+
+		
+
+	// Constants.
+
+	static readonly LuaValue zero = 0;
+
+
+	// Bytecode interpreter.
+		
+	int CreateStackFrame( LuaThread thread, int frameBase, int argumentCount )
 	{
 		thread.BeginFrame( this );
 
@@ -195,38 +123,31 @@ public sealed class LuaBytecodeFunction
 			thread.StackWatermark( fp, fp + Prototype.StackSize );	
 		}
 
-		return Dispatch( thread, frameBase, resultCount, fp, 0 );
+		return fp;
 	}
 
 
-	public override FrozenFrame Resume( LuaThread thread, FrozenFrame frozenFrame )
+	FrozenFrame UnfreezeStackFrame( LuaThread thread, FrozenFrame frozenFrame )
 	{
 		IList< LuaValue > values = thread.Values;
 		int fp = frozenFrame.FramePointer;
 		int ip = frozenFrame.InstructionPointer;
 
-
 		// Resume function that suspended us.
-
 		Instruction i = Prototype.Instructions[ ip - 1 ];
 		LuaValue function = values[ fp + i.A ];
 		FrozenFrame refrozenFrame = function.Resume( thread, frozenFrame.NextFrame );
 		if ( refrozenFrame != null )
 		{
 			// Refreeze.
-
 			refrozenFrame = new FrozenFrame( refrozenFrame, frozenFrame.FrameBase, frozenFrame.ResultCount, fp, ip );
 			return refrozenFrame;
 		}
 
-
 		// Function call completed normally, dispatch.
-
-		return Dispatch( thread, frozenFrame.FrameBase, frozenFrame.ResultCount, fp, ip );
+		return null;
 	}
 
-
-	static readonly LuaValue zero = 0;
 
 	FrozenFrame Dispatch( LuaThread thread, int frameBase, int resultCount, int fp, int ip )
 	{
@@ -551,7 +472,6 @@ public sealed class LuaBytecodeFunction
 				// R( A ), ... , R( A + C - 2 ) := R( A )( R( A + 1 ), ... , R( A + B - 1 ) )
 				
 				// Count arguments.
-
 				int callArgumentCount;
 				if ( i.B == 0 )
 				{
@@ -564,7 +484,6 @@ public sealed class LuaBytecodeFunction
 
 
 				// Call function 
-
 				LuaValue function = values[ fp + i.A ];
 				
 				FrozenFrame frozenFrame = function.Call( thread, fp + i.A, callArgumentCount, i.C - 1 );
@@ -578,7 +497,6 @@ public sealed class LuaBytecodeFunction
 				
 
 				// Trim stack frame used by function.
-
 				int stackWatermark = fp + Prototype.StackSize;
 				if ( i.C == 0 )
 				{
@@ -889,6 +807,98 @@ public sealed class LuaBytecodeFunction
 			return values[ fp + operand ];
 		}
 	}
+
+
+
+
+	// Interop bind table.
+
+	static readonly MethodInfo[][] interopBindTable;
+
+	static LuaBytecodeFunction()
+	{
+		// Create bind table.
+		interopBindTable = new MethodInfo[][]
+		{
+			new MethodInfo[ 5 ],
+			new MethodInfo[ 6 ],
+			new MethodInfo[ 6 ],
+			new MethodInfo[ 7 ],
+			new MethodInfo[ 6 ],
+			new MethodInfo[ 7 ]
+		};
+
+		// Fill it with the appropriate MethodInfo objects.
+		foreach ( MethodInfo methodInfo in typeof( LuaBytecodeFunction ).GetMethods(
+				BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.NonPublic ) )
+		{
+			int typeParametersCount =
+				methodInfo.IsGenericMethodDefinition ? methodInfo.GetGenericArguments().Length : 0;
+
+			Console.WriteLine( methodInfo.Name );
+
+			if ( methodInfo.Name == "InteropV" )
+				interopBindTable[ 0 ][ typeParametersCount ] = methodInfo;
+			else if ( methodInfo.Name == "InteropVP" )
+				interopBindTable[ 1 ][ typeParametersCount ] = methodInfo;
+			else if ( methodInfo.Name == "InteropS" )
+				interopBindTable[ 2 ][ typeParametersCount ] = methodInfo;
+			else if ( methodInfo.Name == "InteropSP" )
+				interopBindTable[ 3 ][ typeParametersCount ] = methodInfo;
+			else if ( methodInfo.Name == "InteropM" )
+				interopBindTable[ 4 ][ typeParametersCount ] = methodInfo;
+			else if ( methodInfo.Name == "InteropMP" )
+				interopBindTable[ 5 ][ typeParametersCount ] = methodInfo;
+		}
+	}
+
+
+
+
+	// Interop delegate functions.
+
+	void InteropV()
+	{
+	}
+
+	void InteropV< T >( T a1 ) {}
+	void InteropV< T1, T2 >( T1 a1, T2 a2 ) {}
+	void InteropV< T1, T2, T3 >( T1 a1, T2 a2, T3 a3 ) {}
+	void InteropV< T1, T2, T3, T4 >( T1 a1, T2 a2, T3 a3, T4 a4 ) {}
+
+	void InteropVP< TParams >( params TParams[] arguments ) {}
+	void InteropVP< T, TParams >( T a1, params TParams[] arguments ) {}
+	void InteropVP< T1, T2, TParams >( T1 a1, T2 a2, params TParams[] arguments ) {}
+	void InteropVP< T1, T2, T3, TParams >( T1 a1, T2 a2, T3 a3, params TParams[] arguments ) {}
+	void InteropVP< T1, T2, T3, T4, TParams >( T1 a1, T2 a2, T3 a3, T4 a4, params TParams[] arguments ) {}
+
+	TResult InteropS< TResult >() { return default( TResult ); }
+	TResult InteropS< T, TResult >( T a1 ) { return default( TResult ); }
+	TResult InteropS< T1, T2, TResult >( T1 a1, T2 a2 ) { return default( TResult ); }
+	TResult InteropS< T1, T2, T3, TResult >( T1 a1, T2 a2, T3 a3 ) { return default( TResult ); }
+	TResult InteropS< T1, T2, T3, T4, TResult >( T1 a1, T2 a2, T3 a3, T4 a4 ) { return default( TResult ); }
+
+	TResult InteropSP< TParams, TResult >( TParams[] arguments ) { return default( TResult ); }
+	TResult InteropSP< T, TParams, TResult >( T a1, TParams[] arguments ) { return default( TResult ); }
+	TResult InteropSP< T1, T2, TParams, TResult >( T1 a1, T2 a2, TParams[] arguments ) { return default( TResult ); }
+	TResult InteropSP< T1, T2, T3, TParams, TResult >( T1 a1, T2 a2, T3 a3, TParams[] arguments ) { return default( TResult ); }
+	TResult InteropSP< T1, T2, T3, T4, TParams, TResult >( T1 a1, T2 a2, T3 a3, T4 a4, TParams[] arguments ) { return default( TResult ); }
+
+	TResult[] InteropM< TResult >() { return new TResult[] {}; }
+	TResult[] InteropM< T, TResult >( T a1 ) { return new TResult[] {}; }
+	TResult[] InteropM< T1, T2, TResult >( T1 a1, T2 a2 ) { return new TResult[] {}; }
+	TResult[] InteropM< T1, T2, T3, TResult >( T1 a1, T2 a2, T3 a3 ) { return new TResult[] {}; }
+	TResult[] InteropM< T1, T2, T3, T4, TResult >( T1 a1, T2 a2, T3 a3, T4 a4 ) { return new TResult[] {}; }
+
+	TResult[] InteropMP< TParams, TResult >( TParams[] arguments ) { return new TResult[] {}; }
+	TResult[] InteropMP< T, TParams, TResult >( T a1, TParams[] arguments ) { return new TResult[] {}; }
+	TResult[] InteropMP< T1, T2, TParams, TResult >( T1 a1, T2 a2, TParams[] arguments ) { return new TResult[] {}; }
+	TResult[] InteropMP< T1, T2, T3, TParams, TResult >( T1 a1, T2 a2, T3 a3, TParams[] arguments ) { return new TResult[] {}; }
+	TResult[] InteropMP< T1, T2, T3, T4, TParams, TResult >( T1 a1, T2 a2, T3 a3, T4 a4, TParams[] arguments ) { return new TResult[] {}; }
+
+
+
+
 
 
 }

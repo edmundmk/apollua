@@ -80,6 +80,12 @@ public sealed class BoxedString
 		return true;
 	}
 
+	public override bool TryToString( out string value )
+	{
+		value = Value;
+		return true;
+	}
+
 
 	// Binary operators.
 
