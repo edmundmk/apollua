@@ -98,6 +98,30 @@ public sealed class LuaThread
 	
 	// Methods.
 
+	public int BeginInterop( LuaFunction function, int argumentCount )
+	{
+		int frameBase = Values.Count;
+		StackWatermark( frameBase, frameBase + 1 + argumentCount );
+		Values[ frameBase ] = function;
+		return frameBase;
+	}
+
+	public void InteropArgument( int frameBase, int argument, LuaValue value )
+	{
+		Values[ frameBase + 1 + argument ] = value;
+	}
+
+	public LuaValue InteropResult( int frameBase, int result )
+	{
+		return Values[ frameBase + result ];
+	}
+
+	public void EndInterop( int frameBase )
+	{
+		StackWatermark( frameBase, frameBase );
+	}
+
+
 	public void BeginFrame( LuaFunction function )
 	{
 		Frames.Add( function );

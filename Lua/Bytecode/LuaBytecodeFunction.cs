@@ -810,6 +810,8 @@ public sealed class LuaBytecodeFunction
 
 
 
+	
+
 
 	// Interop bind table.
 
@@ -859,6 +861,10 @@ public sealed class LuaBytecodeFunction
 
 	void InteropV()
 	{
+		LuaThread thread = LuaThread.GetCurrent();
+		int frameBase = thread.BeginInterop( this, 0 );
+		Call( thread, frameBase, 0, 0 );
+		thread.EndInterop( frameBase );
 	}
 
 	void InteropV< T >( T a1 ) {}
