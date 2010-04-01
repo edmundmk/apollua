@@ -7,48 +7,108 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Lua;
+using Lua.Bytecode;
 
 
-namespace Lua.Bytecode
+namespace Lua
 {
 	
 
 public class LuaBytecode
 {
 
-	// Parameters.
+	// Bytecode.
 
-	public int				UpValCount					{ get; set; }
-	public int				ParameterCount				{ get; set; }
-	public bool				IsVararg					{ get; set; }
+	internal int			UpValCount;
+	internal int			ParameterCount;
+	internal bool			IsVararg;
 
+	internal LuaValue[]		Constants;
+	internal LuaBytecode[]	Prototypes;
 
-	// Constants.
-
-	public LuaValue[]		Constants					{ get; set; }
-	public LuaBytecode[]	Prototypes					{ get; set; }
-
-
-	// VM opcodes.
-
-	public int				StackSize					{ get; set; }
-	public Instruction[]	Instructions				{ get; set; }
+	internal int			StackSize;
+	internal Instruction[]	Instructions;
 
 
-	// Debug information.
+	// Debug info.
 
-	public string			DebugName					{ get; set; }
-	public SourceSpan		DebugSourceSpan				{ get; set; }
-	public SourceSpan[]		DebugInstructionSourceSpans	{ get; set; }
-	public string[]			DebugUpValNames				{ get; set; }
-	public Symbol[]			DebugLocals					{ get; set; }
+	internal string			DebugName;
+	internal SourceSpan		DebugSourceSpan;
+	internal SourceSpan[]	DebugInstructionSourceSpans;
+	internal string[]		DebugUpValNames;
+	internal Symbol[]		DebugLocals;
 
 
 
 
+	// Serialization.
+	
+	public void Load( BinaryReader f )
+	{
+		// header bytes
+		//		signature ('<esc>Lua')
+		//		version (0x51)
+		//		format (0)
+		//		endianness (0: big-endian, 1: little-endian)
+		//		sizeof int
+		//		sizeof size_t
+		//		sizeof Instruction
+		//		sizeof lua_Number
+		//		lua_Number type (0: integral, 1: floating-point)
 
-	// Information about instructions.
+
+		// function header
+		//		string (size_t including trailing null, char[]) source
+		//		int linedefined
+		//		int lastlinedefined
+		//		byte nups
+		//		byte numparams
+		//		byte is_vararg
+		//		byte maxstacksize
+		
+
+		// function code
+		//		int sizecode
+		//		Instruction[]
+
+
+		// function constants
+		//		int sizek
+		//		constant
+		//		Constant[]
+		//			char ttype(o)
+		//				TNIL 0: nothing
+		//				TBOOLEAN 1: byte
+		//				TNUMBER 3: number
+		//				TSTRING 4: string
+		//		int sizep
+		//		Function[]
+		//			header
+		//			code
+		//			constants
+		//			debug
+
+
+		// function debug
+		//		int sizelineinfo
+		//		int[] lineinfo
+		//		int sizelocvars
+		//		LocVar[]
+		//			string varname
+		//			int startpc
+		//			int endpc
+		//		int sizeupvalues
+		//		string[] upvalues
+	}
+
+
+	public void Save( BinaryWriter f )
+	{
+	}
+
+
+
+	// Disassembly.
 
 	enum Operands
 	{
@@ -130,7 +190,6 @@ public class LuaBytecode
 		{ Opcode.Closure,	new OpMetadata( Operands.ABx, Mode.R, Mode.P, Mode.Unused ) },
 		{ Opcode.Vararg,	new OpMetadata( Operands.ABC, Mode.R, Mode.Integer, Mode.Unused ) },
 	};
-
 
 
 	public void Disassemble( TextWriter o )

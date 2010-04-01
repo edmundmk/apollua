@@ -10,7 +10,7 @@ namespace Lua.Bytecode
 {
 
 
-public struct Instruction
+struct Instruction
 {
 	/*
 		Each instruction is packed into a 32-bit uint using the

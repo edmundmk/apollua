@@ -10,7 +10,7 @@ namespace Lua.Bytecode
 {
 
 
-public struct SourceSpan
+struct SourceSpan
 {
 	public SourceLocation	Start		{ get; private set; }
 	public SourceLocation	End			{ get; private set; }

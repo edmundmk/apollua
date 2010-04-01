@@ -14,7 +14,7 @@ namespace Lua.Runtime
 
 
 [DebuggerDisplay( "{value}" )]
-internal sealed class BoxedInteger
+sealed class BoxedInteger
 	:	LuaValue
 {
 

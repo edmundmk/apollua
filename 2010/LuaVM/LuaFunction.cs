@@ -12,7 +12,7 @@ namespace Lua
 {
 
 /*
-public abstract class LuaFunction
+public class LuaFunction
 	:	LuaValue
 {
 

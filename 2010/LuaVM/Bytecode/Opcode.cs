@@ -10,7 +10,7 @@ namespace Lua.Bytecode
 {
 
 
-public enum Opcode
+enum Opcode
 {
 	/*
 		R( x )	means the xth register

@@ -20,7 +20,7 @@ namespace Lua
 */
 
 
-public sealed class LuaThread
+public class LuaThread
 	:	LuaValue
 {
 /*	public static LuaTable TypeMetatable

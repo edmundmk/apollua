@@ -10,7 +10,7 @@ namespace Lua.Bytecode
 {
 
 
-public struct SourceLocation
+struct SourceLocation
 {
 	public string	SourceName		{ get; private set; }
 	public int		Line			{ get; private set; }

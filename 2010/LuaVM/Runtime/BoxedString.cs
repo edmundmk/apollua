@@ -13,7 +13,7 @@ namespace Lua.Runtime
 
 
 [DebuggerDisplay( "{value}" )]
-internal sealed class BoxedString
+sealed class BoxedString
 	:	LuaValue
 {
 

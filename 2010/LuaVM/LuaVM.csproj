@@ -46,11 +46,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bytecode\Instruction.cs" />
-    <Compile Include="Bytecode\LuaBytecode.cs" />
     <Compile Include="Bytecode\Opcode.cs" />
     <Compile Include="Bytecode\SourceLocation.cs" />
     <Compile Include="Bytecode\SourceSpan.cs" />
     <Compile Include="Bytecode\Symbol.cs" />
+    <Compile Include="LuaBytecode.cs" />
     <Compile Include="LuaFunction.cs" />
     <Compile Include="LuaTable.cs" />
     <Compile Include="LuaThread.cs" />

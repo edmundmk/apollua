@@ -15,7 +15,7 @@ namespace Lua.Runtime
 
 /*
 [DebuggerDisplay( "{Value}" )]
-public sealed class UpVal
+sealed class UpVal
 {
 	// Members.
 

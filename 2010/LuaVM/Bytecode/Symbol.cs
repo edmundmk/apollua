@@ -10,7 +10,7 @@ namespace Lua.Bytecode
 {
 
 
-public struct Symbol
+struct Symbol
 {
 	public string	Name				{ get; private set; }
 	public int		StartInstruction	{ get; private set; }

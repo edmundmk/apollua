@@ -15,8 +15,7 @@ namespace Lua.Runtime
 	and resumed by invoking the function objects again with the frozen frames.
 */
 
-public class FrozenFrame
-	:	LuaValue
+sealed class FrozenFrame
 {
 /*	public FrozenFrame	NextFrame			{ get; private set; }
 	public int			FrameBase			{ get; private set; }

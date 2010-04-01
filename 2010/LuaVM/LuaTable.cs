@@ -33,7 +33,7 @@ namespace Lua
 
 
 [DebuggerDisplay( "Count = {Count}" ), DebuggerTypeProxy( typeof( TableDebuggerTypeProxy ) )]
-public sealed class LuaTable
+public class LuaTable
 	:	LuaValue
 	,	IDictionary< LuaValue, LuaValue >
 {
@@ -108,54 +108,54 @@ public sealed class LuaTable
 
 	LuaValue TableIndex( LuaValue key )
 	{
-		LuaValue value = Get( key );
-		if ( value == null )
+		LuaValue value = RawGet( key );
+		if ( value != null )
 		{
-			// No existing value, so try metamethod.
-			LuaValue h = GetHandler( this, "__index" );
-			if ( h != null )
-			{
-/*
- 				if ( h is LuaFunction )
-				{
-					return h.InvokeS( table, key );
-				}
-				else
-				{
-					return h.Index( key );
-				}
-*/
-			}
+			return value;
 		}
 
-		return value;
+		LuaValue h = GetHandler( this, "__index" );
+		if ( h == null )
+		{
+			return null;
+		}
+
+		if ( h.LuaType == "function" )
+		{
+			return h.Call( this, key );
+		}
+		else
+		{
+			return h.Index( key );
+		}
 	}
 
 	void TableNewIndex( LuaValue key, LuaValue value )
 	{
-		LuaValue existingValue = Get( key );
-		if ( existingValue == null )
+		LuaValue existingValue = RawGet( key );
+		if ( existingValue != null )
 		{
-			// No existing value, so try metamethod.
-			LuaValue h = GetHandler( this, "__newindex" );
-			if ( h != null )
-			{
-/*
- 				if ( h is LuaFunction )
-				{
-					h.InvokeS( table, key, value );
-					return;
-				}
-				else
-				{
-					h.NewIndex( key, value );
-					return;
-				}
-*/
-			}
+			RawSet( key, value );
+			return;
 		}
 
-		Set( key, value );
+		LuaValue h = GetHandler( this, "__newindex" );
+		if ( h == null )
+		{
+			RawSet( key, value );
+			return;
+		}
+
+		if ( h.LuaType == "function" )
+		{
+			h.Call( this, key, value );
+			return;
+		}
+		else
+		{
+			h.Call( key, value );
+			return;
+		}
 	}
 
 
@@ -251,8 +251,7 @@ public sealed class LuaTable
 
 	
 	// Initialization.
-
-
+	
 	void Reset( int arrayCount, int hashCount )
 	{
 		hash				= NewHash( MathEx.NextPow2( hashCount ) );
@@ -268,8 +267,7 @@ public sealed class LuaTable
 
 	
 	// Table access.
-	
-	
+		
 	bool TryArrayIndex( LuaValue key, out int index )
 	{
 		if ( ! key.TryToInteger( out index ) )
@@ -292,7 +290,7 @@ public sealed class LuaTable
 	}
 
 
-	LuaValue Get( LuaValue key )
+	LuaValue RawGet( LuaValue key )
 	{
 		// Try integer index.
 
@@ -309,7 +307,7 @@ public sealed class LuaTable
 	}
 
 
-	void Set( LuaValue key, LuaValue value )
+	void RawSet( LuaValue key, LuaValue value )
 	{
 		// Try integer index.
 
@@ -332,7 +330,7 @@ public sealed class LuaTable
 			}
 			else if ( index < arrayLengthNext )
 			{
-				LuaValue existingValue = Get( key );
+				LuaValue existingValue = RawGet( key );
 				if ( existingValue != null && value == null )
 				{
 					arrayOccupancyNext -= 1;
@@ -674,11 +672,11 @@ public sealed class LuaTable
 	{
 		get
 		{
-			return Get( key );
+			return RawGet( key );
 		}
 		set
 		{
-			Set( key, value );
+			RawSet( key, value );
 		}
 	}
 	
@@ -715,7 +713,7 @@ public sealed class LuaTable
 	
 	public void Add( LuaValue key, LuaValue value )
 	{
-		Set( key, value );
+		RawSet( key, value );
 	}
 		
 	public void Add( KeyValuePair< LuaValue, LuaValue > item )
@@ -725,26 +723,26 @@ public sealed class LuaTable
 
 	public bool ContainsKey( LuaValue key )
 	{
-		return Get( key ) != null;
+		return RawGet( key ) != null;
 	}
 
 	public bool Contains( KeyValuePair< LuaValue, LuaValue > item )
 	{
-		return Get( item.Key ).Equals( item.Value );
+		return RawGet( item.Key ).Equals( item.Value );
 	}
 
 	public bool TryGetValue( LuaValue key, out LuaValue value )
 	{
-		value = Get( key );
+		value = RawGet( key );
 		return value != null;
 	}
 
 	public bool Remove( LuaValue key )
 	{
-		LuaValue value = Get( key );
+		LuaValue value = RawGet( key );
 		if ( value != null )
 		{
-			Set( key, null );
+			RawSet( key, null );
 			return true;
 		}
 		return false;
@@ -752,10 +750,10 @@ public sealed class LuaTable
 
 	public bool Remove( KeyValuePair< LuaValue, LuaValue > item )
 	{
-		LuaValue value = Get( item.Key );
+		LuaValue value = RawGet( item.Key );
 		if ( value.Equals( item.Value ) )
 		{
-			Set( item.Key, null );
+			RawSet( item.Key, null );
 			return true;
 		}
 		return false;

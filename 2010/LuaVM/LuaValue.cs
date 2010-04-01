@@ -67,7 +67,6 @@ public abstract class LuaValue
 	public T MakeDelegate< T >()													{ return (T)(object)MakeDelegate( typeof( T ) ); }
 
 
-
 	// Object.
 
 	public override bool				Equals( object o )							{ return o is LuaValue && this.Equals( (LuaValue)o ); }
@@ -111,13 +110,16 @@ public abstract class LuaValue
 
 
 	// Function interface.
-	// TODO: forward this parameter.
 
-	protected internal virtual FrozenFrame Call( LuaThread t, int f, int a, int r )	{ LuaValue h = GetHandler( this, "__call" ); if ( h != null ) return h.Call( t, f, a, r ); else throw new NotSupportedException(); }
-	protected internal virtual FrozenFrame Resume( LuaThread t, FrozenFrame f )		{ LuaValue h = GetHandler( this, "__call" ); if ( h != null ) return h.Resume( t, f ); else throw new NotSupportedException(); }
-	protected internal virtual Delegate MakeDelegate( Type delegateType )			{ LuaValue h = GetHandler( this, "__call" ); if ( h != null ) return h.MakeDelegate( delegateType ); else throw new NotSupportedException(); }
+	protected internal virtual void		Call( LuaThread t, int f, int a, int r )	{ LuaValue h = GetHandler( this, "__call" ); if ( h != null ) h.Call( t, f, a, r ); else throw new NotSupportedException(); }
+	protected internal virtual void		Resume( LuaThread t )						{ throw new NotSupportedException(); }
+	protected internal virtual Delegate	MakeDelegate( Type delegateType )			{ LuaValue h = GetHandler( this, "__call" ); if ( h != null ) return h.MakeDelegate( delegateType ); else throw new NotSupportedException(); }
 	
-	
+	protected internal virtual LuaValue	Call( LuaValue a )							{ throw new NotSupportedException(); }
+	protected internal virtual LuaValue Call( LuaValue a, LuaValue b )				{ throw new NotSupportedException(); }
+	protected internal virtual LuaValue Call( LuaValue a, LuaValue b, LuaValue c )	{ throw new NotSupportedException(); }
+
+
 	// Meta handlers.
 	
 	protected static LuaValue GetHandler( LuaValue o, LuaValue handler )
@@ -128,18 +130,17 @@ public abstract class LuaValue
 
 	protected static LuaValue MetaBinaryOp( LuaValue left, LuaValue right, LuaValue handler )
 	{
-		/*
 		LuaValue h = GetHandler( left, handler );
 		if ( h != null )
 		{
-			return h.InvokeS( left, right );
+			return h.Call( left, right );
 		}
 		h = GetHandler( right, handler );
 		if ( h != null )
 		{
-			return h.InvokeS( left, right );
+			return h.Call( left, right );
 		}
-		*/
+		
 		throw new NotSupportedException();
 	}
 
@@ -159,13 +160,12 @@ public abstract class LuaValue
 
 	protected static LuaValue MetaUnaryOp( LuaValue operand, LuaValue handler )
 	{
-		/*
 		LuaValue h = GetHandler( operand, handler );
 		if ( h != null )
 		{
-			return h.InvokeS( operand );
+			return h.Call( operand );
 		}
-		*/
+
 		throw new NotSupportedException();
 	}
 
@@ -187,8 +187,7 @@ public abstract class LuaValue
 
 	protected static bool MetaEquals( LuaValue left, LuaValue right )
 	{
-		/*
-		if ( left.GetLuaType() != right.GetLuaType() )
+		if ( left.LuaType != right.LuaType )
 		{
 			return false;
 		}
@@ -200,10 +199,9 @@ public abstract class LuaValue
 		LuaValue h = GetComparisonHandler( left, right, "__eq" );
 		if ( h != null )
 		{
-			LuaValue result = h.InvokeS( left, right );
+			LuaValue result = h.Call( left, right );
 			return (bool)result;
 		}
-		*/
 
 		return false;
 	}
@@ -211,35 +209,32 @@ public abstract class LuaValue
 
 	protected static bool MetaLessThan( LuaValue left, LuaValue right )
 	{
-		/*
 		LuaValue h = GetComparisonHandler( left, right, "__lt" );
 		if ( h != null )
 		{
-			LuaValue result = h.InvokeS( left, right );
+			LuaValue result = h.Call( left, right );
 			return (bool)result;
 		}
-		*/
+
 		throw new NotSupportedException();
 	}
 
 
 	protected static bool MetaLessThanOrEquals( LuaValue left, LuaValue right )
 	{
-		/*
 		LuaValue h = GetComparisonHandler( left, right, "__le" );
 		if ( h != null )
 		{
-			LuaValue result = h.InvokeS( left, right );
+			LuaValue result = h.Call( left, right );
 			return (bool)result;
 		}
 
-		h = GetComparisonHandler( left, right, handlerLt );
+		h = GetComparisonHandler( left, right, "__lt" );
 		if ( h != null )
 		{
-			LuaValue result = h.InvokeS( right, left );
-			return (bool)result;
+			LuaValue result = h.Call( right, left );
+			return ! (bool)result;
 		}
-		*/
 
 		throw new NotSupportedException();
 	}
@@ -247,33 +242,31 @@ public abstract class LuaValue
 
 	protected static LuaValue MetaIndex( LuaValue table, LuaValue key )
 	{
-/*
 		LuaValue h = GetHandler( table, "__index" );
 		if ( h != null )
 		{	
-			if ( h is LuaFunction )
+			if ( h.LuaType == "function" )
 			{
-				return h.InvokeS( table, key );
+				return h.Call( table, key );
 			}
 			else
 			{
 				return h.Index( key );
 			}
 		}
-*/
+
 		throw new NotSupportedException();
 	}
 	
 
 	protected static void MetaNewIndex( LuaValue table, LuaValue key, LuaValue value )
 	{
-/*
 		LuaValue h = GetHandler( table, "__newindex" );
 		if ( h != null )
 		{
-			if ( h is LuaFunction )
+			if ( h.LuaType == "function" )
 			{
-				h.InvokeS( table, key, value );
+				h.Call( table, key, value );
 				return;
 			}
 			else
@@ -282,7 +275,7 @@ public abstract class LuaValue
 				return;
 			}
 		}
-*/
+
 		throw new NotSupportedException();
 	}
 

@@ -13,7 +13,7 @@ namespace Lua.Runtime
 
 
 [DebuggerDisplay( "{IsTrue()}" )]
-internal sealed class BoxedBoolean
+sealed class BoxedBoolean
 	:	LuaValue
 {
 
