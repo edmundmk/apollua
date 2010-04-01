@@ -51,18 +51,18 @@ public abstract class LuaValue
 	public static implicit operator LuaValue ( string s )							{ return new BoxedString( s ); }
 
 	public static explicit operator bool ( LuaValue v )								{ return v != null && v.IsTrue(); }
-	public static explicit operator sbyte ( LuaValue v )							{ int value; if ( v.TryToInteger( out value ) ) checked { return (sbyte)value; } else throw new InvalidCastException(); }
-	public static explicit operator byte ( LuaValue v )								{ int value; if ( v.TryToInteger( out value ) ) checked { return (byte)value; } else throw new InvalidCastException(); }
-	public static explicit operator short ( LuaValue v )							{ int value; if ( v.TryToInteger( out value ) ) checked { return (short)value; } else throw new InvalidCastException(); }
-	public static explicit operator ushort ( LuaValue v )							{ int value; if ( v.TryToInteger( out value ) ) checked { return (ushort)value; } else throw new InvalidCastException(); }
-	public static explicit operator int ( LuaValue v )								{ int value; if ( v.TryToInteger( out value ) ) return value; else throw new InvalidCastException(); }
-	public static explicit operator uint ( LuaValue v )								{ int value; if ( v.TryToInteger( out value ) ) checked { return (uint)value; } else throw new InvalidCastException(); }
-	public static explicit operator long ( LuaValue v )								{ int value; if ( v.TryToInteger( out value ) ) return value; else throw new InvalidCastException(); }
-	public static explicit operator ulong ( LuaValue v )							{ int value; if ( v.TryToInteger( out value ) ) checked { return (ulong)value; } else throw new InvalidCastException(); }
-	public static explicit operator float ( LuaValue v )							{ double value; if ( v.TryToDouble( out value ) ) checked { return (float)value; } else throw new InvalidCastException(); }
-	public static explicit operator double ( LuaValue v )							{ double value; if ( v.TryToDouble( out value ) ) return value; else throw new InvalidCastException(); }
-	public static explicit operator decimal ( LuaValue v )							{ double value; if ( v.TryToDouble( out value ) ) checked { return (decimal)value; } else throw new InvalidCastException(); }
-	public static explicit operator string ( LuaValue v )							{ string value; if ( v.TryToString( out value ) ) return value; else throw new InvalidCastException(); }
+	public static explicit operator sbyte ( LuaValue v )							{ int value; if ( CastToInteger( v, out value ) ) checked { return (sbyte)value; } else throw new InvalidCastException(); }
+	public static explicit operator byte ( LuaValue v )								{ int value; if ( CastToInteger( v, out value ) ) checked { return (byte)value; } else throw new InvalidCastException(); }
+	public static explicit operator short ( LuaValue v )							{ int value; if ( CastToInteger( v, out value ) ) checked { return (short)value; } else throw new InvalidCastException(); }
+	public static explicit operator ushort ( LuaValue v )							{ int value; if ( CastToInteger( v, out value ) ) checked { return (ushort)value; } else throw new InvalidCastException(); }
+	public static explicit operator int ( LuaValue v )								{ int value; if ( CastToInteger( v, out value ) ) return value; else throw new InvalidCastException(); }
+	public static explicit operator uint ( LuaValue v )								{ int value; if ( CastToInteger( v, out value ) ) checked { return (uint)value; } else throw new InvalidCastException(); }
+	public static explicit operator long ( LuaValue v )								{ int value; if ( CastToInteger( v, out value ) ) return value; else throw new InvalidCastException(); }
+	public static explicit operator ulong ( LuaValue v )							{ int value; if ( CastToInteger( v, out value ) ) checked { return (ulong)value; } else throw new InvalidCastException(); }
+	public static explicit operator float ( LuaValue v )							{ double value; if ( CastToDouble( v, out value ) ) checked { return (float)value; } else throw new InvalidCastException(); }
+	public static explicit operator double ( LuaValue v )							{ double value; if ( CastToDouble( v, out value ) ) return value; else throw new InvalidCastException(); }
+	public static explicit operator decimal ( LuaValue v )							{ double value; if ( CastToDouble( v, out value ) ) checked { return (decimal)value; } else throw new InvalidCastException(); }
+	public static explicit operator string ( LuaValue v )							{ string value; if ( CastToString( v, out value ) ) return value; else throw new InvalidCastException(); }
 
 	public T MakeDelegate< T >()													{ return (T)(object)MakeDelegate( typeof( T ) ); }
 
@@ -118,6 +118,54 @@ public abstract class LuaValue
 	protected internal virtual LuaValue	Call( LuaValue a )							{ throw new NotSupportedException(); }
 	protected internal virtual LuaValue Call( LuaValue a, LuaValue b )				{ throw new NotSupportedException(); }
 	protected internal virtual LuaValue Call( LuaValue a, LuaValue b, LuaValue c )	{ throw new NotSupportedException(); }
+
+
+	// Casts.
+
+	protected static bool CastToInteger( LuaValue v, out int value )
+	{
+		if ( v == null )
+		{
+			value = 0;
+			return false;
+		}
+
+		if ( v.TryToInteger( out value ) )
+		{
+			return true;
+		}
+		
+		double d;
+		if ( v.TryToDouble( out d ) )
+		{
+			value = (int)d;
+			return (double)value == d;
+		}
+
+		return false;
+	}
+
+	protected static bool CastToDouble( LuaValue v, out double value )
+	{
+		if ( v == null )
+		{
+			value = 0.0;
+			return false;
+		}
+
+		return v.TryToDouble( out value );
+	}
+
+	protected static bool CastToString( LuaValue v, out string value )
+	{
+		if ( v == null )
+		{
+			value = String.Empty;
+			return false;
+		}
+
+		return v.TryToString( out value );
+	}
 
 
 	// Meta handlers.

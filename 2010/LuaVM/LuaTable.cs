@@ -270,23 +270,13 @@ public class LuaTable
 		
 	bool TryArrayIndex( LuaValue key, out int index )
 	{
-		if ( ! key.TryToInteger( out index ) )
+		if ( CastToInteger( key, out index ) && index >= 1 )
 		{
-			double value;
-			if ( ! key.TryToDouble( out value ) )
-			{
-				return false;
-			}
-			
-			index = (int)value;
-			if ( (double)index != value )
-			{
-				return false;
-			}
+			index -= 1;
+			return true;
 		}
 
-		index -= 1;
-		return true;
+		return false;
 	}
 
 
