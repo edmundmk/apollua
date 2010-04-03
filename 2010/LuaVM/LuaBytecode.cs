@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Lua.Bytecode;
 
 
@@ -42,69 +43,148 @@ public class LuaBytecode
 
 
 	// Serialization.
-	
-	public void Load( BinaryReader f )
+
+	const sbyte LUA_TNIL		= 0;
+	const sbyte LUA_TBOOLEAN	= 1;
+	const sbyte LUA_TNUMBER		= 3;
+	const sbyte LUA_TSTRING		= 4;
+
+
+	public void Load( BinaryReader r )
 	{
-		// header bytes
-		//		signature ('<esc>Lua')
-		//		version (0x51)
-		//		format (0)
-		//		endianness (0: big-endian, 1: little-endian)
-		//		sizeof int
-		//		sizeof size_t
-		//		sizeof Instruction
-		//		sizeof lua_Number
-		//		lua_Number type (0: integral, 1: floating-point)
+		// Header.
+		CheckSByte( r, 0x1B );	// <esc>
+		CheckSByte( r, 0x4C );	// 'L'
+		CheckSByte( r, 0x75 );	// 'u'
+		CheckSByte( r, 0x61 );	// 'a'
+		CheckSByte( r, 0x51 );	// Version 5.1
+		CheckSByte( r, 0x00 );	// Format 0
+		CheckSByte( r, 0x01 );	// Little-endian
+		CheckSByte( r, 0x04 );	// sizeof( int )
+		CheckSByte( r, 0x04 );	// sizeof( size_t )
+		CheckSByte( r, 0x04 );	// sizeof( Instruction )
+		CheckSByte( r, 0x08 );	// sizeof( lua_Number )
+		CheckSByte( r, 0x01 );	// Floating-point
 
 
-		// function header
-		//		string (size_t including trailing null, char[]) source
-		//		int linedefined
-		//		int lastlinedefined
-		//		byte nups
-		//		byte numparams
-		//		byte is_vararg
-		//		byte maxstacksize
+		// Function.
+		LoadFunction( r );
+	}
+
+
+	void LoadFunction( BinaryReader r )
+	{
+		// Function information.
+		DebugName		= ReadString( r );
+		DebugSourceSpan	= new SourceSpan( DebugName, r.ReadInt32(), 0, r.ReadInt32(), 0 );
+		UpValCount		= r.ReadByte();
+		ParameterCount	= r.ReadByte();
+		IsVararg		= r.ReadByte() != 0;
+		StackSize		= r.ReadByte();
 		
 
-		// function code
-		//		int sizecode
-		//		Instruction[]
+		// Instructions.
+		int instructionsLength = r.ReadInt32();
+		Instructions = new Instruction[ instructionsLength ];
+		for ( int instruction = 0; instruction < instructionsLength; ++instruction )
+		{
+			Instructions[ instruction ] = Instruction.FromUInt32( r.ReadUInt32() );
+		}
 
 
-		// function constants
-		//		int sizek
-		//		constant
-		//		Constant[]
-		//			char ttype(o)
-		//				TNIL 0: nothing
-		//				TBOOLEAN 1: byte
-		//				TNUMBER 3: number
-		//				TSTRING 4: string
-		//		int sizep
-		//		Function[]
-		//			header
-		//			code
-		//			constants
-		//			debug
+		// Constants.
+		int constantsLength = r.ReadInt32();
+		Constants = new LuaValue[ constantsLength ];
+		for ( int constant = 0; constant < constantsLength; ++constant )
+		{
+			switch ( r.ReadSByte() )
+			{
+				case LUA_TNIL:
+					Constants[ constant ] = null;
+					break;
+
+				case LUA_TBOOLEAN:
+					Constants[ constant ] = r.ReadSByte() != 0;
+					break;
+
+				case LUA_TNUMBER:
+					double d = r.ReadDouble();
+					int i = (int)d;
+					if ( (double)i == d )
+					{
+						Constants[ constant ] = i;
+					}
+					else
+					{
+						Constants[ constant ] = d;
+					}
+					break;
+
+				case LUA_TSTRING:
+					Constants[ constant ] = ReadString( r );
+					break;
+
+				default:
+					throw new FileLoadException();
+			}
+		}
 
 
-		// function debug
-		//		int sizelineinfo
-		//		int[] lineinfo
-		//		int sizelocvars
-		//		LocVar[]
-		//			string varname
-		//			int startpc
-		//			int endpc
-		//		int sizeupvalues
-		//		string[] upvalues
+
+		// Prototypes.
+		int prototypesLength = r.ReadInt32();
+		Prototypes = new LuaBytecode[ prototypesLength ];
+		for ( int prototype = 0; prototype < prototypesLength; ++prototype )
+		{
+			Prototypes[ prototype ] = new LuaBytecode();
+			Prototypes[ prototype ].LoadFunction( r );
+		}
+
+
+		// Debug information.
+		int debugInstructionSourceSpansLength = r.ReadInt32();
+		DebugInstructionSourceSpans = new SourceSpan[ debugInstructionSourceSpansLength ];
+		for ( int debugInstructionSourceSpan = 0; debugInstructionSourceSpan < debugInstructionSourceSpansLength; ++debugInstructionSourceSpan )
+		{
+			int line = r.ReadInt32();
+			DebugInstructionSourceSpans[ debugInstructionSourceSpan ] = new SourceSpan( DebugName, line, 0, line, 0 );
+		}
+
+		int debugLocalsLength = r.ReadInt32();
+		DebugLocals = new Symbol[ debugLocalsLength ];
+		for ( int debugLocal = 0; debugLocal < debugLocalsLength; ++debugLocal )
+		{
+			DebugLocals[ debugLocal ] = new Symbol( ReadString( r ), r.ReadInt32(), r.ReadInt32() );
+		}
+
+		int debugUpValNamesLength = r.ReadInt32();
+		DebugUpValNames = new string[ debugUpValNamesLength ];
+		for ( int debugUpValName = 0; debugUpValName < debugUpValNamesLength; ++debugUpValName )
+		{
+			DebugUpValNames[ debugUpValName ] = ReadString( r );
+		}
 	}
 
 
-	public void Save( BinaryWriter f )
+	void CheckSByte( BinaryReader r, sbyte b )
 	{
+		if ( r.ReadSByte() != b )
+		{
+			throw new FileLoadException();
+		}
 	}
+
+	string ReadString( BinaryReader r )
+	{
+		int length = r.ReadInt32();
+		byte[] characters = r.ReadBytes( length );
+		return Encoding.UTF8.GetString( characters );
+	}
+
+
+	
+
+
 
 
 

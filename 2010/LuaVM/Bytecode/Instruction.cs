@@ -169,6 +169,23 @@ struct Instruction
 		return i;
 	}
 
+
+
+	// Loading and saving.
+
+	public static Instruction FromUInt32( uint i )
+	{
+		Instruction instruction = new Instruction();
+		instruction.i = i;
+		return instruction;
+	}
+
+	public static uint ToUInt32( Instruction instruction )
+	{
+		return instruction.i;
+	}
+
+
 }
 
 

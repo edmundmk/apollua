@@ -23,6 +23,15 @@ struct SourceSpan
 		End		= end;
 	}
 
+
+	public SourceSpan( string sourceName, int startLine, int startColumn, int endLine, int endColumn )
+		:	this()
+	{
+		Start	= new SourceLocation( sourceName, startLine, startColumn );
+		End		= new SourceLocation( sourceName, endLine, endColumn );
+	}
+
+
 }
 	
 
