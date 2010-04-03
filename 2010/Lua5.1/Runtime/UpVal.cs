@@ -13,53 +13,55 @@ using Lua.Bytecode;
 namespace Lua.Runtime
 {
 
-/*
+
 [DebuggerDisplay( "{Value}" )]
 sealed class UpVal
 {
+	
 	// Members.
 
-	IList< LuaValue >	stack;
-	int					index;
-	LuaValue			value;
+	LuaThread	thread;
+	int			stackIndex;
+	LuaValue	value;
+
+	public UpVal( LuaThread thread, int stackIndex )
+	{
+		this.thread		= thread;
+		this.stackIndex	= stackIndex;
+		this.value		= null;
+	}
 
 
 	// Value.
 
 	public LuaValue Value
 	{
-		get { return stack != null ? stack[ index ] : value; }
-		set { if ( stack != null ) stack[ index ] = value; else this.value = value; }
+		get { if ( thread != null ) return thread.Stack[ stackIndex ]; else return value; }
+		set { if ( thread != null ) thread.Stack[ stackIndex ] = value; else this.value = value; }
 	}
 
-	public int Index
+	public int StackIndex
 	{
-		get { return stack != null ? index : -1; }
+		get { return stackIndex; }
 	}
 
 
 	// Lifetime.
 
-	public UpVal( IList< LuaValue > stack, int index )
-	{
-		this.stack	= stack;
-		this.index	= index;
-		value		= null;
-	}
-
-
 	public void Close()
 	{
-		if ( stack == null )
+		if ( thread == null )
+		{
 			throw new InvalidOperationException();
+		}
 
-		value	= stack[ index ];
-		stack	= null;
-		index	= -1;
+		value		= thread.Stack[ stackIndex ];
+		thread		= null;
+		stackIndex	= -1;
 	}
 
 }
-*/
+
 
 }
 

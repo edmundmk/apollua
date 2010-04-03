@@ -111,13 +111,13 @@ public abstract class LuaValue
 
 	// Function interface.
 
-	protected internal virtual void		Call( LuaThread t, int f, int a, int r )	{ LuaValue h = GetHandler( this, "__call" ); if ( h != null ) h.Call( t, f, a, r ); else throw new NotSupportedException(); }
-	protected internal virtual void		Resume( LuaThread t )						{ throw new NotSupportedException(); }
-	protected internal virtual Delegate	MakeDelegate( Type delegateType )			{ LuaValue h = GetHandler( this, "__call" ); if ( h != null ) return h.MakeDelegate( delegateType ); else throw new NotSupportedException(); }
+	internal virtual void				Call( LuaThread t, int f, int a, int r )	{ throw new NotSupportedException(); }
+	internal virtual void				Resume( LuaThread t )						{ throw new NotSupportedException(); }
+	internal virtual Delegate			MakeDelegate( Type delegateType )			{ throw new NotSupportedException(); }
 	
-	protected internal virtual LuaValue	Call( LuaValue a )							{ throw new NotSupportedException(); }
-	protected internal virtual LuaValue Call( LuaValue a, LuaValue b )				{ throw new NotSupportedException(); }
-	protected internal virtual LuaValue Call( LuaValue a, LuaValue b, LuaValue c )	{ throw new NotSupportedException(); }
+	internal virtual LuaValue			Call( LuaValue a )							{ throw new NotSupportedException(); }
+	internal virtual LuaValue			Call( LuaValue a, LuaValue b )				{ throw new NotSupportedException(); }
+	internal virtual LuaValue			Call( LuaValue a, LuaValue b, LuaValue c )	{ throw new NotSupportedException(); }
 
 
 	// Casts.

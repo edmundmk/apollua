@@ -15,7 +15,7 @@ namespace Lua
 {
 	
 
-public class LuaPrototype
+public sealed class LuaPrototype
 {
 
 	// Bytecode.

@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using Lua.Runtime;
+using Lua.Utility;
 
 
 namespace Lua
@@ -20,159 +21,70 @@ namespace Lua
 */
 
 
-public class LuaThread
+public sealed class LuaThread
 	:	LuaValue
 {
-/*	public static LuaTable TypeMetatable
+
+	// Current thread.
+
+	[ThreadStatic] static LuaThread currentThread;
+	internal static LuaThread CurrentThread
 	{
-		get;
-		set;
+		get { if ( currentThread == null ) currentThread = new LuaThread(); return currentThread; }
+		set { currentThread = value; }
+	}
+
+	
+	// Lua.
+
+	protected internal override string LuaType
+	{
+		get { return "thread"; }
 	}
 	
-	public LuaValue Environment
+	internal LuaTable Environment
 	{
-		get;
-		set;
+		get; set;
 	}
 
 
 	// Thread state.
 
-	public List< LuaFunction >	Frames				{ get; private set; }
-	public List< LuaValue >		Values				{ get; private set; }
-	public List< UpVal >		OpenUpVals			{ get; private set; }
-	public int					Top					{ get; set; }
-
-	public FrozenFrame			FrozenFrames		{ get; private set; }
+	internal LuaValue[]		Stack;
+	internal int			Top;
+	internal List< Frame >	SuspendedFrames;
+	List< UpVal >			openUpVals;
+	int						watermark;
 	
-
-	// Constructor.
-
 	public LuaThread()
 	{
-		Frames			= new List< LuaFunction >();
-		Values			= new List< LuaValue >();
-		OpenUpVals		= new List< UpVal >();
+		Stack			= new LuaValue[ 64 ];
 		Top				= -1;
-		FrozenFrames	= null;
+		SuspendedFrames	= new List< Frame >();
+		openUpVals		= new List< UpVal >();
+		watermark		= 0;
 	}
-
-
-
-	// Current thread.
-
-	[ThreadStatic] static LuaThread currentThread;
-
-	public void MakeCurrent()
-	{
-		currentThread = this;
-	}
-
-	public static LuaThread GetCurrent()
-	{
-		if ( currentThread == null )
-		{
-			currentThread = new LuaThread();
-		}
-		return currentThread;
-	}
-
-
-
-
-	// LuaValue
-
-	public override	LuaTable Metatable
-	{
-		get { return TypeMetatable; }
-		set { base.Metatable = value; }
-	}
-
-	public override string GetLuaType()
-	{
-		return "thread";
-	}
-
-
-	
-	// Methods.
-
-	public int BeginInterop( LuaFunction function, int argumentCount )
-	{
-		int frameBase = Values.Count;
-		StackWatermark( frameBase, frameBase + 1 + argumentCount );
-		Values[ frameBase ] = function;
-		return frameBase;
-	}
-
-	public void InteropArgument( int frameBase, int argument, LuaValue value )
-	{
-		Values[ frameBase + 1 + argument ] = value;
-	}
-
-	public LuaValue InteropResult( int frameBase, int result )
-	{
-		return Values[ frameBase + result ];
-	}
-
-	public void EndInterop( int frameBase )
-	{
-		StackWatermark( frameBase, frameBase );
-	}
-
-
-	public void BeginFrame( LuaFunction function )
-	{
-		Frames.Add( function );
-	}
-
-
-	public void EndFrame( LuaFunction function )
-	{
-		Frames.RemoveAt( Frames.Count - 1 );
-	}
-
-
-	public void StackWatermark( int valueTop, int frameTop )
-	{
-		// Make sure we have enough stack space for the function.
-		frameTop = Math.Max( valueTop, frameTop );
 		
-		while ( frameTop > Values.Count )
-		{
-			Values.Add( null );
-		}
-
-		if ( frameTop < Values.Count )
-		{
-			Values.RemoveRange( frameTop, Values.Count - frameTop );
-		}
 
 
-		// Clear all values that have been retired.
-		for ( int index = valueTop; index < Values.Count; ++index )
-		{
-			Values[ index ] = null;
-		}
-	}
+	// UpVals.
 
-
-	public UpVal MakeUpVal( int index )
+	internal UpVal MakeUpVal( int stackIndex )
 	{
 		UpVal upval;
 
 		// Find existing UpVal.
 		int upvalIndex = 0;
-		while ( upvalIndex < OpenUpVals.Count )
+		while ( upvalIndex < openUpVals.Count )
 		{
-			upval = OpenUpVals[ upvalIndex ];
+			upval = openUpVals[ upvalIndex ];
 
-			if ( upval.Index == index )
+			if ( upval.StackIndex == stackIndex )
 			{
 				return upval;
 			}
 
-			if ( upval.Index > index )
+			if ( upval.StackIndex > stackIndex )
 			{
 				break;
 			}
@@ -181,23 +93,22 @@ public class LuaThread
 		}
 
 		// Create new one.
-		upval = new UpVal( Values, index );
-		OpenUpVals.Insert( upvalIndex, upval );
+		upval = new UpVal( this, stackIndex );
+		openUpVals.Insert( upvalIndex, upval );
 		return upval;
 	}
 
-
-	public void CloseUpVals( int index )
+	internal void CloseUpVals( int stackIndex )
 	{
 		UpVal upval;
 
 		// Keep upvals below index.
 		int upvalIndex = 0;
-		while ( upvalIndex < OpenUpVals.Count )
+		while ( upvalIndex < openUpVals.Count )
 		{
-			upval = OpenUpVals[ upvalIndex ];
+			upval = openUpVals[ upvalIndex ];
 			
-			if ( upval.Index >= index )
+			if ( upval.StackIndex >= stackIndex )
 			{
 				break;
 			}
@@ -207,16 +118,36 @@ public class LuaThread
 
 		// Close all upvals after this.
 		int removeIndex = upvalIndex;
-		while ( upvalIndex < OpenUpVals.Count )
+		while ( upvalIndex < openUpVals.Count )
 		{
-			upval = OpenUpVals[ upvalIndex ];
+			upval = openUpVals[ upvalIndex ];
 			upval.Close();
 			upvalIndex += 1;
 		}
 
-		OpenUpVals.RemoveRange( upvalIndex, OpenUpVals.Count - upvalIndex );
+		openUpVals.RemoveRange( upvalIndex, openUpVals.Count - upvalIndex );
+		Array.Clear( Stack, stackIndex, watermark - stackIndex );
 	}
-*/
+
+
+	// Stack management.
+
+	internal void StackWatermark( int newWatermark )
+	{
+		if ( newWatermark < watermark )
+		{
+			// Clear the stack.
+			Array.Clear( Stack, newWatermark, watermark - newWatermark );
+		}
+		else if ( watermark > Stack.Length )
+		{
+			// Grow the stack.
+			Array.Resize( ref Stack, MathEx.NextPow2( newWatermark ) );
+		}
+
+		watermark = newWatermark;
+	}	
+
 }
 
 

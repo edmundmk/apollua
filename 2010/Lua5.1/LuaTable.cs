@@ -33,7 +33,7 @@ namespace Lua
 
 
 [DebuggerDisplay( "Count = {Count}" ), DebuggerTypeProxy( typeof( TableDebuggerTypeProxy ) )]
-public class LuaTable
+public sealed class LuaTable
 	:	LuaValue
 	,	IDictionary< LuaValue, LuaValue >
 {

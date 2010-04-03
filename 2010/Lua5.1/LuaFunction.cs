@@ -5,87 +5,735 @@
 
 
 using System;
+using System.Text;
 using Lua.Runtime;
+using Lua.Bytecode;
 
 
 namespace Lua
 {
 
-/*
-public class LuaFunction
+
+public sealed class LuaFunction
 	:	LuaValue
 {
 
-	// Type metatable and function environment.
+	// Function state.
 
-	public static LuaTable TypeMetatable
+	UpVal[]			upVals;
+	LuaPrototype	prototype;
+
+	public LuaFunction( LuaPrototype p )
 	{
-		get;
-		set;
-	}
-	
-	public LuaValue Environment
-	{
-		get;
-		set;
+		upVals = new UpVal[ p.UpValCount ];
+		prototype = p;
 	}
 
 	
-	// Metatable.
-
-	public override	LuaTable Metatable
+	public LuaPrototype Prototype
 	{
-		get { return TypeMetatable; }
-		set { base.Metatable = value; }
+		get { return prototype; }
+	}
+
+	
+	
+	// Lua.
+
+	protected internal override string LuaType
+	{
+		get { return "function"; }
+	}
+
+	internal LuaTable Environment
+	{
+		get; set;
 	}
 
 
-	// Type.
+	// Function interface.
+
+	internal override void Call( LuaThread thread, int frameBase, int argumentCount, int resultCount )
+	{
+		throw new NotSupportedException();
+	}
+
+	internal override void Resume( LuaThread t )
+	{
+		throw new NotSupportedException();
+	}
 	
-	public override sealed string	GetLuaType()						{ return "function"; }
-	public override sealed bool		IsPrimitiveValue()					{ return base.IsPrimitiveValue(); }
-	public override sealed bool		TryToInteger( out int v )			{ return base.TryToInteger( out v ); }
-	public override sealed bool		TryToDouble( out double v )			{ return base.TryToDouble( out v ); }
-	public override sealed bool		TryToString( out string v )			{ return base.TryToString( out v ); }
-	public override sealed bool		TryToNumberValue( out LuaValue v )	{ return base.TryToNumberValue( out v ); }
+
+	static readonly LuaValue zero = 0;
+
+	void Dispatch( LuaThread thread, int frameBase, int resultCount, int fp, int ip )
+	{
+		LuaValue[] stack = thread.Stack;
+		
+		while ( true )
+		{
+			Instruction i = prototype.Instructions[ ip++ ];
+
+			switch ( i.Opcode )
+			{
+
+			case Opcode.Move:
+			{
+				// R( A ) := R( B )
+				stack[ fp + i.A ] = stack[ fp + i.B ];
+				continue;
+			}
+
+			case Opcode.LoadK:
+			{
+				// R( A ) := K( Bx )
+				stack[ fp + i.A ] = K( i.Bx );
+				continue;
+			}
+
+			case Opcode.LoadBool:
+			{
+				// R( A ) := (bool)B
+				if ( i.B != 0 )
+				{
+					stack[ fp + i.A ] = true;
+				}
+				else
+				{
+					stack[ fp + i.A ] = false;
+				}
+			
+				// if C skip next instruction
+				if ( i.C != 0 )
+				{
+					ip += 1;
+				}
+				
+				continue;
+			}
+
+			case Opcode.LoadNil:
+			{
+				// R( A ) ... R( B ) := nil
+				for ( int r = i.A; r < i.B; ++r )
+				{
+					stack[ fp + r ] = null;
+				}
+				continue;
+			}
+	
+			case Opcode.GetUpVal:
+			{
+				// R( A ) := U( B )
+				stack[ fp + i.A ] = upVals[ i.B ].Value;
+				continue;
+			}
+
+			case Opcode.GetGlobal:
+			{
+				// R( A ) := G[ K( Bx ) ]
+				stack[ fp + i.A ] = Environment.Index( K( i.Bx ) );
+				continue;
+			}
+
+			case Opcode.GetTable:
+			{
+				// R( A ) := R( B )[ RK( C ) ]
+				stack[ fp + i.A ] = stack[ fp + i.B ].Index( RK( stack, fp, i.C ) );
+				continue;
+			}
+	
+			case Opcode.SetGlobal:
+			{
+				// G[ K( Bx ) ] := R( A )
+				Environment.NewIndex( K( i.Bx ), stack[ fp + i.A ] );
+				continue;
+			}
+
+			case Opcode.SetUpVal:
+			{
+				// U( B ) := R( A )
+				upVals[ i.B ].Value = stack[ fp + i.A ];
+				continue;
+			}
+
+			case Opcode.SetTable:
+			{
+				// R( A )[ RK( B ) ] = RK( C )
+				stack[ fp + i.A ].NewIndex( RK( stack, fp, i.B ), RK( stack, fp, i.C ) );
+				continue;
+			}
+	
+			case Opcode.NewTable:
+			{
+				// R( A ) := {} ( B is array size hint, C is hash size hint )
+				stack[ fp + i.A ] = new LuaTable( i.B, i.C );
+				continue;
+			}
+
+			case Opcode.Self:
+			{
+				LuaValue self = stack[ fp + i.B ];
+
+				// R( A + 1 ) := R( B ) 
+				stack[ fp + i.A + 1 ] = self;
+
+				// R( A ) = R( B )[ RK( C ) ]
+				stack[ fp + i.A ] = self.Index( RK( stack, fp, i.C ) );
+
+				continue;
+			}
+	
+			case Opcode.Add:
+			{
+				// R( A ) := RK( B ) + RK( C )
+				stack[ fp + i.A ] = RK( stack, fp, i.B ).Add( RK( stack, fp, i.C ) );
+				continue;
+			}
+
+			case Opcode.Sub:
+			{
+				// R( A ) := RK( B ) - RK( C )
+				stack[ fp + i.A ] = RK( stack, fp, i.B ).Subtract( RK( stack, fp, i.C ) );
+				continue;
+			}
+
+			case Opcode.Mul:
+			{
+				// R( A ) := RK( B ) * RK( C )
+				stack[ fp + i.A ] = RK( stack, fp, i.B ).Multiply( RK( stack, fp, i.C ) );
+				continue;
+			}
+
+			case Opcode.Div:
+			{
+				// R( A ) := RK( B ) / RK( C )
+				stack[ fp + i.A ] = RK( stack, fp, i.B ).Divide( RK( stack, fp, i.C ) );
+				continue;
+			}
+	
+			case Opcode.Mod:
+			{
+				// R( A ) := RK( B ) % RK( C )
+				stack[ fp + i.A ] = RK( stack, fp, i.B ).Modulus( RK( stack, fp, i.C ) );
+				continue;
+			}
+
+			case Opcode.Pow:
+			{
+				// R( A ) := RK( B ) ^ RK( C )
+				stack[ fp + i.A ] = RK( stack, fp, i.B ).RaiseToPower( RK( stack, fp, i.C ) );
+				continue;
+			}
+	
+			case Opcode.Unm:
+			{
+				// R( A ) := -R( B )
+				stack[ fp + i.A ] = stack[ fp + i.B ].UnaryMinus();
+				continue;
+			}
+
+			case Opcode.Not:
+			{
+				// R( A ) := not R( B )
+				stack[ fp + i.A ] = ! stack[ fp + i.B ].IsTrue();
+				continue;
+			}
+
+			case Opcode.Len:
+			{
+				// R( A ) := length of R( B )
+				stack[ fp + i.A ] = stack[ fp + i.B ].Length();
+				continue;
+			}
+
+			case Opcode.Concat:
+			{
+				// R( A ) := R( B ) .. ... .. R( C ), concatenating whole list
+				int listTop	= fp + i.C;
+				int count	= i.C - i.B + 1;
+
+				while ( count > 1 )
+				{
+					LuaValue left	= stack[ listTop - 1 ];
+					LuaValue right	= stack[ listTop - 0 ];
+
+					if ( left.SupportsSimpleConcatenation() && right.SupportsSimpleConcatenation() )
+					{
+						// Count how many we can concatenate in this pass.
+						int concatCount = 2;
+						for ( concatCount = 2; concatCount < count; ++concatCount )
+						{
+							LuaValue operand = stack[ listTop - concatCount ];
+							if ( ! operand.SupportsSimpleConcatenation() )
+							{
+								break;
+							}
+						}
+
+						// Concatenate them.
+						StringBuilder s = new StringBuilder();
+
+						for ( int r = listTop - ( concatCount - 1 ); r <= listTop; ++r )
+						{
+							s.Append( stack[ r ].ToString() );
+						}
+
+						// Modify the stack top and continue.
+						stack[ listTop - ( concatCount - 1 ) ] = s.ToString();
+						listTop	-= concatCount - 1;
+						count	-= concatCount - 1;
+					}
+					else
+					{
+						// Perform meta concatenation.
+						stack[ listTop - 1 ] = left.Concatenate( right );
+						listTop	-= 1;
+						count	-= 1;
+					}
+				}
+
+				stack[ fp + i.A ] = stack[ listTop ];
+
+				continue;
+			}
+
+			case Opcode.Jmp:
+			{
+				// relative jump sBx ( relative to next instruction )
+				ip += i.sBx;
+				continue;
+			}
+	
+			case Opcode.Eq:
+			{
+				// if ( RK( B ) == RK( C ) ) ~= A then skip associated jump
+				if ( RK( stack, fp, i.B ).Equals( RK( stack, fp, i.C ) ) == ( i.A != 0 ) )
+				{
+					i = prototype.Instructions[ ip++ ];
+					ip += i.sBx;
+				}
+				else
+				{
+					ip += 1;
+				}
+				continue;
+			}
+
+			case Opcode.Lt:
+			{
+				// if ( RK( B ) <  RK( C ) ) ~= A then skip associated jump
+				if ( RK( stack, fp, i.B ).LessThan( RK( stack, fp, i.C ) ) == ( i.A != 0 ) )
+				{
+					i = prototype.Instructions[ ip++ ];
+					ip += i.sBx;
+				}
+				else
+				{
+					ip += 1;
+				}
+				continue;
+			}
+
+			case Opcode.Le:
+			{
+				// if ( RK( B ) <= RK( C ) ) ~= A then skip associated jump
+				if ( RK( stack, fp, i.B ).LessThanOrEquals( RK( stack, fp, i.C ) ) == ( i.A != 0 ) )
+				{
+					i = prototype.Instructions[ ip++ ];
+					ip += i.sBx;
+				}
+				else
+				{
+					ip += 1;
+				}
+				continue;
+			}
+
+			case Opcode.Test:
+			{
+				// if not ( R( A ) <=> C ) then skip associated jump
+				if ( stack[ fp + i.A ].IsTrue() != ( i.C != 0 ) )
+				{
+					i = prototype.Instructions[ ip++ ];
+					ip += i.sBx;
+				}
+				else
+				{
+					ip += 1;
+				}
+				continue;
+			}
+
+			case Opcode.TestSet:
+			{
+				// if ( R( B ) <=> C ) then R( A ) := R( B ) else skip associated jump
+				if ( stack[ fp + i.B ].IsTrue() != ( i.C != 0 ) )
+				{
+					// Set.
+					stack[ fp + i.A ] = stack[ fp + i.B ];
+
+					// Perform associated jump.
+					i = prototype.Instructions[ ip++ ];
+					ip += i.sBx;
+				}
+				else
+				{
+					ip += 1;
+				}
+				continue;
+			}
+
+			case Opcode.Call:
+			{
+				// R( A ), ... , R( A + C - 2 ) := R( A )( R( A + 1 ), ... , R( A + B - 1 ) )
+				
+				// Count arguments.
+				int callArgumentCount;
+				if ( i.B != 0 )
+				{
+					callArgumentCount = i.B - 1;
+				}
+				else
+				{
+					callArgumentCount = thread.Top - fp - i.A;
+					thread.Top = -1;
+				}
+
+				LuaValue function = stack[ fp + i.A ];
+				function.Call( thread, fp + i.A, callArgumentCount, i.C - 1 );
+
+				if ( i.C != 0 )
+				{
+					thread.StackWatermark( fp + prototype.StackSize );
+				}
+				else
+				{
+					thread.StackWatermark( Math.Max( fp + prototype.StackSize, thread.Top + 1 ) );
+				}
+
+				continue;
+			}
+
+			case Opcode.TailCall:
+			{
+				// return R( A )( R( A + 1 ), ... , R( A + B - 1 ) )
+
+				int callArgumentCount;
+				if ( i.B != 0 )
+				{
+					callArgumentCount = i.B - 1;
+				}
+				else
+				{
+					callArgumentCount = thread.Top - fp - i.A;
+					thread.Top = -1;
+				}
+
+				LuaValue function = stack[ fp + i.A ];
+				
+				stack[ frameBase ] = function;
+				for ( int argument = 0; argument < callArgumentCount; ++argument )
+				{
+					stack[ frameBase + 1 + argument ] = stack[ fp + i.A + 1 + argument ];
+				}
+
+				function.Call( thread, frameBase, callArgumentCount, resultCount );
+
+				return;
+			}
+
+			case Opcode.Return:
+			{
+				// return R( A ), ... R( A + B - 2 )
+
+				// Find number of results we have.
+				int returnResultCount;
+				if ( i.B != 0 )
+				{
+					returnResultCount = i.B - 1;
+				}
+				else
+				{
+					returnResultCount = thread.Top + 1 - fp - i.A;
+					thread.Top = -1;
+				}
+				
+				// Calculate number of results we want.
+				int copyCount;
+				if ( resultCount == -1 )
+				{
+					copyCount = returnResultCount;
+					thread.Top = frameBase + returnResultCount - 1;
+				}
+				else
+				{
+					copyCount = Math.Min( resultCount, returnResultCount );
+				}
+
+				// Copy results.
+				for ( int result = 0; result < copyCount; ++result )
+				{
+					stack[ frameBase + result ] = stack[ fp + i.A + result ];
+				}
+				for ( int result = copyCount; result < resultCount; ++result )
+				{
+					stack[ frameBase + result ] = null;
+				}
+
+				return;
+			}
 
 
-	// Operations
+			/*	A + 0		Index
+				A + 1		Limit
+				A + 2		Step
+				A + 3		Var
+			*/
 
-	public override sealed LuaValue Add( LuaValue o )					{ return base.Add( o ); }
-	public override sealed LuaValue Subtract( LuaValue o )				{ return base.Subtract( o ); }
-	public override sealed LuaValue Multiply( LuaValue o )				{ return base.Multiply( o ); }
-	public override sealed LuaValue Divide( LuaValue o )				{ return base.Divide( o ); }
-	public override sealed LuaValue IntegerDivide( LuaValue o )			{ return base.IntegerDivide( o ); }
-	public override sealed LuaValue Modulus( LuaValue o )				{ return base.Modulus( o ); }
-	public override sealed LuaValue RaiseToPower( LuaValue o )			{ return base.RaiseToPower( o ); }
-	public override sealed LuaValue Concatenate( LuaValue o )			{ return base.Concatenate( o ); }
+			case Opcode.ForLoop:
+			{
+				LuaValue index	= stack[ fp + i.A + 0 ];
+				LuaValue limit	= stack[ fp + i.A + 1 ];
+				LuaValue step	= stack[ fp + i.A + 2 ];
 
-	public override sealed LuaValue UnaryMinus()						{ return base.UnaryMinus(); }
-	public override sealed LuaValue Length()							{ return base.Length(); }
+				// Index += Step
+				index = index.Add( step );
+				stack[ fp + i.A + 0 ] = index;
+				
+				// if ( Step > 0 and Index <= Limit ) or ( Step < 0 and Index >= Limit ) then Var = Index, relative jump sBx
+				if (    ( ! step.LessThanOrEquals( zero ) && index.LessThanOrEquals( limit ) )
+					 || ( step.LessThan( zero ) && ! index.LessThan( limit ) ) )
+				{
+					stack[ fp + i.A + 3 ] = index;
+					ip += i.sBx;
+				}
+				continue;
+			}
 
-	public sealed override bool IsTrue()								{ return base.IsTrue(); }
-	public override sealed bool EqualsValue( LuaValue o )				{ return base.EqualsValue( o ); }
-	public override sealed bool LessThanValue( LuaValue o )				{ return base.LessThanValue( o ); }
-	public override sealed bool LessThanOrEqualsValue( LuaValue o )		{ return base.LessThanOrEqualsValue( o ); }
+			case Opcode.ForPrep:
+			{
+				LuaValue index	= stack[ fp + i.A + 0 ];
+				LuaValue limit	= stack[ fp + i.A + 1 ];
+				LuaValue step	= stack[ fp + i.A + 2 ];
+				
+				// Convert for control variables to numbers.
+				if ( ! index.TryToNumberValue( out index ) )
+				{
+					throw new InvalidOperationException( "'for' initial value must be a number." );
+				}
+				if ( ! index.TryToNumberValue( out limit ) )
+				{
+					throw new InvalidOperationException( "'for' limit must be a number." );
+				}
+				if ( ! index.TryToNumberValue( out step ) )
+				{
+					throw new InvalidOperationException( "'for' step must be a number." );
+				}
 
-	public override sealed LuaValue Index( LuaValue k )					{ return base.Index( k ); }
-	public override sealed void NewIndex( LuaValue k, LuaValue v )		{ base.NewIndex( k, v ); }
+				// Index -= Step
+				index = index.Subtract( step );
 
-/*	
-	// Bytecode function interface.
+				// Update stack.
+				stack[ fp + i.A + 0 ] = index;
+				stack[ fp + i.A + 1 ] = limit;
+				stack[ fp + i.A + 2 ] = step;
+				
+				// relative jump sBx
+				ip += i.sBx;
+				continue;
+			}
 
-	public override abstract FrozenFrame Call( LuaThread t, int f, int a, int r );
-	public override abstract FrozenFrame Resume( LuaThread t, FrozenFrame f );
+	
+			/*	A + 0		Generator
+				A + 1		State
+				A + 2		Control
+				A + 3		Var_1
+				...
+				A + 3 + C	Var_C
+			*/
+
+			case Opcode.TForLoop:
+			{
+				LuaValue generator	= stack[ fp + i.A + 0 ];
+				LuaValue state		= stack[ fp + i.A + 1 ];
+				LuaValue control	= stack[ fp + i.A + 2 ];
+
+				// Var_1, ..., Var_C := Generator( State, Control )
+				stack[ fp + i.A + 3 ] = generator;
+				stack[ fp + i.A + 4 ] = state;
+				stack[ fp + i.A + 5 ] = control;
+				generator.Call( thread, fp + i.A + 3, 2, i.C );
+
+				// if Var_1 ~= nil then Control = Var_1 else skip associated jump
+				LuaValue var_1 = stack[ fp + i.A + 3 ];
+				if ( var_1.IsTrue() )
+				{
+					// Set control.
+					stack[ fp + i.A + 2 ] = var_1;
+
+					// Perform associated jump.
+					i = prototype.Instructions[ ip++ ];
+					ip += i.sBx;
+				}
+				else
+				{
+					ip += 1;
+				}
+				continue;
+			}
+	
+
+			case Opcode.SetList:
+			{
+				// Special decoding.
+				int keyBase;
+				if ( i.C != 0 )
+				{
+					keyBase = i.C;
+				}
+				else
+				{
+					keyBase = prototype.Instructions[ ip++ ].Index;
+				}
+
+				int lastKey;
+				if ( i.B != 0 )
+				{
+					lastKey = i.B;
+				}
+				else
+				{
+					lastKey = thread.Top - fp - i.A;
+					thread.Top = -1;
+				}
+	
+				// R( A )[ ( C - 1 ) * 50 + i ] := R( A + i ), 1 <= i <= B
+				for ( int key = 1; key <= lastKey; ++key )
+				{
+					stack[ fp + i.A ].NewIndex( ( keyBase - 1 ) * Instruction.FieldsPerFlush + key, stack[ fp + i.A + key ] );
+				}
+
+				if ( i.B == 0 )
+				{
+					thread.StackWatermark( fp + prototype.StackSize );
+				}
+
+				continue;
+			}
+
+			case Opcode.Close:
+			{
+				// close all stack variables from R( A ) to the top
+				thread.CloseUpVals( fp + i.A );
+				continue;
+			}
+
+			case Opcode.Closure:
+			{
+				// R( A ) := function closure from P( Bx )
+				LuaFunction function = new LuaFunction( prototype.Prototypes[ i.Bx ] );
+				function.Environment = Environment;
+				stack[ fp + i.A ] = function;
+				
+				// followed by upval initialization with Move or GetUpVal
+				for ( int upval = 0; upval < function.prototype.UpValCount; ++upval )
+				{
+					Instruction u = prototype.Instructions[ ip++ ];
+
+					if ( u.Opcode == Opcode.Move )
+					{
+						function.upVals[ upval ] = thread.MakeUpVal( fp + u.B );
+					}
+					else if ( u.Opcode == Opcode.GetUpVal )
+					{
+						function.upVals[ upval ] = upVals[ u.B ];
+					}
+					else
+					{
+						throw new InvalidProgramException( "Malformed upval initialization bytecode." );
+					}
+				}
+
+				continue;
+			}
+
+			case Opcode.Vararg:
+			{
+				// R( A ), ..., R( A + B - 1 ) = vararg
+
+				/*	frameBase		-->	Function
+						^				null
+					argumentCount		null
+						v				argument (vararg)
+					framePointer	--> argument
+										argument
+				*/
+				
+				// Find varargs.
+				int varargBase	= frameBase + 1 + prototype.ParameterCount;
+				int varargCount	= Math.Max( fp - varargBase, 0 );
+
+				// Find how many we want.
+				int copyCount;
+				if ( i.B != 0 )
+				{
+					copyCount = Math.Min( i.B, varargCount );
+				}
+				else
+				{
+					copyCount = varargCount;
+					thread.Top = fp + i.A + copyCount - 1;
+					thread.StackWatermark( Math.Max( fp + prototype.StackSize, thread.Top + 1 ) );
+				}
+
+				// Copy into correct position.
+				for ( int vararg = 0; vararg < copyCount; ++vararg )
+				{
+					stack[ fp + i.A + vararg ] = stack[ varargBase + vararg ];
+				}
+
+				for ( int vararg = copyCount; vararg < i.B; ++vararg )
+				{
+					stack[ fp + i.A + vararg ] = null;
+				}
+
+				continue;
+			}
+
+			case Opcode.IntDiv:
+			{
+				// R( A ) := RK( B ) \ RK( C )
+				stack[ fp + i.A ] = RK( stack, fp, i.B ).IntegerDivide( RK( stack, fp, i.C ) );
+				continue;
+			}
+
+			}
+
+		}
+	}
 
 
-	// Interop function interface.
+	LuaValue K( int operand )
+	{
+		return prototype.Constants[ operand ];
+	}
+	
 
-	protected override abstract Delegate MakeDelegate( Type delegateType );
-*//*
+	LuaValue RK( LuaValue[] stack, int fp, int operand )
+	{
+		if ( Instruction.IsConstant( operand ) )
+		{
+			return Prototype.Constants[ Instruction.RKToConstant( operand ) ];
+		}
+		else
+		{
+			return stack[ fp + operand ];
+		}
+	}
+
 
 }
-*/
+
 
 }
 

@@ -52,10 +52,13 @@
     <Compile Include="Runtime\BoxedDouble.cs" />
     <Compile Include="Runtime\BoxedInteger.cs" />
     <Compile Include="Runtime\BoxedString.cs" />
-    <Compile Include="Runtime\FrozenFrame.cs" />
+    <Compile Include="Runtime\Frame.cs" />
     <Compile Include="Runtime\UpVal.cs" />
     <Compile Include="Utility\NextPow2.cs" />
     <Compile Include="Utility\Pow.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Library\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
