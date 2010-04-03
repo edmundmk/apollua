@@ -15,7 +15,7 @@ namespace Lua
 {
 	
 
-public class LuaBytecode
+public class LuaPrototype
 {
 
 	// Bytecode.
@@ -25,7 +25,7 @@ public class LuaBytecode
 	internal bool			IsVararg;
 
 	internal LuaValue[]		Constants;
-	internal LuaBytecode[]	Prototypes;
+	internal LuaPrototype[]	Prototypes;
 
 	internal int			StackSize;
 	internal Instruction[]	Instructions;
@@ -43,7 +43,7 @@ public class LuaBytecode
 
 	// Constructor.
 
-	internal LuaBytecode()
+	internal LuaPrototype()
 	{
 	}
 
@@ -58,7 +58,7 @@ public class LuaBytecode
 	const sbyte LUA_TSTRING		= 4;
 
 
-	public static LuaBytecode Load( BinaryReader r )
+	public static LuaPrototype Load( BinaryReader r )
 	{
 		// Header.
 		CheckSByte( r, 0x1B );	// <esc>
@@ -76,7 +76,7 @@ public class LuaBytecode
 
 
 		// Function.
-		LuaBytecode result = new LuaBytecode();
+		LuaPrototype result = new LuaPrototype();
 		result.LoadPrototype( r );
 		return result;
 	}
@@ -143,10 +143,10 @@ public class LuaBytecode
 
 		// Prototypes.
 		int prototypesLength = r.ReadInt32();
-		Prototypes = new LuaBytecode[ prototypesLength ];
+		Prototypes = new LuaPrototype[ prototypesLength ];
 		for ( int prototype = 0; prototype < prototypesLength; ++prototype )
 		{
-			Prototypes[ prototype ] = new LuaBytecode();
+			Prototypes[ prototype ] = new LuaPrototype();
 			Prototypes[ prototype ].LoadPrototype( r );
 		}
 
@@ -374,7 +374,7 @@ public class LuaBytecode
 			ip = WriteInstruction( o, ip );
 			if ( Instructions[ ip ].Opcode == Opcode.Closure )
 			{
-				LuaBytecode closure = Prototypes[ Instructions[ ip ].Bx ];
+				LuaPrototype closure = Prototypes[ Instructions[ ip ].Bx ];
 				for ( int upval = 0; upval < closure.UpValCount; ++upval )
 				{
 					Instruction i = Instructions[ ip + 1 + upval ];

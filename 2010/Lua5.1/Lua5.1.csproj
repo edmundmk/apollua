@@ -42,8 +42,8 @@
     <Compile Include="Bytecode\SourceLocation.cs" />
     <Compile Include="Bytecode\SourceSpan.cs" />
     <Compile Include="Bytecode\Symbol.cs" />
-    <Compile Include="LuaBytecode.cs" />
     <Compile Include="LuaFunction.cs" />
+    <Compile Include="LuaPrototype.cs" />
     <Compile Include="LuaTable.cs" />
     <Compile Include="LuaThread.cs" />
     <Compile Include="LuaValue.cs" />
