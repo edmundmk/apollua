@@ -64,7 +64,7 @@ public class LuaBytecode
 		CheckSByte( r, 0x04 );	// sizeof( size_t )
 		CheckSByte( r, 0x04 );	// sizeof( Instruction )
 		CheckSByte( r, 0x08 );	// sizeof( lua_Number )
-		CheckSByte( r, 0x01 );	// Floating-point
+		CheckSByte( r, 0x00 );	// Floating-point
 
 
 		// Function.
@@ -177,8 +177,15 @@ public class LuaBytecode
 	string ReadString( BinaryReader r )
 	{
 		int length = r.ReadInt32();
-		byte[] characters = r.ReadBytes( length );
-		return Encoding.UTF8.GetString( characters );
+		if ( length > 0 )
+		{
+			byte[] characters = r.ReadBytes( length );
+			return Encoding.UTF8.GetString( characters, 0, length - 1 );
+		}
+		else
+		{
+			return String.Empty;
+		}
 	}
 
 
@@ -583,10 +590,46 @@ public class LuaBytecode
 	{
 		LuaValue constant = Constants[ index ];
 		string s;
-		if ( constant.TryToString( out s ) )
+		if ( constant == null )
 		{
-			s = s.Replace( "\n", "\\n" );
-			return String.Format( "\"{0}\"", s );
+			return "nil";
+		}
+		else if ( constant.TryToString( out s ) )
+		{
+			StringBuilder escapedString = new StringBuilder();
+			escapedString.Append( "\"" );
+			int start = 0;
+			for ( int c = 0; c < s.Length; ++c )
+			{
+				if ( s[ c ] == '"' || s[ c ] == '\\' || Char.IsControl( s[ c ] ) )
+				{
+					escapedString.Append( s, start, c - start );
+					start = c + 1;
+					switch ( s[ c ] )
+					{
+						case '"':	escapedString.Append( "\\\"" );	break;
+						case '\0':	escapedString.Append( "\\0" );	break;
+						case '\a':	escapedString.Append( "\\a" );	break;
+						case '\b':	escapedString.Append( "\\b" );	break;
+						case '\f':	escapedString.Append( "\\f" );	break;
+						case '\n':	escapedString.Append( "\\n" );	break;
+						case '\r':	escapedString.Append( "\\r" );	break;
+						case '\t':	escapedString.Append( "\\t" );	break;
+						case '\v':	escapedString.Append( "\\v" );	break;
+						
+						default:
+							byte[] utf8 = Encoding.UTF8.GetBytes( s[ c ].ToString() );
+							foreach ( byte b in utf8 )
+							{
+								escapedString.AppendFormat( "\\x{0:X2}", b );
+							}
+							break;
+					}
+				}
+			}
+			escapedString.Append( s, start, s.Length - start );
+			escapedString.Append( "\"" );
+			return escapedString.ToString();
 		}
 		else
 		{
