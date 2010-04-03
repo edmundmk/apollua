@@ -20,12 +20,11 @@ static class EntryPoint
 		}
 
 
-		LuaBytecode bytecode = new LuaBytecode();
 		using ( BinaryReader r = new BinaryReader( File.OpenRead( arguments[ 0 ] ) ) )
 		{
-			bytecode.Load( r );
+			LuaBytecode bytecode = LuaBytecode.Load( r );
+			bytecode.Disassemble( Console.Out );
 		}
-		bytecode.Disassemble( Console.Out );
 		
 
 		return 0;

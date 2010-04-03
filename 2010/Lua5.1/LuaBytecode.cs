@@ -41,6 +41,14 @@ public class LuaBytecode
 
 
 
+	// Constructor.
+
+	internal LuaBytecode()
+	{
+	}
+
+
+
 
 	// Serialization.
 
@@ -50,7 +58,7 @@ public class LuaBytecode
 	const sbyte LUA_TSTRING		= 4;
 
 
-	public void Load( BinaryReader r )
+	public static LuaBytecode Load( BinaryReader r )
 	{
 		// Header.
 		CheckSByte( r, 0x1B );	// <esc>
@@ -68,11 +76,13 @@ public class LuaBytecode
 
 
 		// Function.
-		LoadFunction( r );
+		LuaBytecode result = new LuaBytecode();
+		result.LoadPrototype( r );
+		return result;
 	}
 
 
-	void LoadFunction( BinaryReader r )
+	void LoadPrototype( BinaryReader r )
 	{
 		// Function information.
 		DebugName		= ReadString( r );
@@ -137,7 +147,7 @@ public class LuaBytecode
 		for ( int prototype = 0; prototype < prototypesLength; ++prototype )
 		{
 			Prototypes[ prototype ] = new LuaBytecode();
-			Prototypes[ prototype ].LoadFunction( r );
+			Prototypes[ prototype ].LoadPrototype( r );
 		}
 
 
@@ -166,7 +176,7 @@ public class LuaBytecode
 	}
 
 
-	void CheckSByte( BinaryReader r, sbyte b )
+	static void CheckSByte( BinaryReader r, sbyte b )
 	{
 		if ( r.ReadSByte() != b )
 		{
@@ -174,7 +184,8 @@ public class LuaBytecode
 		}
 	}
 
-	string ReadString( BinaryReader r )
+
+	static string ReadString( BinaryReader r )
 	{
 		int length = r.ReadInt32();
 		if ( length > 0 )
