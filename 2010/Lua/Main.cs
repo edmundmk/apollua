@@ -19,13 +19,24 @@ static class EntryPoint
 			return 1;
 		}
 
-
-		using ( BinaryReader r = new BinaryReader( File.OpenRead( arguments[ 0 ] ) ) )
-		{
-			LuaPrototype prototype = LuaPrototype.Load( r );
-			prototype.Disassemble( Console.Out );
-		}
 		
+		try
+		{
+			LuaPrototype prototype;
+			using ( BinaryReader r = new BinaryReader( File.OpenRead( arguments[ 0 ] ) ) )
+			{
+				prototype = LuaPrototype.Load( r );
+			}
+			prototype.Disassemble( Console.Out );
+			LuaFunction function = new LuaFunction( prototype );
+			Action action = function.MakeDelegate< Action >();
+			action();
+		}
+		catch ( Exception e )
+		{
+			Console.Error.WriteLine( e.ToString() );
+			return 1;
+		}
 
 		return 0;
 	}

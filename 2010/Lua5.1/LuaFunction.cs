@@ -23,10 +23,21 @@ public sealed class LuaFunction
 	UpVal[]			upVals;
 	LuaPrototype	prototype;
 
+
 	public LuaFunction( LuaPrototype p )
+		:	this( p, null )
+	{
+	}
+
+	public LuaFunction( LuaPrototype p, LuaTable environment )
 	{
 		upVals = new UpVal[ p.UpValCount ];
 		prototype = p;
+
+		if ( environment != null )
+			Environment = environment;
+		else
+			Environment = LuaThread.CurrentThread.Environment;
 	}
 
 	
@@ -52,25 +63,74 @@ public sealed class LuaFunction
 
 	// Function interface.
 
-	internal override void Call( LuaThread thread, int frameBase, int argumentCount, int resultCount )
-	{
-		throw new NotSupportedException();
-	}
-
-	internal override void Resume( LuaThread t )
-	{
-		throw new NotSupportedException();
-	}
-	
-
 	static readonly LuaValue zero = 0;
 
+
+	internal override void Call( LuaThread thread, int frameBase, int argumentCount, int resultCount )
+	{
+		/*	frameBase		-->	Function
+				^				argument
+			argumentCount		argument
+				v				argument
+		*/
+
+		int fp = frameBase;
+
+		if ( Prototype.IsVararg && argumentCount > Prototype.ParameterCount )
+		{
+			/*	frameBase		-->	Function
+					^				null
+				argumentCount		null
+					v				argument (vararg)
+				framePointer	--> argument
+									argument
+			*/
+
+			fp = frameBase + 1 + argumentCount;
+			thread.StackWatermark( fp + prototype.StackSize );
+
+			for ( int argument = 0; argument < argumentCount; ++argument )
+			{
+				thread.Stack[ fp + argument ] = thread.Stack[ frameBase + 1 + argument ];
+				thread.Stack[ frameBase + 1 + argument ] = null;
+			}
+		}
+		else
+		{
+			fp = frameBase + 1;
+			thread.StackWatermark( fp + prototype.StackSize );
+		}
+
+		Dispatch( thread, frameBase, resultCount, fp, 0 );
+	}
+
+	
+	internal override void Resume( LuaThread t )
+	{
+		throw new NotImplementedException();
+	}
+	
+	
 	void Dispatch( LuaThread thread, int frameBase, int resultCount, int fp, int ip )
 	{
 		LuaValue[] stack = thread.Stack;
 		
+		try
+		{
+
 		while ( true )
 		{
+			// Suspend coroutine.
+
+			if ( thread.UnwoundFrames.Count > 0 )
+			{
+				thread.UnwoundFrames.Add( new Frame( frameBase, resultCount, fp, ip ) );
+				return;
+			}
+
+
+			// Dispatch instructions.
+	
 			Instruction i = prototype.Instructions[ ip++ ];
 
 			switch ( i.Opcode )
@@ -402,6 +462,12 @@ public sealed class LuaFunction
 				LuaValue function = stack[ fp + i.A ];
 				function.Call( thread, fp + i.A, callArgumentCount, i.C - 1 );
 
+				if ( thread.UnwoundFrames.Count > 0 )
+				{
+					thread.UnwoundFrames.Add( new Frame( frameBase, resultCount, fp, ip ) );
+					return;
+				}
+
 				if ( i.C != 0 )
 				{
 					thread.StackWatermark( fp + prototype.StackSize );
@@ -507,6 +573,7 @@ public sealed class LuaFunction
 					stack[ fp + i.A + 3 ] = index;
 					ip += i.sBx;
 				}
+
 				continue;
 			}
 
@@ -631,8 +698,7 @@ public sealed class LuaFunction
 			case Opcode.Closure:
 			{
 				// R( A ) := function closure from P( Bx )
-				LuaFunction function = new LuaFunction( prototype.Prototypes[ i.Bx ] );
-				function.Environment = Environment;
+				LuaFunction function = new LuaFunction( prototype.Prototypes[ i.Bx ], Environment );
 				stack[ fp + i.A ] = function;
 				
 				// followed by upval initialization with Move or GetUpVal
@@ -684,6 +750,7 @@ public sealed class LuaFunction
 					copyCount = varargCount;
 					thread.Top = fp + i.A + copyCount - 1;
 					thread.StackWatermark( Math.Max( fp + prototype.StackSize, thread.Top + 1 ) );
+					stack = thread.Stack;
 				}
 
 				// Copy into correct position.
@@ -710,6 +777,14 @@ public sealed class LuaFunction
 			}
 
 		}
+
+		}
+		catch ( Exception e )
+		{
+			thread.UnwoundFrames.Add( new Frame( frameBase, resultCount, fp, ip ) );
+			throw e;
+		}
+
 	}
 
 

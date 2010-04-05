@@ -52,17 +52,21 @@ public sealed class LuaThread
 
 	internal LuaValue[]		Stack;
 	internal int			Top;
-	internal List< Frame >	SuspendedFrames;
+	internal List< Frame >	UnwoundFrames;
 	List< UpVal >			openUpVals;
 	int						watermark;
 	
 	public LuaThread()
 	{
+		// Thread state.
 		Stack			= new LuaValue[ 64 ];
 		Top				= -1;
-		SuspendedFrames	= new List< Frame >();
+		UnwoundFrames	= new List< Frame >();
 		openUpVals		= new List< UpVal >();
 		watermark		= 0;
+		
+		// Environment.
+		Environment		= new LuaTable();
 	}
 		
 
@@ -147,6 +151,38 @@ public sealed class LuaThread
 
 		watermark = newWatermark;
 	}	
+
+
+
+	// Interop.
+
+	public int BeginCall( LuaValue function, int argumentCount )
+	{
+		int frameBase = watermark;
+		StackWatermark( frameBase + 1 + argumentCount );
+		Stack[ frameBase ] = function;
+		return frameBase;
+	}
+
+	public void CallArgument( int frameBase, int argument, LuaValue value )
+	{
+		Stack[ frameBase + 1 + argument ] = value;
+	}
+
+	public void Call( int frameBase, int resultCount )
+	{
+		Stack[ frameBase ].Call( this, frameBase, watermark - frameBase - 1, resultCount );
+	}
+
+	public LuaValue CallResult( int frameBase, int result )
+	{
+		return Stack[ frameBase + result ];
+	}
+
+	public void EndCall( int frameBase )
+	{
+		StackWatermark( frameBase );
+	}
 
 }
 

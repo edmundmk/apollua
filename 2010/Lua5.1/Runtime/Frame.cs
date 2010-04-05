@@ -17,16 +17,20 @@ namespace Lua.Runtime
 
 struct Frame
 {
+	
 	public int FrameBase;
 	public int ResultCount;
 	public int FramePointer;
 	public int InstructionPointer;
 
-	
 
-	
-
-
+	public Frame( int frameBase, int resultCount, int fp, int ip )
+	{
+		FrameBase			= frameBase;
+		ResultCount			= resultCount;
+		FramePointer		= fp;
+		InstructionPointer	= ip;
+	}
 
 }
 

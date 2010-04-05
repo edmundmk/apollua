@@ -5,7 +5,9 @@
 
 
 using System;
+using System.Reflection;
 using Lua.Runtime;
+using Lua.Interop;
 
 
 namespace Lua
@@ -111,13 +113,239 @@ public abstract class LuaValue
 
 	// Function interface.
 
-	internal virtual void				Call( LuaThread t, int f, int a, int r )	{ throw new NotSupportedException(); }
-	internal virtual void				Resume( LuaThread t )						{ throw new NotSupportedException(); }
-	internal virtual Delegate			MakeDelegate( Type delegateType )			{ throw new NotSupportedException(); }
+	internal virtual void Call( LuaThread thread, int frameBase, int argumentCount, int resultCount )
+	{
+		MetaCall( this, thread, frameBase, argumentCount, resultCount );
+	}
 	
-	internal virtual LuaValue			Call( LuaValue a )							{ throw new NotSupportedException(); }
-	internal virtual LuaValue			Call( LuaValue a, LuaValue b )				{ throw new NotSupportedException(); }
-	internal virtual LuaValue			Call( LuaValue a, LuaValue b, LuaValue c )	{ throw new NotSupportedException(); }
+	internal virtual void Resume( LuaThread thread )
+	{
+		throw new NotSupportedException();
+	}
+		
+	internal virtual LuaValue Call( LuaValue a )
+	{
+		LuaThread thread = LuaThread.CurrentThread;
+		int frameBase = thread.BeginCall( this, 1 );
+		thread.CallArgument( frameBase, 0, a );
+		thread.Call( frameBase, 1 );
+		LuaValue result = thread.CallResult( frameBase, 0 );
+		thread.EndCall( frameBase );
+		return result;
+	}
+
+	internal virtual LuaValue Call( LuaValue a, LuaValue b )
+	{
+		LuaThread thread = LuaThread.CurrentThread;
+		int frameBase = thread.BeginCall( this, 2 );
+		thread.CallArgument( frameBase, 0, a );
+		thread.CallArgument( frameBase, 1, b );
+		thread.Call( frameBase, 1 );
+		LuaValue result = thread.CallResult( frameBase, 0 );
+		thread.EndCall( frameBase );
+		return result;
+	}
+
+	internal virtual LuaValue Call( LuaValue a, LuaValue b, LuaValue c )
+	{
+		LuaThread thread = LuaThread.CurrentThread;
+		int frameBase = thread.BeginCall( this, 3 );
+		thread.CallArgument( frameBase, 0, a );
+		thread.CallArgument( frameBase, 1, a );
+		thread.CallArgument( frameBase, 2, a );
+		thread.Call( frameBase, 1 );
+		LuaValue result = thread.CallResult( frameBase, 0 );
+		thread.EndCall( frameBase );
+		return result;
+	}
+
+	internal virtual Delegate MakeDelegate( Type delegateType )
+	{
+		MethodInfo signature = delegateType.GetMethod( "Invoke" );
+		MethodInfo callMethod = InteropHelpers.BindDelegateSignature( signature, callActionTable, callFuncTable );
+		return Delegate.CreateDelegate( delegateType, this, callMethod );
+	}
+
+
+	void CallAction()
+	{
+		LuaThread thread = LuaThread.CurrentThread;
+		try
+		{
+			int frameBase = thread.BeginCall( this, 0 );
+			thread.Call( frameBase, 0 );
+			thread.EndCall( frameBase );
+		}
+		catch ( Exception e )
+		{
+			throw new LuaError( thread, e );
+		}
+	}
+
+	void CallAction< T >( T a )
+	{
+		LuaThread thread = LuaThread.CurrentThread;
+		try
+		{
+			int frameBase = thread.BeginCall( this, 1 );
+			thread.CallArgument( frameBase, 0, InteropHelpers.Box( a ) );
+			thread.Call( frameBase, 0 );
+			thread.EndCall( frameBase );
+		}
+		catch ( Exception e )
+		{
+			throw new LuaError( thread, e );
+		}
+	}
+
+	void CallAction< T1, T2 >( T1 a, T2 b )
+	{
+		LuaThread thread = LuaThread.CurrentThread;
+		try
+		{
+			int frameBase = thread.BeginCall( this, 2 );
+			thread.CallArgument( frameBase, 0, InteropHelpers.Box( a ) );
+			thread.CallArgument( frameBase, 1, InteropHelpers.Box( b ) );
+			thread.Call( frameBase, 0 );
+			thread.EndCall( frameBase );
+		}
+		catch ( Exception e )
+		{
+			throw new LuaError( thread, e );
+		}
+	}
+
+	void CallAction< T1, T2, T3 >( T1 a, T2 b, T3 c )
+	{
+		LuaThread thread = LuaThread.CurrentThread;
+		try
+		{
+			int frameBase = thread.BeginCall( this, 3 );
+			thread.CallArgument( frameBase, 0, InteropHelpers.Box( a ) );
+			thread.CallArgument( frameBase, 1, InteropHelpers.Box( b ) );
+			thread.CallArgument( frameBase, 2, InteropHelpers.Box( c ) );
+			thread.Call( frameBase, 0 );
+			thread.EndCall( frameBase );
+		}
+		catch ( Exception e )
+		{
+			throw new LuaError( thread, e );
+		}
+	}
+
+	void CallAction< T1, T2, T3, T4 >( T1 a, T2 b, T3 c, T4 d )
+	{
+		LuaThread thread = LuaThread.CurrentThread;
+		try
+		{
+			int frameBase = thread.BeginCall( this, 4 );
+			thread.CallArgument( frameBase, 0, InteropHelpers.Box( a ) );
+			thread.CallArgument( frameBase, 1, InteropHelpers.Box( b ) );
+			thread.CallArgument( frameBase, 2, InteropHelpers.Box( c ) );
+			thread.CallArgument( frameBase, 3, InteropHelpers.Box( d ) );
+			thread.Call( frameBase, 0 );
+			thread.EndCall( frameBase );
+		}
+		catch ( Exception e )
+		{
+			throw new LuaError( thread, e );
+		}
+	}
+
+	TResult CallFunc< TResult >()
+	{
+		LuaThread thread = LuaThread.CurrentThread;
+		try
+		{
+			int frameBase = thread.BeginCall( this, 0 );
+			thread.Call( frameBase, 1 );
+			TResult result = InteropHelpers.Unbox< TResult >( thread.CallResult( frameBase, 0 ) );
+			thread.EndCall( frameBase );
+			return result;
+		}
+		catch ( Exception e )
+		{
+			throw new LuaError( thread, e );
+		}
+	}
+
+	TResult CallFunc< T, TResult >( T a )
+	{
+		LuaThread thread = LuaThread.CurrentThread;
+		try
+		{
+			int frameBase = thread.BeginCall( this, 1 );
+			thread.CallArgument( frameBase, 0, InteropHelpers.Box( a ) );
+			thread.Call( frameBase, 1 );
+			TResult result = InteropHelpers.Unbox< TResult >( thread.CallResult( frameBase, 0 ) );
+			thread.EndCall( frameBase );
+			return result;
+		}
+		catch ( Exception e )
+		{
+			throw new LuaError( thread, e );
+		}
+	}
+
+	TResult CallFunc< T1, T2, TResult >( T1 a, T2 b )
+	{
+		LuaThread thread = LuaThread.CurrentThread;
+		try
+		{
+			int frameBase = thread.BeginCall( this, 2 );
+			thread.CallArgument( frameBase, 0, InteropHelpers.Box( a ) );
+			thread.CallArgument( frameBase, 1, InteropHelpers.Box( b ) );
+			thread.Call( frameBase, 1 );
+			TResult result = InteropHelpers.Unbox< TResult >( thread.CallResult( frameBase, 0 ) );
+			thread.EndCall( frameBase );
+			return result;
+		}
+		catch ( Exception e )
+		{
+			throw new LuaError( thread, e );
+		}
+	}
+
+	TResult CallFunc< T1, T2, T3, TResult >( T1 a, T2 b, T3 c )
+	{
+		LuaThread thread = LuaThread.CurrentThread;
+		try
+		{
+			int frameBase = thread.BeginCall( this, 3 );
+			thread.CallArgument( frameBase, 0, InteropHelpers.Box( a ) );
+			thread.CallArgument( frameBase, 1, InteropHelpers.Box( b ) );
+			thread.CallArgument( frameBase, 2, InteropHelpers.Box( c ) );
+			thread.Call( frameBase, 1 );
+			TResult result = InteropHelpers.Unbox< TResult >( thread.CallResult( frameBase, 0 ) );
+			thread.EndCall( frameBase );
+			return result;
+		}
+		catch ( Exception e )
+		{
+			throw new LuaError( thread, e );
+		}
+	}
+
+	TResult CallFunc< T1, T2, T3, T4, TResult >( T1 a, T2 b, T3 c, T4 d )
+	{
+		LuaThread thread = LuaThread.CurrentThread;
+		try
+		{
+			int frameBase = thread.BeginCall( this, 4 );
+			thread.CallArgument( frameBase, 0, InteropHelpers.Box( a ) );
+			thread.CallArgument( frameBase, 1, InteropHelpers.Box( b ) );
+			thread.CallArgument( frameBase, 2, InteropHelpers.Box( c ) );
+			thread.CallArgument( frameBase, 3, InteropHelpers.Box( d ) );
+			thread.Call( frameBase, 1 );
+			TResult result = InteropHelpers.Unbox< TResult >( thread.CallResult( frameBase, 0 ) );
+			thread.EndCall( frameBase );
+			return result;
+		}
+		catch ( Exception e )
+		{
+			throw new LuaError( thread, e );
+		}
+	}
 
 
 	// Casts.
@@ -239,7 +467,7 @@ public abstract class LuaValue
 		{
 			return false;
 		}
-		if ( left.Equals( right ) )
+		if ( left.RawEquals( right ) )
 		{
 			return true;
 		}
@@ -327,6 +555,54 @@ public abstract class LuaValue
 		throw new NotSupportedException();
 	}
 
+
+	protected static void MetaCall( LuaValue function, LuaThread thread, int frameBase, int argumentCount, int resultCount )
+	{
+		LuaValue h = GetHandler( function, "__call" );
+		if ( h != null )
+		{
+			thread.StackWatermark( frameBase + 2 + argumentCount );
+			
+			for ( int p = argumentCount; p >= 0; --p )
+			{
+				thread.Stack[ frameBase + p + 1 ] = thread.Stack[ frameBase + p ];
+			}
+			thread.Stack[ frameBase ] = h;
+
+			h.Call( thread, frameBase, argumentCount + 1, resultCount );	
+			return;
+		}
+
+		throw new NotSupportedException();
+	}
+
+
+
+	// Interop bind tables.
+
+	static readonly MethodInfo[] callActionTable;
+	static readonly MethodInfo[] callFuncTable;
+
+	static LuaValue()
+	{
+		// Create bind tables.
+		callActionTable	= new MethodInfo[ 5 ];
+		callFuncTable	= new MethodInfo[ 5 ];
+
+		// Fill them with MethodInfos for our generic call entry points.
+		foreach ( MethodInfo methodInfo in typeof( LuaValue ).GetMethods( BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.NonPublic ) )
+		{
+			int typeParametersCount = methodInfo.IsGenericMethodDefinition ? methodInfo.GetGenericArguments().Length : 0;
+			if ( methodInfo.Name == "CallAction" )
+			{
+				callActionTable[ typeParametersCount ] = methodInfo;
+			}
+			else if ( methodInfo.Name == "CallFunc" )
+			{
+				callFuncTable[ typeParametersCount - 1 ] = methodInfo;
+			}
+		}
+	}
 
 
 }
