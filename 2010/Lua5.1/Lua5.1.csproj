@@ -42,7 +42,15 @@
     <Compile Include="Bytecode\SourceLocation.cs" />
     <Compile Include="Bytecode\SourceSpan.cs" />
     <Compile Include="Bytecode\Symbol.cs" />
+    <Compile Include="Interop\LuaInteropDelegate.cs" />
     <Compile Include="Interop\InteropHelpers.cs" />
+    <Compile Include="Interop\LuaInteropSignature.cs" />
+    <Compile Include="Interop\LuaInterop.cs" />
+    <Compile Include="Library\basic.cs" />
+    <Compile Include="Library\io.cs" />
+    <Compile Include="Library\io.file.cs" />
+    <Compile Include="Library\math.cs" />
+    <Compile Include="Library\string.cs" />
     <Compile Include="LuaError.cs" />
     <Compile Include="LuaFunction.cs" />
     <Compile Include="LuaPrototype.cs" />
@@ -58,9 +66,6 @@
     <Compile Include="Runtime\UpVal.cs" />
     <Compile Include="Utility\NextPow2.cs" />
     <Compile Include="Utility\Pow.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Library\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

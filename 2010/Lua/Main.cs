@@ -27,7 +27,6 @@ static class EntryPoint
 			{
 				prototype = LuaPrototype.Load( r );
 			}
-			prototype.Disassemble( Console.Out );
 			LuaFunction function = new LuaFunction( prototype );
 			Action action = function.MakeDelegate< Action >();
 			action();

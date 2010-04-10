@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using Lua.Runtime;
 using Lua.Utility;
+using Lua.Library;
 
 
 namespace Lua
@@ -66,7 +67,10 @@ public sealed class LuaThread
 		watermark		= 0;
 		
 		// Environment.
-		Environment		= new LuaTable();
+		Environment				= basic.CreateTable();
+		Environment[ "io" ]		= io.CreateTable();
+		Environment[ "math" ]	= math.CreateTable();
+		Environment[ "string" ]	= @string.CreateTable();
 	}
 		
 
@@ -156,7 +160,7 @@ public sealed class LuaThread
 
 	// Interop.
 
-	public int BeginCall( LuaValue function, int argumentCount )
+	internal int BeginCall( LuaValue function, int argumentCount )
 	{
 		int frameBase = watermark;
 		StackWatermark( frameBase + 1 + argumentCount );
@@ -164,22 +168,22 @@ public sealed class LuaThread
 		return frameBase;
 	}
 
-	public void CallArgument( int frameBase, int argument, LuaValue value )
+	internal void CallArgument( int frameBase, int argument, LuaValue value )
 	{
 		Stack[ frameBase + 1 + argument ] = value;
 	}
 
-	public void Call( int frameBase, int resultCount )
+	internal void Call( int frameBase, int resultCount )
 	{
 		Stack[ frameBase ].Call( this, frameBase, watermark - frameBase - 1, resultCount );
 	}
 
-	public LuaValue CallResult( int frameBase, int result )
+	internal LuaValue CallResult( int frameBase, int result )
 	{
 		return Stack[ frameBase + result ];
 	}
 
-	public void EndCall( int frameBase )
+	internal void EndCall( int frameBase )
 	{
 		StackWatermark( frameBase );
 	}
