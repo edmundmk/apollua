@@ -139,7 +139,7 @@ public static partial class @string
 
 			case 'o':
 			{
-				throw new NotImplementedException();
+				throw new NotImplementedException( "%o format conversion specifier not implemented." );
 			}
 
 			case 'u':
@@ -171,20 +171,27 @@ public static partial class @string
 			case 'f': case 'F':
 			{
 				double v = lua.Argument< double >( argument++ );
-				string value = ConvertInfinityOrNaN( v, c );
-				if ( value == null )
+
+				if ( precision == -1 )
+					precision = 6;
+				string value = v.ToString( "F" + precision.ToString() );
+
+				if ( ! Double.IsInfinity( v ) && ! ! Double.IsNaN( v ) )
 				{
-					if ( precision == -1 )
-						precision = 6;
-					value = v.ToString( "F" + precision.ToString() );
+					// Add decimal point if forced.
 					if ( bAlternateForm && precision == 0 )
 						value += ".";
+
+					// Print.
+					value = AddSign( value, bSignPlus, bSignSpace );
+					if ( bPadWithZeroes )
+					{
+						AppendPadded( s, value, fieldWidth );
+						break;
+					}
 				}
-				value = AddSign( value, bSignPlus, bSignSpace );
-				if ( bPadWithZeroes )
-					AppendPadded( s, value, fieldWidth );
-				else
-					AppendJustified( s, value, fieldWidth, bLeftJustify );
+
+				AppendJustified( s, value, fieldWidth, bLeftJustify );
 				break;
 			}
 
@@ -193,13 +200,13 @@ public static partial class @string
 			{
 				string f = c.ToString();
 				double v = lua.Argument< double >( argument++ );
-				string value = ConvertInfinityOrNaN( v, c );
-				if ( value == null )
-				{
-					if ( precision == -1 )
-						precision = 6;
-					value = v.ToString( f + precision.ToString() );
 
+				if ( precision == -1 )
+					precision = 6;
+				string value = v.ToString( f + precision.ToString() );
+
+				if ( ! Double.IsInfinity( v ) && ! Double.IsNaN( v ) )
+				{
 					// Add decimal point if forced.
 					if ( bAlternateForm )
 					{
@@ -209,12 +216,17 @@ public static partial class @string
 						if ( value.IndexOf( NumberFormatInfo.CurrentInfo.NumberDecimalSeparator ) == -1 )
 							value = value.Insert( e, NumberFormatInfo.CurrentInfo.NumberDecimalSeparator );
 					}
+
+					// Print.
+					value = AddSign( value, bSignPlus, bSignSpace );
+					if ( bPadWithZeroes )
+					{
+						AppendPadded( s, value, fieldWidth );
+						break;
+					}
 				}
-				value = AddSign( value, bSignPlus, bSignSpace );
-				if ( bPadWithZeroes )
-					AppendPadded( s, value, fieldWidth );
-				else
-					AppendJustified( s, value, fieldWidth, bLeftJustify );
+
+				AppendJustified( s, value, fieldWidth, bLeftJustify );
 				break;
 			}
 
@@ -223,15 +235,15 @@ public static partial class @string
 			{
 				string f = c.ToString();
 				double v = lua.Argument< double >( argument++ );
-				string value = ConvertInfinityOrNaN( v, c );
-				if ( value == null )
-				{
-					if ( precision == -1 )
-						precision = 6;
-					if ( precision == 0 )
-						precision = 1;
-					value = v.ToString( f + precision.ToString() );
 
+				if ( precision == -1 )
+					precision = 6;
+				if ( precision == 0 )
+					precision = 1;
+				string value = v.ToString( f + precision.ToString() );
+				
+				if ( ! Double.IsInfinity( v ) && ! Double.IsNaN( v ) )
+				{
 					// Add in decimal point and trailing zeroes if alternate form.
 					if ( bAlternateForm )
 					{
@@ -252,18 +264,23 @@ public static partial class @string
 							e += 1;
 						}
 					}
+
+					// Print.
+					value = AddSign( value, bSignPlus, bSignSpace );
+					if ( bPadWithZeroes )
+					{
+						AppendPadded( s, value, fieldWidth );
+						break;
+					}
 				}
-				value = AddSign( value, bSignPlus, bSignSpace );
-				if ( bPadWithZeroes )
-					AppendPadded( s, value, fieldWidth );
-				else
-					AppendJustified( s, value, fieldWidth, bLeftJustify );
+
+				AppendJustified( s, value, fieldWidth, bLeftJustify );
 				break;
 			}
 
 			case 'a': case 'A':
 			{
-				throw new NotImplementedException();
+				throw new NotImplementedException( "%" + c.ToString() + " format conversion specifier not supported." );
 			}
 
 
@@ -332,7 +349,7 @@ public static partial class @string
 			// Invalid conversion.
 
 			default:
-				throw new FormatException( "Invalid format conversion specifier." );
+				throw new FormatException( "Invalid format conversion specifier '%" + c.ToString() + "'." );
 			}
 
 			
@@ -365,57 +382,7 @@ public static partial class @string
 		return value;
 	}
 
-
-	static string ConvertInfinityOrNaN( double v, char c )
-	{
-		if ( Char.IsUpper( c ) )
-		{
-			if ( Double.IsPositiveInfinity( v ) )
-				return "INFINITY";
-			else if ( Double.IsNegativeInfinity( v ) )
-				return NumberFormatInfo.CurrentInfo.NegativeSign + "INFINITY";
-			else if ( Double.IsNaN( v ) )
-				return "NAN";
-		}
-		else
-		{
-			if ( Double.IsPositiveInfinity( v ) )
-				return "infinity";
-			else if ( Double.IsNegativeInfinity( v ) )
-				return NumberFormatInfo.CurrentInfo.NegativeSign + "infinity";
-			else if ( Double.IsNaN( v ) )
-				return "nan";
-		}
-
-		return null;
-	}
-
-
-	static void AppendJustified( StringBuilder s, string value, int fieldWidth, bool bLeftJustify )
-	{
-		// Don't pad values that are larger than their fields.
-		if ( value.Length >= fieldWidth )
-		{
-			s.Append( value );
-			return;
-		}
-		
-		// Pad with spaces.
-		if ( bLeftJustify )
-		{
-			s.Append( value );
-			for ( int i = value.Length; i < fieldWidth; ++i )
-				s.Append( ' ' );
-		}
-		else
-		{
-			for ( int i = value.Length; i < fieldWidth; ++i )
-				s.Append( ' ' );
-			s.Append( value );
-		}
-	}
-
-
+	
 	static void AppendPadded( StringBuilder s, string value, int fieldWidth )
 	{
 		// Don't pad values that are larger than their fields.
@@ -450,6 +417,34 @@ public static partial class @string
 		// Add value.
 		s.Append( value, start, value.Length - start );
 	}
+
+	
+	static void AppendJustified( StringBuilder s, string value, int fieldWidth, bool bLeftJustify )
+	{
+		// Don't pad values that are larger than their fields.
+		if ( value.Length >= fieldWidth )
+		{
+			s.Append( value );
+			return;
+		}
+		
+		// Pad with spaces.
+		if ( bLeftJustify )
+		{
+			s.Append( value );
+			for ( int i = value.Length; i < fieldWidth; ++i )
+				s.Append( ' ' );
+		}
+		else
+		{
+			for ( int i = value.Length; i < fieldWidth; ++i )
+				s.Append( ' ' );
+			s.Append( value );
+		}
+	}
+
+
+
 
 
 }
