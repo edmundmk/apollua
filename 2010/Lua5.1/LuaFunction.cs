@@ -588,11 +588,11 @@ public sealed class LuaFunction
 				{
 					throw new InvalidOperationException( "'for' initial value must be a number." );
 				}
-				if ( ! index.TryToNumberValue( out limit ) )
+				if ( ! limit.TryToNumberValue( out limit ) )
 				{
 					throw new InvalidOperationException( "'for' limit must be a number." );
 				}
-				if ( ! index.TryToNumberValue( out step ) )
+				if ( ! step.TryToNumberValue( out step ) )
 				{
 					throw new InvalidOperationException( "'for' step must be a number." );
 				}
