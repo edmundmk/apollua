@@ -171,7 +171,7 @@ public static partial class @string
 			case 'f': case 'F':
 			{
 				double v = lua.Argument< double >( argument++ );
-				string value = ConvertInfinityOrNan( v, c );
+				string value = ConvertInfinityOrNaN( v, c );
 				if ( value == null )
 				{
 					if ( precision == -1 )
@@ -193,16 +193,12 @@ public static partial class @string
 			{
 				string f = c.ToString();
 				double v = lua.Argument< double >( argument++ );
-				string value = ConvertInfinityOrNan( v, c );
+				string value = ConvertInfinityOrNaN( v, c );
 				if ( value == null )
 				{
 					if ( precision == -1 )
 						precision = 6;
 					value = v.ToString( f + precision.ToString() );
-
-					// Remove extra exponent digit if it is 0.
-					value = value.Replace( f + NumberFormatInfo.CurrentInfo.PositiveSign + "0", f + NumberFormatInfo.CurrentInfo.PositiveSign );
-					value = value.Replace( f + NumberFormatInfo.CurrentInfo.NegativeSign + "0", f + NumberFormatInfo.CurrentInfo.NegativeSign );
 
 					// Add decimal point if forced.
 					if ( bAlternateForm )
@@ -227,7 +223,7 @@ public static partial class @string
 			{
 				string f = c.ToString();
 				double v = lua.Argument< double >( argument++ );
-				string value = ConvertInfinityOrNan( v, c );
+				string value = ConvertInfinityOrNaN( v, c );
 				if ( value == null )
 				{
 					if ( precision == -1 )
@@ -370,7 +366,7 @@ public static partial class @string
 	}
 
 
-	static string ConvertInfinityOrNan( double v, char c )
+	static string ConvertInfinityOrNaN( double v, char c )
 	{
 		if ( Char.IsUpper( c ) )
 		{

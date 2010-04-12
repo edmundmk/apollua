@@ -89,7 +89,7 @@ public static partial class io
 				if ( type == "string" )
 					writer.Write( lua.Argument< string >( argument ) );
 				else if ( type == "number" )
-					writer.Write( lua.Argument< double >( argument ) );
+					writer.Write( lua.Argument< double >( argument ).ToString( "G14" ) );
 				else
 					throw new ArgumentException( "write() only accepts strings or numbers as arguments." );
 			}
