@@ -18,11 +18,36 @@ public static partial class basic
 	public static LuaTable CreateTable()
 	{
 		LuaTable basic = new LuaTable();
-		basic[ "print" ]	= new LuaInteropDelegate( print );
-		basic[ "tostring" ]	= new LuaInteropDelegateFunc< LuaValue, string >( tostring );
+		basic[ "getfenv" ]		= new LuaInteropDelegateFunc< LuaValue, LuaTable >( getfenv );
+		basic[ "print" ]		= new LuaInteropDelegate( print );
+		basic[ "setmetatable" ]	= new LuaInteropDelegateFunc< LuaTable, LuaTable, LuaTable >( setmetatable );
+		basic[ "tostring" ]		= new LuaInteropDelegateFunc< LuaValue, string >( tostring );
+		basic[ "type" ]			= new LuaInteropDelegateFunc< LuaValue, string >( type );
 		return basic;
 	}
 
+
+	public static LuaTable getfenv( LuaValue f )
+	{
+		LuaFunction function = f as LuaFunction;
+		if ( function != null )
+		{
+			return function.Environment;
+		}
+		int level = 1;
+		if ( f != null )
+		{
+			level = (int)f;
+		}
+		if ( level > 0 )
+		{
+			return LuaThread.CurrentThread.StackLevels[ LuaThread.CurrentThread.StackLevels.Count - level ].Environment;
+		}
+		else
+		{
+			return LuaThread.CurrentThread.Environment;
+		}
+	}
 
 
 	public static void print( LuaInterop lua )
@@ -39,6 +64,13 @@ public static partial class basic
 	}
 
 
+	public static LuaTable setmetatable( LuaTable table, LuaTable metatable )
+	{
+		table.Metatable = metatable;
+		return table;
+	}
+
+
 	public static string tostring( LuaValue v )
 	{
 		LuaValue handler = LuaValue.GetHandler( v, "__tostring" );
@@ -47,13 +79,18 @@ public static partial class basic
 			v = handler.Call( v );
 		}
 		if ( v != null )
-		{
 			return v.ToString();
-		}
 		else
-		{
 			return "nil";
-		}
+	}
+
+
+	public static string type( LuaValue v )
+	{
+		if ( v != null )
+			return v.LuaType;
+		else
+			return "nil";
 	}
 
 

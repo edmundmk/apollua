@@ -37,6 +37,9 @@ public static class InteropHelpers
 		else if ( typeof( T ) == typeof( decimal ) )	{ return (T)(object)(decimal)v; }
 		else if ( typeof( T ) == typeof( string ) )		{ return (T)(object)(string)v; }
 
+		else if ( typeof( T ).IsSubclassOf( typeof( LuaValue ) ) )
+			return (T)(object)v;
+
 		throw new InvalidCastException();
 	}
 
@@ -58,6 +61,9 @@ public static class InteropHelpers
 		else if ( typeof( T ) == typeof( double ) )		{ return (LuaValue)(double)(object)v; }
 		else if ( typeof( T ) == typeof( decimal ) )	{ return (LuaValue)(decimal)(object)v; }
 		else if ( typeof( T ) == typeof( string ) )		{ return (LuaValue)(string)(object)v; }
+
+		else if ( typeof( T ).IsSubclassOf( typeof( LuaValue ) ) )
+			return (LuaValue)(object)v;
 
 		throw new InvalidCastException();
 	}

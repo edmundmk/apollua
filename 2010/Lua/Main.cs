@@ -13,7 +13,7 @@ static class EntryPoint
 
 	public static int Main( string[] arguments )
 	{
-		if ( arguments.Length != 1 )
+		if ( arguments.Length < 1 )
 		{
 			Console.Out.WriteLine( "Usage: Lua <chunk>.luac" );
 			return 1;

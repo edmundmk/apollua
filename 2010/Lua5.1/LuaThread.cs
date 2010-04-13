@@ -51,11 +51,12 @@ public sealed class LuaThread
 
 	// Thread state.
 
-	internal LuaValue[]		Stack;
-	internal int			Top;
-	internal List< Frame >	UnwoundFrames;
-	List< UpVal >			openUpVals;
-	int						watermark;
+	internal LuaValue[]				Stack;
+	internal int					Top;
+	internal List< Frame >			UnwoundFrames;
+	internal List< LuaFunction >	StackLevels;
+	List< UpVal >					openUpVals;
+	int								watermark;
 	
 	public LuaThread()
 	{
@@ -63,6 +64,7 @@ public sealed class LuaThread
 		Stack			= new LuaValue[ 64 ];
 		Top				= -1;
 		UnwoundFrames	= new List< Frame >();
+		StackLevels		= new List< LuaFunction >();
 		openUpVals		= new List< UpVal >();
 		watermark		= 0;
 		
@@ -70,6 +72,7 @@ public sealed class LuaThread
 		Environment				= basic.CreateTable();
 		Environment[ "io" ]		= io.CreateTable();
 		Environment[ "math" ]	= math.CreateTable();
+		Environment[ "os" ]		= os.CreateTable();
 		Environment[ "string" ]	= @string.CreateTable();
 	}
 		
@@ -147,7 +150,7 @@ public sealed class LuaThread
 			// Clear the stack.
 			Array.Clear( Stack, newWatermark, watermark - newWatermark );
 		}
-		else if ( watermark > Stack.Length )
+		else if ( newWatermark > Stack.Length )
 		{
 			// Grow the stack.
 			Array.Resize( ref Stack, MathEx.NextPow2( newWatermark ) );

@@ -101,6 +101,7 @@ public sealed class LuaFunction
 			thread.StackWatermark( fp + prototype.StackSize );
 		}
 
+		thread.StackLevels.Add( this );
 		Dispatch( thread, frameBase, resultCount, fp, 0 );
 	}
 
@@ -503,6 +504,7 @@ public sealed class LuaFunction
 					stack[ frameBase + 1 + argument ] = stack[ fp + i.A + 1 + argument ];
 				}
 
+				thread.StackLevels.RemoveAt( thread.StackLevels.Count - 1 );
 				function.Call( thread, frameBase, callArgumentCount, resultCount );
 
 				return;
@@ -546,6 +548,7 @@ public sealed class LuaFunction
 					stack[ frameBase + result ] = null;
 				}
 
+				thread.StackLevels.RemoveAt( thread.StackLevels.Count - 1 );
 				return;
 			}
 
