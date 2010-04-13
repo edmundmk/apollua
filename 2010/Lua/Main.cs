@@ -22,14 +22,32 @@ static class EntryPoint
 		
 		try
 		{
+
+			// Load .luac
 			LuaPrototype prototype;
 			using ( BinaryReader r = new BinaryReader( File.OpenRead( arguments[ 0 ] ) ) )
 			{
 				prototype = LuaPrototype.Load( r );
 			}
+
+
+			// Build arg table.
+			LuaTable arg = new LuaTable();
+			for ( int argument = 0; argument < arguments.Length; ++argument )
+			{
+				arg[ argument ] = arguments[ argument ];
+			}
+
+
+			// Modify environment.
+			LuaThread.CurrentThread.Environment[ "arg" ] = arg;
+
+
+			// Invoke script.
 			LuaFunction function = new LuaFunction( prototype );
 			Action action = function.MakeDelegate< Action >();
 			action();
+
 		}
 		catch ( Exception e )
 		{

@@ -398,13 +398,13 @@ public abstract class LuaValue
 
 	// Meta handlers.
 	
-	protected static LuaValue GetHandler( LuaValue o, LuaValue handler )
+	internal static LuaValue GetHandler( LuaValue o, LuaValue handler )
 	{
 		return o != null && o.Metatable != null ? o.Metatable[ handler ] : null;
 	}
 
 
-	protected static LuaValue MetaBinaryOp( LuaValue left, LuaValue right, LuaValue handler )
+	internal static LuaValue MetaBinaryOp( LuaValue left, LuaValue right, LuaValue handler )
 	{
 		LuaValue h = GetHandler( left, handler );
 		if ( h != null )
@@ -421,7 +421,7 @@ public abstract class LuaValue
 	}
 
 
-	protected static LuaValue MetaConcatenate( LuaValue left, LuaValue right )
+	internal static LuaValue MetaConcatenate( LuaValue left, LuaValue right )
 	{
 		if ( left.SupportsSimpleConcatenation() && right.SupportsSimpleConcatenation() )
 		{
@@ -434,7 +434,7 @@ public abstract class LuaValue
 	}
 
 
-	protected static LuaValue MetaUnaryOp( LuaValue operand, LuaValue handler )
+	internal static LuaValue MetaUnaryOp( LuaValue operand, LuaValue handler )
 	{
 		LuaValue h = GetHandler( operand, handler );
 		if ( h != null )
@@ -446,7 +446,7 @@ public abstract class LuaValue
 	}
 
 
-	protected static LuaValue GetComparisonHandler( LuaValue left, LuaValue right, LuaValue handler )
+	internal static LuaValue GetComparisonHandler( LuaValue left, LuaValue right, LuaValue handler )
 	{
 		if ( left != null && right != null && left.GetType() == right.GetType() )
 		{
@@ -461,7 +461,7 @@ public abstract class LuaValue
 	}
 
 
-	protected static bool MetaEquals( LuaValue left, LuaValue right )
+	internal static bool MetaEquals( LuaValue left, LuaValue right )
 	{
 		if ( left.LuaType != right.LuaType )
 		{
@@ -483,7 +483,7 @@ public abstract class LuaValue
 	}
 
 
-	protected static bool MetaLessThan( LuaValue left, LuaValue right )
+	internal static bool MetaLessThan( LuaValue left, LuaValue right )
 	{
 		LuaValue h = GetComparisonHandler( left, right, "__lt" );
 		if ( h != null )
@@ -496,7 +496,7 @@ public abstract class LuaValue
 	}
 
 
-	protected static bool MetaLessThanOrEquals( LuaValue left, LuaValue right )
+	internal static bool MetaLessThanOrEquals( LuaValue left, LuaValue right )
 	{
 		LuaValue h = GetComparisonHandler( left, right, "__le" );
 		if ( h != null )
@@ -516,7 +516,7 @@ public abstract class LuaValue
 	}
 
 
-	protected static LuaValue MetaIndex( LuaValue table, LuaValue key )
+	internal static LuaValue MetaIndex( LuaValue table, LuaValue key )
 	{
 		LuaValue h = GetHandler( table, "__index" );
 		if ( h != null )
@@ -535,7 +535,7 @@ public abstract class LuaValue
 	}
 	
 
-	protected static void MetaNewIndex( LuaValue table, LuaValue key, LuaValue value )
+	internal static void MetaNewIndex( LuaValue table, LuaValue key, LuaValue value )
 	{
 		LuaValue h = GetHandler( table, "__newindex" );
 		if ( h != null )
@@ -556,7 +556,7 @@ public abstract class LuaValue
 	}
 
 
-	protected static void MetaCall( LuaValue function, LuaThread thread, int frameBase, int argumentCount, int resultCount )
+	internal static void MetaCall( LuaValue function, LuaThread thread, int frameBase, int argumentCount, int resultCount )
 	{
 		LuaValue h = GetHandler( function, "__call" );
 		if ( h != null )

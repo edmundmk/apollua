@@ -29,7 +29,7 @@ public sealed class LuaThread
 	// Current thread.
 
 	[ThreadStatic] static LuaThread currentThread;
-	internal static LuaThread CurrentThread
+	public static LuaThread CurrentThread
 	{
 		get { if ( currentThread == null ) currentThread = new LuaThread(); return currentThread; }
 		set { currentThread = value; }
@@ -43,7 +43,7 @@ public sealed class LuaThread
 		get { return "thread"; }
 	}
 	
-	internal LuaTable Environment
+	public LuaTable Environment
 	{
 		get; set;
 	}

@@ -43,6 +43,13 @@ public struct LuaInterop
 			return "nil";
 	}
 
+	public LuaValue Argument( int argument )
+	{
+		if ( argument < argumentCount )
+			return thread.Stack[ frameBase + 1 + argument ];
+		else
+			return null;
+	}
 
 	public T Argument< T >( int argument )
 	{
@@ -59,6 +66,13 @@ public struct LuaInterop
 		EndReturn();
 	}
 	
+	public void Return( LuaValue result )
+	{
+		BeginReturn( 1 );
+		ReturnResult( 0, result );
+		EndReturn();
+	}
+
 	public void Return< T >( T result )
 	{
 		BeginReturn( 1 );
@@ -72,6 +86,14 @@ public struct LuaInterop
 		{
 			thread.Top = frameBase + returnResultCount - 1;
 			thread.StackWatermark( thread.Top + 1 );
+		}
+	}
+
+	public void ReturnResult( int result, LuaValue value )
+	{
+		if ( resultCount == -1 || result < resultCount )
+		{
+			thread.Stack[ frameBase + result ] = value;
 		}
 	}
 
