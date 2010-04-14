@@ -296,7 +296,8 @@ public sealed class LuaFunction
 			case Opcode.Not:
 			{
 				// R( A ) := not R( B )
-				stack[ fp + i.A ] = ! stack[ fp + i.B ].IsTrue();
+				LuaValue B = stack[ fp + i.B ];
+				stack[ fp + i.A ] = ( B == null || ! B.IsTrue() );
 				continue;
 			}
 
@@ -413,7 +414,8 @@ public sealed class LuaFunction
 			case Opcode.Test:
 			{
 				// if not ( R( A ) <=> C ) then skip associated jump
-				if ( stack[ fp + i.A ].IsTrue() != ( i.C != 0 ) )
+				LuaValue A = stack[ fp + i.A ];
+				if ( ( A != null && A.IsTrue() ) != ( i.C != 0 ) )
 				{
 					i = prototype.Instructions[ ip++ ];
 					ip += i.sBx;
@@ -428,7 +430,8 @@ public sealed class LuaFunction
 			case Opcode.TestSet:
 			{
 				// if ( R( B ) <=> C ) then R( A ) := R( B ) else skip associated jump
-				if ( stack[ fp + i.B ].IsTrue() != ( i.C != 0 ) )
+				LuaValue B = stack[ fp + i.B ];
+				if ( ( B != null && B.IsTrue() ) != ( i.C != 0 ) )
 				{
 					// Set.
 					stack[ fp + i.A ] = stack[ fp + i.B ];
@@ -640,7 +643,7 @@ public sealed class LuaFunction
 
 				// if Var_1 ~= nil then Control = Var_1 else skip associated jump
 				LuaValue var_1 = stack[ fp + i.A + 3 ];
-				if ( var_1.IsTrue() )
+				if ( var_1 != null && var_1.IsTrue() )
 				{
 					// Set control.
 					stack[ fp + i.A + 2 ] = var_1;
