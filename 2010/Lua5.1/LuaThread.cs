@@ -137,7 +137,6 @@ public sealed class LuaThread
 		}
 
 		openUpVals.RemoveRange( upvalIndex, openUpVals.Count - upvalIndex );
-		Array.Clear( Stack, stackIndex, watermark - stackIndex );
 	}
 
 

@@ -485,6 +485,9 @@ public sealed class LuaFunction
 			{
 				// return R( A )( R( A + 1 ), ... , R( A + B - 1 ) )
 
+				thread.CloseUpVals( fp );
+				thread.StackLevels.RemoveAt( thread.StackLevels.Count - 1 );
+
 				int callArgumentCount;
 				if ( i.B != 0 )
 				{
@@ -497,14 +500,13 @@ public sealed class LuaFunction
 				}
 
 				LuaValue function = stack[ fp + i.A ];
-				
+
 				stack[ frameBase ] = function;
 				for ( int argument = 0; argument < callArgumentCount; ++argument )
 				{
 					stack[ frameBase + 1 + argument ] = stack[ fp + i.A + 1 + argument ];
 				}
 
-				thread.StackLevels.RemoveAt( thread.StackLevels.Count - 1 );
 				function.Call( thread, frameBase, callArgumentCount, resultCount );
 
 				return;
@@ -513,6 +515,9 @@ public sealed class LuaFunction
 			case Opcode.Return:
 			{
 				// return R( A ), ... R( A + B - 2 )
+
+				thread.CloseUpVals( fp );
+				thread.StackLevels.RemoveAt( thread.StackLevels.Count - 1 );
 
 				// Find number of results we have.
 				int returnResultCount;
@@ -548,7 +553,6 @@ public sealed class LuaFunction
 					stack[ frameBase + result ] = null;
 				}
 
-				thread.StackLevels.RemoveAt( thread.StackLevels.Count - 1 );
 				return;
 			}
 

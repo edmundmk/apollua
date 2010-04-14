@@ -295,7 +295,7 @@ public sealed class LuaPrototype
 		// Function signature.
 
 		o.Write( "function " );
-		if ( DebugName != null )
+		if ( DebugName != null && DebugName != String.Empty )
 		{
 			o.Write( DebugName );
 		}
@@ -550,7 +550,10 @@ public sealed class LuaPrototype
 			return String.Format( "upval {0}", DebugUpValNames[ operand ] );
 
 		case Mode.P:
-			return String.Format( "function x{0:X}", Prototypes[ operand ].GetHashCode() );
+			if ( Prototypes[ operand ].DebugName != null && Prototypes[ operand ].DebugName != String.Empty )
+				return String.Format( "function {0}", Prototypes[ operand ].DebugName );
+			else
+				return String.Format( "function x{0:X}", Prototypes[ operand ].GetHashCode() );
 
 		case Mode.Integer:
 			return String.Format( "{0} ", operand );

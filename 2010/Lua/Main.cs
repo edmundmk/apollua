@@ -29,6 +29,7 @@ static class EntryPoint
 			{
 				prototype = LuaPrototype.Load( r );
 			}
+			//prototype.Disassemble( Console.Out );
 
 
 			// Build arg table.
