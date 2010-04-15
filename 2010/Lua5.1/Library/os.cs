@@ -5,6 +5,7 @@
 
 
 using System;
+using System.Diagnostics;
 using Lua.Interop;
 
 
@@ -18,10 +19,19 @@ public static partial class os
 	public static LuaTable CreateTable()
 	{
 		LuaTable os = new LuaTable();
+		os[ "clock" ]	= new LuaInteropDelegateFunc< double >( clock );
 		os[ "getenv" ]	= new LuaInteropDelegateFunc< string, string >( getenv );
 		return os;
 	}
 
+
+	static Stopwatch stopwatch = Stopwatch.StartNew();
+	
+
+	public static double clock()
+	{
+		return stopwatch.Elapsed.TotalSeconds;
+	}
 
 
 	public static string getenv( string varname )

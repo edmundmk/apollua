@@ -114,8 +114,6 @@ public sealed class LuaFunction
 	
 	void Dispatch( LuaThread thread, int frameBase, int resultCount, int fp, int ip )
 	{
-		LuaValue[] stack = thread.Stack;
-		
 		try
 		{
 
@@ -140,14 +138,14 @@ public sealed class LuaFunction
 			case Opcode.Move:
 			{
 				// R( A ) := R( B )
-				stack[ fp + i.A ] = stack[ fp + i.B ];
+				thread.Stack[ fp + i.A ] = thread.Stack[ fp + i.B ];
 				continue;
 			}
 
 			case Opcode.LoadK:
 			{
 				// R( A ) := K( Bx )
-				stack[ fp + i.A ] = K( i.Bx );
+				thread.Stack[ fp + i.A ] = K( i.Bx );
 				continue;
 			}
 
@@ -156,11 +154,11 @@ public sealed class LuaFunction
 				// R( A ) := (bool)B
 				if ( i.B != 0 )
 				{
-					stack[ fp + i.A ] = true;
+					thread.Stack[ fp + i.A ] = true;
 				}
 				else
 				{
-					stack[ fp + i.A ] = false;
+					thread.Stack[ fp + i.A ] = false;
 				}
 			
 				// if C skip next instruction
@@ -177,7 +175,7 @@ public sealed class LuaFunction
 				// R( A ) ... R( B ) := nil
 				for ( int r = i.A; r < i.B; ++r )
 				{
-					stack[ fp + r ] = null;
+					thread.Stack[ fp + r ] = null;
 				}
 				continue;
 			}
@@ -185,61 +183,61 @@ public sealed class LuaFunction
 			case Opcode.GetUpVal:
 			{
 				// R( A ) := U( B )
-				stack[ fp + i.A ] = upVals[ i.B ].Value;
+				thread.Stack[ fp + i.A ] = upVals[ i.B ].Value;
 				continue;
 			}
 
 			case Opcode.GetGlobal:
 			{
 				// R( A ) := G[ K( Bx ) ]
-				stack[ fp + i.A ] = Environment.Index( K( i.Bx ) );
+				thread.Stack[ fp + i.A ] = Environment.Index( K( i.Bx ) );
 				continue;
 			}
 
 			case Opcode.GetTable:
 			{
 				// R( A ) := R( B )[ RK( C ) ]
-				stack[ fp + i.A ] = stack[ fp + i.B ].Index( RK( stack, fp, i.C ) );
+				thread.Stack[ fp + i.A ] = thread.Stack[ fp + i.B ].Index( RK( thread.Stack, fp, i.C ) );
 				continue;
 			}
 	
 			case Opcode.SetGlobal:
 			{
 				// G[ K( Bx ) ] := R( A )
-				Environment.NewIndex( K( i.Bx ), stack[ fp + i.A ] );
+				Environment.NewIndex( K( i.Bx ), thread.Stack[ fp + i.A ] );
 				continue;
 			}
 
 			case Opcode.SetUpVal:
 			{
 				// U( B ) := R( A )
-				upVals[ i.B ].Value = stack[ fp + i.A ];
+				upVals[ i.B ].Value = thread.Stack[ fp + i.A ];
 				continue;
 			}
 
 			case Opcode.SetTable:
 			{
 				// R( A )[ RK( B ) ] = RK( C )
-				stack[ fp + i.A ].NewIndex( RK( stack, fp, i.B ), RK( stack, fp, i.C ) );
+				thread.Stack[ fp + i.A ].NewIndex( RK( thread.Stack, fp, i.B ), RK( thread.Stack, fp, i.C ) );
 				continue;
 			}
 	
 			case Opcode.NewTable:
 			{
 				// R( A ) := {} ( B is array size hint, C is hash size hint )
-				stack[ fp + i.A ] = new LuaTable( i.B, i.C );
+				thread.Stack[ fp + i.A ] = new LuaTable( i.B, i.C );
 				continue;
 			}
 
 			case Opcode.Self:
 			{
-				LuaValue self = stack[ fp + i.B ];
+				LuaValue self = thread.Stack[ fp + i.B ];
 
 				// R( A + 1 ) := R( B ) 
-				stack[ fp + i.A + 1 ] = self;
+				thread.Stack[ fp + i.A + 1 ] = self;
 
 				// R( A ) = R( B )[ RK( C ) ]
-				stack[ fp + i.A ] = self.Index( RK( stack, fp, i.C ) );
+				thread.Stack[ fp + i.A ] = self.Index( RK( thread.Stack, fp, i.C ) );
 
 				continue;
 			}
@@ -247,64 +245,64 @@ public sealed class LuaFunction
 			case Opcode.Add:
 			{
 				// R( A ) := RK( B ) + RK( C )
-				stack[ fp + i.A ] = RK( stack, fp, i.B ).Add( RK( stack, fp, i.C ) );
+				thread.Stack[ fp + i.A ] = RK( thread.Stack, fp, i.B ).Add( RK( thread.Stack, fp, i.C ) );
 				continue;
 			}
 
 			case Opcode.Sub:
 			{
 				// R( A ) := RK( B ) - RK( C )
-				stack[ fp + i.A ] = RK( stack, fp, i.B ).Subtract( RK( stack, fp, i.C ) );
+				thread.Stack[ fp + i.A ] = RK( thread.Stack, fp, i.B ).Subtract( RK( thread.Stack, fp, i.C ) );
 				continue;
 			}
 
 			case Opcode.Mul:
 			{
 				// R( A ) := RK( B ) * RK( C )
-				stack[ fp + i.A ] = RK( stack, fp, i.B ).Multiply( RK( stack, fp, i.C ) );
+				thread.Stack[ fp + i.A ] = RK( thread.Stack, fp, i.B ).Multiply( RK( thread.Stack, fp, i.C ) );
 				continue;
 			}
 
 			case Opcode.Div:
 			{
 				// R( A ) := RK( B ) / RK( C )
-				stack[ fp + i.A ] = RK( stack, fp, i.B ).Divide( RK( stack, fp, i.C ) );
+				thread.Stack[ fp + i.A ] = RK( thread.Stack, fp, i.B ).Divide( RK( thread.Stack, fp, i.C ) );
 				continue;
 			}
 	
 			case Opcode.Mod:
 			{
 				// R( A ) := RK( B ) % RK( C )
-				stack[ fp + i.A ] = RK( stack, fp, i.B ).Modulus( RK( stack, fp, i.C ) );
+				thread.Stack[ fp + i.A ] = RK( thread.Stack, fp, i.B ).Modulus( RK( thread.Stack, fp, i.C ) );
 				continue;
 			}
 
 			case Opcode.Pow:
 			{
 				// R( A ) := RK( B ) ^ RK( C )
-				stack[ fp + i.A ] = RK( stack, fp, i.B ).RaiseToPower( RK( stack, fp, i.C ) );
+				thread.Stack[ fp + i.A ] = RK( thread.Stack, fp, i.B ).RaiseToPower( RK( thread.Stack, fp, i.C ) );
 				continue;
 			}
 	
 			case Opcode.Unm:
 			{
 				// R( A ) := -R( B )
-				stack[ fp + i.A ] = stack[ fp + i.B ].UnaryMinus();
+				thread.Stack[ fp + i.A ] = thread.Stack[ fp + i.B ].UnaryMinus();
 				continue;
 			}
 
 			case Opcode.Not:
 			{
 				// R( A ) := not R( B )
-				LuaValue B = stack[ fp + i.B ];
-				stack[ fp + i.A ] = ( B == null || ! B.IsTrue() );
+				LuaValue B = thread.Stack[ fp + i.B ];
+				thread.Stack[ fp + i.A ] = !( B != null && B.IsTrue() );
 				continue;
 			}
 
 			case Opcode.Len:
 			{
 				// R( A ) := length of R( B )
-				stack[ fp + i.A ] = stack[ fp + i.B ].Length();
+				thread.Stack[ fp + i.A ] = thread.Stack[ fp + i.B ].Length();
 				continue;
 			}
 
@@ -316,8 +314,8 @@ public sealed class LuaFunction
 
 				while ( count > 1 )
 				{
-					LuaValue left	= stack[ listTop - 1 ];
-					LuaValue right	= stack[ listTop - 0 ];
+					LuaValue left	= thread.Stack[ listTop - 1 ];
+					LuaValue right	= thread.Stack[ listTop - 0 ];
 
 					if ( left.SupportsSimpleConcatenation() && right.SupportsSimpleConcatenation() )
 					{
@@ -325,7 +323,7 @@ public sealed class LuaFunction
 						int concatCount = 2;
 						for ( concatCount = 2; concatCount < count; ++concatCount )
 						{
-							LuaValue operand = stack[ listTop - concatCount ];
+							LuaValue operand = thread.Stack[ listTop - concatCount ];
 							if ( ! operand.SupportsSimpleConcatenation() )
 							{
 								break;
@@ -337,24 +335,24 @@ public sealed class LuaFunction
 
 						for ( int r = listTop - ( concatCount - 1 ); r <= listTop; ++r )
 						{
-							s.Append( stack[ r ].ToString() );
+							s.Append( thread.Stack[ r ].ToString() );
 						}
 
-						// Modify the stack top and continue.
-						stack[ listTop - ( concatCount - 1 ) ] = s.ToString();
+						// Modify the thread.Stack top and continue.
+						thread.Stack[ listTop - ( concatCount - 1 ) ] = s.ToString();
 						listTop	-= concatCount - 1;
 						count	-= concatCount - 1;
 					}
 					else
 					{
 						// Perform meta concatenation.
-						stack[ listTop - 1 ] = left.Concatenate( right );
+						thread.Stack[ listTop - 1 ] = left.Concatenate( right );
 						listTop	-= 1;
 						count	-= 1;
 					}
 				}
 
-				stack[ fp + i.A ] = stack[ listTop ];
+				thread.Stack[ fp + i.A ] = thread.Stack[ listTop ];
 
 				continue;
 			}
@@ -369,7 +367,7 @@ public sealed class LuaFunction
 			case Opcode.Eq:
 			{
 				// if ( RK( B ) == RK( C ) ) ~= A then skip associated jump
-				if ( RK( stack, fp, i.B ).Equals( RK( stack, fp, i.C ) ) == ( i.A != 0 ) )
+				if ( RK( thread.Stack, fp, i.B ).Equals( RK( thread.Stack, fp, i.C ) ) == ( i.A != 0 ) )
 				{
 					i = prototype.Instructions[ ip++ ];
 					ip += i.sBx;
@@ -384,7 +382,7 @@ public sealed class LuaFunction
 			case Opcode.Lt:
 			{
 				// if ( RK( B ) <  RK( C ) ) ~= A then skip associated jump
-				if ( RK( stack, fp, i.B ).LessThan( RK( stack, fp, i.C ) ) == ( i.A != 0 ) )
+				if ( RK( thread.Stack, fp, i.B ).LessThan( RK( thread.Stack, fp, i.C ) ) == ( i.A != 0 ) )
 				{
 					i = prototype.Instructions[ ip++ ];
 					ip += i.sBx;
@@ -399,7 +397,7 @@ public sealed class LuaFunction
 			case Opcode.Le:
 			{
 				// if ( RK( B ) <= RK( C ) ) ~= A then skip associated jump
-				if ( RK( stack, fp, i.B ).LessThanOrEquals( RK( stack, fp, i.C ) ) == ( i.A != 0 ) )
+				if ( RK( thread.Stack, fp, i.B ).LessThanOrEquals( RK( thread.Stack, fp, i.C ) ) == ( i.A != 0 ) )
 				{
 					i = prototype.Instructions[ ip++ ];
 					ip += i.sBx;
@@ -414,8 +412,8 @@ public sealed class LuaFunction
 			case Opcode.Test:
 			{
 				// if not ( R( A ) <=> C ) then skip associated jump
-				LuaValue A = stack[ fp + i.A ];
-				if ( ( A != null && A.IsTrue() ) != ( i.C != 0 ) )
+				LuaValue A = thread.Stack[ fp + i.A ];
+				if ( ( A != null && A.IsTrue() ) == ( i.C != 0 ) )
 				{
 					i = prototype.Instructions[ ip++ ];
 					ip += i.sBx;
@@ -430,11 +428,11 @@ public sealed class LuaFunction
 			case Opcode.TestSet:
 			{
 				// if ( R( B ) <=> C ) then R( A ) := R( B ) else skip associated jump
-				LuaValue B = stack[ fp + i.B ];
-				if ( ( B != null && B.IsTrue() ) != ( i.C != 0 ) )
+				LuaValue B = thread.Stack[ fp + i.B ];
+				if ( ( B != null && B.IsTrue() ) == ( i.C != 0 ) )
 				{
 					// Set.
-					stack[ fp + i.A ] = stack[ fp + i.B ];
+					thread.Stack[ fp + i.A ] = thread.Stack[ fp + i.B ];
 
 					// Perform associated jump.
 					i = prototype.Instructions[ ip++ ];
@@ -463,7 +461,7 @@ public sealed class LuaFunction
 					thread.Top = -1;
 				}
 
-				LuaValue function = stack[ fp + i.A ];
+				LuaValue function = thread.Stack[ fp + i.A ];
 				function.Call( thread, fp + i.A, callArgumentCount, i.C - 1 );
 
 				if ( thread.UnwoundFrames.Count > 0 )
@@ -502,12 +500,12 @@ public sealed class LuaFunction
 					thread.Top = -1;
 				}
 
-				LuaValue function = stack[ fp + i.A ];
+				LuaValue function = thread.Stack[ fp + i.A ];
 
-				stack[ frameBase ] = function;
+				thread.Stack[ frameBase ] = function;
 				for ( int argument = 0; argument < callArgumentCount; ++argument )
 				{
-					stack[ frameBase + 1 + argument ] = stack[ fp + i.A + 1 + argument ];
+					thread.Stack[ frameBase + 1 + argument ] = thread.Stack[ fp + i.A + 1 + argument ];
 				}
 
 				function.Call( thread, frameBase, callArgumentCount, resultCount );
@@ -549,11 +547,11 @@ public sealed class LuaFunction
 				// Copy results.
 				for ( int result = 0; result < copyCount; ++result )
 				{
-					stack[ frameBase + result ] = stack[ fp + i.A + result ];
+					thread.Stack[ frameBase + result ] = thread.Stack[ fp + i.A + result ];
 				}
 				for ( int result = copyCount; result < resultCount; ++result )
 				{
-					stack[ frameBase + result ] = null;
+					thread.Stack[ frameBase + result ] = null;
 				}
 
 				return;
@@ -568,19 +566,19 @@ public sealed class LuaFunction
 
 			case Opcode.ForLoop:
 			{
-				LuaValue index	= stack[ fp + i.A + 0 ];
-				LuaValue limit	= stack[ fp + i.A + 1 ];
-				LuaValue step	= stack[ fp + i.A + 2 ];
+				LuaValue index	= thread.Stack[ fp + i.A + 0 ];
+				LuaValue limit	= thread.Stack[ fp + i.A + 1 ];
+				LuaValue step	= thread.Stack[ fp + i.A + 2 ];
 
 				// Index += Step
 				index = index.Add( step );
-				stack[ fp + i.A + 0 ] = index;
+				thread.Stack[ fp + i.A + 0 ] = index;
 				
 				// if ( Step > 0 and Index <= Limit ) or ( Step < 0 and Index >= Limit ) then Var = Index, relative jump sBx
 				if (    ( ! step.LessThanOrEquals( zero ) && index.LessThanOrEquals( limit ) )
 					 || ( step.LessThan( zero ) && ! index.LessThan( limit ) ) )
 				{
-					stack[ fp + i.A + 3 ] = index;
+					thread.Stack[ fp + i.A + 3 ] = index;
 					ip += i.sBx;
 				}
 
@@ -589,9 +587,9 @@ public sealed class LuaFunction
 
 			case Opcode.ForPrep:
 			{
-				LuaValue index	= stack[ fp + i.A + 0 ];
-				LuaValue limit	= stack[ fp + i.A + 1 ];
-				LuaValue step	= stack[ fp + i.A + 2 ];
+				LuaValue index	= thread.Stack[ fp + i.A + 0 ];
+				LuaValue limit	= thread.Stack[ fp + i.A + 1 ];
+				LuaValue step	= thread.Stack[ fp + i.A + 2 ];
 				
 				// Convert for control variables to numbers.
 				if ( ! index.TryToNumberValue( out index ) )
@@ -610,10 +608,10 @@ public sealed class LuaFunction
 				// Index -= Step
 				index = index.Subtract( step );
 
-				// Update stack.
-				stack[ fp + i.A + 0 ] = index;
-				stack[ fp + i.A + 1 ] = limit;
-				stack[ fp + i.A + 2 ] = step;
+				// Update thread.Stack.
+				thread.Stack[ fp + i.A + 0 ] = index;
+				thread.Stack[ fp + i.A + 1 ] = limit;
+				thread.Stack[ fp + i.A + 2 ] = step;
 				
 				// relative jump sBx
 				ip += i.sBx;
@@ -631,22 +629,22 @@ public sealed class LuaFunction
 
 			case Opcode.TForLoop:
 			{
-				LuaValue generator	= stack[ fp + i.A + 0 ];
-				LuaValue state		= stack[ fp + i.A + 1 ];
-				LuaValue control	= stack[ fp + i.A + 2 ];
+				LuaValue generator	= thread.Stack[ fp + i.A + 0 ];
+				LuaValue state		= thread.Stack[ fp + i.A + 1 ];
+				LuaValue control	= thread.Stack[ fp + i.A + 2 ];
 
 				// Var_1, ..., Var_C := Generator( State, Control )
-				stack[ fp + i.A + 3 ] = generator;
-				stack[ fp + i.A + 4 ] = state;
-				stack[ fp + i.A + 5 ] = control;
+				thread.Stack[ fp + i.A + 3 ] = generator;
+				thread.Stack[ fp + i.A + 4 ] = state;
+				thread.Stack[ fp + i.A + 5 ] = control;
 				generator.Call( thread, fp + i.A + 3, 2, i.C );
 
 				// if Var_1 ~= nil then Control = Var_1 else skip associated jump
-				LuaValue var_1 = stack[ fp + i.A + 3 ];
+				LuaValue var_1 = thread.Stack[ fp + i.A + 3 ];
 				if ( var_1 != null && var_1.IsTrue() )
 				{
 					// Set control.
-					stack[ fp + i.A + 2 ] = var_1;
+					thread.Stack[ fp + i.A + 2 ] = var_1;
 
 					// Perform associated jump.
 					i = prototype.Instructions[ ip++ ];
@@ -687,7 +685,7 @@ public sealed class LuaFunction
 				// R( A )[ ( C - 1 ) * 50 + i ] := R( A + i ), 1 <= i <= B
 				for ( int key = 1; key <= lastKey; ++key )
 				{
-					stack[ fp + i.A ].NewIndex( ( keyBase - 1 ) * Instruction.FieldsPerFlush + key, stack[ fp + i.A + key ] );
+					thread.Stack[ fp + i.A ].NewIndex( ( keyBase - 1 ) * Instruction.FieldsPerFlush + key, thread.Stack[ fp + i.A + key ] );
 				}
 
 				if ( i.B == 0 )
@@ -700,7 +698,7 @@ public sealed class LuaFunction
 
 			case Opcode.Close:
 			{
-				// close all stack variables from R( A ) to the top
+				// close all thread.Stack variables from R( A ) to the top
 				thread.CloseUpVals( fp + i.A );
 				continue;
 			}
@@ -709,7 +707,7 @@ public sealed class LuaFunction
 			{
 				// R( A ) := function closure from P( Bx )
 				LuaFunction function = new LuaFunction( prototype.Prototypes[ i.Bx ], Environment );
-				stack[ fp + i.A ] = function;
+				thread.Stack[ fp + i.A ] = function;
 				
 				// followed by upval initialization with Move or GetUpVal
 				for ( int upval = 0; upval < function.prototype.UpValCount; ++upval )
@@ -760,18 +758,17 @@ public sealed class LuaFunction
 					copyCount = varargCount;
 					thread.Top = fp + i.A + copyCount - 1;
 					thread.StackWatermark( Math.Max( fp + prototype.StackSize, thread.Top + 1 ) );
-					stack = thread.Stack;
 				}
 
 				// Copy into correct position.
 				for ( int vararg = 0; vararg < copyCount; ++vararg )
 				{
-					stack[ fp + i.A + vararg ] = stack[ varargBase + vararg ];
+					thread.Stack[ fp + i.A + vararg ] = thread.Stack[ varargBase + vararg ];
 				}
 
 				for ( int vararg = copyCount; vararg < i.B; ++vararg )
 				{
-					stack[ fp + i.A + vararg ] = null;
+					thread.Stack[ fp + i.A + vararg ] = null;
 				}
 
 				continue;
@@ -780,7 +777,7 @@ public sealed class LuaFunction
 			case Opcode.IntDiv:
 			{
 				// R( A ) := RK( B ) \ RK( C )
-				stack[ fp + i.A ] = RK( stack, fp, i.B ).IntegerDivide( RK( stack, fp, i.C ) );
+				thread.Stack[ fp + i.A ] = RK( thread.Stack, fp, i.B ).IntegerDivide( RK( thread.Stack, fp, i.C ) );
 				continue;
 			}
 
