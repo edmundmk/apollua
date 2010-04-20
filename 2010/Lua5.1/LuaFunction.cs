@@ -590,14 +590,14 @@ public sealed class LuaFunction
 				
 				// Calculate number of results we want.
 				int copyCount;
-				if ( resultCount == -1 )
+				if ( resultCount != -1 )
 				{
-					copyCount = returnResultCount;
-					thread.Top = frameBase + returnResultCount - 1;
+					copyCount = Math.Min( resultCount, returnResultCount );
 				}
 				else
 				{
-					copyCount = Math.Min( resultCount, returnResultCount );
+					copyCount = returnResultCount;
+					thread.Top = frameBase + returnResultCount - 1;
 				}
 
 				// Copy results.

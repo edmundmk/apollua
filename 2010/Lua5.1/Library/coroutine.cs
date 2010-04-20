@@ -113,6 +113,7 @@ public static partial class coroutine
 
 		internal override void Call( LuaThread thread, int frameBase, int argumentCount, int resultCount )
 		{
+			thread.Top = frameBase + argumentCount;
 			thread.UnwoundFrames.Add( new Frame( frameBase, resultCount, frameBase + 1, 0 ) );
 			// Callers should also unwind until the whole stack is unwound.
 		}
@@ -120,7 +121,30 @@ public static partial class coroutine
 		internal override void Resume( LuaThread thread )
 		{
 			// We should be the last function in the stack (at index 0).
+			Frame frame = thread.UnwoundFrames[ thread.UnwoundFrames.Count - 1 ];
 			thread.UnwoundFrames.RemoveAt( thread.UnwoundFrames.Count - 1 );
+
+			// The resume code will have altered our arguments to correspond to the
+			// arguments of the resume call (always the correct number of results).
+
+			// Find number of arguments/results.
+			int resultCount;
+			if ( frame.ResultCount != -1 )
+			{
+				resultCount = frame.ResultCount;
+			}
+			else
+			{
+				resultCount = thread.Top - frame.FrameBase;
+				thread.Top = -1;
+				thread.Top = frame.FrameBase + resultCount - 1;
+			}
+
+			// Copy down.
+			for ( int result = 0; result < resultCount; ++result )
+			{
+				thread.Stack[ frame.FrameBase + result ] = thread.Stack[ frame.FrameBase + 1 + result ];
+			}
 		}
 	
 	}
@@ -171,7 +195,7 @@ public static partial class coroutine
 			// Copy results.
 			for ( int result = 0; result < copyCount; ++result )
 			{
-				thread.Stack[ frameBase + result ] = thread.ResumeResult( result );
+				thread.Stack[ frameBase + result ] = coroutine.ResumeResult( result );
 			}
 			for ( int result = copyCount; result < resultCount; ++result )
 			{

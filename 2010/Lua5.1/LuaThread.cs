@@ -106,7 +106,7 @@ public sealed class LuaThread
 
 			// Set up as suspended frame.
 			Stack[ 0 ] = function;
-			UnwoundFrames.Add( new Frame( 1, -1, 2, 0 ) );
+			UnwoundFrames.Add( new Frame( 0, -1, 1, 0 ) );
 			UnwoundFrames.Add( new Frame( 0, -1, 1, 0 ) );
 		}
 		else
@@ -203,7 +203,7 @@ public sealed class LuaThread
 			upvalIndex += 1;
 		}
 
-		openUpVals.RemoveRange( upvalIndex, openUpVals.Count - upvalIndex );
+		openUpVals.RemoveRange( removeIndex, openUpVals.Count - upvalIndex );
 	}
 
 
@@ -288,14 +288,13 @@ public sealed class LuaThread
 		Frame yield = UnwoundFrames[ 0 ];
 		if ( yield.ResultCount != -1 )
 		{
-			StackWatermark( yield.FrameBase + yield.ResultCount );
+			StackWatermark( yield.FrameBase + 1 + yield.ResultCount );
 		}
 		else
 		{
-			Top = yield.FrameBase + argumentCount - 1;
+			Top = yield.FrameBase + 1 + argumentCount - 1;
 			StackWatermark( Top + 1 );
 		}
-		Stack[ yield.FrameBase ] = null;
 	}
 
 	public void ResumeArgument( int argument, LuaValue value )
@@ -303,7 +302,7 @@ public sealed class LuaThread
 		Frame yield = UnwoundFrames[ 0 ];
 		if ( argument < yield.ResultCount || yield.ResultCount == -1 )
 		{
-			Stack[ yield.FrameBase + argument ] = value;
+			Stack[ yield.FrameBase + 1 + argument ] = value;
 		}
 	}
 
@@ -329,8 +328,10 @@ public sealed class LuaThread
 			else
 			{
 				// First time this function has been called.
-				Frame yield = UnwoundFrames[ 0 ];
-				Stack[ resume.FrameBase ].Call( this, resume.FrameBase, yield.ResultCount, -1 );
+				UnwoundFrames.Clear();
+				int callArgumentCount = Top - resume.FrameBase;
+				Top = -1;
+				Stack[ resume.FrameBase ].Call( this, resume.FrameBase, callArgumentCount, -1 );
 			}
 
 			CurrentThread = coroutine;
