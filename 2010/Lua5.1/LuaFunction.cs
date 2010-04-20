@@ -106,9 +106,65 @@ public sealed class LuaFunction
 	}
 
 	
-	internal override void Resume( LuaThread t )
+	internal override void Resume( LuaThread thread )
 	{
-		throw new NotImplementedException();
+		// Pop frame off the stack.
+		Frame frame = thread.UnwoundFrames[ thread.UnwoundFrames.Count - 1 ];
+		thread.UnwoundFrames.RemoveAt( thread.UnwoundFrames.Count - 1 );
+
+
+		// Recover frame information.
+		int frameBase = frame.FrameBase;
+		int resultCount = frame.ResultCount;
+		int fp = frame.FramePointer;
+		int ip = frame.InstructionPointer;
+
+
+		// Resume the next suspended frame.
+		try
+		{
+	
+		Instruction i = prototype.Instructions[ ip - 1 ];
+		
+		switch ( i.Opcode )
+		{
+			case Opcode.Call:
+			{
+				// Resume function.
+				LuaValue function = thread.Stack[ fp + i.A ];
+				function.Resume( thread );
+
+				if ( thread.UnwoundFrames.Count > 0 )
+				{
+					thread.UnwoundFrames.Add( new Frame( frameBase, resultCount, fp, ip ) );
+					return;
+				}
+
+				if ( i.C != 0 )
+				{
+					thread.StackWatermark( fp + prototype.StackSize );
+				}
+				else
+				{
+					thread.StackWatermark( Math.Max( fp + prototype.StackSize, thread.Top + 1 ) );
+				}
+
+				break;
+			}
+
+			default:
+				throw new InvalidOperationException();
+		}
+
+		}
+		catch ( Exception e )
+		{
+			thread.UnwoundFrames.Add( new Frame( frameBase, resultCount, fp, ip ) );
+			throw e;
+		}
+
+		// Returned normally, dispatch the rest of the function.
+		Dispatch( thread, frameBase, resultCount, fp, ip );
 	}
 	
 	
@@ -119,14 +175,14 @@ public sealed class LuaFunction
 
 		while ( true )
 		{
-			// Suspend coroutine.
-
+			// Suspend coroutine (support for suspending at arbitrary instructions).
+/*
 			if ( thread.UnwoundFrames.Count > 0 )
 			{
 				thread.UnwoundFrames.Add( new Frame( frameBase, resultCount, fp, ip ) );
 				return;
 			}
-
+*/
 
 			// Dispatch instructions.
 	
@@ -509,7 +565,7 @@ public sealed class LuaFunction
 				}
 
 				function.Call( thread, frameBase, callArgumentCount, resultCount );
-
+				
 				return;
 			}
 

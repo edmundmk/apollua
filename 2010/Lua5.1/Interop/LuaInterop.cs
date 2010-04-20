@@ -53,10 +53,7 @@ public struct LuaInterop
 
 	public T Argument< T >( int argument )
 	{
-		if ( argument < argumentCount )
-			return InteropHelpers.Unbox< T >( thread.Stack[ frameBase + 1 + argument ] );
-		else
-			return default( T );
+		return InteropHelpers.Unbox< T >( Argument( argument ) );
 	}
 
 
@@ -75,9 +72,7 @@ public struct LuaInterop
 
 	public void Return< T >( T result )
 	{
-		BeginReturn( 1 );
-		ReturnResult( 0, result );
-		EndReturn();
+		Return( InteropHelpers.Box( result ) );
 	}
 	
 	public void BeginReturn( int returnResultCount )
@@ -99,10 +94,7 @@ public struct LuaInterop
 
 	public void ReturnResult< T >( int result, T value )
 	{
-		if ( resultCount == -1 || result < resultCount )
-		{
-			thread.Stack[ frameBase + result ] = InteropHelpers.Box( value );
-		}
+		ReturnResult( result, InteropHelpers.Box( value ) );
 	}
 
 	public void EndReturn()

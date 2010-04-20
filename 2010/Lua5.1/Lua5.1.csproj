@@ -47,6 +47,7 @@
     <Compile Include="Interop\LuaInteropSignature.cs" />
     <Compile Include="Interop\LuaInterop.cs" />
     <Compile Include="Library\basic.cs" />
+    <Compile Include="Library\coroutine.cs" />
     <Compile Include="Library\io.cs" />
     <Compile Include="Library\io.file.cs" />
     <Compile Include="Library\math.cs" />

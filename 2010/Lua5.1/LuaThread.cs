@@ -5,10 +5,13 @@
 
 
 using System;
+using System.Text;
 using System.Collections.Generic;
+using Lua.Bytecode;
+using Lua.Interop;
+using Lua.Library;
 using Lua.Runtime;
 using Lua.Utility;
-using Lua.Library;
 
 
 namespace Lua
@@ -22,9 +25,21 @@ namespace Lua
 */
 
 
+public enum LuaThreadStatus
+{
+	Running,
+	Suspended,
+	Normal,
+	Dead
+}
+
+
 public sealed class LuaThread
 	:	LuaValue
 {
+	public static int VarResult = -1;
+
+
 
 	// Current thread.
 
@@ -42,26 +57,42 @@ public sealed class LuaThread
 	{
 		get { return "thread"; }
 	}
-	
+
 	public LuaTable Environment
 	{
 		get; set;
 	}
+	
 
 
 	// Thread state.
 
+	public LuaThreadStatus Status
+	{
+		get { return GetStatus(); }
+	}
+	
 	internal LuaValue[]				Stack;
 	internal int					Top;
 	internal List< Frame >			UnwoundFrames;
 	internal List< LuaFunction >	StackLevels;
 	List< UpVal >					openUpVals;
 	int								watermark;
-	
+
+
+
+	// Constructors
+
 	public LuaThread()
+		:	this( null )
+	{
+	}
+
+
+	public LuaThread( LuaFunction function )
 	{
 		// Thread state.
-		Stack			= new LuaValue[ 64 ];
+		Stack			= new LuaValue[ 16 ];
 		Top				= -1;
 		UnwoundFrames	= new List< Frame >();
 		StackLevels		= new List< LuaFunction >();
@@ -69,13 +100,49 @@ public sealed class LuaThread
 		watermark		= 0;
 		
 		// Environment.
-		Environment				= basic.CreateTable();
-		Environment[ "io" ]		= io.CreateTable();
-		Environment[ "math" ]	= math.CreateTable();
-		Environment[ "os" ]		= os.CreateTable();
-		Environment[ "string" ]	= @string.CreateTable();
+		if ( function != null )
+		{
+			Environment	= CurrentThread.Environment;
+
+			// Set up as suspended frame.
+			Stack[ 0 ] = function;
+			UnwoundFrames.Add( new Frame( 1, -1, 2, 0 ) );
+			UnwoundFrames.Add( new Frame( 0, -1, 1, 0 ) );
+		}
+		else
+		{
+			Environment	= CreateDefaultEnvironment();
+		}
 	}
-		
+
+
+
+	// State.
+
+	static LuaTable CreateDefaultEnvironment()
+	{
+		LuaTable environment		= basic.CreateTable();
+		environment[ "coroutine" ]	= coroutine.CreateTable();
+		environment[ "io" ]			= io.CreateTable();
+		environment[ "math" ]		= math.CreateTable();
+		environment[ "os" ]			= os.CreateTable();
+		environment[ "string" ]		= @string.CreateTable();
+		return environment;
+	}
+
+
+	LuaThreadStatus GetStatus()
+	{
+		if ( CurrentThread == this )
+			return LuaThreadStatus.Running;
+		else if ( UnwoundFrames.Count > 0 )
+			return LuaThreadStatus.Suspended;
+		else if ( watermark != 0 )
+			return LuaThreadStatus.Normal;
+		else
+			return LuaThreadStatus.Dead;
+	}
+			
 
 
 	// UpVals.
@@ -160,9 +227,9 @@ public sealed class LuaThread
 
 
 
-	// Interop.
+	// Call interop.
 
-	internal int BeginCall( LuaValue function, int argumentCount )
+	public int BeginCall( LuaValue function, int argumentCount )
 	{
 		int frameBase = watermark;
 		StackWatermark( frameBase + 1 + argumentCount );
@@ -170,25 +237,209 @@ public sealed class LuaThread
 		return frameBase;
 	}
 
-	internal void CallArgument( int frameBase, int argument, LuaValue value )
+	public void CallArgument( int frameBase, int argument, LuaValue value )
 	{
 		Stack[ frameBase + 1 + argument ] = value;
 	}
 
-	internal void Call( int frameBase, int resultCount )
+	public void CallArgument< T >( int frameBase, int argument, T value )
 	{
-		Stack[ frameBase ].Call( this, frameBase, watermark - frameBase - 1, resultCount );
+		CallArgument( frameBase, argument, InteropHelpers.Box( value ) );
 	}
 
-	internal LuaValue CallResult( int frameBase, int result )
+	public int Call( int frameBase, int resultCount )
+	{
+		try
+		{
+			Stack[ frameBase ].Call( this, frameBase, watermark - frameBase - 1, resultCount );
+			if ( resultCount != VarResult )
+				return resultCount;
+			else
+				return Top + 1 - frameBase;
+		}
+		catch ( Exception e )
+		{
+			throw new LuaError( UnwindStackTrace(), e );
+		}
+	}
+
+	public LuaValue CallResult( int frameBase, int result )
 	{
 		return Stack[ frameBase + result ];
 	}
 
-	internal void EndCall( int frameBase )
+	public T CallResult< T >( int frameBase, int result )
+	{
+		return InteropHelpers.Unbox< T >( CallResult( frameBase, result ) );
+	}
+
+	public void EndCall( int frameBase )
 	{
 		StackWatermark( frameBase );
 	}
+
+
+
+
+	// Resume interop.
+
+	public void BeginResume( int argumentCount )
+	{
+		Frame yield = UnwoundFrames[ 0 ];
+		if ( yield.ResultCount != -1 )
+		{
+			StackWatermark( yield.FrameBase + yield.ResultCount );
+		}
+		else
+		{
+			Top = yield.FrameBase + argumentCount - 1;
+			StackWatermark( Top + 1 );
+		}
+		Stack[ yield.FrameBase ] = null;
+	}
+
+	public void ResumeArgument( int argument, LuaValue value )
+	{
+		Frame yield = UnwoundFrames[ 0 ];
+		if ( argument < yield.ResultCount || yield.ResultCount == -1 )
+		{
+			Stack[ yield.FrameBase + argument ] = value;
+		}
+	}
+
+	public void ResumeArgument< T >( int argument, T value )
+	{
+		ResumeArgument( argument, InteropHelpers.Box( value ) );
+	}
+
+	public int Resume( int resultCount )
+	{
+		try
+		{
+
+			LuaThread coroutine = CurrentThread;
+			CurrentThread = this;
+			
+			Frame resume = UnwoundFrames[ UnwoundFrames.Count - 1 ];
+			if ( resume.InstructionPointer > 0 )
+			{
+				// Resume from a yield.
+				Stack[ resume.FrameBase ].Resume( this );
+			}
+			else
+			{
+				// First time this function has been called.
+				Frame yield = UnwoundFrames[ 0 ];
+				Stack[ resume.FrameBase ].Call( this, resume.FrameBase, yield.ResultCount, -1 );
+			}
+
+			CurrentThread = coroutine;
+
+
+			int resultBase;
+			int actualResultCount;
+			
+			if ( UnwoundFrames.Count > 0 )
+			{
+				// Yielded.
+				Frame yield = UnwoundFrames[ 0 ];
+				resultBase = yield.FrameBase + 1;
+				actualResultCount = Top - yield.FrameBase;
+				Top = -1;
+			}
+			else
+			{
+				// Normal return.
+				resultBase = resume.FrameBase;
+				actualResultCount = Top + 1 - resume.FrameBase;
+				Top = -1;
+			}
+						
+			if ( resultCount != VarResult )
+			{
+				StackWatermark( resultBase + resultCount );
+				if ( resultCount > actualResultCount )
+				{
+					Array.Clear( Stack, resultBase, resultCount - actualResultCount );
+				}
+				return resultCount;
+			}
+			else
+			{
+				StackWatermark( resultBase + actualResultCount );
+				return actualResultCount;
+			}
+
+		}
+		catch ( Exception e )
+		{
+			throw new LuaError( UnwindStackTrace(), e );
+		}
+	}
+
+	public LuaValue ResumeResult( int result )
+	{
+		if ( UnwoundFrames.Count > 0 )
+		{
+			Frame yield = UnwoundFrames[ 0 ];
+			return Stack[ yield.FrameBase + 1 + result ];
+		}
+		else
+		{
+			return Stack[ result ];
+		}
+	}
+
+	public T ResumeResult< T >( int result )
+	{
+		return InteropHelpers.Unbox< T >( ResumeResult( result ) );
+	}
+
+	public void EndResume()
+	{
+		if ( UnwoundFrames.Count > 0 )
+		{
+			Frame yield = UnwoundFrames[ 0 ];
+			StackWatermark( yield.FrameBase + 1 );
+		}
+		else
+		{
+			StackWatermark( 0 );
+		}
+
+	}
+
+
+
+
+	// Stack unwinding due to error.
+
+	internal string UnwindStackTrace()
+	{
+		StringBuilder s = new StringBuilder();
+
+		foreach ( Frame frame in UnwoundFrames )
+		{
+			LuaValue function = Stack[ frame.FrameBase ];
+			if ( function is LuaFunction )
+			{
+				LuaPrototype prototype = ( (LuaFunction)function ).Prototype;
+				SourceSpan location = prototype.DebugInstructionSourceSpans[ frame.InstructionPointer - 1 ];
+				s.AppendFormat( "   at <unknown> in {0}:line {1}\n", location.Start.SourceName, location.Start.Line );
+			}
+			else
+			{
+				s.AppendFormat( "   Frame: {0} {1} {2} {3}\n", frame.FrameBase, frame.ResultCount, frame.FramePointer, frame.InstructionPointer );
+			}
+
+			StackWatermark( frame.FrameBase );
+		}
+
+		UnwoundFrames.Clear();
+
+		return s.ToString();
+	}
+
 
 }
 
