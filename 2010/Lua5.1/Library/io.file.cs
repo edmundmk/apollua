@@ -79,6 +79,12 @@ public static partial class io
 		}
 		
 
+		public void read( LuaInterop lua )
+		{
+			// TODO.
+		}
+
+	
 		public void write( LuaInterop lua )
 		{
 			EnsureWriter();

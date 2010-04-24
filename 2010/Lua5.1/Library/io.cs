@@ -30,11 +30,16 @@ public static partial class io
 	static file defaultOutput	= stdout;
 
 
+	public static void read( LuaInterop lua )
+	{
+		defaultInput.read( lua );
+	}
+
+	
 	public static void write( LuaInterop lua )
 	{
 		defaultOutput.write( lua );
 	}
-
 
 }
 	

@@ -126,6 +126,9 @@ public static partial class coroutine
 
 			// The resume code will have altered our arguments to correspond to the
 			// arguments of the resume call (always the correct number of results).
+			// The resume code can't simulate a return directly because that would
+			// overwrite the value at the frame base, which references the yeild
+			// function.
 
 			// Find number of arguments/results.
 			int resultCount;
