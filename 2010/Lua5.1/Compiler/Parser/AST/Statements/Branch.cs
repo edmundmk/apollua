@@ -15,10 +15,10 @@ namespace Lua.Compiler.Parser.AST.Statements
 class Branch
 	:	Statement
 {
-	public LabelAST Target { get; private set; }
+	public Label Target { get; private set; }
 
 		
-	public Branch( SourceSpan s, LabelAST target )
+	public Branch( SourceSpan s, Label target )
 		:	base( s )
 	{
 		Target = target;

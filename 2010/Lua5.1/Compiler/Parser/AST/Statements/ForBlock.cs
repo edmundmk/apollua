@@ -20,13 +20,13 @@ class ForBlock
 	public Variable	Limit				{ get; private set; }
 	public Variable	Step				{ get; private set; }
 	public Variable	UserIndex			{ get; private set; }
-	public LabelAST	BreakLabel			{ get; private set; }
-	public LabelAST	ContinueLabel		{ get; private set; }
+	public Label	BreakLabel			{ get; private set; }
+	public Label	ContinueLabel		{ get; private set; }
 	
 
 	public ForBlock( SourceSpan s, Block parent, string name,
 				Variable index, Variable limit, Variable step, Variable userIndex,
-				LabelAST breakLabel, LabelAST continueLabel )
+				Label breakLabel, Label continueLabel )
 		:	base( s, parent, name )
 	{
 		Index			= index;

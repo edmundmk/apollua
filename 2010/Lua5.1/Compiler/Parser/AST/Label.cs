@@ -12,13 +12,13 @@ namespace Lua.Compiler.Parser.AST
 {
 
 
-class LabelAST
+class Label
 {
 	public string	Name	{ get; private set; }
 	public Block	Block	{ get; private set; }
 
 
-	public LabelAST( string name )
+	public Label( string name )
 	{
 		Name = name;
 	}

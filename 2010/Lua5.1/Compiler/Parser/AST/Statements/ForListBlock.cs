@@ -21,13 +21,13 @@ class ForListBlock
 	public Variable				State				{ get; private set; }
 	public Variable				Control				{ get; private set; }
 	public IList< Variable >	UserVariables		{ get; private set; }
-	public LabelAST				BreakLabel			{ get; private set; }
-	public LabelAST				ContinueLabel		{ get; private set; }
+	public Label				BreakLabel			{ get; private set; }
+	public Label				ContinueLabel		{ get; private set; }
 	
 
 	public ForListBlock( SourceSpan s, Block parent, string name,
 				Variable generator, Variable state, Variable control, IList< Variable > userVariables,
-				LabelAST breakLabel, LabelAST continueLabel )
+				Label breakLabel, Label continueLabel )
 		:	base( s, parent, name )
 	{
 		Generator		= generator;

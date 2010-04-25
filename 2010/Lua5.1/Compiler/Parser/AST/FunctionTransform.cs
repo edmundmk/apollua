@@ -14,11 +14,11 @@ namespace Lua.Compiler.Parser.AST
 {
 
 
-class FunctionTransform
+abstract class FunctionTransform
 	:	IStatementVisitor
 	,	IExpressionVisitor
 {
-	protected FunctionAST	function;
+	protected LuaAST	function;
 	protected Block			block;
 	protected object		result;
 
@@ -30,9 +30,9 @@ class FunctionTransform
 	}
 
 
-	public virtual FunctionAST Transform( FunctionAST f )
+	public virtual LuaAST Transform( LuaAST f )
 	{
-		function = new FunctionAST( f.Name, function );
+		function = new LuaAST( f.Name, function );
 
 		// Upvals.
 		foreach ( Variable upval in f.UpVals )
@@ -57,7 +57,7 @@ class FunctionTransform
 		}
 
 		// Labels.
-		foreach ( LabelAST label in f.Labels )
+		foreach ( Label label in f.Labels )
 		{
 			function.Label( label );
 		}
@@ -275,7 +275,7 @@ class FunctionTransform
 
 	public virtual void Visit( FunctionClosure e )
 	{
-		FunctionAST f = Transform( e.Function );
+		LuaAST f = Transform( e.Function );
 		function.ChildFunction( f );
 		result = new FunctionClosure( e.SourceSpan, f );
 	}

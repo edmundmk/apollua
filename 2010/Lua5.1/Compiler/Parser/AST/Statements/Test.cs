@@ -19,10 +19,10 @@ class Test
 	:	Statement
 {
 	public Expression	Condition	{ get; private set; }
-	public LabelAST		Target		{ get; private set; }
+	public Label		Target		{ get; private set; }
 
 		
-	public Test( SourceSpan s, Expression condition, LabelAST target )
+	public Test( SourceSpan s, Expression condition, Label target )
 		:	base( s )
 	{
 		Condition	= condition;

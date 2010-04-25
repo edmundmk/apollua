@@ -15,11 +15,11 @@ namespace Lua.Compiler.Parser.AST.Statements
 class MarkLabel
 	:	Statement
 {
-	public LabelAST Label	{ get; private set; }
+	public Label Label	{ get; private set; }
 	public Block	Block	{ get; private set; }
 
 		
-	public MarkLabel( SourceSpan s, LabelAST label )
+	public MarkLabel( SourceSpan s, Label label )
 		:	base( s )
 	{
 		Label = label;

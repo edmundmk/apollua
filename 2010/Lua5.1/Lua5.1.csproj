@@ -42,7 +42,6 @@
     <Compile Include="Bytecode\SourceLocation.cs" />
     <Compile Include="Bytecode\SourceSpan.cs" />
     <Compile Include="Bytecode\Symbol.cs" />
-    <Compile Include="Compiler\Parser\AST\ASTWriter.cs" />
     <Compile Include="Compiler\Parser\AST\Expression.cs" />
     <Compile Include="Compiler\Parser\AST\Expressions\Binary.cs" />
     <Compile Include="Compiler\Parser\AST\Expressions\BinaryOp.cs" />
@@ -65,11 +64,12 @@
     <Compile Include="Compiler\Parser\AST\Expressions\UnaryOp.cs" />
     <Compile Include="Compiler\Parser\AST\Expressions\UpValRef.cs" />
     <Compile Include="Compiler\Parser\AST\Expressions\Vararg.cs" />
-    <Compile Include="Compiler\Parser\AST\FunctionAST.cs" />
     <Compile Include="Compiler\Parser\AST\FunctionTransform.cs" />
     <Compile Include="Compiler\Parser\AST\IExpressionVisitor.cs" />
     <Compile Include="Compiler\Parser\AST\IStatementVisitor.cs" />
-    <Compile Include="Compiler\Parser\AST\LabelAST.cs" />
+    <Compile Include="Compiler\Parser\AST\Label.cs" />
+    <Compile Include="Compiler\Parser\AST\LuaAST.cs" />
+    <Compile Include="Compiler\Parser\AST\LuaASTWriter.cs" />
     <Compile Include="Compiler\Parser\AST\Statement.cs" />
     <Compile Include="Compiler\Parser\AST\Statements\Assign.cs" />
     <Compile Include="Compiler\Parser\AST\Statements\AssignList.cs" />

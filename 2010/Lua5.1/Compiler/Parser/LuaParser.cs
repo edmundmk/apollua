@@ -24,10 +24,10 @@ sealed class LuaParser
 
 	// Parsing.
 
-	public static FunctionAST Parse( TextWriter errorWriter, TextReader sourceReader, string sourceName )
+	public static LuaAST Parse( TextWriter errorWriter, TextReader sourceReader, string sourceName )
 	{
 		LuaParser parser = new LuaParser( errorWriter, sourceReader, sourceName );
-		FunctionAST functionAST = parser.chunk();
+		LuaAST functionAST = parser.chunk();
 		if ( ! parser.hasError && ! parser.lexer.HasError )
 		{
 			return functionAST;
@@ -56,7 +56,7 @@ sealed class LuaParser
 
 	// Parse state.
 
-	FunctionAST					function;
+	LuaAST					function;
 	Block						block;
 	LoopScope					loopScope;
 	ParseStack< Expression >	expression;
@@ -83,7 +83,7 @@ sealed class LuaParser
 
 	// Chunk
 
-	FunctionAST chunk()
+	LuaAST chunk()
 	{
 		/*	goal chunk
 				: block eof
@@ -94,7 +94,7 @@ sealed class LuaParser
 		Debug.Assert( block == null );
 		Debug.Assert( loopScope == null );
 
-		function = new FunctionAST( "<chunk>", function );
+		function = new LuaAST( "<chunk>", function );
 		block = new Block( new SourceSpan(), null, "function" );
 		function.SetBlock( block );
 
@@ -108,7 +108,7 @@ sealed class LuaParser
 
 		block.SetSourceSpan( new SourceSpan( new SourceLocation( sourceName, 0, 0 ), eof.SourceSpan.End ) );
 		block = block.Parent;
-		FunctionAST result = function;
+		LuaAST result = function;
 		function = function.Parent;
 
 		Debug.Assert( function == null );
@@ -290,8 +290,8 @@ sealed class LuaParser
 		Token doToken = Check( TokenKind.Do );
 
 		SourceSpan s			= new SourceSpan( matchWhile.SourceSpan.Start, doToken.SourceSpan.End );
-		LabelAST whileBreak		= new LabelAST( "whileBreak" );		function.Label( whileBreak );
-		LabelAST whileContinue	= new LabelAST( "whileContinue" );	function.Label( whileContinue );
+		Label whileBreak		= new Label( "whileBreak" );		function.Label( whileBreak );
+		Label whileContinue	= new Label( "whileContinue" );	function.Label( whileContinue );
 		
 
 		block.Statement( new MarkLabel( s, whileContinue ) );
@@ -333,9 +333,9 @@ sealed class LuaParser
 		Token matchRepeat = Check( TokenKind.Repeat );
 
 		SourceSpan s			= matchRepeat.SourceSpan;
-		LabelAST repeat			= new LabelAST( "repeat" );			function.Label( repeat );
-		LabelAST repeatBreak	= new LabelAST( "repeatBreak" );	function.Label( repeatBreak );
-		LabelAST repeatContinue	= new LabelAST( "repeatContinue" );	function.Label( repeatContinue );
+		Label repeat			= new Label( "repeat" );			function.Label( repeat );
+		Label repeatBreak	= new Label( "repeatBreak" );	function.Label( repeatBreak );
+		Label repeatContinue	= new Label( "repeatContinue" );	function.Label( repeatContinue );
 		
 		block.Statement( new MarkLabel( s, repeat ) );
 
@@ -393,8 +393,8 @@ sealed class LuaParser
 		Token thenToken = Check( TokenKind.Then );
 
 		SourceSpan s		= new SourceSpan( match.SourceSpan.Start, thenToken.SourceSpan.End );
-		LabelAST ifClause	= new LabelAST( "ifClause" );	function.Label( ifClause );
-		LabelAST ifEnd		= null;
+		Label ifClause	= new Label( "ifClause" );	function.Label( ifClause );
+		Label ifEnd		= null;
 
 		block.Statement( new Test( s, condition, ifClause ) );
 
@@ -412,7 +412,7 @@ sealed class LuaParser
 
 			if ( ifEnd == null )
 			{
-				ifEnd = new LabelAST( "ifEnd" ); function.Label( ifEnd );
+				ifEnd = new Label( "ifEnd" ); function.Label( ifEnd );
 			}
 			block.Statement( new Branch( elseIf.SourceSpan, ifEnd ) );
 			block.Statement( new MarkLabel( elseIf.SourceSpan, ifClause ) );
@@ -422,7 +422,7 @@ sealed class LuaParser
 			thenToken = Check( TokenKind.Then );
 
 			s			= new SourceSpan( elseIf.SourceSpan.Start, thenToken.SourceSpan.End );
-			ifClause	= new LabelAST( "ifClause" ); function.Label( ifClause );
+			ifClause	= new Label( "ifClause" ); function.Label( ifClause );
 			
 			block.Statement( new Test( s, condition, ifClause ) );
 
@@ -441,7 +441,7 @@ sealed class LuaParser
 
 			if ( ifEnd == null )
 			{
-				ifEnd = new LabelAST( "ifEnd" ); function.Label( ifEnd );
+				ifEnd = new Label( "ifEnd" ); function.Label( ifEnd );
 			}
 			block.Statement( new Branch( elseToken.SourceSpan, ifEnd ) );
 			block.Statement( new MarkLabel( elseToken.SourceSpan, ifClause ) );
@@ -579,8 +579,8 @@ sealed class LuaParser
 		
 		// For loop.
 
-		LabelAST breakLabel		= new LabelAST( "forBreak" );
-		LabelAST continueLabel	= new LabelAST( "forContinue" );
+		Label breakLabel		= new Label( "forBreak" );
+		Label continueLabel	= new Label( "forContinue" );
 
 		block = new ForBlock( s, block, "forBody",
 			forIndex, forLimit, forStep, userIndex, breakLabel, continueLabel );
@@ -668,8 +668,8 @@ sealed class LuaParser
 			userVariables[ i ] = new Variable( (string)namelist[ i ].Value );
 		}
 	
-		LabelAST breakLabel		= new LabelAST( "forBreak" );
-		LabelAST continueLabel	= new LabelAST( "forContinue" );
+		Label breakLabel		= new Label( "forBreak" );
+		Label continueLabel	= new Label( "forContinue" );
 
 		block = new ForListBlock( s, block, "forlistBody",
 			block.Locals[ 0 ], block.Locals[ 1 ], block.Locals[ 2 ], 
@@ -797,7 +797,7 @@ sealed class LuaParser
 
 		// Function.
 
-		function = new FunctionAST( functionName, function );
+		function = new LuaAST( functionName, function );
 		function.Parent.ChildFunction( function );
 		block = new Block( new SourceSpan(), block, "function" );
 		function.SetBlock( block );
@@ -883,7 +883,7 @@ sealed class LuaParser
 
 		block.SetSourceSpan( s );
 		block = block.Parent;
-		FunctionAST result = function;
+		LuaAST result = function;
 		function = function.Parent;
 
 		
@@ -1797,13 +1797,13 @@ sealed class LuaParser
 
 	class LoopScope
 	{
-		public FunctionAST	Function	{ get; private set; }
+		public LuaAST	Function	{ get; private set; }
 		public LoopScope	Parent		{ get; private set; }
-		public LabelAST		Break		{ get; private set; }
-		public LabelAST		Continue	{ get; private set; }
+		public Label		Break		{ get; private set; }
+		public Label		Continue	{ get; private set; }
 
 
-		public LoopScope( FunctionAST function, LoopScope parent, LabelAST b, LabelAST c )
+		public LoopScope( LuaAST function, LoopScope parent, Label b, Label c )
 		{
 			Function	= function;
 			Parent		= parent;
@@ -1818,7 +1818,7 @@ sealed class LuaParser
 		string name = (string)nameToken.Value;
 
 		// Search through scopes.
-		FunctionAST f = function;
+		LuaAST f = function;
 		for ( Block b = block; b != null; b = b.Parent )
 		{
 			for ( int i = b.Locals.Count - 1; i >= 0; --i )

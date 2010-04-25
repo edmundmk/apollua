@@ -14,22 +14,31 @@ namespace Lua.Compiler.Parser.AST
 {
 
 
-class ASTWriter
+class LuaASTWriter
 	:	IStatementVisitor
 	,	IExpressionVisitor
 {
+
+	public static void Write( TextWriter writer, LuaAST function )
+	{
+		LuaASTWriter w = new LuaASTWriter( writer );
+		w.Write( function );
+	}
+
+
+
 	protected TextWriter	o;
 	int						indent;
 
 
-	public ASTWriter( TextWriter oWriter )
+	public LuaASTWriter( TextWriter oWriter )
 	{
 		o		= oWriter;
 		indent	= 0;
 	}
 
 
-	public void Write( FunctionAST function )
+	public void Write( LuaAST function )
 	{
 		// Function signature.
 
@@ -81,7 +90,7 @@ class ASTWriter
 		{
 			o.Write( "  -- label " );
 			bool bFirst = true;
-			foreach ( LabelAST label in function.Labels )
+			foreach ( Label label in function.Labels )
 			{
 				if ( ! bFirst )
 					o.Write( ", " );
@@ -139,7 +148,7 @@ class ASTWriter
 
 		// Other functions.
 		
-		foreach ( FunctionAST child in function.Functions )
+		foreach ( LuaAST child in function.Functions )
 		{
 			Write( child );
 		}

@@ -15,10 +15,10 @@ namespace Lua.Compiler.Parser.AST.Expressions
 class FunctionClosure
 	:	Expression
 {
-	public FunctionAST Function { get; private set; }
+	public LuaAST Function { get; private set; }
 
 
-	public FunctionClosure( SourceSpan s, FunctionAST function )
+	public FunctionClosure( SourceSpan s, LuaAST function )
 		:	base( s )
 	{
 		Function = function;
