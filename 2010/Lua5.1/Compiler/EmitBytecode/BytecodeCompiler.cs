@@ -1343,7 +1343,19 @@ sealed class BytecodeCompiler
 
 	public void Visit( Literal e )
 	{
-		function.InstructionABx( e.SourceSpan, Opcode.LoadK, target, function.Constant( e.Value ) );
+		if ( e.Value == null )
+		{
+			function.InstructionABC( e.SourceSpan, Opcode.LoadNil, target, target, 0 );
+		}
+		else if ( e.Value is bool )
+		{
+			function.InstructionABC( e.SourceSpan, Opcode.LoadBool, target, (bool)e.Value ? 1 : 0, 0 );
+		}
+		else
+		{
+			function.InstructionABx( e.SourceSpan, Opcode.LoadK, target, function.Constant( e.Value ) );
+			
+		}
 	}
 
 	public void Visit( LocalRef e )
