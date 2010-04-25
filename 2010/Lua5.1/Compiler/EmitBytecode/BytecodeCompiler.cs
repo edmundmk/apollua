@@ -1050,6 +1050,23 @@ sealed class BytecodeCompiler
 
 	public void Visit( ReturnList s )
 	{
+		// Check for tailcall.
+		if ( s.Results.Count == 0 )
+		{
+			if ( s.ResultList is Call )
+			{
+				Call call = (Call)s.ResultList;
+				BuildCall( TailCallC, call.Function, null, call.Arguments, call.ArgumentValues );
+				return;
+			}
+			else if ( s.ResultList is CallSelf )
+			{
+				CallSelf call = (CallSelf)s.ResultList;
+				BuildCall( TailCallC, call.Object, call.MethodName, call.Arguments, call.ArgumentValues );
+				return;
+			}
+		}
+
 		// Push results onto the stack.
 		Allocation allocation = function.Top();
 		foreach ( Expression result in s.Results )
@@ -1130,6 +1147,8 @@ sealed class BytecodeCompiler
 		result.Release();
 	}
 
+	static int TailCallC = -1;
+
 	Allocation BuildCall( int C,
 			Expression functionOrObject, string methodName,
 			IList< Expression > arguments, Expression argumentValues )
@@ -1174,21 +1193,31 @@ sealed class BytecodeCompiler
 			B = arguments.Count + 1;
 		}
 
-		// Call.
-		function.InstructionABC( functionOrObject.SourceSpan, Opcode.Call, allocation, B, C );
-		allocation.Release();
-
-		// Return appropriate number of values.
-		Allocation results = function.Top();
-		if ( C > 0 )
+		if ( C != TailCallC )
 		{
-			results.Allocate( C - 1 );
+			// Call.
+			function.InstructionABC( functionOrObject.SourceSpan, Opcode.Call, allocation, B, C );
+			allocation.Release();
+
+			// Return appropriate number of values.
+			Allocation results = function.Top();
+			if ( C > 0 )
+			{
+				results.Allocate( C - 1 );
+			}
+			else
+			{
+				results.SetTop();
+			}
+			return results;
 		}
 		else
 		{
-			results.SetTop();
+			// Tail call.
+			function.InstructionABC( functionOrObject.SourceSpan, Opcode.TailCall, allocation, B, 0 );
+			allocation.Release();
+			return function.Top();
 		}
-		return results;
 	}
 
 	public void Visit( Comparison e )
