@@ -42,6 +42,7 @@
     <Compile Include="Bytecode\SourceLocation.cs" />
     <Compile Include="Bytecode\SourceSpan.cs" />
     <Compile Include="Bytecode\Symbol.cs" />
+    <Compile Include="Compiler\EmitBytecode\BytecodeCompiler.cs" />
     <Compile Include="Compiler\Parser\AST\Expression.cs" />
     <Compile Include="Compiler\Parser\AST\Expressions\Binary.cs" />
     <Compile Include="Compiler\Parser\AST\Expressions\BinaryOp.cs" />
