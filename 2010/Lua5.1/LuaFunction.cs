@@ -423,7 +423,10 @@ public sealed class LuaFunction
 			case Opcode.Eq:
 			{
 				// if ( RK( B ) == RK( C ) ) ~= A then skip associated jump
-				if ( RK( thread.Stack, fp, i.B ).Equals( RK( thread.Stack, fp, i.C ) ) == ( i.A != 0 ) )
+				LuaValue B = RK( thread.Stack, fp, i.B );
+				LuaValue C = RK( thread.Stack, fp, i.C );
+				bool equals = B != null ? B.Equals( C ) : C == null;
+				if ( equals == ( i.A != 0 ) )
 				{
 					i = prototype.Instructions[ ip++ ];
 					ip += i.sBx;

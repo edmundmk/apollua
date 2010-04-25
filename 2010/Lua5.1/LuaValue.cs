@@ -393,6 +393,10 @@ public abstract class LuaValue
 
 	internal static bool MetaEquals( LuaValue left, LuaValue right )
 	{
+		if ( left == null || right == null )
+		{
+			return left == right;
+		}
 		if ( left.LuaType != right.LuaType )
 		{
 			return false;

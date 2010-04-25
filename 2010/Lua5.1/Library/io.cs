@@ -19,7 +19,8 @@ public static partial class io
 	public static LuaTable CreateTable()
 	{
 		LuaTable io = new LuaTable();
-		io[ "write" ] = new LuaInteropDelegate( write );
+		io[ "read" ]	= new LuaInteropDelegate( read );
+		io[ "write" ]	= new LuaInteropDelegate( write );
 		return io;
 	}
 	

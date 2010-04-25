@@ -139,7 +139,37 @@ public static partial class @string
 
 			case 'o':
 			{
-				throw new NotImplementedException( "%o format conversion specifier not implemented." );
+				StringBuilder o = new StringBuilder();
+				uint number = lua.Argument< uint >( argument++ );
+				for ( uint remainder = number; remainder > 0; remainder >>= 3 )
+				{
+					o.Insert( 0, (char)( '0' + ( remainder & 7 ) ) );
+				}
+				if ( bAlternateForm )
+				{
+					precision = o.Length + 1;
+				}
+				if ( precision >= 0 )
+				{
+					bPadWithZeroes = false;
+					for ( int zero = 0; zero < precision; ++zero )
+					{
+						o.Insert( 0, '0' );
+					}
+				}
+				else
+				{
+					if ( number == 0 )
+					{
+						o.Append( '0' );
+					}
+				}
+				string value = AddSign( o.ToString(), bSignPlus, bSignSpace );
+				if ( bPadWithZeroes )
+					AppendPadded( s, value, fieldWidth );
+				else
+					AppendJustified( s, value, fieldWidth, bLeftJustify );
+				break;
 			}
 
 			case 'u':
@@ -276,11 +306,6 @@ public static partial class @string
 
 				AppendJustified( s, value, fieldWidth, bLeftJustify );
 				break;
-			}
-
-			case 'a': case 'A':
-			{
-				throw new NotImplementedException( "%" + c.ToString() + " format conversion specifier not supported." );
 			}
 
 
