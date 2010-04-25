@@ -395,7 +395,6 @@ class LuaASTWriter
 		case BinaryOp.IntegerDivide:	o.Write( "\\" );	break;
 		case BinaryOp.Modulus:			o.Write( "%" );		break;
 		case BinaryOp.RaiseToPower:		o.Write( "^" );		break;
-		case BinaryOp.Concatenate:		o.Write( ".." );	break;
 		}
 		o.Write( " " );
 		e.Right.Accept( this );
@@ -479,9 +478,18 @@ class LuaASTWriter
 		o.Write( " )" );
 	}
 
-	public virtual void Visit( Concat e )
+	public virtual void Visit( Concatenate e )
 	{
-		// TODO.
+		o.Write( "( " );
+		bool bFirst = true;
+		foreach ( Expression operand in e.Operands )
+		{
+			if ( ! bFirst )
+				o.Write( " .. " );
+			bFirst = false;
+			operand.Accept( this );
+		}
+		o.Write( " )" );
 	}
 
 	public void Visit( Constructor e )

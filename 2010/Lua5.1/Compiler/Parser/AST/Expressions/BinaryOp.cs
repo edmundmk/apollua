@@ -19,8 +19,7 @@ enum BinaryOp
 	Divide,
 	IntegerDivide,
 	Modulus,
-	RaiseToPower,
-	Concatenate
+	RaiseToPower
 }
 
 

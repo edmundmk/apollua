@@ -13,13 +13,13 @@ namespace Lua.Compiler.Parser.AST
 {
 
 
-class Concat
+class Concatenate
 	:	Expression
 {
 	public IList< Expression > Operands { get; private set; }
 	
 
-	public Concat( SourceSpan s, IList< Expression > operands )
+	public Concatenate( SourceSpan s, IList< Expression > operands )
 		:	base( s )
 	{
 		Operands = operands;

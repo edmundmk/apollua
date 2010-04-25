@@ -19,8 +19,8 @@ abstract class FunctionTransform
 	,	IExpressionVisitor
 {
 	protected LuaAST	function;
-	protected Block			block;
-	protected object		result;
+	protected Block		block;
+	protected object	result;
 
 
 	public FunctionTransform()
@@ -248,9 +248,14 @@ abstract class FunctionTransform
 		result = new Comparison( e.SourceSpan, e.Op, Transform( e.Left ), Transform( e.Right ) );
 	}
 
-	public virtual void Visit( Concat e )
+	public virtual void Visit( Concatenate e )
 	{
-		// TODO.
+		Expression[] operands = new Expression[ e.Operands.Count ];
+		for ( int i = 0; i < e.Operands.Count; ++i )
+		{
+			operands[ i ] = Transform( e.Operands[ i ] );
+		}
+		result = new Concatenate( e.SourceSpan, operands );
 	}
 
 	public virtual void Visit( Constructor e )

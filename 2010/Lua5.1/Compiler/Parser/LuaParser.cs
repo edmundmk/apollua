@@ -19,6 +19,16 @@ namespace Lua.Compiler.Parser
 {
 
 
+public class TestParser
+{
+	public static void Parse( TextWriter errorWriter, TextReader sourceReader, string sourceName )
+	{
+		LuaAST ast = LuaParser.Parse( errorWriter, sourceReader, sourceName );
+		LuaASTWriter.Write( Console.Out, ast );
+	}
+}
+
+
 sealed class LuaParser
 {
 
@@ -1347,7 +1357,6 @@ sealed class LuaParser
 			case TokenKind.ReverseSolidus:		e = new Binary( s, BinaryOp.IntegerDivide, left, right );				break;
 			case TokenKind.PercentSign:			e = new Binary( s, BinaryOp.Modulus, left, right );						break;
 			case TokenKind.CircumflexAccent:	e = new Binary( s, BinaryOp.RaiseToPower, left, right );				break;
-			case TokenKind.Concatenate:			e = new Binary( s, BinaryOp.Concatenate, left, right );					break;
 
 			case TokenKind.LogicalEqual:		e = new Comparison( s, ComparisonOp.Equal, left, right );				break;
 			case TokenKind.NotEqual:			e = new Comparison( s, ComparisonOp.NotEqual, left, right );			break;
@@ -1358,6 +1367,25 @@ sealed class LuaParser
 
 			case TokenKind.And:					e = new Logical( s, LogicalOp.And, left, right );						break;
 			case TokenKind.Or:					e = new Logical( s, LogicalOp.Or, left, right );						break;
+
+			case TokenKind.Concatenate:
+			{
+				Concatenate concatenate = right as Concatenate;
+				if ( concatenate != null )
+				{
+					concatenate.Operands.Insert( 0, left );
+					e = concatenate;
+				}
+				else
+				{
+					List< Expression > operands = new List< Expression >();
+					operands.Add( left );
+					operands.Add( right );
+					e = new Concatenate( s, operands );
+				}
+				break;
+			}
+
 			}
 
 			Debug.Assert( e != null );

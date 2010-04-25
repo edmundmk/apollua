@@ -18,7 +18,7 @@ interface IExpressionVisitor
 	void Visit( Call e );
 	void Visit( CallSelf e );
 	void Visit( Comparison e );
-	void Visit( Concat e );
+	void Visit( Concatenate e );
 	void Visit( Constructor e );
 	void Visit( FunctionClosure e );
 	void Visit( GlobalRef e );

@@ -49,7 +49,7 @@
     <Compile Include="Compiler\Parser\AST\Expressions\CallSelf.cs" />
     <Compile Include="Compiler\Parser\AST\Expressions\Comparison.cs" />
     <Compile Include="Compiler\Parser\AST\Expressions\ComparisonOp.cs" />
-    <Compile Include="Compiler\Parser\AST\Expressions\Concat.cs" />
+    <Compile Include="Compiler\Parser\AST\Expressions\Concatenate.cs" />
     <Compile Include="Compiler\Parser\AST\Expressions\Constructor.cs" />
     <Compile Include="Compiler\Parser\AST\Expressions\ConstructorElement.cs" />
     <Compile Include="Compiler\Parser\AST\Expressions\FunctionClosure.cs" />

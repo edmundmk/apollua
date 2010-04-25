@@ -22,6 +22,13 @@ static class EntryPoint
 		
 		try
 		{
+			// Test parsing.
+			using ( TextReader r = File.OpenText( arguments[ 0 ] ) )
+			{
+				Lua.Compiler.Parser.TestParser.Parse( Console.Error, r, arguments[ 0 ] );
+			}
+
+/*
 
 			// Load .luac
 			LuaPrototype prototype;
@@ -49,7 +56,7 @@ static class EntryPoint
 			Action action = function.MakeDelegate< Action >();
 			action();
 
-		}
+*/		}
 		catch ( Exception e )
 		{
 			Console.Error.WriteLine( e.ToString() );
