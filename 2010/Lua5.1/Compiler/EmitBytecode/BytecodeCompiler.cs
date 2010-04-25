@@ -911,14 +911,25 @@ sealed class BytecodeCompiler
 
 	public void Visit( Declare s )
 	{
-		bool bInitialize = function.DeclareLocal( s.Variable );
-		Allocation local = function.Local( s.Variable );
 		Literal literal = s.Value as Literal;
-		if ( bInitialize || literal == null || literal.Value != null )
+		if ( literal == null || literal.Value != null )
 		{
-			Move( local, s.Value );
+			// Normal declaration initialized with a value.
+			Allocation value = Push( s.Value );
+			value.Release();
+			function.DeclareLocal( s.Variable );
 		}
-		local.Release();
+		else
+		{
+			// Initialized with nil, we can avoid initialization in some circumstances.
+			bool bInitialize = function.DeclareLocal( s.Variable );
+			if ( bInitialize )
+			{
+				Allocation local = function.Local( s.Variable );
+				Move( local, s.Value );
+				local.Release();
+			}
+		}
 	}
 
 	public void Visit( DeclareList s )
