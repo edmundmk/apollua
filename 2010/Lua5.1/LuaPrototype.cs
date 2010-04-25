@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Lua.Bytecode;
+using Lua.Compiler.EmitBytecode;
 
 
 namespace Lua
@@ -45,6 +46,15 @@ public sealed class LuaPrototype
 
 	internal LuaPrototype()
 	{
+	}
+
+
+
+	// Compiling.
+
+	public static LuaPrototype Compile( TextWriter errorWriter, TextReader sourceReader, string sourceName )
+	{
+		return BytecodeCompiler.Compile( errorWriter, sourceReader, sourceName );
 	}
 
 

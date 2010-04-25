@@ -544,6 +544,29 @@ sealed class BytecodeCompiler
 		return R( e );
 	}
 
+	void Evaluate( Expression e )
+	{
+		if ( e is Call )
+		{
+			Call call = (Call)e;
+			BuildCall( 1, call.Function, null, call.Arguments, call.ArgumentValues );
+		}
+		else if ( e is CallSelf )
+		{
+			CallSelf call = (CallSelf)e;
+			BuildCall( 1, call.Object, call.MethodName, call.Arguments, call.ArgumentValues );
+		}
+		else if ( e is Vararg )
+		{
+			// Do nothing since vararg has no side effects.
+		}
+		else
+		{
+			Allocation allocation = R( e );
+			allocation.Release();
+		}
+	}
+
 	Allocation PushList( Expression e, int count )
 	{
 		Allocation results;
@@ -917,8 +940,7 @@ sealed class BytecodeCompiler
 	public void Visit( Evaluate s )
 	{
 		// Evaluate and throw away result.
-		Allocation allocation = R( s.Expression );
-		allocation.Release();
+		Evaluate( s.Expression );
 	}
 
 	public void Visit( ForBlock s )
@@ -998,7 +1020,8 @@ sealed class BytecodeCompiler
 
 		// Epilogue.
 		function.Label( s.ContinueLabel );
-		function.InstructionAsBx( s.SourceSpan, Opcode.TForLoop, A, forlistLoop );
+		function.InstructionABC( s.SourceSpan, Opcode.TForLoop, A, 0, s.UserVariables.Count );
+		function.InstructionAsBx( s.SourceSpan, Opcode.Jmp, 0, forlistLoop );
 		function.Label( s.BreakLabel );
 
 		// End of block.
@@ -1012,9 +1035,6 @@ sealed class BytecodeCompiler
 
 	public void Visit( Return s )
 	{
-		// Close upvals.
-		Close( s.SourceSpan, function.Function.Block.Parent );
-
 		// Return.
 		if ( ( s.Result is Literal ) && ( ( (Literal)s.Result ).Value == null ) )
 		{
@@ -1030,9 +1050,6 @@ sealed class BytecodeCompiler
 
 	public void Visit( ReturnList s )
 	{
-		// Close upvals.
-		Close( s.SourceSpan, function.Function.Block.Parent );
-
 		// Push results onto the stack.
 		Allocation allocation = function.Top();
 		foreach ( Expression result in s.Results )

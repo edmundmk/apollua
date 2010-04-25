@@ -22,21 +22,38 @@ static class EntryPoint
 		
 		try
 		{
-			// Test parsing.
-			using ( TextReader r = File.OpenText( arguments[ 0 ] ) )
-			{
-				Lua.Compiler.Parser.TestParser.Parse( Console.Error, r, arguments[ 0 ] );
-			}
-
-/*
-
-			// Load .luac
+			// Get function.
 			LuaPrototype prototype;
-			using ( BinaryReader r = new BinaryReader( File.OpenRead( arguments[ 0 ] ) ) )
+			string sourceName = arguments[ 0 ];
+			if ( String.Equals( Path.GetExtension( sourceName ), ".luac", StringComparison.InvariantCultureIgnoreCase ) )
 			{
-				prototype = LuaPrototype.Load( r );
+				// Load script.
+				using ( BinaryReader r = new BinaryReader( File.OpenRead( sourceName ) ) )
+				{
+					prototype = LuaPrototype.Load( r );
+				}
 			}
-			//prototype.Disassemble( Console.Out );
+			else
+			{
+				using ( TextReader r = File.OpenText( sourceName ) )
+				{
+					Lua.Compiler.Parser.TestParser.Parse( Console.Error, r, sourceName );
+				}
+
+
+				// Compile script.
+				using ( TextReader r = File.OpenText( sourceName ) )
+				{
+					prototype = LuaPrototype.Compile( Console.Error, r, sourceName );
+				}
+			}
+
+			if ( prototype == null )
+			{
+				return 1;
+			}
+
+			prototype.Disassemble( Console.Out );
 
 
 			// Build arg table.
@@ -56,7 +73,7 @@ static class EntryPoint
 			Action action = function.MakeDelegate< Action >();
 			action();
 
-*/		}
+		}
 		catch ( Exception e )
 		{
 			Console.Error.WriteLine( e.ToString() );

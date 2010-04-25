@@ -203,7 +203,7 @@ public sealed class LuaThread
 			upvalIndex += 1;
 		}
 
-		openUpVals.RemoveRange( removeIndex, openUpVals.Count - upvalIndex );
+		openUpVals.RemoveRange( removeIndex, openUpVals.Count - removeIndex );
 	}
 
 

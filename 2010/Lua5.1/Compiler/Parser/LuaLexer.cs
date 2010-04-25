@@ -130,6 +130,7 @@ class LuaLexer
 		{ TokenKind.EqualSign,				"="				},
 		{ TokenKind.GreaterThanSign,		">"				},
 		{ TokenKind.LeftSquareBracket,		"["				},
+		{ TokenKind.ReverseSolidus,			"\\"			},
 		{ TokenKind.RightSquareBracket,		"]"				},
 		{ TokenKind.CircumflexAccent,		"^"				},
 		{ TokenKind.LeftCurlyBracket,		"{"				},
