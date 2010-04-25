@@ -229,7 +229,7 @@ public sealed class LuaFunction
 			case Opcode.LoadNil:
 			{
 				// R( A ) ... R( B ) := nil
-				for ( int r = i.A; r < i.B; ++r )
+				for ( int r = i.A; r <= i.B; ++r )
 				{
 					thread.Stack[ fp + r ] = null;
 				}
