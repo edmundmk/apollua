@@ -557,13 +557,13 @@ public sealed class LuaPrototype
 			}
 
 		case Mode.U:
-			return String.Format( "upval {0}", DebugUpValNames[ operand ] );
+			return String.Format( "upval {0} ", DebugUpValNames[ operand ] );
 
 		case Mode.P:
 			if ( Prototypes[ operand ].DebugName != null && Prototypes[ operand ].DebugName != String.Empty )
-				return String.Format( "function {0}", Prototypes[ operand ].DebugName );
+				return String.Format( "function {0} ", Prototypes[ operand ].DebugName );
 			else
-				return String.Format( "function x{0:X}", Prototypes[ operand ].GetHashCode() );
+				return String.Format( "function x{0:X} ", Prototypes[ operand ].GetHashCode() );
 
 		case Mode.Integer:
 			return String.Format( "{0} ", operand );
@@ -596,7 +596,7 @@ public sealed class LuaPrototype
 			{
 				if ( index == 0 )
 				{
-					return String.Format( "{1} ", operand, debugLocal.Name );
+					return String.Format( "{1}", operand, debugLocal.Name );
 				}
 				else
 				{
@@ -605,7 +605,7 @@ public sealed class LuaPrototype
 			}
 		}
 
-		return String.Format( "r{0} ", operand );
+		return String.Format( "r{0}", operand );
 	}
 
 

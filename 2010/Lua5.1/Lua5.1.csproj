@@ -101,6 +101,7 @@
     <Compile Include="Library\math.cs" />
     <Compile Include="Library\os.cs" />
     <Compile Include="Library\string.cs" />
+    <Compile Include="Library\string.pattern.cs" />
     <Compile Include="LuaError.cs" />
     <Compile Include="LuaFunction.cs" />
     <Compile Include="LuaPrototype.cs" />
